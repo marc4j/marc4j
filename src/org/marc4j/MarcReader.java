@@ -59,6 +59,8 @@ public class MarcReader {
 
     int fileCounter = 0;
     int recordCounter = 0;
+    String controlNumber = null;
+    String tag = null;
 
     /** The MarcHandler object. */
     private MarcHandler mh;
@@ -138,7 +140,11 @@ public class MarcReader {
 		input.read(f);
 		recordCounter += 12;
 		tag[i] = new String(d);
-		length[i] = Integer.parseInt(new String(e));
+		try {
+		    length[i] = Integer.parseInt(new String(e));
+		} catch (NumberFormatException nfe) {
+		    reportError("Invalid directory entry");
+		}
 	    }
 
 	    if (input.read() != FT)
@@ -179,6 +185,8 @@ public class MarcReader {
     }
 
     private void parseControlField(String tag, char[] field) {
+	if (Tag.isControlNumberField(tag))
+	    setControlNumber(new String(field).trim());
 	if (mh != null) 
 	    mh.controlField(tag, new String(field).trim().toCharArray());
     }
@@ -193,8 +201,10 @@ public class MarcReader {
 	    ind1 = field[0];
 	    ind2 = field[1];
 	} else {
-	    reportWarning("Field contains no data elements");
+	    reportWarning("Data Field contains no data elements");
 	}
+	if (field[2] != US)
+	    reportWarning("Expected a data element identifier");
 	if (mh != null)
 	    mh.startDataField(tag, ind1, ind2);
 	for (int i = 2; i < field.length; i++) {
@@ -226,17 +236,28 @@ public class MarcReader {
 
     private void reportWarning(String message) {
 	if (eh != null) 
-	    eh.warning(new MarcReaderException(message, getPosition()));
+	    eh.warning(new MarcReaderException(message, getPosition(), 
+					       getControlNumber()));
     }
 
     private void reportError(String message) {
 	if (eh != null) 
-	    eh.error(new MarcReaderException(message, getPosition()));
+	    eh.error(new MarcReaderException(message, getPosition(),
+					     getControlNumber()));
     }
 
     private void reportFatalError(String message) {
 	if (eh != null) 
-	    eh.fatalError(new MarcReaderException(message, getPosition()));
+	    eh.fatalError(new MarcReaderException(message, getPosition(),
+						  getControlNumber()));
+    }
+
+    private void setControlNumber(String controlNumber) {
+	this.controlNumber = controlNumber;
+    }
+
+    private String getControlNumber() {
+	return controlNumber;
     }
 
     private int getPosition() {
