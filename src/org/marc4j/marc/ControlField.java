@@ -1,4 +1,4 @@
-// $Id: ControlField.java,v 1.2 2002/07/06 13:40:20 bpeters Exp $
+// $Id: ControlField.java,v 1.3 2002/08/03 12:33:24 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -18,11 +18,6 @@
  * along with MARC4J; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * As a special exception, if you link this library with other files to
- * produce an executable, this library does not by itself cause the
- * resulting executable to be covered by the GNU General Public License.
- * This exception does not however invalidate any other reasons why the
- * executable file might be covered by the GNU General Public License.
  */
 package org.marc4j.marc;
 
@@ -41,7 +36,7 @@ package org.marc4j.marc;
  * method.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
  */
 public class ControlField extends VariableField {
