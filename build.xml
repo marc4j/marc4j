@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="marc4j" default="jar" basedir=".">
 
+  <!-- $Id: build.xml,v 1.9 2002/08/03 12:47:33 bpeters Exp $ -->
   <target name="init">
     <tstamp/>
     <property name="src" value="src"/>

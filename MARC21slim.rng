@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE grammar SYSTEM "relaxng.dtd">
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
          xmlns:a="http://www.marc4j.org/annotation"
 	 ns="http://www.loc.gov/MARC21/slim"
 	 datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <!-- $Id: MARC21slim.rng,v 1.2 2002/08/03 12:46:15 bpeters Exp $ -->
 
   <start>
     <a:documentation>collection is a top level container 
