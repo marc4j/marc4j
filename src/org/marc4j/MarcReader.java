@@ -199,9 +199,9 @@ public class MarcReader {
 	if (field.length < 2 && eh != null)
 	    reportWarning("Control Field contains no data elements for tag " + tag);
 	if (Tag.isControlNumberField(tag))
-	    setControlNumber(new String(field).trim());
+	    setControlNumber(trimFT(field));
 	if (mh != null) 
-	    mh.controlField(tag, new String(field).trim().toCharArray());
+	    mh.controlField(tag, trimFT(field));
     }
 
     private void parseDataField(String tag, char[] field) 
@@ -271,12 +271,30 @@ public class MarcReader {
 	this.controlNumber = controlNumber;
     }
 
+    private void setControlNumber(char[] controlNumber) {
+	this.controlNumber = new String(controlNumber);
+    }
+
     private String getControlNumber() {
 	return controlNumber;
     }
 
     private int getPosition() {
 	return fileCounter + recordCounter;
+    }
+
+    private char[] trimFT(char[] field) {
+	StringBuffer sb = new StringBuffer();
+	for (int i = 0; i < field.length; i++) {
+	    char c = field[i];
+	    switch(c) {
+	    case FT :
+		break;
+	    default :
+		sb.append(c);
+	    }
+	}
+	return sb.toString().toCharArray();
     }
 
 }

@@ -27,6 +27,7 @@ package org.marc4j.helpers;
 
 import java.io.*;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLFilterImpl;
@@ -56,19 +57,36 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
 	"http://www.loc.gov/MARC21/slim " +  
 	"http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd";
 
-    private boolean schema = false;
+    private boolean xmlSchema = false;
+    private String name = null;
+    private String publicId = null;
+    private String systemId = null;
 
     /** ContentHandler object */
-    private ContentHandler contentHandler;
+    private ContentHandler ch;
+    private DTDHandler dh;
 
     /**
      * <p>If true the schema location and the namespace 
      * declarations are added.</p>
      *
-     * @param schema the boolean value
+     * @param xmlSchema the boolean value
      */
-    public void setSchemaLocation(boolean schema) {
-	this.schema = schema;
+    public void setSchemaLocation(boolean xmlSchema) {
+	this.xmlSchema = xmlSchema;
+    }
+
+    /**
+     * <p>If set a Documenttype definition is written to output.</p>
+     *
+     * @param name the name of the root element
+     * @param publicId the public idetifier
+     * @param systemId the system identifier
+     */
+    public void setDTD(String name, String publicId, String systemId) {
+	this.name = name;
+	this.publicId = publicId;
+	this.systemId = systemId;
     }
 
     /**
@@ -78,21 +96,23 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
      */
     public void startFile() {
     	try {
-            contentHandler = getContentHandler();
-            contentHandler.startDocument();
-            contentHandler.ignorableWhitespace("\n".toCharArray(), 0, 1);
+            ch = getContentHandler();
+            ch.startDocument();
+            ch.ignorableWhitespace("\n".toCharArray(), 0, 1);
 	    AttributesImpl atts = new AttributesImpl();
+
 	    // Outputting namespace declarations through the attribute object,
-	    // since the startPrefixMapping refuses to output namespace declarations.
-	    if (schema) {
-		atts.addAttribute("", "", "xmlns", "CDATA", NS_URI);
+	    // since the startPrefixMapping refuses to output namespace declarations.	    
+	    if (xmlSchema) {
 		atts.addAttribute("", "xsi", "xmlns:xsi", "CDATA", NS_XSI);
 		atts.addAttribute(NS_XSI, "schemaLocation", "xsi:schemaLocation", 
 				  "CDATA", schemaLocation);
-		contentHandler.startPrefixMapping("xsi", NS_XSI);
+		ch.startPrefixMapping("xsi", NS_XSI);
 	    }
-	    contentHandler.startPrefixMapping("", NS_URI);
-            contentHandler.startElement(NS_URI, "collection", "collection", atts);
+
+	    atts.addAttribute("", "", "xmlns", "CDATA", NS_URI);
+	    ch.startPrefixMapping("", NS_URI);
+            ch.startElement(NS_URI, "collection", "collection", atts);
         } catch (SAXException se) {
             se.printStackTrace();
         }
@@ -105,9 +125,9 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
      */
     public void startRecord(Leader leader) {
 	try {
-	    contentHandler.ignorableWhitespace("\n  ".toCharArray(), 0, 3);
-	    contentHandler.startElement(NS_URI, "record", "record", new AttributesImpl());
-	    contentHandler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
+	    ch.ignorableWhitespace("\n  ".toCharArray(), 0, 3);
+	    ch.startElement(NS_URI, "record", "record", new AttributesImpl());
+	    ch.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
 	    writeElement(NS_URI,"leader","leader", new AttributesImpl(), leader.marshal());
 	} catch (SAXException se) {
 	    se.printStackTrace();
@@ -124,7 +144,7 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
 	try {
 	    AttributesImpl atts = new AttributesImpl();
 	    atts.addAttribute("", "tag", "tag", "CDATA", tag);
-	    contentHandler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
+	    ch.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
 	    writeElement(NS_URI,"controlfield","controlfield", atts, data);
 	} catch (SAXException se) {
 	    se.printStackTrace();
@@ -144,8 +164,8 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
 	    atts.addAttribute("", "tag", "tag", "CDATA", tag);
 	    atts.addAttribute("", "ind1", "ind1", "CDATA", String.valueOf(ind1));
 	    atts.addAttribute("", "ind2", "ind2", "CDATA", String.valueOf(ind2));
-            contentHandler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
-	    contentHandler.startElement(NS_URI,"datafield","datafield", atts);
+            ch.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
+	    ch.startElement(NS_URI,"datafield","datafield", atts);
 	} catch (SAXException se) {
 	    se.printStackTrace();
 	}
@@ -161,10 +181,10 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
 	try {
 	    AttributesImpl atts = new AttributesImpl();
 	    atts.addAttribute("", "code", "code", "CDATA", String.valueOf(code));
-            contentHandler.ignorableWhitespace("\n      ".toCharArray(), 0, 7);
-	    contentHandler.startElement(NS_URI,"subfield","subfield", atts);
-	    contentHandler.characters(data,0,data.length);
-	    contentHandler.endElement(NS_URI,"subfield","subfield");
+            ch.ignorableWhitespace("\n      ".toCharArray(), 0, 7);
+	    ch.startElement(NS_URI,"subfield","subfield", atts);
+	    ch.characters(data,0,data.length);
+	    ch.endElement(NS_URI,"subfield","subfield");
 	} catch (SAXException se) {
 	    se.printStackTrace();
     	}
@@ -177,8 +197,8 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
      */
     public void endDataField(String tag) {
 	try {
-            contentHandler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
-	    contentHandler.endElement(NS_URI,"datafield","datafield");
+            ch.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
+	    ch.endElement(NS_URI,"datafield","datafield");
 	} catch (SAXException se) {
 	    se.printStackTrace();
 	}
@@ -190,8 +210,8 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
      */
     public void endRecord() {
 	try {
-            contentHandler.ignorableWhitespace("\n  ".toCharArray(), 0, 3);
-	    contentHandler.endElement(NS_URI,"record","record");
+            ch.ignorableWhitespace("\n  ".toCharArray(), 0, 3);
+	    ch.endElement(NS_URI,"record","record");
 	} catch (SAXException se) {
 	    se.printStackTrace();
 	}
@@ -203,11 +223,11 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
      */
     public void endFile() {
 	try {
-            contentHandler.ignorableWhitespace("\n".toCharArray(), 0, 1);
-	    contentHandler.endElement(NS_URI,"collection","collection");
-	    if (schema) contentHandler.endPrefixMapping("xsi");
-	    contentHandler.endPrefixMapping("");
-	    contentHandler.endDocument();
+            ch.ignorableWhitespace("\n".toCharArray(), 0, 1);
+	    ch.endElement(NS_URI,"collection","collection");
+	    if (xmlSchema) ch.endPrefixMapping("xsi");
+	    ch.endPrefixMapping("");
+	    ch.endDocument();
 	} catch (SAXException e) {
 	    e.printStackTrace();
 	}
@@ -228,9 +248,9 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
     private void writeElement(String uri, String localName,
 			      String qName, Attributes atts, char[] content)
         throws SAXException {
-        contentHandler.startElement(uri, localName, qName, atts);
-        contentHandler.characters(content, 0, content.length);
-        contentHandler.endElement(uri, localName, qName);
+        ch.startElement(uri, localName, qName, atts);
+        ch.characters(content, 0, content.length);
+        ch.endElement(uri, localName, qName);
     }
 
 }

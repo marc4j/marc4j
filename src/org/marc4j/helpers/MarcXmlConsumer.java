@@ -105,28 +105,32 @@ public class MarcXmlConsumer extends DefaultHandler {
 	    if (tag.length() > 0)
 		controlField.setTag(tag);
 	    else
-		throw new SAXParseException("tag is empty", locator);
+		throw new SAXParseException("Attribute tag is empty", locator);
 
 	    data = new StringBuffer();
 	} else if (name.equals("datafield")) {
+	    if (atts.getLength() == 0)
+		throw new SAXParseException("Invalid datafield element: tag and indicators are missing", locator);
+	    else if (atts.getLength() == 1)
+		throw new SAXParseException("Invalid datafield element: indicators are missing", locator);
 	    dataField = new DataField();
 
 	    String tag = atts.getValue("tag");
 	    if (tag.length() > 0)
 		dataField.setTag(tag);
 	    else
-		throw new SAXParseException("tag is empty", locator);
+		throw new SAXParseException("Attribute tag is empty", locator);
 
 	    String ind1 = atts.getValue("ind1");
 	    String ind2 = atts.getValue("ind2");
 	    if (ind1.length() == 1)
 		dataField.setIndicator1(ind1.charAt(0));
 	    else
-		throw new SAXParseException("ind1 is empty or length is not 1", locator);
+		throw new SAXParseException("Attribute ind1 is empty or length is not 1", locator);
 	    if (ind2.length() == 1)
 		dataField.setIndicator2(ind2.charAt(0));
 	    else
-		throw new SAXParseException("ind2 is empty or length is not 1", locator);
+		throw new SAXParseException("Attribute ind2 is empty or length is not 1", locator);
 
 	    data = new StringBuffer();
 
@@ -137,7 +141,7 @@ public class MarcXmlConsumer extends DefaultHandler {
 	    if (code.length() == 1)
 		subfield.setCode(code.charAt(0));
 	    else
-		throw new SAXParseException("code is empty or length is not 1", locator);
+		throw new SAXParseException("Attribute code is empty or length is not 1", locator);
 
 	    data = new StringBuffer();
 	}
@@ -149,12 +153,16 @@ public class MarcXmlConsumer extends DefaultHandler {
 	}
     }
 
-    public void endElement(String uri, String name, String qName) {
+    public void endElement(String uri, String name, String qName) throws SAXParseException {
 	if (name.equals("record")) {
 	    if (rh != null)
 		rh.record(record);
 	} else if (name.equals("leader")) {
-	    record.add(new Leader(data.toString()));
+	    try {
+		record.add(new Leader(data.toString()));
+	    } catch (MarcException e) {
+		throw new SAXParseException("Unable to unmarshal leader", locator);
+	    }
 	} else if (name.equals("controlfield")) {
 	    controlField.setData(data.toString());
 	    record.add(controlField);
