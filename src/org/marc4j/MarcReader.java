@@ -1,4 +1,4 @@
-// $Id: MarcReader.java,v 1.8 2002/07/06 13:40:20 bpeters Exp $
+// $Id: MarcReader.java,v 1.9 2002/07/31 17:54:36 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -43,7 +43,7 @@ import org.marc4j.marc.MarcException;
  * and optionally the <code>ErrorHandler</code>.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  *
  * @see MarcHandler
  * @see ErrorHandler
@@ -147,7 +147,7 @@ public class MarcReader {
 	    } catch (MarcException e) { 
 		if (eh != null) 
 		    reportFatalError("Unable to parse leader");
-		System.exit(0);
+		return;
 	    } 
 	    int baseAddress = leader.getBaseAddressOfData();
 
