@@ -1,4 +1,4 @@
-// $Id: MarcXmlFilter.java,v 1.14 2003/02/26 23:22:43 ceyates Exp $
+// $Id: MarcXmlFilter.java,v 1.15 2003/03/23 11:56:46 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -47,7 +47,7 @@ import org.marc4j.util.AnselToUnicode;
  * a SAX2 <code>ContentHandler</code>.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  *
  * @see ExtendedFilter
  * @see MarcHandler
@@ -73,7 +73,7 @@ public class MarcXmlFilter extends ExtendedFilter
 
     /** MARC4J character conversion */
     private static final String CHARACTER_CONVERTER = 
-	"http://marc4j.org/features/charconv";
+	"http://marc4j.org/properties/character-conversion";
 
     /** MARC4J pretty printing */
     private static final String PRETTY_PRINTING = 
@@ -123,6 +123,8 @@ public class MarcXmlFilter extends ExtendedFilter
 	    this.eh = (ErrorHandler)obj;
 	else if (SCHEMA_LOC.equals(name))
 	    this.schemaLocation = (String)obj;
+	else if (CHARACTER_CONVERTER.equals(name))
+	    this.charconv = (CharacterConverter)obj;
 	else
 	    super.setProperty(name, obj);
     }
@@ -136,8 +138,6 @@ public class MarcXmlFilter extends ExtendedFilter
     public void setFeature(String name, boolean value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
 	if (ANSEL_TO_UNICODE.equals(name))
-	    setCharacterConverter(true);
-	else if (CHARACTER_CONVERTER.equals(name))
 	    setCharacterConverter(true);
 	else if (PRETTY_PRINTING.equals(name))
 	    this.prettyPrinting = value;
