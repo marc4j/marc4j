@@ -1,4 +1,4 @@
-// $Id: AnselToUnicode.java,v 1.8 2002/08/15 20:06:49 bpeters Exp $
+// $Id: AnselToUnicode.java,v 1.9 2002/12/11 19:21:41 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -26,9 +26,9 @@ import java.util.*;
  * <p>A utility to convert MARC-8 data to UCS/Unicode.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
-public class AnselToUnicode {
+public class AnselToUnicode implements CharacterConverter {
 
     /**
      * <p>Converts MARC-8 data to UCS/Unicode.</p>
@@ -36,7 +36,7 @@ public class AnselToUnicode {
      * @param data the MARC-8 data
      * @return {@link String} - the UCS/Unicode data
      */
-    public static String convert(String s) {
+    public String convert(String s) {
 	return new String(convert(s.toCharArray()));
     }
 
@@ -46,7 +46,7 @@ public class AnselToUnicode {
      * @param data the MARC-8 data
      * @return char[] - the UCS/Unicode data
      */
-    public static char[] convert(char[] data) {
+    public char[] convert(char[] data) {
 	StringBuffer sb = new StringBuffer();
         for(int i=0;i < data.length;i++) {
             char c = data[i];
@@ -67,25 +67,25 @@ public class AnselToUnicode {
 	return sb.toString().toCharArray();
     }
 
-    private static boolean hasNext(int pos, int len) {
+    private boolean hasNext(int pos, int len) {
 	if (pos < (len -1))
 	    return true;
 	return false;
     }
 
-    private static boolean isAscii(int i) {
+    private boolean isAscii(int i) {
 	if (i > 0x00 && i < 0x7F)
 	    return true;
 	return false;
     }
 
-    private static boolean isCombining(int i) {
+    private boolean isCombining(int i) {
 	if (i > 0xE0 && i < 0xFF)
 	    return true;
 	return false;
     }
 
-    private static char getChar(int i) {
+    private char getChar(int i) {
 	switch(i) {
 	case 0x8D: return 0x200D;  // zero width joiner
         case 0x8E: return 0x200C;  // zero width non-joiner
@@ -157,7 +157,7 @@ public class AnselToUnicode {
 	}
     }
 
-    private static char getCombiningChar(int i) {
+    private char getCombiningChar(int i) {
 	switch(i) {
 	case 0xE041: return 0x1EA2;  // capital a with hook above
         case 0xE045: return 0x1EBA;  // capital e with hook above

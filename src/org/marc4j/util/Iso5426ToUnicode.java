@@ -1,4 +1,4 @@
-// $Id: Iso5426ToUnicode.java,v 1.2 2002/12/05 17:03:44 ypratter Exp $
+// $Id: Iso5426ToUnicode.java,v 1.3 2002/12/11 19:22:15 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas  Peters  (mail@bpeters.com)
  * Copyright (C) 2002 Yves Pratter (ypratter@club-internet.fr)
@@ -28,9 +28,9 @@ import java.util.*;
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
  * @author <a href="mailto:ypratter@club-internet.fr">Yves Pratter</a> 
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class Iso5426ToUnicode {
+public class Iso5426ToUnicode implements CharacterConverter {
 
     /**
      * <p>Converts UNIMARC (ISO 5426 charset) data to UCS/Unicode.</p>
@@ -38,7 +38,7 @@ public class Iso5426ToUnicode {
      * @param data the UNIMARC data
      * @return {@link String} - the UCS/Unicode data
      */
-    public static String convert(String s) {
+    public String convert(String s) {
 	return new String(convert(s.toCharArray()));
     }
 
@@ -48,7 +48,7 @@ public class Iso5426ToUnicode {
      * @param data the UNIMARC data
      * @return char[] - the UCS/Unicode data
      */
-    public static char[] convert(char[] data) {
+    public char[] convert(char[] data) {
 	StringBuffer sb = new StringBuffer();
         for(int i=0;i < data.length;i++) {
             char c = data[i];
@@ -69,26 +69,26 @@ public class Iso5426ToUnicode {
 	return sb.toString().toCharArray();
     }
 
-    private static boolean hasNext(int pos, int len) {
+    private boolean hasNext(int pos, int len) {
 	if (pos < (len -1))
 	    return true;
 	return false;
     }
 
-    private static boolean isAscii(int i) {
+    private boolean isAscii(int i) {
 	if (i > 0x00 && i < 0x7F)
 	    return true;
 	return false;
     }
 
-    private static boolean isCombining(int i) {
+    private boolean isCombining(int i) {
 //	if (i > 0xE0 && i < 0xFF)
 	if (i > 0xC0 && i < 0xFF)
 	    return true;
 	return false;
     }
 
-    private static char getChar(int i) {
+    private char getChar(int i) {
 	switch(i) {
         case 0x8D: return 0x200D;  // zero width joiner
         case 0x8E: return 0x200C;  // zero width non-joiner
@@ -160,7 +160,7 @@ public class Iso5426ToUnicode {
 	}
     }
 
-    private static char getCombiningChar(int i) {
+    private char getCombiningChar(int i) {
 	switch(i) {
 	case 0xE041: return 0x1EA2;  // capital a with hook above
 

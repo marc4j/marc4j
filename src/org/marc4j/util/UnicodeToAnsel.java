@@ -1,4 +1,4 @@
-// $Id: UnicodeToAnsel.java,v 1.6 2002/08/18 12:42:21 bpeters Exp $
+// $Id: UnicodeToAnsel.java,v 1.7 2002/12/11 19:21:55 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -27,9 +27,9 @@ import java.io.IOException;
  * <p>A utility to convert UCS/Unicode data to MARC-8.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
-public class UnicodeToAnsel {
+public class UnicodeToAnsel implements CharacterConverter {
 
     /**
      * <p>Converts UCS/Unicode data to MARC-8.</p>
@@ -39,7 +39,7 @@ public class UnicodeToAnsel {
      * @param data the UCS/Unicode data
      * @return {@link String} - the MARC-8 data
      */
-    public static String convert(String data) {
+    public String convert(String data) {
 	return new String(convert(data.toCharArray()));
     }
 
@@ -51,7 +51,7 @@ public class UnicodeToAnsel {
      * @param data the UCS/Unicode data
      * @return char[] - the MARC-8 data
      */
-    public static char[] convert(char[] data) {
+    public char[] convert(char[] data) {
 	StringBuffer sb = new StringBuffer();
 	for(int i = 0; i < data.length; i++) {
 	    char c = data[i];
@@ -70,7 +70,7 @@ public class UnicodeToAnsel {
 	return sb.toString().toCharArray();
     }
     
-    private static int convert(int i) {
+    private int convert(int i) {
 	switch(i) {
         case 0x00A1: return 0xC6;    // inverted exclamation mark
         case 0x00A3: return 0xB9;    // pound sign

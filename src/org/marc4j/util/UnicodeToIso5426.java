@@ -1,4 +1,4 @@
-// $Id: UnicodeToIso5426.java,v 1.1 2002/12/05 17:17:23 ypratter Exp $
+// $Id: UnicodeToIso5426.java,v 1.2 2002/12/11 19:22:06 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -24,34 +24,35 @@ import java.io.CharArrayReader;
 import java.io.IOException;
 
 /**
- * <p>A utility to convert UCS/Unicode data to MARC-8.</p>
+ * <p>A utility to convert UCS/Unicode data to UNIMARC (ISO 5426 charset).</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:ypratter@club-internet.fr">Yves Pratter</a> 
+ * @version $Revision: 1.2 $
  */
-public class UnicodeToIso5426 {
+public class UnicodeToIso5426 implements CharacterConverter {
 
     /**
-     * <p>Converts UCS/Unicode data to MARC-8.</p>
+     * <p>Converts UCS/Unicode data to UNIMARC (ISO 5426 charset).</p>
      *
      * <p>A question mark (0x3F) is returned if there is no match.</p> 
      *
      * @param data the UCS/Unicode data
-     * @return {@link String} - the MARC-8 data
+     * @return {@link String} - the UNIMARC (ISO 5426 charset) data 
      */
-    public static String convert(String data) {
+    public String convert(String data) {
 	return new String(convert(data.toCharArray()));
     }
 
     /**
-     * <p>Converts UCS/Unicode data to MARC-8.</p>
+     * <p>Converts UCS/Unicode data to UNIMARC (ISO 5426 charset).</p>
      *
      * <p>A question mark (0x3F) is returned if there is no match.</p> 
      *
      * @param data the UCS/Unicode data
-     * @return char[] - the MARC-8 data
+     * @return char[] - the UNIMARC (ISO 5426 charset) data
      */
-    public static char[] convert(char[] data) {
+    public char[] convert(char[] data) {
 	StringBuffer sb = new StringBuffer();
 	for(int i = 0; i < data.length; i++) {
 	    char c = data[i];
@@ -70,7 +71,7 @@ public class UnicodeToIso5426 {
 	return sb.toString().toCharArray();
     }
     
-    private static int convert(int i) {
+    private int convert(int i) {
 	switch(i) {
         case 0x00A1: return 0xC6;    // inverted exclamation mark
         case 0x00A3: return 0xB9;    // pound sign
