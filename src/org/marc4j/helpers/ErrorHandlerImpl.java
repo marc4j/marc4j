@@ -52,12 +52,17 @@ public class ErrorHandlerImpl implements ErrorHandler {
     public static String printMarcException(String label, 
 					    MarcReaderException e) {
 	StringBuffer buf = new StringBuffer ();
-	buf.append("**");
+	buf.append("** ");
 	buf.append(label);
 	buf.append(": ");
 	buf.append(e.getMessage());
 	buf.append('\n');
-	buf.append("  Position: ");
+	if (e.getControlNumber() != null) {
+	    buf.append("   Record Number: ");
+	    buf.append(e.getControlNumber());
+	    buf.append('\n');
+	}
+	buf.append("   Character: ");
 	buf.append(e.getPosition());
 	buf.append('\n');
 	return buf.toString();
