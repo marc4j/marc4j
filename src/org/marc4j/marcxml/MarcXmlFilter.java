@@ -1,4 +1,4 @@
-// $Id: MarcXmlFilter.java,v 1.5 2002/07/06 13:40:20 bpeters Exp $
+// $Id: MarcXmlFilter.java,v 1.6 2002/07/06 14:05:30 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -50,7 +50,7 @@ import org.marc4j.util.AnselToUnicode;
  * a SAX2 <code>ContentHandler</code>.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
  * @see ExtendedFilter
  * @see MarcHandler
@@ -137,7 +137,7 @@ public class MarcXmlFilter extends ExtendedFilter
 	throws SAXNotRecognizedException, SAXNotSupportedException {
 	if (ANSEL_TO_UNICODE.equals(name))
 	    this.convert = value;
-	if (PRETTY_PRINTING.equals(name))
+	else if (PRETTY_PRINTING.equals(name))
 	    this.prettyPrinting = value;
 	else
 	    super.setFeature(name, value);

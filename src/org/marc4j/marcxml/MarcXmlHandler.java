@@ -1,4 +1,4 @@
-// $Id: MarcXmlHandler.java,v 1.3 2002/07/06 13:40:20 bpeters Exp $
+// $Id: MarcXmlHandler.java,v 1.4 2002/07/06 14:05:30 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -26,7 +26,6 @@
  */
 package org.marc4j.marcxml;
 
-import java.io.File;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -43,7 +42,7 @@ import org.marc4j.marc.MarcException;
  * that reports events to the <code>MarcHandler</code> interface.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *
  * @see MarcHandler
  * @see DefaultHandler
@@ -104,7 +103,8 @@ public class MarcXmlHandler extends DefaultHandler {
 	    tag = atts.getValue("tag");
 	    String ind1 = atts.getValue("ind1");
 	    String ind2 = atts.getValue("ind2");
-	    mh.startDataField(tag, ind1.charAt(0), ind2.charAt(0));
+	    if (mh != null)
+		mh.startDataField(tag, ind1.charAt(0), ind2.charAt(0));
 	    data = new StringBuffer();
 	} else if (name.equals("subfield")) {
 	    code = atts.getValue("code");
@@ -128,7 +128,8 @@ public class MarcXmlHandler extends DefaultHandler {
 		mh.endRecord();
 	} else if (name.equals("leader")) {
 	    try {
-		mh.startRecord(new Leader(data.toString()));
+		if (mh != null)
+		    mh.startRecord(new Leader(data.toString()));
 	    } catch (MarcException e) {
 		throw new SAXParseException("Unable to unmarshal leader", locator);
 	    }

@@ -1,4 +1,4 @@
-// $Id: MarcSource.java,v 1.4 2002/07/06 13:40:20 bpeters Exp $
+// $Id: MarcSource.java,v 1.5 2002/07/06 14:05:30 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -38,13 +38,13 @@ import org.marc4j.MarcReader;
  * non-MARCXML conversions.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
  */
 public class MarcSource implements Source {
 
     public static final String FEATURE =
-	"http://org.marc4j.marcxml.MarcSource/feature";
+    	"http://org.marc4j.marcxml.MarcSource/feature";
 
     private String publicId = null;
     private String systemId = null;
