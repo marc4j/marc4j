@@ -43,8 +43,20 @@ import org.marc4j.helpers.SaxErrorHandler;
 import org.marc4j.util.RecordHandlerImpl;
 
 /**
- * <p>Provides a driver for <code>MarcXmlConsumer</code>.</p>
+ * <p>Provides a driver for <code>MarcXmlConsumer</code> 
+ * to convert a MARCXML collection document to MARC tape format (ISO 2709).   </p>
  *
+ * <p>For usage, run the command-line with the following command:</p>
+ * <p><code>java org.marc4j.util.XmlMarcWriter -help</code></p>
+ *
+ * <p><b>Note:</b> this class requires a JAXP compliant SAX2 parser.
+ * For W3C XML Schema support a JAXP 1.2 compliant parser is needed.</p> 
+ *
+ * <p>Check the home page for <a href="http://www.loc.gov/standards/marcxml/">
+ * MARCXML</a> for more information about the MARCXML format.</p>
+ *
+ * @author Bas Peters
+ * @see MarcXmlConsumer
  */
 public class XmlMarcWriter {
 

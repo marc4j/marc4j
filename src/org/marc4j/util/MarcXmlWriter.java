@@ -37,13 +37,16 @@ import org.marc4j.helpers.MarcXmlProducer;
 
 /**
  * <p>Provides a driver for <code>MarcXmlProducer</code> 
- * to convert MARC records to a different format using 
+ * to convert MARC records to a MARCXML collection document or to a different format using 
  * an XSLT stylesheet.    </p>
  *
- * <p>Run the utility from the command-line with the following command:</p>
- * <p><code>java org.marc4j.util.MarcXslWriter input-file [stylesheet] [output-file]</code></p>
+ * <p>For usage, run the command-line with the following command:</p>
+ * <p><code>java org.marc4j.util.MarcXmlWriter -help</code></p>
  *
- * <p>Note: this class requires a JAXP compliant XSLT processor.</p> 
+ * <p>Check the home page for <a href="http://www.loc.gov/standards/marcxml/">
+ * MARCXML</a> for more information about the MARCXML format.</p>
+ *
+ * <p><b>Note:</b> this class requires a JAXP compliant XSLT processor.</p> 
  *
  * @author Bas Peters
  * @see MarcXmlProducer
@@ -141,6 +144,7 @@ public class MarcXmlWriter {
         System.err.println("       -xsl <file> = Perform XSLT transformation using <file>");
         System.err.println("       -out <file> = Output using <file>");
         System.err.println("       -usage or -help = this message");
+        System.err.println("       Without a stylesheet the program outputs XML");
         System.exit(1);
     }
 }
