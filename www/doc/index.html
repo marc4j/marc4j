@@ -17,15 +17,15 @@
     </ul>
     <h1><a name="intro">Introduction</a></h1>
     <p>This document provides basic examples that illustrate the features provided by the MARC4J library and demonstrates how they can be used. For additional information check the Javadoc <a href="apidoc/index.html">documentation</a>.</p>
-    <p>MARC4J is an easy to use library for working with <a href="http://lcweb.loc.gov/marc/">MARC</a> records in Java. The library consists of an event-based MARC parser, an object model for in-memory editing of MARC record objects and SAX2 based producers and consumers for conversions between MARC and <a href="http://www.loc.gov/standards/marcxml/">MARCXML</a>, the new XML exchange format for MARC as published by the Library of Congress. For preprocessing XML to create MARCXML or for postprocessing MARCXML to create a different output format XSLT support is added through JAXP, a vendor-neutral interface for working with XML in Java. This means that you can use any XML parser or XSLT processor that is JAXP compliant.</p>
+    <p>MARC4J is an easy to use library for working with <a href="http://lcweb.loc.gov/marc/">MARC</a> records in Java. The library consists of an event-based MARC parser, an object model for in-memory editing of MARC record objects and SAX2 based producers and consumers for conversions between MARC and <a href="http://www.loc.gov/standards/marcxml/">MARCXML</a>, the new XML exchange format for MARC as published by the Library of Congress. For preprocessing XML to create MARCXML, or for postprocessing MARCXML to create a different format, XSLT support is added through JAXP. JAXP is a vendor-neutral interface for working with XML in Java. This means that you can use any XML parser or XSLT processor that is JAXP compliant.</p>
     <h1><a name="download">Download</a></h1>
     <p>MARC4J can be downloaded from <a href="http://marc4j.tigris.org">http://marc4j.tigris.org</a>, the project home for MARC4J.</p>
     <h1><a name="installing">Installing MARC4J</a></h1>
-    <p>MARC4J requires no additional libraries. Simply make sure that your Java environment is able to locate the library, for example by adding the library to your Java classpath environment variable.</p>
-    <p>If you plan to use the XML features that MARC4J ofers a SAX2 parser is needed with optionally a JAXP compatible XSLT processor to add XSLT support. Examples of SAX2 parsers are <a href="http://www.gnu.org/software/classpathx/jaxp/">GNU JAXP</a>, <a href="http://xml.apache.org/xerces2-j/index.html">Xerces</a>, <a href="http://xml.apache.org/crimson/index.html">Crimson</a> and <a href="http://piccolo.sourceforge.net/">Piccolo</a>. Examples of JAXP compatible XSLT engines are <a href="http://saxon.sourceforge.net/">Saxon</a> and <a href="http://xml.apache.org/xalan-j/index.html">Xalan</a>.</p>
+    <p>MARC4J requires no additional libraries. Simply make sure that your Java environment is able to locate the library, for example by adding the <code>marc4j.jar</code> to your Java classpath environment variable.</p>
+    <p>If you plan to use the XML features that MARC4J offers, a SAX2 parser is needed with optionally a JAXP compatible XSLT processor to add XSLT support. Examples of SAX2 parsers are <a href="http://www.gnu.org/software/classpathx/jaxp/">GNU JAXP</a>, <a href="http://xml.apache.org/xerces2-j/index.html">Xerces</a>, <a href="http://xml.apache.org/crimson/index.html">Crimson</a> and <a href="http://piccolo.sourceforge.net/">Piccolo</a>. Examples of JAXP compatible XSLT engines are <a href="http://saxon.sourceforge.net/">Saxon</a> and <a href="http://xml.apache.org/xalan-j/index.html">Xalan</a>.</p>
     <p>If you need W3C XML Schema support consider using Xerces 2. Also Sun's <a href="">Java API for XML Processing</a> (JAXP) v1.2 provides all the necessary libraries to use MARC4J with XML.</p>
     <h1><a name="example">A first example</a></h1>
-    <p>Using MARC4J one can write Java applications that involve MARC records simply by implementing the <a href="apidoc/org/marc4j/MarcHandler.html">MarcHandler</a> and optionally the <a href="apidoc/org/marc4j/ErrorHandler.html">ErrorHandler</a> interfaces. It is also possible to extend the <a <a href="apidoc/org/marc4j/helpers/DefaultHandler.html">DefaultHandler</a>, a class that implements all the methods in MarcHandler and ErrorHandler.</p>
+    <p>Using MARC4J one can write Java applications that involve MARC records simply by implementing the <a href="apidoc/org/marc4j/MarcHandler.html">MarcHandler</a> and optionally the <a href="apidoc/org/marc4j/ErrorHandler.html">ErrorHandler</a> interface. It is also possible to extend the <a <a href="apidoc/org/marc4j/helpers/DefaultHandler.html">DefaultHandler</a>, a class that implements all the methods in MarcHandler and ErrorHandler.</p>
     <p>The <code>MarcHandler</code> interface provides methods that receive MARC parser events (such as the start and the end of a record) from the MARC parser. The interface defines the following methods:</p>
     <pre>
     public void startCollection();
@@ -151,9 +151,9 @@ class Driver {
     public abstract void error(MarcReaderException exception);
 
     public abstract void fatalError(MarcReaderException exception);</pre>
-    <p>Basically this is what MARC4J is about. The MarcReader takes care of reading MARC records and writing a program is simply implementing the MarcHandler interface.</p>
+    <p>Basically this is what MARC4J is about. The MarcReader takes care of reading MARC records and writing a program is simply a matter of implementing the two interfaces.</p>
     <h1><a name="marcxml">Converting between MARC and MARCXML</a></h1>
-    <p>Besides working with MARC records in tape format, MARC4J also provides SAX2 producers and consumers for working with MARCXML documents. MARCXML is a simple format to represent a MARC record in XML. It is part of a larger framework developed by the Library of Congress. Click <a href="http://www.loc.gov/standards/marcxml//Sandburg/sandburg.xml">here</a> to see what a MARCXML document looks like.</p>
+    <p>Besides working with MARC records in tape format, MARC4J also provides SAX2 producers and consumers for working with MARCXML documents. MARCXML is a simple format to represent a MARC record in XML. It is part of a larger <a href="http://www.loc.gov/standards/marcxml//marcxml-architecture.html">framework</a> developed by the Library of Congress. Click <a href="http://www.loc.gov/standards/marcxml//Sandburg/sandburg.xml">here</a> to see what a MARCXML document looks like.</p>
     <p>MARC4J provides a command-line utility to convert records in MARC tape format to MARCXML and back. To convert MARC to MARCXML use the following command from the command-line:</p>
     <pre>java org.marc4j.util.MarcXmlWriter &lt;input-file&gt;</pre>
     <p>Run the program with the following command for help:</p>
@@ -164,9 +164,9 @@ class Driver {
     <pre>java org.marc4j.util.XmlMarcWriter &lt;input-file&gt;</pre>
     <p>Run the program with the following command for help:</p>
     <pre>java org.marc4j.util.XmlMarcWriter -usage</pre>
-    <p>It is also possible to use XSLT to preprocess a document, for example to transform OAI MARC XML to MARCXML, before th input is converted to MARC tape format.</p>
-    <p>The conversion between MARC and MARCXML is provided through the <a href="apidoc/org/marc4j/marcxml/Converter.html">Converter</a> class. This class can be compared with the <code>javax.xml.transform.Transformer</code> class in JAXP. You can even use the same <code>javax.xml.transform.Source</code> and <code>javax.xml.transform.Result</code> implementations. For MARC support MARC4J provides a <a href="apidoc/org/marc4j/marcxml/MarcSource.html">MarcSource</a> and a <a href="apidoc/org/marc4j/marcxml/MarcResult.html">MarcResult</a> class. MarcSource and MarcResult are modelled after the <code>javax.xml.transform.SAXSource</code> and <code>javax.xml.transform.SAXResult</code> classes. A MarcSource takes a <code>org.marc4j.MarcReader</code> object and an input source as parameters and the MarcResult takes a <code>org.marc4j.MarcHandler</code> as parameter.</p>
-    <p>The following code sample performs the same task as the first example, now using the Conversion class:</p>
+    <p>It is also possible to use XSLT to preprocess a document, for example to transform OAI MARC XML to MARCXML, before the input is converted to MARC tape format.</p>
+    <p>The conversion between MARC and MARCXML is provided through the <a href="apidoc/org/marc4j/marcxml/Converter.html">Converter</a> class. This class can be compared with the <code>javax.xml.transform.Transformer</code> class in JAXP. You can even use the same <code>javax.xml.transform.Source</code> and <code>javax.xml.transform.Result</code> implementations. For MARC support MARC4J provides a <a href="apidoc/org/marc4j/marcxml/MarcSource.html">MarcSource</a> and a <a href="apidoc/org/marc4j/marcxml/MarcResult.html">MarcResult</a> class. <code>MarcSource</code> and <code>MarcResult</code> are modelled after the <code>javax.xml.transform.SAXSource</code> and <code>javax.xml.transform.SAXResult</code> classes. A <code>MarcSource</code> takes a <code>org.marc4j.MarcReader</code> object and an input source as parameters and the MarcResult takes a <code>MarcHandler</code> as parameter.</p>
+    <p>The following code sample performs the same task as the first example, now using the <code>Conversion</code> class:</p>
 <pre>
 class Driver {
     public static void main(String args[]) {
@@ -201,7 +201,7 @@ class Driver {
 	}
     }
 }</pre>
-    <p>This sample will perfom a null transform, which means that it will output well-formed XML. Provide an XSLT stylesheet to postprocess the SAX2 events with XSLT:</p>
+    <p>This sample perfoms a null transform, which means that it will output well-formed XML. Provide an XSLT stylesheet to postprocess the SAX2 events with XSLT:</p>
 <pre>
 class Driver {
     public static void main(String args[]) {
@@ -255,8 +255,8 @@ class Driver {
 	}
     }
 }</pre>
-    <p>If the stylesheet is not null, the program can preprocesses the input XML using an XSLT stylesheet that outputs MARCXML.</p>
-    <p>It is also possible to perform XML transformations without converting the result to MARC tape format using the Converter class, since it uses the <code>Transformer</code> class, but of course you can also directly use the <code>Transformer</code> class.</p>
+    <p>If the stylesheet is not null, the program tries to preprocess the input XML using the XSLT stylesheet (it should output MARCXML).</p>
+    <p>It is also possible to perform XML transformations without converting the result to MARC tape format using the <code>Converter</code> class, since it uses the <code>Transformer</code> class, but of course you can also directly use the <code>Transformer</code> class. It should even be possible to provide a <code>SAXSource</code> and collect the result in a <code>javax.xml.transform.dom.DOMResult</code>.</p>
     <p>Since <code>MarcXmlHandler</code> is a standard SAX2 content handler, you can use standard SAX2 features like for example XML validation. Validating the MARCXML document against the W3C XML Schema for MARCXML as provided by the Library of Congress can be done as follows:</p>
 <pre>
 	    SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -284,6 +284,7 @@ class Driver {
 	    e.printStackTrace();
 	}
     }</pre>
+    <p><b>Note:</b> please note that the current character conversion in MARC4J is not yet 100% reliable.</p>
     <h1><a name="object">Using the record object model</a></h1>
     <p>The record object model can be used to edit MARC records as objects and to marshal record objects to MARC tape format. The following code sample implements the <code>MarcHandler</code> to build Record objects and marshal the objects to MARC tape format using the <code>marshal()</code> method in the <a href="apidoc/org/marc4j/marc/Record.html">Record</a> class:</p>
 <pre>
@@ -347,8 +348,8 @@ class Driver {
 </pre>
     <p>If you want to work with Record objects in your program consider using the <a href="apidoc/org/marc4j/helpers/RecordBuilder.html">RecordBuilder</a> together with a <a href="apidoc/org/marc4j/helpers/RecordHandler.html">RecordHandler</a> implementation. The <code>RecordBuilder</code> creates MARC record objects and reports them to the <code>RecordHandler</code> interface. By using the record handler it is possible to handle large records sets. If you need access to a collection of record objects you can use the <a href="apidoc/org/marc4j/marc/Collection.html">Collection</a> class which serves as a container for a collection of record objects.</p>
     <p>Copyright &#169; 2002 <a href="mailto:mail@bpeters.com">Bas Peters</a>. All Rights Reserved.</p>
-    <p>Last updated: $Date: 2002/07/10 17:23:10 $</p>
-    <!-- $Id: index.html,v 1.1 2002/07/10 17:23:10 bpeters Exp $ -->
+    <p>Last updated: $Date: 2002/07/10 17:54:48 $</p>
+    <!-- $Id: index.html,v 1.2 2002/07/10 17:54:48 bpeters Exp $ -->
   </body>
 </html>
 
