@@ -1,4 +1,4 @@
-// $Id: Subfield.java,v 1.4 2002/08/03 15:14:39 bpeters Exp $
+// $Id: Subfield.java,v 1.5 2003/01/10 09:40:03 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -34,7 +34,7 @@ package org.marc4j.marc;
  * method.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
  */
 public class Subfield {
@@ -92,7 +92,8 @@ public class Subfield {
      * @param data the data element
      */
     public void setData(char[] data) {
-	    this.data = data;
+	Verifier.checkDataElement(data);
+	this.data = data;
     }
 
     /**
@@ -101,7 +102,7 @@ public class Subfield {
      * @param data the data element
      */
     public void setData(String data) {
-	    this.data = data.toCharArray();
+	setData(data.toCharArray());
     }
 
     /**
@@ -110,7 +111,7 @@ public class Subfield {
      * @return <code>char</code> - the data element identifier
      */
     public char getCode() {
-	    return code;
+	return code;
     }
 
     /**
@@ -119,7 +120,7 @@ public class Subfield {
      * @return <code>char[]</code> - the data element
      */
     public char[] getData() {
-	    return data;
+	return data;
     }
 
     /**

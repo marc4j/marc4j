@@ -1,4 +1,4 @@
-// $Id: DataField.java,v 1.4 2002/08/03 15:14:39 bpeters Exp $
+// $Id: DataField.java,v 1.5 2003/01/10 09:40:03 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -42,7 +42,7 @@ import java.util.Iterator;
  * method.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
  */
 public class DataField extends VariableField {
@@ -122,6 +122,7 @@ public class DataField extends VariableField {
      * @throws IllegalIndicatorException when the indicator value is invalid
      */
     public void setIndicator1(char ind1) {
+	Verifier.checkDataElement(ind1);
         this.ind1 = ind1;
     }
 
@@ -132,6 +133,7 @@ public class DataField extends VariableField {
      * @throws IllegalIndicatorException when the indicator value is invalid
      */
     public void setIndicator2(char ind2) {
+	Verifier.checkDataElement(ind2);
         this.ind2 = ind2;
     }
 
