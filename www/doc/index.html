@@ -264,8 +264,10 @@ class Driver {
 	    factory.setNamespaceAware(true);
 	    factory.setValidating(true);
 	    SAXParser saxParser = factory.newSAXParser();
-            saxParser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
-            saxParser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", new File("MARC21slim.xsd"));
+            saxParser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", 
+                                  "http://www.w3.org/2001/XMLSchema");
+            saxParser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", 
+                                  new File("MARC21slim.xsd"));
 	    XMLReader xmlReader = saxParser.getXMLReader();
 	    xmlReader.setErrorHandler(new SaxErrorHandler());
 	    InputSource in = new InputSource(new File(input).toURL().toString());
@@ -349,8 +351,8 @@ class Driver {
 </pre>
     <p>If you want to work with Record objects in your program consider using the <a href="apidoc/org/marc4j/helpers/RecordBuilder.html">RecordBuilder</a> together with a <a href="apidoc/org/marc4j/helpers/RecordHandler.html">RecordHandler</a> implementation. The <code>RecordBuilder</code> creates MARC record objects and reports them to the <code>RecordHandler</code> interface. By using the record handler it is possible to handle large records sets. If you need access to a collection of record objects you can use the <a href="apidoc/org/marc4j/marc/Collection.html">Collection</a> class which serves as a container for a collection of record objects.</p>
     <p>Copyright &#169; 2002 <a href="mailto:mail@bpeters.com">Bas Peters</a>. All Rights Reserved.</p>
-    <p>Last updated: $Date: 2002/07/10 20:37:27 $</p>
-    <!-- $Id: index.html,v 1.4 2002/07/10 20:37:27 bpeters Exp $ -->
+    <p>Last updated: $Date: 2002/07/29 15:27:14 $</p>
+    <!-- $Id: index.html,v 1.5 2002/07/29 15:27:14 bpeters Exp $ -->
   </body>
 </html>
 
