@@ -31,7 +31,8 @@
                         element for 0 or many records              -->
 <!ELEMENT  collection   (record)*                                    >
 <!ATTLIST  collection
-            %idEntity;                                               >
+            %idEntity;
+            xmlns       CDATA                               #IMPLIED >
 
 
 <!--                    record                                     -->
@@ -66,8 +67,8 @@
 <!ATTLIST  datafield
              %idEntity;
              %tagEntity;
-             ind1       NMTOKENS                           #REQUIRED
-             ind2       NMTOKENS                           #REQUIRED >
+             ind1       CDATA                              #REQUIRED
+             ind2       CDATA                              #REQUIRED >
 
 
 <!--                    subfield                                   -->
