@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="marc4j" default="jar" basedir=".">
 
-  <!-- $Id: build.xml,v 1.14 2003/03/23 12:12:33 bpeters Exp $ -->
+  <!-- $Id: build.xml,v 1.15 2003/03/31 19:57:15 ceyates Exp $ -->
   <target name="init">
     <tstamp/>
     <property name="src" value="src"/>
@@ -17,7 +17,13 @@
   </target>
 
   <target name="compile" depends="prepare">
-    <javac srcdir="${src}" destdir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}">
+      <classpath>
+        <fileset dir="lib">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
     <copy todir="${build}">
       <fileset dir="src">
         <include name="**/*.properties" />
