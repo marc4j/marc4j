@@ -1,4 +1,4 @@
-// $Id: Leader.java,v 1.5 2002/07/31 17:55:53 bpeters Exp $
+// $Id: Leader.java,v 1.6 2002/08/02 14:48:40 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -48,7 +48,7 @@ import java.io.ByteArrayInputStream;
  * <p>This structure is returned by the {@link #marshal()} method.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
  */
 public class Leader {
@@ -309,12 +309,12 @@ public class Leader {
 	    if (isInteger(s))
 		setIndicatorCount(Integer.parseInt(s));
 	    else
-		setIndicatorCount('2');
+		setIndicatorCount(2);
 	    s = String.valueOf(ldr.charAt(10));
 	    if (isInteger(s))
 		setSubfieldCodeLength(Integer.parseInt(s));
 	    else
-		setSubfieldCodeLength('2');
+		setSubfieldCodeLength(2);
 	    s = ldr.substring(12, 17);
 	    if (isInteger(s))
 		setBaseAddressOfData(Integer.parseInt(s));
