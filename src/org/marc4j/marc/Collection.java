@@ -70,7 +70,7 @@ public class Collection {
     }
 
     /**
-     * <p>Marshalls all the records in the collection 
+     * <p>Marshals all the records in the collection 
      * and writes the tape format records to the Writer 
      * object.</p>
      *
