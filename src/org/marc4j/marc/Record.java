@@ -1,4 +1,4 @@
-// $Id: Record.java,v 1.4 2002/08/03 15:14:39 bpeters Exp $
+// $Id: Record.java,v 1.5 2002/11/02 07:54:21 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -43,7 +43,7 @@ import java.util.Collections;
  * control number field is supplied.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
  */
 public class Record {
@@ -67,7 +67,7 @@ public class Record {
     /**
      * <p>Default constructor.</p>
      */
-    public void Record() {}
+    public Record() {}
 
     /**
      * <p>Creates a new instance for a record and registers the
@@ -75,7 +75,7 @@ public class Record {
      *
      * @param leader the {@link Leader} object
      */
-    public void Record(Leader leader) {
+    public Record(Leader leader) {
         add(leader);
     }
 
