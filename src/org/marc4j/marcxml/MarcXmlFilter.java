@@ -44,14 +44,17 @@ import org.marc4j.marc.Tag;
 import org.marc4j.util.AnselToUnicode;
 
 /**
- * <p><code>MarcXmlfilter</code> produces SAX2 events from MARC records.  </p>
+ * <p><code>MarcXmlFilter</code> is an <code>XMLFilter</code> that 
+ * consumes <code>MarcHandler</code> events and reports events to 
+ * a SAX2 <code>ContentHandler</code>.  </p>
  *
- * <p> </p>
+ * <p></p>
  *
  * @author Bas Peters
  *
  * @see ExtendedFilter
- * @see org.marc4j.MarcHandler
+ * @see MarcHandler
+ * @see ContentHandler
  */
 public class MarcXmlFilter extends ExtendedFilter 
     implements MarcHandler {
@@ -98,7 +101,7 @@ public class MarcXmlFilter extends ExtendedFilter
     private String schemaLocation = null;
 
     /** {@link DocType} object */
-    private DocType doctype = null;
+    private DoctypeDecl doctype = null;
 
     /** {@link ContentHandler} object */
     private ContentHandler ch;
@@ -107,23 +110,29 @@ public class MarcXmlFilter extends ExtendedFilter
     private ErrorHandler eh;
 
     /**
-     * <p>Set the document type declaration.</p>
+     * <p>Sets the object for the given property.</p>
      *
-     * @param {@link String} the property name
-     * @param {@link DocType} the property value
+     * @param name the property name
+     * @param obj the property object
      */
-    public void setProperty(String name, Object value) 
+    public void setProperty(String name, Object obj) 
 	throws SAXNotRecognizedException, SAXNotSupportedException {
 	if (DOC_TYPE_DECL.equals(name))
-	    this.doctype = (DocType)value;
+	    this.doctype = (DoctypeDecl)obj;
 	else if (ERROR_HANDLER.equals(name))
-	    this.eh = (ErrorHandler)value;
+	    this.eh = (ErrorHandler)obj;
 	else if (SCHEMA_LOC.equals(name))
-	    this.schemaLocation = (String)value;
+	    this.schemaLocation = (String)obj;
 	else
-	    super.setProperty(name, value);
+	    super.setProperty(name, obj);
     }
 
+    /**
+     * <p>Sets the boolean for the feature with the given name.</p>
+     *
+     * @param name the name of the feature
+     * @param value the boolean value
+     */
     public void setFeature(String name, boolean value)
 	throws SAXNotRecognizedException, SAXNotSupportedException {
 	if (ANSEL_TO_UNICODE.equals(name))
@@ -183,7 +192,7 @@ public class MarcXmlFilter extends ExtendedFilter
      * and reports the root element.  </p>
      *
      */
-    public void startFile() {
+    public void startCollection() {
     	try {
 	    AttributesImpl atts = new AttributesImpl();
 
@@ -338,7 +347,7 @@ public class MarcXmlFilter extends ExtendedFilter
      * of the prefix mapping and the end a document.  </p>
      *
      */
-    public void endFile() {
+    public void endCollection() {
 	try {
 	    if (prettyPrinting) 
 		ch.ignorableWhitespace("\n".toCharArray(), 0, 1);

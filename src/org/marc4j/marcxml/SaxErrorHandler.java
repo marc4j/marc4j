@@ -32,8 +32,11 @@ import org.xml.sax.ErrorHandler;
 // in the SAX2 book by David Brownell.
 
 /**
- * <p>SAX error handler implementation.   </p>
+ * <p><code>SaxErrorHandler</code> is a SAX2 <code>ErrorHandler</code> 
+ * implementation.   </p>
  *
+ * @see ErrorHandler
+ * @author Bas Peters
  */
 public class SaxErrorHandler implements ErrorHandler {
 

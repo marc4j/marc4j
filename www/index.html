@@ -16,10 +16,11 @@
       <li>a MARC record object model (like DOM for XML) including the possibility to marshal record objects to tape format (ISO 2709);</li>
       <li>support for conversions from ANSEL to UCS/Unicode;</li>
       <li>build-in support for MARC tape format to MARCXML conforming to <a href="http://www.loc.gov/standards/marcxml/">MARC21 XML Schema</a> and back to MARC tape format using any <a href="http://www.saxproject.org">SAX2</a> parser;</li>
+      <li>supports a pipeline model to pre-process a different XML format (for example OAI MARC XML) using an XSLT stylesheet that outputs MARCXML and convert the result to MARC tape format;</li>
+      <li>or to apply XSLT directly to a collection of MARC records through MARCXML using any XSLT processor that supports the <a href="http://java.sun.com/xml/jaxp/index.html">JAXP</a> interface;</li>
       <li>supports validation against W3C XML Schema's using a JAXP 1.2 compliant parser like for example <a href="http://xml.apache.org/xerces2-j/index.html">Xerces2 Java Parser 2.0.2</a>;</li>
-      <li>apply XSLT directly to a collection of MARC records through MARCXML using any XSLT processor that supports the <a href="http://java.sun.com/xml/jaxp/index.html">JAXP</a> interface;</li>
       <li>tightly integrated with SAX2, a high performance XML interface;</li>
-      <li>easy to integrate with other XML interfaces like DOM or JDOM;</li>
+      <li>easy to integrate with other XML interfaces like DOM, JDOM or DOM4J;</li>
       <li>extensive Javadoc documentation.</li>
     </ul>
     <p>Using MARC4J it is easy to write any kind of Java application or servlet that involves MARC records. Together with the SAX2 interface it is possible to write robust MARC to XML conversion programs simply by implementing the methods in the <code>MarcHandler</code> interface. The MARC record object model can be used to convert XML back to MARC tape format. The record object model is also suitable for in-memory editing of MARC records, just as DOM is used for XML editing purposes. The MARC4J library can also be used for reporting purposes, to import MARC records into databases, or to provide transformations between different MARC formats.</p>
@@ -36,7 +37,6 @@
       <li><a href="http://www.loc.gov/standards/marcxml/">MARCXML</a></li>
       <li><a href="www.http://saxproject.org">SAX2</a></li>
       <li><a href="http://java.sun.com/xml/jaxp/index.html">JAXP</a></li>
-      <li><a href="http://xml.apache.org/xerces2-j/index.html">Xerces2 Java Parser 2.0.2</a></li>
     </ul>
   </body>
 </html>

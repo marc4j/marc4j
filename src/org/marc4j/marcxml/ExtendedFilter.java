@@ -32,8 +32,8 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
 /**
- * <p>Extends <code>XMLFilterImpl</code> with an implementation 
- * of the <code>LexicalHandler</code> interface.   </p>
+ * <p><code>ExtendedFilter</code> extends <code>XMLFilterImpl</code> 
+ * with an implementation of the <code>LexicalHandler</code> interface.  </p>
  *
  * @author Bas Peters
  */
