@@ -1,4 +1,4 @@
-// $Id: Leader.java,v 1.9 2003/01/10 09:41:12 bpeters Exp $
+// $Id: Leader.java,v 1.10 2003/03/31 19:55:26 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -22,6 +22,7 @@ package org.marc4j.marc;
 
 import java.text.DecimalFormat;
 import java.io.ByteArrayInputStream;
+import java.io.Serializable;
 
 /**
  * <p><code>Leader</code> defines behaviour for the record label
@@ -42,10 +43,10 @@ import java.io.ByteArrayInputStream;
  * <p>This structure is returned by the {@link #marshal()} method.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  *
  */
-public class Leader {
+public class Leader implements Serializable {
 
     /** The logical record length. */
     private int recordLength;

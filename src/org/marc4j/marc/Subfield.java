@@ -1,4 +1,4 @@
-// $Id: Subfield.java,v 1.5 2003/01/10 09:40:03 bpeters Exp $
+// $Id: Subfield.java,v 1.6 2003/03/31 19:55:26 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -20,6 +20,8 @@
  */
 package org.marc4j.marc;
 
+import java.io.Serializable;
+
 /**
  * <p><code>Subfield</code> defines behaviour for a subfield (a data
  * element within a data field).  </p>
@@ -34,10 +36,10 @@ package org.marc4j.marc;
  * method.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
  */
-public class Subfield {
+public class Subfield implements Serializable {
 
     private static final char US = MarcConstants.US;
 

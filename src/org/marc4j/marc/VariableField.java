@@ -1,4 +1,4 @@
-// $Id: VariableField.java,v 1.5 2003/01/10 09:40:03 bpeters Exp $
+// $Id: VariableField.java,v 1.6 2003/03/31 19:55:26 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -20,6 +20,8 @@
  */
 package org.marc4j.marc;
 
+import java.io.Serializable;
+
 /**
  * <p><code>VariableField</code> defines general behaviour for
  * variable fields.  </p>
@@ -31,12 +33,12 @@ package org.marc4j.marc;
  * the directory.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
  * @see ControlField
  * @see DataField
  */
-abstract class VariableField {
+public abstract class VariableField implements Serializable {
 
     /** The field terminator */
     public static final char FT = MarcConstants.FT;

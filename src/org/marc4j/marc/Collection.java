@@ -1,4 +1,4 @@
-// $Id: Collection.java,v 1.6 2002/08/03 15:14:39 bpeters Exp $
+// $Id: Collection.java,v 1.7 2003/03/31 19:55:26 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -22,6 +22,7 @@ package org.marc4j.marc;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,10 +32,10 @@ import java.util.Iterator;
  * <code>Record</code> objects.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  *
  */
-public class Collection {
+public class Collection implements Serializable {
 
     private List list;
 

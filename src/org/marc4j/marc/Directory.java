@@ -1,4 +1,4 @@
-// $Id: Directory.java,v 1.4 2002/08/03 15:14:39 bpeters Exp $
+// $Id: Directory.java,v 1.5 2003/03/31 19:55:26 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -20,6 +20,7 @@
  */
 package org.marc4j.marc;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 
 /**
@@ -41,10 +42,10 @@ import java.text.DecimalFormat;
  * unused positions contain zero's.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
  */
-public class Directory {
+public class Directory implements Serializable {
 
     private static final char FT = MarcConstants.FT;
 

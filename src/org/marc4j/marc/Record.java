@@ -1,4 +1,4 @@
-// $Id: Record.java,v 1.6 2003/01/10 09:41:12 bpeters Exp $
+// $Id: Record.java,v 1.7 2003/03/31 19:55:26 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collections;
+import java.io.Serializable;
 
 /**
  * <p><code>Record</code> defines behaviour for a record.  </p>
@@ -43,10 +44,10 @@ import java.util.Collections;
  * control number field is supplied.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  *
  */
-public class Record {
+public class Record implements Serializable {
 
     /** The record terminator. */
     private static final char RT = MarcConstants.RT;

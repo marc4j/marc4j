@@ -1,4 +1,4 @@
-// $Id: DataField.java,v 1.5 2003/01/10 09:40:03 bpeters Exp $
+// $Id: DataField.java,v 1.6 2003/03/31 19:55:26 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -20,6 +20,7 @@
  */
 package org.marc4j.marc;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,10 +43,10 @@ import java.util.Iterator;
  * method.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
  */
-public class DataField extends VariableField {
+public class DataField extends VariableField implements Serializable {
 
     /** The first indicator value. */
     private char ind1;
