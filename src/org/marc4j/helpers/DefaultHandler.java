@@ -45,11 +45,11 @@ import org.marc4j.marc.Leader;
 public class DefaultHandler implements
     MarcHandler, ErrorHandler {
 
-    public void startFile() {
+    public void startCollection() {
 	// Do nothing.
     }
 
-    public void endFile() {
+    public void endCollection() {
 	// Do nothing.
     }
 

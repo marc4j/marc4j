@@ -36,9 +36,9 @@ import org.marc4j.marc.Record;
 public interface RecordHandler {
 
     /**
-     * <p>Receives notification at the start of the file.  </p>
+     * <p>Receives notification at the start of the collection.  </p>
      */
-    public void startFile();
+    public void startCollection();
 
 
     /**
@@ -49,8 +49,8 @@ public interface RecordHandler {
     public void record(Record record);
 
     /**
-     * <p>Receives notification at the end of the file.</p>
+     * <p>Receives notification at the end of the collection.</p>
      */
-    public void endFile();
+    public void endCollection();
 
 }
