@@ -1,4 +1,4 @@
-// $Id: MarcWriter.java,v 1.9 2002/08/18 12:42:21 bpeters Exp $
+// $Id: MarcWriter.java,v 1.10 2002/12/11 19:23:24 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -32,7 +32,7 @@ import org.marc4j.MarcHandler;
  * to write record objects to tape format (ISO 2709).</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  *
  * @see MarcHandler
  */
@@ -49,7 +49,7 @@ public class MarcWriter
     private Writer out;
 
     /** The character conversion option */
-    private boolean convert = false;
+    private CharacterConverter charconv = null;
 
     /**
      * <p>Default constructor.</p>
@@ -100,12 +100,30 @@ public class MarcWriter
     }
 
     /**
-     * <p>Sets the character conversion option.</p>
-     *
-     * @param convert if true UTF-8 is converted to ANSEL
+     * @deprecated  As of MARC4J beta 7 replaced by {@link #setCharacterConverter(boolean convert)}
      */
     public void setUnicodeToAnsel(boolean convert) {
-	this.convert = convert;
+	if (convert)
+	    charconv = new UnicodeToAnsel();
+    }
+
+    /**
+     * <p>Sets the character conversion option.</p>
+     * <p>The loader will first look for a <code>org.marc4j.charconv</code> property.
+     * The default property is {@link UnicodeToAnsel}.</p>
+     *
+     * @param convert if true sets the character converter
+     */
+    public void setCharacterConverter(boolean convert) {
+	if (convert) {
+	    try {
+		charconv = (CharacterConverter)CharacterConverterLoader
+		    .createCharacterConverter("org.marc4j.charconv", 
+					      "org.marc4j.util.UnicodeToAnsel");
+	    } catch (CharacterConverterLoaderException e) {
+		e.printStackTrace();
+	    }
+	}
     }
 
     /**
@@ -119,7 +137,7 @@ public class MarcWriter
      */
     public void setWriter(Writer out, boolean convert) {
 	this.out = out;
-	this.convert = convert;
+	setUnicodeToAnsel(convert);
     }
 
     /**
@@ -145,8 +163,8 @@ public class MarcWriter
     }
 
     public void subfield(char code, char[] data) {
-	if (convert)
-	    datafield.add(new Subfield(code, UnicodeToAnsel.convert(data)));
+	if (charconv != null)
+	    datafield.add(new Subfield(code, charconv.convert(data)));
 	else
 	    datafield.add(new Subfield(code, data));
     }
