@@ -75,23 +75,23 @@ public class SaxErrorHandler implements ErrorHandler {
     public static String printParseException(String label, SAXParseException e) {
 	StringBuffer buf = new StringBuffer ();
 	int temp;
-	buf.append("**");
+	buf.append("** ");
 	buf.append(label);
 	buf.append(": ");
 	buf.append(e.getMessage ());
 	buf.append('\n');
 	if (e.getSystemId() != null) {
-	    buf.append("  URI:  ");
+	    buf.append("   URI:  ");
 	    buf.append(e.getSystemId ());
 	    buf.append('\n');
 	}
 	if ((temp = e.getLineNumber()) != -1) {
-	    buf.append("  Line: ");
+	    buf.append("   Line: ");
 	    buf.append(temp);
 	    buf.append('\n');
 	}
 	if ((temp = e.getColumnNumber ()) != -1) {
-	    buf.append("  Position: ");
+	    buf.append("   Character: ");
 	    buf.append(temp);
 	    buf.append('\n');
 	}
