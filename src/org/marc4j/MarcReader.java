@@ -99,13 +99,13 @@ public class MarcReader {
     /**
      * <p>Sends an input stream reader to the MARC parser.</p>
      *
-     * @param src the input stream reader
+     * @param input the input stream reader
      */
     public void parse(InputStreamReader input) throws IOException {
 	parse(new BufferedReader(input));
     }
 
-    private void parse(Reader input) throws IOException {
+    public void parse(BufferedReader input) throws IOException {
 	int ldrLength = 24;
 
 	if (! input.ready())
