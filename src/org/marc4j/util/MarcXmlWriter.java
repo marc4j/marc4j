@@ -1,4 +1,4 @@
-// $Id: MarcXmlWriter.java,v 1.17 2003/03/23 12:06:49 bpeters Exp $
+// $Id: MarcXmlWriter.java,v 1.18 2003/04/11 20:42:01 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -21,14 +21,13 @@
 package org.marc4j.util;
 
 import java.io.*;
-import org.xml.sax.XMLFilter;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.InputSource;
 import org.marc4j.helpers.ErrorHandlerImpl;
 import org.marc4j.marcxml.DoctypeDecl;
-import org.marc4j.marcxml.MarcXmlFilter;
+import org.marc4j.marcxml.MarcXmlReader;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,7 +43,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.marc4j.marcxml.Converter;
 
 /**
- * <p>Provides a driver for <code>MarcXmlFilter</code> 
+ * <p>Provides a driver for <code>MarcXmlReader</code> 
  * to convert MARC records to MARCXML or to a different format using 
  * an XSLT stylesheet.    </p>
  *
@@ -57,9 +56,9 @@ import org.marc4j.marcxml.Converter;
  * <p><b>Note:</b> this class requires a JAXP compliant XSLT processor.</p> 
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  *
- * @see MarcXmlFilter
+ * @see MarcXmlReader
  * @see Converter
  */
 public class MarcXmlWriter {
@@ -115,9 +114,8 @@ public class MarcXmlWriter {
         }
 
         try {
-            XMLFilter producer = new MarcXmlFilter();
-	    producer.setProperty("http://marc4j.org/properties/error-handler", 
-				 new ErrorHandlerImpl());
+            MarcXmlReader producer = new MarcXmlReader();
+	    producer.setProperty("http://marc4j.org/properties/error-handler", new ErrorHandlerImpl());
 	    if (xsd)
 		producer.setProperty("http://marc4j.org/properties/schema-location", 
 				     "http://www.loc.gov/MARC21/slim " + 
