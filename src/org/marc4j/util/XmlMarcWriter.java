@@ -47,7 +47,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.marc4j.marcxml.SaxErrorHandler;
 import org.marc4j.marcxml.MarcXmlHandler;
 import org.marc4j.helpers.RecordBuilder;
-import org.marc4j.helpers.RecordMarshaller;
 import org.marc4j.MarcHandler;
 import org.marc4j.marcxml.MarcResult;
 import org.marc4j.marcxml.Converter;
@@ -70,7 +69,7 @@ import org.marc4j.marcxml.Converter;
  *
  * @author Bas Peters
  * @see MarcXmlHandler
- * @see RecordMarshaller
+ * @see MarcWriter
  * @see Converter
  */
 public class XmlMarcWriter {
@@ -137,7 +136,7 @@ public class XmlMarcWriter {
 	    } else {
 		writer = new BufferedWriter(new FileWriter(output));
 	    }
-	    RecordMarshaller handler = new RecordMarshaller(writer);
+	    MarcWriter handler = new MarcWriter(writer);
 
 	    SAXParserFactory factory = SAXParserFactory.newInstance();
 	    factory.setNamespaceAware(true);
@@ -180,7 +179,7 @@ public class XmlMarcWriter {
         System.err.println("       -xsd | -xsdss <file.xsd> = W3C XML Schema validation using xsi: hints");
         System.err.println("           in instance document or schema source <file.xsd>");
         System.err.println("       -xsdss <file> = W3C XML Schema validation using schema source <file>");
-        System.err.println("       -xsl <file> = Pre-process XML using XSLT stylesheet <file>");
+        System.err.println("       -xsl <file> = Preprocess XML using XSLT stylesheet <file>");
         System.err.println("       -out <file> = Output using <file>");
         System.err.println("       -usage or -help = this message");
         System.exit(1);

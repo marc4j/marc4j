@@ -155,12 +155,12 @@ public class MarcXmlWriter {
 
     private static void usage() {
         System.err.println("Usage: MarcXmlWriter [-options] <file.xml>");
-        System.err.println("       -xsd = Add W3C XML Schema Location");
-        System.err.println("       -xsl <file> = Perform XSLT transformation using <file>");
+        System.err.println("       -xsd = Add W3C XML Schema Location to root element");
+        System.err.println("       -xsl <file> = Postprocess MARCXML using XSLT stylesheet <file>");
         System.err.println("       -out <file> = Output using <file>");
         System.err.println("       -convert = Convert ANSEL to Unicode");
         System.err.println("       -usage or -help = this message");
-        System.err.println("       Without a stylesheet the program outputs well-formed XML");
+        System.err.println("       Without a stylesheet the program outputs well-formed MARCXML");
         System.exit(1);
     }
 }
