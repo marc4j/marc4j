@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- $Id: MARC21slim.dtd,v 1.4 2002/08/03 12:48:34 bpeters Exp $   -->
+<!-- $Id: MARC21slim.dtd,v 1.5 2002/08/15 20:33:00 bpeters Exp $   -->
 
 <!-- ============================================================= -->
 <!--                    MARCXML DTD                                -->
@@ -34,7 +34,7 @@
 <!ELEMENT  collection   (record)*                                    >
 <!ATTLIST  collection
             %idEntity;
-            xmlns       CDATA                               #IMPLIED >
+            xmlns       CDATA #FIXED "http://www.loc.gov/MARC21/slim">
 
 
 <!--                    record                                     -->
