@@ -2,11 +2,12 @@
 <project name="marc4j" default="jar" basedir=".">
 
   <target name="init">
+    <tstamp/>
     <property name="src" value="src"/>
     <property name="build" value="build"/>
     <property name="dist" value="dist"/>
     <property name="apidoc" value="${dist}/apidoc"/>
-    <property name="version" value="b6"/>
+    <property name="version" value="20020627"/>
     <property name="name" value="marc4j"/>
   </target>
 
@@ -19,8 +20,9 @@
   </target>
 
   <target name="jar" depends="compile">
-    <mkdir dir="${dist}/lib" />
-    <jar jarfile="${dist}/lib/marc4j.jar" basedir="${build}"/>
+    <mkdir dir="${dist}/lib"/>
+    <jar jarfile="${dist}/lib/marc4j.jar" basedir="${build}" excludes="org/marc4j/marcxml/**"/>
+    <jar jarfile="${dist}/lib/marcxml.jar" basedir="${build}" includes="org/marc4j/marcxml/**"/>
   </target>
 
   <target name="javadoc" depends="init">
@@ -45,7 +47,7 @@
 
   <target name="dist" depends="init">
     <mkdir dir="${dist}"/>
-    <property name="prefix" value="marc4j-${version}"/>
+    <property name="prefix" value="marc4j-${DSTAMP}"/>
     <property name="tmp_dir" value="${dist}/tmp"/>
     <property name="dist_dir" value="${tmp_dir}/${prefix}"/>
     <property name="dist_arc" value="${dist}/${prefix}"/>
@@ -53,7 +55,7 @@
     <copydir src="${dist}/apidoc" dest="${dist_dir}/apidoc"/>
     <copydir src="${dist}/lib" dest="${dist_dir}/lib"/>
     <copydir src="${src}" dest="${dist_dir}/src"/>
-    <copydir src="." includes="lgpl.txt, build.xml, build.bat" dest="${dist_dir}/"/>
+    <copydir src="." includes="lgpl.txt, build.xml, build.bat, MARC21slim.rng, MARC21slim.dtd" dest="${dist_dir}/"/>
     <tar tarfile="${dist_arc}.tar" basedir="${tmp_dir}"/>
     <gzip zipfile="${dist_arc}.tar.gz" src="${dist_arc}.tar"/>
     <delete file="${dist_arc}.tar"/>
