@@ -6,7 +6,7 @@
     <property name="src" value="src"/>
     <property name="build" value="build"/>
     <property name="dist" value="dist"/>
-    <property name="apidoc" value="${dist}/apidoc"/>
+    <property name="apidoc" value="${dist}/doc/apidoc"/>
     <property name="version" value="20020627"/>
     <property name="name" value="marc4j"/>
   </target>
@@ -51,9 +51,10 @@
     <property name="dist_dir" value="${tmp_dir}/${prefix}"/>
     <property name="dist_arc" value="${dist}/${prefix}"/>
     <mkdir dir="${dist_dir}"/>
-    <copydir src="${dist}/apidoc" dest="${dist_dir}/apidoc"/>
+    <copydir src="${dist}/apidoc" dest="${dist_dir}/doc/apidoc"/>
     <copydir src="${dist}/lib" dest="${dist_dir}/lib"/>
     <copydir src="${src}" dest="${dist_dir}/src"/>
+    <copydir src="./www/doc" includes="index.html" dest="${dist_dir}/doc"/>
     <copydir src="." includes="lgpl.txt, build.xml, build.bat, MARC21slim.rng, MARC21slim.dtd" dest="${dist_dir}/"/>
     <tar tarfile="${dist_arc}.tar" basedir="${tmp_dir}"/>
     <gzip zipfile="${dist_arc}.tar.gz" src="${dist_arc}.tar"/>
