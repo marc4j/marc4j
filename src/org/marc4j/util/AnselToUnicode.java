@@ -1,4 +1,4 @@
-// $Id: AnselToUnicode.java,v 1.7 2002/08/13 20:46:38 bpeters Exp $
+// $Id: AnselToUnicode.java,v 1.8 2002/08/15 20:06:49 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -20,823 +20,447 @@
  */
 package org.marc4j.util;
 
+import java.util.*;
+
 /**
- * <p><code>AnselToUnicode</code> is a utility to convert
- * MARC-8 data to UCS/Unicode.   </p>
+ * <p>A utility to convert MARC-8 data to UCS/Unicode.</p>
  *
- * This class currently implements
- * <a href="http://www.loc.gov/marc/specifications/speccharlatin.html">
- * Code Table 1: Latin</a>,
- * <a href="http://www.loc.gov/marc/specifications/specchargrsymbols.html">
- * Code Table 2: Greek symbols</a>,
- * <a href="http://www.loc.gov/marc/specifications/speccharsubscript.html">
- * Code Table 3: Subscripts</a>,
- * <a href="http://www.loc.gov/marc/specifications/speccharsuperscript.html">
- * Code Table 4: Superscripts</a>
- * as published by the
- * <a href="http://www.loc.gov/marc/specifications/specchartables.html">
- * Library of Congress</a>.
- * If possible UCS/Unicode non-spacing characters are together with their
- * base character converted to UCS/Unicode combining characters.</p>
- *
- * @author <a href="mailto:mail@bpeters.com">Bas Peters</a>
- * @version $Version$
- *
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.8 $
  */
 public class AnselToUnicode {
 
-    /** Escape character. */
-    protected static final char ESCAPE = 0x001B;
-
-    /** Redesignate default character set.  */
-    protected static final char REDESIGNATE = 0x0073;
-
-    /** Designate greek symbols. */
-    protected static final char GREEK = 0x0067;
-
-    /** Designate subscript characters. */
-    protected static final char SUBSCRIPT = 0x0070;
-
-    /** Designate superscript characters. */
-    protected static final char SUPERSCRIPT = 0X062;
+    /**
+     * <p>Converts MARC-8 data to UCS/Unicode.</p>
+     *
+     * @param data the MARC-8 data
+     * @return {@link String} - the UCS/Unicode data
+     */
+    public static String convert(String s) {
+	return new String(convert(s.toCharArray()));
+    }
 
     /**
-     * <p>Converts MARC-8 data to UCS/Unicode.    </p>
+     * <p>Converts MARC-8 data to UCS/Unicode.</p>
      *
-     * <p>The <code>convert</code> method performs the following steps:</p>
-     * <ul>
-     * <li>If the character is a reserved character in the MARC-8 environment
-     * the character is not converted.</li>
-     * <li>If the character is an escape character, the next graphic character
-     * is evaluated:
-     * <ul>
-     * <li>If s (0x0073) - the default character set is redesignated
-     * <li>If g (0x0067) - the Greek Symbols are designated
-     * <li>If b (0x0062) - the subscript characters are designated
-     * <li>If p (0x0070) - the superscript characters are desingated
-     * </ul>
-     * If there is no match for an alternate graphic character set,
-     * the characters are returned.
-     * <br>The alternate graphic character set is designated until another escape
-     * sequence is encountered.
-     * <br>If there is no match for characters within the alternate graphic
-     * character set, the characters are not converted.
-     * <li>If the character is not an ASCII character it is converted
-     * to UCS/Unicode.</li>
-     * <li>If the UCS/Unicode character is a combining diacritical mark
-     * and it's position is not the last position within the field it is
-     * converted together with the next character to a combining
-     * Unicode character.</li>
-     * <li>If the mapping for combining characters does not return
-     * a combining character, the combining diacritical mark and
-     * the base character are re-ordered so that the base character
-     * precedes the combining diacritical mark.</li>
-     * <li>If the converted character is not a combining diacritical mark and/or
-     * the last character it is returned.</li>
-     * </ul>
-     * <br>
-     *
-     * @param data the input data
-     * @return <code>char[]</code> - the output data
-     * @see #getChar
-     * @see #isReserved
-     * @see Ascii#isValid
-     * @see Unicode#isCombiningDiacriticalMark
-     * @see Unicode#getCombiningChar
+     * @param data the MARC-8 data
+     * @return char[] - the UCS/Unicode data
      */
     public static char[] convert(char[] data) {
-
-        // Indicator for an alternate graphic character set.
-        char alternate = 0;
-	
 	StringBuffer sb = new StringBuffer();
-	for(int i=0;i < data.length;i++) {
+        for(int i=0;i < data.length;i++) {
             char c = data[i];
             int len = data.length;
-
-            // Throw exception if the character is a reserved character.
-            if (isReserved(c)) {
-                //throw new ReservedCharacterException(c);
-                sb.append(c);
-		
-            // If the character is an ESCAPE check the alternate
-            // graphic character set.
-            } else if (c == ESCAPE  && hasNext(i, len)) {
-                char d = designate(data[i + 1]);
-                // Check the alternate character.
-                switch (d) {
-	        // If zero append escape character.
-                case 0 :
-                    sb.append(c);
-                    break;
-                // If redesignate check current alternate character.
-                case REDESIGNATE :
-                    switch (alternate) {
-                    // If zero append escape since there is no active
-                    // alternate character set.
-                    case 0 :
-                        sb.append(c);
-                        break;
-                    // In all other cases set the alternate to it's
-                    // initial value.
-                    default :
-                        alternate = 0;
-                        i++;
-                        break;
-                    }
-                    break;
-                // If not zero or redesignate, set the alternate
-                // character set.
-                default :
-                    alternate = d;
-                    i++;
-                    break;
-                }
-
-            // If an alternate character set is active
-            // get alternate graphic character.
-            } else if (alternate != 0) {
-                char d = getAlternateChar(alternate, c);
-                switch(d) {
-                case 0 :
-                    sb.append(c);
-                    break;
-                default :
-                    sb.append(d);
-                    break;
-                }
-		
-	    // If the character is an ASCII character append to buffer.
-	    } else if (Ascii.isValid(c)) {
+	    if (isAscii(c))
 		sb.append(c);
-
-            // Else get the unicode character.
-	    } else {
-		char d = getChar(c);
-
-		// Check if character is a diacritic and
-		// if there is a next character.
-		if (Unicode.isCombiningDiacriticalMark(d) && hasNext(i, len)) {
-                    char e;
-		    if (Ascii.isValid(data[i + 1]))
-			e = data[i + 1];
-		    else
-			e = getChar(data[i + 1]);
-		    char f = Unicode.getCombiningChar(d, e);
-
-                    switch(f) {
-                    case 0 :
-                        sb.append(e);
-                        sb.append(d);
-                        break;
-                    default :
-                        sb.append(f);
-                        break;
-                    }
-                    i++;
-
-		// If not a combining character or last in a field
-	        // append the character returned by getChar().
+	    else if (isCombining(c) && hasNext(i,len)) {
+		char d = getCombiningChar(c*256 + data[i + 1]);
+		if(d != 0) {
+		    sb.append(d);
+		    i++;
 		} else {
-                    sb.append(d);
-		} // End of if (isNonspacingChar()) loop
-		
-	    } // End of if (isASCII()) loop
-	    
-	} // End of for loop
+		    sb.append(getChar(c));
+		}
+	    } else
+		sb.append(getChar(c));
+	}
 	return sb.toString().toCharArray();
     }
 
-    /**
-     * <p>Designates the alternate graphic character set.   </p>
-     *
-     * @param c the code for the alternate graphic character set
-     * @return <code>char</code> - returns the code for the alternate character set,
-     *                             or the character to redesignate the default
-     *                             character set,
-     *                             returns 0 if there is no match.
-     */
-    private static char designate(char c) {
-        switch(c) {
-        case GREEK :
-            return GREEK;
-        case SUBSCRIPT :
-            return SUBSCRIPT;
-        case SUPERSCRIPT :
-            return SUPERSCRIPT;
-        case REDESIGNATE :
-            return REDESIGNATE;
-        default :
-            return 0;
-        }
+    private static boolean hasNext(int pos, int len) {
+	if (pos < (len -1))
+	    return true;
+	return false;
     }
 
-    /**
-     * <p>Returns an alternate graphic character.   </p>
-     *
-     * @param alternate the code for the alternate character set
-     * @param c the character to convert
-     * @return <code>char</code> - returns the converted character,
-     *                           returns 0 if the character is not converted.
-     */
-    private static char getAlternateChar(char alternate, char c) {
-        switch(alternate) {
-        case GREEK :
-            return getGreekSymbol(c);
-        case SUBSCRIPT :
-            return getSubscript(c);
-        case SUPERSCRIPT :
-            return getSuperscript(c);
-        default :
-            return 0;
-        }
+    private static boolean isAscii(int i) {
+	if (i > 0x00 && i < 0x7F)
+	    return true;
+	return false;
     }
 
-    /**
-     * <p>Converts a single MARC-8 character to it's UCS/Unicode
-     * equivalent.         </p>
-     *
-     * <p>This method implements the following mapping between MARC-8
-     * and UCS/Unicode:</p>
-     * <pre>
-     * MARC  UCS
-     * (hex) (hex)   MARC / UCS NAME
-     * 8D    200D    JNR (Joiner) / ZERO WIDTH JOINER
-     * 8E    200C    NJR (Non-joiner) / ZERO WIDTH NON-JOINER
-     * A1    0141    UPPERCASE POLISH L / LATIN CAPITAL LETTER L WITH STROKE
-     * A2    00D8    UPPERCASE SCANDINAVIAN O / LATIN CAPITAL LETTER O WITH STROKE
-     * A3    0110    UPPERCASE D WITH CROSSBAR / LATIN CAPITAL LETTER D WITH STROKE
-     * A4    00DE    UPPERCASE ICELANDIC THORN / LATIN CAPITAL LETTER THORN (Icelandic)
-     * A5    00C6    UPPERCASE DIGRAPH AE / LATIN CAPITAL LIGATURE AE
-     * A6    0152    UPPERCASE DIGRAPH OE / LATIN CAPITAL LIGATURE OE
-     * A7    02B9    SOFT SIGN, PRIME / MODIFIER LETTER PRIME
-     * A8    00B7    MIDDLE DOT
-     * A9    266D    MUSIC FLAT SIGN
-     * AA    00AE    PATENT MARK / REGISTERED SIGN
-     * AB    00B1    PLUS OR MINUS / PLUS-MINUS SIGN
-     * AC    01A0    UPPERCASE O-HOOK / LATIN CAPITAL LETTER O WITH HORN
-     * AD    01AF    UPPERCASE U-HOOK / LATIN CAPITAL LETTER U WITH HORN
-     * AE    02BE    ALIF / MODIFIER LETTER RIGHT HALF RING
-     * B0    02BB    AYN / MODIFIER LETTER TURNED COMMA
-     * B1    0142    LOWERCASE POLISH L / LATIN SMALL LETTER L WITH STROKE
-     * B2    00F8    LOWERCASE SCANDINAVIAN O / LATIN SMALL LETTER O WITH STROKE
-     * B3    0111    LOWERCASE D WITH CROSSBAR / LATIN SMALL LETTER D WITH STROKE
-     * B4    00FE    LOWERCASE ICELANDIC THORN / LATIN SMALL LETTER THORN (Icelandic)
-     * B5    00E6    LOWERCASE DIGRAPH AE / LATIN SMALL LIGATURE AE
-     * B6    0153    LOWERCASE DIGRAPH OE / LATIN SMALL LIGATURE OE
-     * B7    02BA    HARD SIGN, DOUBLE PRIME / MODIFIER LETTER DOUBLE PRIME
-     * B8    0131    LOWERCASE TURKISH I / LATIN SMALL LETTER DOTLESS I
-     * B9    00A3    BRITISH POUND / POUND SIGN
-     * BA    00F0    LOWERCASE ETH / LATIN SMALL LETTER ETH (Icelandic)
-     * BC    01A1    LOWERCASE O-HOOK / LATIN SMALL LETTER O WITH HORN
-     * BD    01B0    LOWERCASE U-HOOK / LATIN SMALL LETTER U WITH HORN
-     * C0    00B0    DEGREE SIGN
-     * C1    2113    SCRIPT SMALL L
-     * C2    2117    SOUND RECORDING COPYRIGHT
-     * C3    00A9    COPYRIGHT SIGN
-     * C4    266F    MUSIC SHARP SIGN
-     * C5    00BF    INVERTED QUESTION MARK
-     * C6    00A1    INVERTED EXCLAMATION MARK
-     * E0    0309    PSEUDO QUESTION MARK / COMBINING HOOK ABOVE
-     * E1    0300    GRAVE / COMBINING GRAVE ACCENT (Varia)
-     * E2    0301    ACUTE / COMBINING ACUTE ACCENT (Oxia)
-     * E3    0302    CIRCUMFLEX / COMBINING CIRCUMFLEX ACCENT
-     * E4    0303    TILDE / COMBINING TILDE
-     * E5    0304    MACRON / COMBINING MACRON
-     * E6    0306    BREVE / COMBINING BREVE (Vrachy)
-     * E7    0307    SUPERIOR DOT / COMBINING DOT ABOVE
-     * E8    0308    UMLAUT, DIAERESIS / COMBINING DIAERESIS (Dialytika)
-     * E9    030C    HACEK / COMBINING CARON
-     * EA    030A    CIRCLE ABOVE, ANGSTROM / COMBINING RING ABOVE
-     * EB    FE20    LIGATURE, FIRST HALF / COMBINING LIGATURE LEFT HALF
-     * EC    FE21    LIGATURE, SECOND HALF / COMBINING LIGATURE RIGHT HALF
-     * ED    0315    HIGH COMMA, OFF CENTER / COMBINING COMMA ABOVE RIGHT
-     * EE    030B    DOUBLE ACUTE / COMBINING DOUBLE ACUTE ACCENT
-     * EF    0310    CANDRABINDU / COMBINING CANDRABINDU
-     * F0    0327    CEDILLA / COMBINING CEDILLA
-     * F1    0328    RIGHT HOOK, OGONEK / COMBINING OGONEK
-     * F2    0323    DOT BELOW / COMBINING DOT BELOW
-     * F3    0324    DOUBLE DOT BELOW / COMBINING DIAERESIS BELOW
-     * F4    0325    CIRCLE BELOW / COMBINING RING BELOW
-     * F5    0333    DOUBLE UNDERSCORE / COMBINING DOUBLE LOW LINE
-     * F6    0332    UNDERSCORE / COMBINING LOW LINE
-     * F7    0326    LEFT HOOK (COMMA BELOW) / COMBINING COMMA BELOW
-     * F8    031C    RIGHT CEDILLA / COMBINING LEFT HALF RING BELOW
-     * F9    032E    UPADHMANIYA / COMBINING BREVE BELOW
-     * FA    FE22    DOUBLE TILDE, FIRST HALF / COMBINING DOUBLE TILDE LEFT HALF
-     * FB    FE23    DOUBLE TILDE, SECOND HALF / COMBINING DOUBLE TILDE RIGHT HALF
-     * FE    0313    HIGH COMMA, CENTERED / COMBINING COMMA ABOVE (Psili)
-     * </pre>
-     *
-     * @param c the character to be converted
-     * @return <code>char</code> - returns the converted character,
-     *                           returns 0 if the character is not converted.
-     * @see com.bpeters.util.Unicode
-     */
-    public static char getChar(char c) {
-	    switch (c) {
-	    // JNR (Joiner) [?]
-	    case 0x008D :
-	        return 0x200D;
-	    // NJR (Non-joiner) [?]
-	    case 0x008E :
-	        return 0x200C;
-	    // latin capital letter l with stroke
-	    case 0x00A1 :
-	        return 0x0141;
-	    // latin capital letter o with stroke
-	    case 0x00A2 :
-	        return 0x00D8;
-	    // latin capital letter d with stroke
-	    case 0x00A3 :
-	        return 0x0110;
-	    // latin capital letter thorn
-	    case 0x00A4 :
-	        return 0x00DE;
-	    // latin capital letter AE
-	    case 0x00A5 :
-	        return 0x00C6;
-	    // latin capital letter OE
-	    case 0x00A6 :
-	        return 0x0152;
-	    // modifier letter prime
-	    case 0x00A7 :
-	        return 0x02B9;
-	    // middle dot
-	    case 0x00A8 :
-	        return 0x00B7;
-	    // musical flat sign
-	    case 0x00A9 :
-	        return 0x266D;
-	    // registered sign
-	    case 0x00AA :
-	        return 0x00AE;
-	    // plus-minus sign
-	    case 0x00AB :
-	        return 0x00B1;
-	    // latin capital letter o with horn
-	    case 0x00AC :
-	        return 0x01A0;
-	    // latin capital letter u with horn
-	    case 0x00AD :
-	        return 0x01AF;
-	    // modifier letter right half ring
-	    case 0x00AE :
-	        return 0x02BE;
-
-	    // modifier letter left half ring
-	    case 0x00B0 :
-	        return 0x02BF;
-	    // latin small letter l with stroke
-	    case 0x00B1 :
-	        return 0x0142;
-	    // latin small letter o with stroke
-	    case 0x00B2 :
-	        return 0x00F8;
-	    // latin small letter d with stroke
-	    case 0x00B3 :
-	        return 0x0111;
-	    // latin small letter thorn
-	    case 0x00B4 :
-	        return 0x00FE;
-	    // latin small letter ae
-	    case 0x00B5 :
-	        return 0x00E6;
-	    // latin small letter oe
-	    case 0x00B6 :
-	        return 0x0153;
-	    // modifier letter double prime
-	    case 0x00B7 :
-	        return 0x02BA;
-	    // latin small letter dotless i
-	    case 0x00B8 :
-		return 0x0131;
-	    // pound sign
-	    case 0x00B9 :
-	        return 0x00A3;
-	    // latin small letter eth
-	    case 0x00BA :
-	        return 0x00F0;
-	    // latin small letter o with horn
-	    case 0x00BC :
-	        return 0x01A1;
-	    // latin small letter u with horn
-	    case 0x00BD :
-	        return 0x01B0;
-
-	    // degree sign
-	    case 0x00C0 :
-	        return 0x00B0;
-	    // script small l
-	    case 0x00C1 :
-	        return 0x2113;
-	    // sound recording copyright
-	    case 0x00C2 :
-	        return 0x2117;
-	    // copyright sign
-	    case 0x00C3 :
-	        return 0x00A9;
-	    // sharp
-	    case 0x00C4 :
-	        return 0x266F;
-	    // inverted question mark
-	    case 0x00C5 :
-	        return 0x00BF;
-	    // inverted exclamation mark
-	    case 0x00C6 :
-	        return 0x00A1;
-
-	    // combining hook above
-	    case 0x00E0 :
-	        return 0x0309;
-	    // combining grave accent
-	    case 0x00E1 :
-	        return 0x0300;
-	    // combining acute accent
-	    case 0x00E2 :
-	        return 0x0301;
-	    // combining circumflex
-	    case 0x00E3 :
-	        return 0x0302;
-	    // combining tilde
-	    case 0x00E4 :
-	        return 0x0303;
-	    // combining macron
-	    case 0x00E5 :
-	        return 0x0304;
-	    // combining breve
-	    case 0x00E6 :
-	        return 0x0306;
-	    // combining dot above
-	    case 0x00E7 :
-	        return 0x0307;
-	    // combining diaeresis
-	    case 0x00E8 :
-	        return 0x0308;
-	    // combining caron
-	    case 0x00E9 :
-	        return 0x030C;
-	    // combining ring above
-	    case 0x00EA :
-	        return 0x030A;
-	    // combining ligature left half
-	    case 0x00EB :
-	        return 0xFE20;
-	    // combining ligature right half
-	    case 0x00EC :
-	        return 0xFE21;
-	    // combining comma above right
-	    case 0x00ED :
-	        return 0x0315;
-	    // combining double acute accent
-	    case 0x00EE :
-	        return 0x030B;
-	    // combining candrabindu
-	    case 0x00EF :
-	        return 0x0310;
-
-	    // combining cedilla
-	    case 0x00F0 :
-	        return 0x0327;
-	    // combining ogonek
-	    case 0x00F1 :
-	        return 0x0328;
-	    // combining dot below
-	    case 0x00F2 :
-	        return 0x0323;
-	    // combining double dot below
-	    case 0x00F3 :
-	        return 0x0324;
-	    // combining ring below
-	    case 0x00F4 :
-	        return 0x0325;
-	    // combining double low line
-	    case 0x00F5 :
-	        return 0x0333;
-	    // combining low line
-	    case 0x00F6 :
-	        return 0x0332;
-	    // combining comma below
-	    case 0x00F7 :
-	        return 0x0326;
-	    // combining left half ring below
-	    case 0x00F8 :
-	        return 0x031C;
-	    // combining breve below
-	    case 0x00F9 :
-	        return 0x032E;
-	    // combining double tilde left half
-	    case 0x00FA :
-	        return 0xFE22;
-	    // combining double tilde right half
-	    case 0x00FB :
-	        return 0xFE23;
-	    // combining comma above
-	    case 0x00FE :
-	        return 0x0313;
-
-	    default:
-	        return 0;
-    	}
+    private static boolean isCombining(int i) {
+	if (i > 0xE0 && i < 0xFF)
+	    return true;
+	return false;
     }
 
-    /**
-     * <p>Converts a single MARC-8 Greek symbol to it's
-     * UCS/Unicode equivalent.   </p>
-     *
-     * <pre>
-     * MARC  UCS
-     * (hex) (hex)   MARC / UCS NAME
-     * 61    03B1    GREEK SMALL LETTER ALPHA
-     * 62    03B2    GREEK SMALL LETTER BETA
-     * 63    03B3    GREEK SMALL LETTER GAMMA
-     * </pre>
-     *
-     * @param c the character to be converted
-     * @return <code>char</code> - returns the converted character,
-     *                           returns 0 if the character is not converted.
-     */
-    public static char getGreekSymbol(char c) {
-        switch(c) {
-        case 0x0061 :
-            return 0x03B1;
-        case 0x0062 :
-            return 0x03B2;
-        case 0x0063 :
-            return 0x03B3;
-        default :
-            return 0;
-        }
+    private static char getChar(int i) {
+	switch(i) {
+	case 0x8D: return 0x200D;  // zero width joiner
+        case 0x8E: return 0x200C;  // zero width non-joiner
+        case 0xA1: return 0x0141;  // capital L with stroke
+        case 0xA2: return 0x00D8;  // capital O with oblique stroke
+        case 0xA3: return 0x0110;  // capital D with stroke
+        case 0xA4: return 0x00DE;  // capital Icelandic letter Thorn
+        case 0xA5: return 0x00C6;  // capital diphthong A with E
+        case 0xA6: return 0x0152;  // capital ligature OE
+        case 0xA7: return 0x02B9;  // modified letter prime
+        case 0xA8: return 0x00B7;  // middle dot
+        case 0xA9: return 0x266D;  // music flat sign
+        case 0xAA: return 0x00AE;  // registered trade mark sign
+        case 0xAB: return 0x00B1;  // plus-minus sign
+        case 0xAC: return 0x01A0;  // capital O with horn
+        case 0xAD: return 0x01AF;  // capital U with horn
+        case 0xAE: return 0x02BE;  // modifier letter right half ring
+        case 0xB0: return 0x02BF;  // modifier letter turned comma
+        case 0xB1: return 0x0142;  // small l with stroke
+        case 0xB2: return 0x00F8;  // small o with oblique stroke
+        case 0xB3: return 0x0111;  // small D with stroke
+        case 0xB4: return 0x00FE;  // small Icelandic letter Thorn
+        case 0xB5: return 0x00E6;  // small diphthong a with e
+        case 0xB6: return 0x0153;  // small ligature OE
+        case 0xB7: return 0x02BA;  // modified letter double prime
+        case 0xB8: return 0x0131;  // small dotless i
+        case 0xB9: return 0x00A3;  // pound sign
+        case 0xBA: return 0x00F0;  // small Icelandic letter Eth
+        case 0xBC: return 0x01A1;  // small o with horn
+        case 0xBD: return 0x01B0;  // small u with horn
+        case 0xC0: return 0x00B0;  // degree sign, ring above
+        case 0xC1: return 0x2113;  // script small l
+        case 0xC2: return 0x2117;  // sound recording copyright
+        case 0xC3: return 0x00A9;  // copyright sign
+        case 0xC4: return 0x266F;  // music sharp sign
+        case 0xC5: return 0x00BF;  // inverted question mark
+        case 0xC6: return 0x00A1;  // inverted exclamation mark
+        case 0xE0: return 0x0309;  // hook above
+        case 0xE1: return 0x0300;  // grave accent
+        case 0xE2: return 0x0301;  // acute accent
+        case 0xE3: return 0x0302;  // circumflex accent
+        case 0xE4: return 0x0303;  // tilde
+        case 0xE5: return 0x0304;  // combining macron
+        case 0xE6: return 0x0306;  // breve
+        case 0xE7: return 0x0307;  // dot above
+	case 0xE8: return 0x0308;  // combining diaeresis
+        case 0xE9: return 0x030C;  // caron
+        case 0xEA: return 0x030A;  // ring above
+        case 0xEB: return 0xFE20;  // ligature left half
+        case 0xEC: return 0xFE21;  // ligature right half
+        case 0xED: return 0x0315;  // comma above right
+        case 0xEE: return 0x030B;  // double acute accent
+        case 0xEF: return 0x0310;  // candrabindu
+        case 0xF0: return 0x0327;  // combining cedilla
+        case 0xF1: return 0x0328;  // ogonek
+        case 0xF2: return 0x0323;  // dot below
+        case 0xF3: return 0x0324;  // diaeresis below
+        case 0xF4: return 0x0325;  // ring below
+        case 0xF5: return 0x0333;  // double low line
+        case 0xF6: return 0x0332;  // low line (= line below?)
+        case 0xF7: return 0x0326;  // comma below
+        case 0xF8: return 0x031C;  // combining half ring below
+        case 0xF9: return 0x032E;  // breve below
+        case 0xFA: return 0xFE22;  // double tilde left half
+        case 0xFB: return 0xFE23;  // double tilde right half
+        case 0xFE: return 0x0313;  // comma above
+	default :
+	    return (char)i;
+	}
     }
 
-    /**
-     * <p>Converts a single MARC-8 subscript character to it's
-     * UCS/Unicode equivalent.   </p>
-     *
-     * <pre>
-     * MARC  UCS
-     * (hex) (hex)   MARC / UCS NAME
-     * 28    208D    SUBSCRIPT OPENING PARENTHESIS / SUBSCRIPT LEFT PARENTHESIS
-     * 29    208E    SUBSCRIPT CLOSING PARENTHESIS / SUBSCRIPT RIGHT PARENTHESIS
-     * 2B    208A    SUBSCRIPT PLUS SIGN
-     * 2D    208B    SUBSCRIPT HYPHEN-MINUS / SUBSCRIPT MINUS
-     * 30    2080    SUBSCRIPT DIGIT ZERO
-     * 31    2081    SUBSCRIPT DIGIT ONE
-     * 32    2082    SUBSCRIPT DIGIT TWO
-     * 33    2083    SUBSCRIPT DIGIT THREE
-     * 34    2084    SUBSCRIPT DIGIT FOUR
-     * 35    2085    SUBSCRIPT DIGIT FIVE
-     * 36    2086    SUBSCRIPT DIGIT SIX
-     * 37    2087    SUBSCRIPT DIGIT SEVEN
-     * 38    2088    SUBSCRIPT DIGIT EIGHT
-     * 39    2089    SUBSCRIPT DIGIT NINE
-     * </pre>
-     *
-     * @param c the character to be converted
-     * @return <code>char</code> - returns the converted character,
-     *                           returns 0 if the character is not converted.
-     */
-    public static char getSubscript(char c) {
-        switch(c) {
-        case 0x0028 :
-            return 0x208D;
-        case 0x0029 :
-            return 0x208E;
-        case 0x002B :
-            return 0x208A;
-        case 0x002D :
-            return 0x208B;
-        case 0x0030 :
-            return 0x2080;
-        case 0x0031 :
-            return 0x2081;
-        case 0x0032 :
-            return 0x2082;
-        case 0x0033 :
-            return 0x2083;
-        case 0x0034 :
-            return 0x2084;
-        case 0x0035 :
-            return 0x2085;
-        case 0x0036 :
-            return 0x2086;
-        case 0x0037 :
-            return 0x2087;
-        case 0x0038 :
-            return 0x2088;
-        case 0x0039 :
-            return 0x2089;
-        default :
-            return 0;
-        }
+    private static char getCombiningChar(int i) {
+	switch(i) {
+	case 0xE041: return 0x1EA2;  // capital a with hook above
+        case 0xE045: return 0x1EBA;  // capital e with hook above
+        case 0xE049: return 0x1EC8;  // capital i with hook above
+        case 0xE04F: return 0x1ECE;  // capital o with hook above
+        case 0xE055: return 0x1EE6;  // capital u with hook above
+        case 0xE059: return 0x1EF6;  // capital y with hook above
+        case 0xE061: return 0x1EA3;  // small a with hook above
+        case 0xE065: return 0x1EBB;  // small e with hook above
+        case 0xE069: return 0x1EC9;  // small i with hook above
+        case 0xE06F: return 0x1ECF;  // small o with hook above
+        case 0xE075: return 0x1EE7;  // small u with hook above
+        case 0xE079: return 0x1EF7;  // small y with hook above
+        case 0xE141: return 0x00C0;  // capital A with grave accent
+        case 0xE145: return 0x00C8;  // capital E with grave accent
+        case 0xE149: return 0x00CC;  // capital I with grave accent
+        case 0xE14F: return 0x00D2;  // capital O with grave accent
+        case 0xE155: return 0x00D9;  // capital U with grave accent
+        case 0xE157: return 0x1E80;  // capital w with grave
+        case 0xE159: return 0x1EF2;  // capital y with grave
+        case 0xE161: return 0x00E0;  // small a with grave accent
+        case 0xE165: return 0x00E8;  // small e with grave accent
+        case 0xE169: return 0x00EC;  // small i with grave accent
+        case 0xE16F: return 0x00F2;  // small o with grave accent
+        case 0xE175: return 0x00F9;  // small u with grave accent
+        case 0xE177: return 0x1E81;  // small w with grave
+        case 0xE179: return 0x1EF3;  // small y with grave
+        case 0xE241: return 0x00C1;  // capital A with acute accent
+        case 0xE243: return 0x0106;  // capital C with acute accent
+        case 0xE245: return 0x00C9;  // capital E with acute accent
+        case 0xE247: return 0x01F4;  // capital g with acute
+        case 0xE249: return 0x00CD;  // capital I with acute accent
+        case 0xE24B: return 0x1E30;  // capital k with acute
+        case 0xE24C: return 0x0139;  // capital L with acute accent
+        case 0xE24D: return 0x1E3E;  // capital m with acute
+        case 0xE24E: return 0x0143;  // capital N with acute accent
+        case 0xE24F: return 0x00D3;  // capital O with acute accent
+        case 0xE250: return 0x1E54;  // capital p with acute
+        case 0xE252: return 0x0154;  // capital R with acute accent
+        case 0xE253: return 0x015A;  // capital S with acute accent
+        case 0xE255: return 0x00DA;  // capital U with acute accent
+        case 0xE257: return 0x1E82;  // capital w with acute
+        case 0xE259: return 0x00DD;  // capital Y with acute accent
+        case 0xE25A: return 0x0179;  // capital Z with acute accent
+        case 0xE261: return 0x00E1;  // small a with acute accent
+        case 0xE263: return 0x0107;  // small c with acute accent
+        case 0xE265: return 0x00E9;  // small e with acute accent
+        case 0xE267: return 0x01F5;  // small g with acute
+        case 0xE269: return 0x00ED;  // small i with acute accent
+        case 0xE26B: return 0x1E31;  // small k with acute
+        case 0xE26C: return 0x013A;  // small l with acute accent
+        case 0xE26D: return 0x1E3F;  // small m with acute
+        case 0xE26E: return 0x0144;  // small n with acute accent
+        case 0xE26F: return 0x00F3;  // small o with acute accent
+        case 0xE270: return 0x1E55;  // small p with acute
+        case 0xE272: return 0x0155;  // small r with acute accent
+        case 0xE273: return 0x015B;  // small s with acute accent
+        case 0xE275: return 0x00FA;  // small u with acute accent
+        case 0xE277: return 0x1E83;  // small w with acute
+        case 0xE279: return 0x00FD;  // small y with acute accent
+        case 0xE27A: return 0x017A;  // small z with acute accent
+        case 0xE2A5: return 0x01FC;  // capital ae with acute
+        case 0xE2B5: return 0x01FD;  // small ae with acute
+        case 0xE341: return 0x00C2;  // capital A with circumflex accent
+        case 0xE343: return 0x0108;  // capital c with circumflex
+        case 0xE345: return 0x00CA;  // capital E with circumflex accent
+        case 0xE347: return 0x011C;  // capital g with circumflex
+        case 0xE348: return 0x0124;  // capital h with circumflex
+        case 0xE349: return 0x00CE;  // capital I with circumflex accent
+        case 0xE34A: return 0x0134;  // capital j with circumflex
+        case 0xE34F: return 0x00D4;  // capital O with circumflex accent
+        case 0xE353: return 0x015C;  // capital s with circumflex
+        case 0xE355: return 0x00DB;  // capital U with circumflex
+        case 0xE357: return 0x0174;  // capital w with circumflex
+        case 0xE359: return 0x0176;  // capital y with circumflex
+        case 0xE35A: return 0x1E90;  // capital z with circumflex
+        case 0xE361: return 0x00E2;  // small a with circumflex accent
+        case 0xE363: return 0x0109;  // small c with circumflex
+        case 0xE365: return 0x00EA;  // small e with circumflex accent
+        case 0xE367: return 0x011D;  // small g with circumflex
+        case 0xE368: return 0x0125;  // small h with circumflex
+        case 0xE369: return 0x00EE;  // small i with circumflex accent
+        case 0xE36A: return 0x0135;  // small j with circumflex
+        case 0xE36F: return 0x00F4;  // small o with circumflex accent
+        case 0xE373: return 0x015D;  // small s with circumflex
+        case 0xE375: return 0x00FB;  // small u with circumflex
+        case 0xE377: return 0x0175;  // small w with circumflex
+        case 0xE379: return 0x0177;  // small y with circumflex
+        case 0xE37A: return 0x1E91;  // small z with circumflex
+        case 0xE441: return 0x00C3;  // capital A with tilde
+        case 0xE445: return 0x1EBC;  // capital e with tilde
+        case 0xE449: return 0x0128;  // capital i with tilde
+        case 0xE44E: return 0x00D1;  // capital N with tilde
+        case 0xE44F: return 0x00D5;  // capital O with tilde
+        case 0xE455: return 0x0168;  // capital u with tilde
+        case 0xE456: return 0x1E7C;  // capital v with tilde
+        case 0xE459: return 0x1EF8;  // capital y with tilde
+        case 0xE461: return 0x00E3;  // small a with tilde
+        case 0xE465: return 0x1EBD;  // small e with tilde
+        case 0xE469: return 0x0129;  // small i with tilde
+        case 0xE46E: return 0x00F1;  // small n with tilde
+        case 0xE46F: return 0x00F5;  // small o with tilde
+        case 0xE475: return 0x0169;  // small u with tilde
+        case 0xE476: return 0x1E7D;  // small v with tilde
+        case 0xE479: return 0x1EF9;  // small y with tilde
+        case 0xE541: return 0x0100;  // capital a with macron
+        case 0xE545: return 0x0112;  // capital e with macron
+        case 0xE547: return 0x1E20;  // capital g with macron
+        case 0xE549: return 0x012A;  // capital i with macron
+        case 0xE54F: return 0x014C;  // capital o with macron
+        case 0xE555: return 0x016A;  // capital u with macron
+        case 0xE561: return 0x0101;  // small a with macron
+        case 0xE565: return 0x0113;  // small e with macron
+        case 0xE567: return 0x1E21;  // small g with macron
+        case 0xE569: return 0x012B;  // small i with macron
+        case 0xE56F: return 0x014D;  // small o with macron
+        case 0xE575: return 0x016B;  // small u with macron
+        case 0xE5A5: return 0x01E2;  // capital ae with macron
+        case 0xE5B5: return 0x01E3;  // small ae with macron
+        case 0xE641: return 0x0102;  // capital A with breve
+        case 0xE645: return 0x0114;  // capital e with breve
+        case 0xE647: return 0x011E;  // capital g with breve
+        case 0xE649: return 0x012C;  // capital i with breve
+        case 0xE64F: return 0x014E;  // capital o with breve
+        case 0xE655: return 0x016C;  // capital u with breve
+        case 0xE661: return 0x0103;  // small a with breve
+        case 0xE665: return 0x0115;  // small e with breve
+        case 0xE667: return 0x011F;  // small g with breve
+        case 0xE669: return 0x012D;  // small i with breve
+        case 0xE66F: return 0x014F;  // small o with breve
+        case 0xE675: return 0x016D;  // small u with breve
+        case 0xE742: return 0x1E02;  // capital b with dot above
+        case 0xE743: return 0x010A;  // capital c with dot above
+        case 0xE744: return 0x1E0A;  // capital d with dot above
+        case 0xE745: return 0x0116;  // capital e with dot above
+        case 0xE746: return 0x1E1E;  // capital f with dot above
+        case 0xE747: return 0x0120;  // capital g with dot above
+        case 0xE748: return 0x1E22;  // capital h with dot above
+        case 0xE749: return 0x0130;  // capital i with dot above
+        case 0xE74D: return 0x1E40;  // capital m with dot above
+        case 0xE74E: return 0x1E44;  // capital n with dot above
+        case 0xE750: return 0x1E56;  // capital p with dot above
+        case 0xE752: return 0x1E58;  // capital r with dot above
+        case 0xE753: return 0x1E60;  // capital s with dot above
+        case 0xE754: return 0x1E6A;  // capital t with dot above
+        case 0xE757: return 0x1E86;  // capital w with dot above
+        case 0xE758: return 0x1E8A;  // capital x with dot above
+        case 0xE759: return 0x1E8E;  // capital y with dot above
+        case 0xE75A: return 0x017B;  // capital Z with dot above
+        case 0xE762: return 0x1E03;  // small b with dot above
+        case 0xE763: return 0x010B;  // small c with dot above
+        case 0xE764: return 0x1E0B;  // small d with dot above
+        case 0xE765: return 0x0117;  // small e with dot above
+        case 0xE766: return 0x1E1F;  // small f with dot above
+        case 0xE767: return 0x0121;  // small g with dot above
+        case 0xE768: return 0x1E23;  // small h with dot above
+        case 0xE76D: return 0x1E41;  // small m with dot above
+        case 0xE76E: return 0x1E45;  // small n with dot above
+        case 0xE770: return 0x1E57;  // small p with dot above
+        case 0xE772: return 0x1E59;  // small r with dot above
+        case 0xE773: return 0x1E61;  // small s with dot above
+        case 0xE774: return 0x1E6B;  // small t with dot above
+        case 0xE777: return 0x1E87;  // small w with dot above
+        case 0xE778: return 0x1E8B;  // small x with dot above
+        case 0xE779: return 0x1E8F;  // small y with dot above
+        case 0xE77A: return 0x017C;  // small z with dot above
+        case 0xE841: return 0x00C4;  // capital A with diaeresis
+        case 0xE845: return 0x00CB;  // capital E with diaeresis
+        case 0xE848: return 0x1E26;  // capital h with diaeresis
+        case 0xE849: return 0x00CF;  // capital I with diaeresis
+        case 0xE84F: return 0x00D6;  // capital O with diaeresis
+        case 0xE855: return 0x00DC;  // capital U with diaeresis
+        case 0xE857: return 0x1E84;  // capital w with diaeresis
+        case 0xE858: return 0x1E8C;  // capital x with diaeresis
+        case 0xE859: return 0x0178;  // capital y with diaeresis
+        case 0xE861: return 0x00E4;  // small a with diaeresis
+        case 0xE865: return 0x00EB;  // small e with diaeresis
+        case 0xE868: return 0x1E27;  // small h with diaeresis
+        case 0xE869: return 0x00EF;  // small i with diaeresis
+        case 0xE86F: return 0x00F6;  // small o with diaeresis
+        case 0xE874: return 0x1E97;  // small t with diaeresis
+        case 0xE875: return 0x00FC;  // small u with diaeresis
+        case 0xE877: return 0x1E85;  // small w with diaeresis
+        case 0xE878: return 0x1E8D;  // small x with diaeresis
+        case 0xE879: return 0x00FF;  // small y with diaeresis
+        case 0xE941: return 0x01CD;  // capital a with caron
+        case 0xE943: return 0x010C;  // capital C with caron
+        case 0xE944: return 0x010E;  // capital D with caron
+        case 0xE945: return 0x011A;  // capital E with caron
+        case 0xE947: return 0x01E6;  // capital g with caron
+        case 0xE949: return 0x01CF;  // capital i with caron
+        case 0xE94B: return 0x01E8;  // capital k with caron
+        case 0xE94C: return 0x013D;  // capital L with caron
+        case 0xE94E: return 0x0147;  // capital N with caron
+        case 0xE94F: return 0x01D1;  // capital o with caron
+        case 0xE952: return 0x0158;  // capital R with caron
+        case 0xE953: return 0x0160;  // capital S with caron
+        case 0xE954: return 0x0164;  // capital T with caron
+        case 0xE955: return 0x01D3;  // capital u with caron
+        case 0xE95A: return 0x017D;  // capital Z with caron
+        case 0xE961: return 0x01CE;  // small a with caron
+        case 0xE963: return 0x010D;  // small c with caron
+        case 0xE964: return 0x010F;  // small d with caron
+        case 0xE965: return 0x011B;  // small e with caron
+        case 0xE967: return 0x01E7;  // small g with caron
+        case 0xE969: return 0x01D0;  // small i with caron
+        case 0xE96A: return 0x01F0;  // small j with caron
+        case 0xE96B: return 0x01E9;  // small k with caron
+        case 0xE96C: return 0x013E;  // small l with caron
+        case 0xE96E: return 0x0148;  // small n with caron
+        case 0xE96F: return 0x01D2;  // small o with caron
+        case 0xE972: return 0x0159;  // small r with caron
+        case 0xE973: return 0x0161;  // small s with caron
+        case 0xE974: return 0x0165;  // small t with caron
+        case 0xE975: return 0x01D4;  // small u with caron
+        case 0xE97A: return 0x017E;  // small z with caron
+        case 0xEA41: return 0x00C5;  // capital A with ring above
+        case 0xEA61: return 0x00E5;  // small a with ring above
+        case 0xEA75: return 0x016F;  // small u with ring above
+        case 0xEA77: return 0x1E98;  // small w with ring above
+        case 0xEA79: return 0x1E99;  // small y with ring above
+        case 0xEAAD: return 0x016E;  // capital U with ring above
+        case 0xEE4F: return 0x0150;  // capital O with double acute
+        case 0xEE55: return 0x0170;  // capital U with double acute
+        case 0xEE6F: return 0x0151;  // small o with double acute
+        case 0xEE75: return 0x0171;  // small u with double acute
+        case 0xF020: return 0x00B8;  // cedilla
+        case 0xF043: return 0x00C7;  // capital C with cedilla
+        case 0xF044: return 0x1E10;  // capital d with cedilla
+        case 0xF047: return 0x0122;  // capital g with cedilla
+        case 0xF048: return 0x1E28;  // capital h with cedilla
+        case 0xF04B: return 0x0136;  // capital k with cedilla
+        case 0xF04C: return 0x013B;  // capital l with cedilla
+        case 0xF04E: return 0x0145;  // capital n with cedilla
+        case 0xF052: return 0x0156;  // capital r with cedilla
+        case 0xF053: return 0x015E;  // capital S with cedilla
+        case 0xF054: return 0x0162;  // capital T with cedilla
+        case 0xF063: return 0x00E7;  // small c with cedilla
+        case 0xF064: return 0x1E11;  // small d with cedilla
+        case 0xF067: return 0x0123;  // small g with cedilla
+        case 0xF068: return 0x1E29;  // small h with cedilla
+        case 0xF06B: return 0x0137;  // small k with cedilla
+        case 0xF06C: return 0x013C;  // small l with cedilla
+        case 0xF06E: return 0x0146;  // small n with cedilla
+        case 0xF072: return 0x0157;  // small r with cedilla
+        case 0xF073: return 0x015F;  // small s with cedilla
+        case 0xF074: return 0x0163;  // small t with cedilla
+        case 0xF141: return 0x0104;  // capital A with ogonek
+        case 0xF145: return 0x0118;  // capital E with ogonek
+        case 0xF149: return 0x012E;  // capital i with ogonek
+        case 0xF14F: return 0x01EA;  // capital o with ogonek
+        case 0xF155: return 0x0172;  // capital u with ogonek
+        case 0xF161: return 0x0105;  // small a with ogonek
+        case 0xF165: return 0x0119;  // small e with ogonek
+        case 0xF169: return 0x012F;  // small i with ogonek
+        case 0xF16F: return 0x01EB;  // small o with ogonek
+        case 0xF175: return 0x0173;  // small u with ogonek
+        case 0xF241: return 0x1EA0;  // capital a with dot below
+        case 0xF242: return 0x1E04;  // capital b with dot below
+        case 0xF244: return 0x1E0C;  // capital d with dot below
+        case 0xF245: return 0x1EB8;  // capital e with dot below
+        case 0xF248: return 0x1E24;  // capital h with dot below
+        case 0xF249: return 0x1ECA;  // capital i with dot below
+        case 0xF24B: return 0x1E32;  // capital k with dot below
+        case 0xF24C: return 0x1E36;  // capital l with dot below
+        case 0xF24D: return 0x1E42;  // capital m with dot below
+        case 0xF24E: return 0x1E46;  // capital n with dot below
+        case 0xF24F: return 0x1ECC;  // capital o with dot below
+        case 0xF252: return 0x1E5A;  // capital r with dot below
+        case 0xF253: return 0x1E62;  // capital s with dot below
+        case 0xF254: return 0x1E6C;  // capital t with dot below
+        case 0xF255: return 0x1EE4;  // capital u with dot below
+        case 0xF256: return 0x1E7E;  // capital v with dot below
+        case 0xF257: return 0x1E88;  // capital w with dot below
+        case 0xF259: return 0x1EF4;  // capital y with dot below
+        case 0xF25A: return 0x1E92;  // capital z with dot below
+        case 0xF261: return 0x1EA1;  // small a with dot below
+        case 0xF262: return 0x1E05;  // small b with dot below
+        case 0xF264: return 0x1E0D;  // small d with dot below
+        case 0xF265: return 0x1EB9;  // small e with dot below
+        case 0xF268: return 0x1E25;  // small h with dot below
+        case 0xF269: return 0x1ECB;  // small i with dot below
+        case 0xF26B: return 0x1E33;  // small k with dot below
+        case 0xF26C: return 0x1E37;  // small l with dot below
+        case 0xF26D: return 0x1E43;  // small m with dot below
+        case 0xF26E: return 0x1E47;  // small n with dot below
+        case 0xF26F: return 0x1ECD;  // small o with dot below
+        case 0xF272: return 0x1E5B;  // small r with dot below
+        case 0xF273: return 0x1E63;  // small s with dot below
+        case 0xF274: return 0x1E6D;  // small t with dot below
+        case 0xF275: return 0x1EE5;  // small u with dot below
+        case 0xF276: return 0x1E7F;  // small v with dot below
+        case 0xF277: return 0x1E89;  // small w with dot below
+        case 0xF279: return 0x1EF5;  // small y with dot below
+        case 0xF27A: return 0x1E93;  // small z with dot below
+        case 0xF355: return 0x1E72;  // capital u with diaeresis below
+        case 0xF375: return 0x1E73;  // small u with diaeresis below
+        case 0xF441: return 0x1E00;  // capital a with ring below
+        case 0xF461: return 0x1E01;  // small a with ring below
+        case 0xF948: return 0x1E2A;  // capital h with breve below
+        case 0xF968: return 0x1E2B;  // small h with breve below
+	default :
+	    return 0;
+	}
     }
-
-    /**
-     * <p>Converts a single MARC-8 superscript character to it's
-     * UCS/Unicode equivalent.   </p>
-     *
-     * <pre>
-     * MARC  UCS
-     * (hex) (hex)   MARC / UCS NAME
-     *
-     * 28    207D    SUPERSCRIPT OPENING PARENTHESIS / SUPERSCRIPT LEFT PARENTHESIS
-     * 29    207E    SUPERSCRIPT CLOSING PARENTHESIS / SUPERSCRIPT RIGHT PARENTHESIS
-     * 2B    207A    SUPERSCRIPT PLUS SIGN
-     * 2D    207B    SUPERSCRIPT HYPHEN-MINUS / SUPERSCRIPT MINUS
-     * 30    2070    SUPERSCRIPT DIGIT ZERO
-     * 31    00B9    SUPERSCRIPT DIGIT ONE
-     * 32    00B2    SUPERSCRIPT DIGIT TWO
-     * 33    00B3    SUPERSCRIPT DIGIT THREE
-     * 34    2074    SUPERSCRIPT DIGIT FOUR
-     * 35    2075    SUPERSCRIPT DIGIT FIVE
-     * 36    2076    SUPERSCRIPT DIGIT SIX
-     * 37    2077    SUPERSCRIPT DIGIT SEVEN
-     * 38    2078    SUPERSCRIPT DIGIT EIGHT
-     * 39    2079    SUPERSCRIPT DIGIT NINE
-     * </pre>
-     *
-     * @param c the character to be converted
-     * @return <code>char</code> - returns the converted character,
-     *                           returns 0 if the character is not converted.
-     */
-    public static char getSuperscript(char c) {
-        switch(c) {
-        case 0x0028 :
-            return 0x207D;
-        case 0x0029 :
-            return 0x207E;
-        case 0x002B :
-            return 0x207A;
-        case 0x002D :
-            return 0x207B;
-        case 0x0030 :
-            return 0x2070;
-        case 0x0031 :
-            return 0x00B9;
-        case 0x0032 :
-            return 0x00B2;
-        case 0x0033 :
-            return 0x00B3;
-        case 0x0034 :
-            return 0x2074;
-        case 0x0035 :
-            return 0x2075;
-        case 0x0036 :
-            return 0x2076;
-        case 0x0037 :
-            return 0x2077;
-        case 0x0038 :
-            return 0x2078;
-        case 0x0039 :
-            return 0x2079;
-        default :
-            return 0;
-        }
-    }
-
-    /**
-     * <p>Returns true if the character position is not the last
-     * position within the character array.   </p>
-     *
-     * <p>This method is used to check if a particular MARC-8 non-spacing
-     * character has a base character.</p>
-     *
-     * @param position the character position integer
-     * @param length the length of the character array
-     * @return <code>boolean</code> - true if the character is not the last character,
-     *                                false if the character is the last character
-     */
-    public static boolean hasNext(int position, int length) {
-	    if (position < (length -1))
-	        return true;
-	    return false;
-    }
-
-    /**
-     * <p>Returns true if the character is a reserved character.   </p>
-     *
-     * <p>This method implements the following character map:</p>
-     * <pre>
-     * MARC
-     * (hex)
-     * 00-1A         [RESERVED]
-     * 1C            [RESERVED]
-     * 7F-87         [RESERVED]
-     * 8A-8C         [RESERVED]
-     * 8F-A0         [RESERVED]
-     * AF            [RESERVED]
-     * BB            [RESERVED]
-     * BE            [RESERVED]
-     * BF            [RESERVED]
-     * C7-DF         [RESERVED]
-     * FC            [RESERVED]
-     * FD            [RESERVED]
-     * FF            [RESERVED]
-     * </pre>
-     *
-     * @param <code>char</code> c the character to validate
-     * @return <code>boolean</code> - true if the character is a reserved character,
-     *                                false if the character is not a reserved character
-     */
-    public static boolean isReserved(char c) {
-	    switch(c) {
-        case 0x0000 :
-        case 0x0001 :
-        case 0x0002 :
-        case 0x0003 :
-        case 0x0004 :
-        case 0x0005 :
-        case 0x0006 :
-        case 0x0007 :
-        case 0x0008 :
-        case 0x0009 :
-        case 0x000A :
-        case 0x000B :
-        case 0x000C :
-        case 0x000D :
-        case 0x000E :
-        case 0x000F :
-        case 0x0010 :
-        case 0x0011 :
-        case 0x0012 :
-        case 0x0013 :
-        case 0x0014 :
-        case 0x0015 :
-        case 0x0016 :
-        case 0x0017 :
-        case 0x0018 :
-        case 0x0019 :
-        case 0x001A :
-        case 0x001C :
-        case 0x007F :
-        case 0x0080 :
-        case 0x0081 :
-        case 0x0082 :
-        case 0x0083 :
-        case 0x0084 :
-        case 0x0085 :
-        case 0x0086 :
-        case 0x0087 :
-        case 0x008A :
-        case 0x008B :
-        case 0x008C :
-        case 0x008F :
-        case 0x0090 :
-        case 0x0091 :
-        case 0x0092 :
-        case 0x0093 :
-        case 0x0094 :
-        case 0x0095 :
-        case 0x0096 :
-        case 0x0097 :
-        case 0x0098 :
-        case 0x0099 :
-        case 0x009A :
-        case 0x009B :
-        case 0x009C :
-        case 0x009D :
-        case 0x009E :
-        case 0x009F :
-        case 0x00A0 :
-        case 0x00AF :
-        case 0x00BB :
-        case 0x00BE :
-        case 0x00BF :
-        case 0x00C7 :
-        case 0x00C8 :
-        case 0x00C9 :
-        case 0x00CA :
-        case 0x00CB :
-        case 0x00CC :
-        case 0x00CD :
-        case 0x00CE :
-        case 0x00CF :
-        case 0x00D0 :
-        case 0x00D1 :
-        case 0x00D2 :
-        case 0x00D3 :
-        case 0x00D4 :
-        case 0x00D5 :
-        case 0x00D6 :
-        case 0x00D7 :
-        case 0x00D8 :
-        case 0x00D9 :
-        case 0x00DA :
-        case 0x00DB :
-        case 0x00DC :
-        case 0x00DD :
-        case 0x00DE :
-        case 0x00DF :
-        case 0x00FC :
-        case 0x00FD :
-        case 0x00FF :
-            break;
-        default :
-            return false;
-        }
-        return true;
-    }
-
 }
-
-// End of AnselToUnicode.java

@@ -1,4 +1,4 @@
-// $Id: MarcXmlWriter.java,v 1.14 2002/08/03 15:14:39 bpeters Exp $
+// $Id: MarcXmlWriter.java,v 1.15 2002/08/15 20:06:49 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -57,7 +57,7 @@ import org.marc4j.marcxml.Converter;
  * <p><b>Note:</b> this class requires a JAXP compliant XSLT processor.</p> 
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  *
  * @see MarcXmlFilter
  * @see Converter
@@ -75,7 +75,7 @@ public class MarcXmlWriter {
 	boolean dtd = false;
 	boolean xsd = false;
 	boolean convert = false;
-        
+
 	for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-xsl")) {
                 if (i == args.length - 1) {
@@ -120,22 +120,26 @@ public class MarcXmlWriter {
 				     "http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd");
 	    if (convert)
 	    	producer.setFeature("http://marc4j.org/features/ansel-to-unicode", true);
+
 	    // This character encoding stuff is very tricky.
 	    // Full character encoding support for UTF-8 and ANSEL is currently missing.
 	    // The default is reading and writing UTF-8.
 	    // When convert is selected ANSEL characters are converted to UTF-8
-	    InputStreamReader reader;
+	    BufferedReader reader;
 	    if (convert)
-		reader = new InputStreamReader(new FileInputStream(input));
+		reader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(input)));
 	    else
-		reader = new InputStreamReader(new FileInputStream(input));
+		reader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(input), "UTF8"));
 	    InputSource in = new InputSource(reader);
 	    Source source = new SAXSource(producer, in);
 	    Writer writer;
 	    if (output == null)
 		writer = new BufferedWriter(new OutputStreamWriter(System.out, "UTF8"));
 	    else
-		writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output), "UTF8"));
+		writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(output), "UTF8"));
 	    Result result = new StreamResult(writer);
 	    Converter converter = new Converter();
 	    if (stylesheet != null) {
@@ -159,14 +163,15 @@ public class MarcXmlWriter {
     }
 
     private static void usage() {
-        System.err.println("Usage: MarcXmlWriter [-options] <file.xml>");
+	System.err.println("MARC4J version beta 6b, Copyright (C) 2002 Bas Peters");
+        System.err.println("Usage: org.marc4j.util.MarcXmlWriter [-options] <file.xml>");
         System.err.println("       -xsd = Add W3C XML Schema Location to root element");
         System.err.println("       -xsl <file> = Postprocess MARCXML using XSLT stylesheet <file>");
         System.err.println("       -out <file> = Output using <file>");
-        System.err.println("       -convert = Convert ANSEL to Unicode");
+        System.err.println("       -convert = Convert ANSEL to UTF-8");
         System.err.println("       -usage or -help = this message");
         System.err.println("       Without a stylesheet the program outputs well-formed MARCXML");
-        System.err.println("       When -convert is false the program reads and writes UTF-8");
+	System.err.println("See http://marc4j.tigris.org for more information.");
         System.exit(1);
     }
 }
