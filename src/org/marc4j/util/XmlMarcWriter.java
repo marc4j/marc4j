@@ -27,77 +27,148 @@ package org.marc4j.util;
 
 import java.io.Writer;
 import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
-import java.io.FileWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.io.IOException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.SAXNotRecognizedException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.ParserConfigurationException;
 import org.marc4j.helpers.MarcXmlConsumer;
 import org.marc4j.helpers.SaxErrorHandler;
+import org.marc4j.util.RecordHandlerImpl;
 
 /**
- * <p>Provides a driver for <code>MarcXmlConsumer</code> 
- * to convert MARCXML records to MARC tape format (ISO 2709).</p>
+ * <p>Provides a driver for <code>MarcXmlConsumer</code>.</p>
  *
- * <p>Run the utility from the command-line with the following command:</p>
- * <p><code>java org.marc4j.util.XmlMarcWriter input-file [output-file]</code></p>
- *
- * <p>Note: this class requires a SAX2 parser.</p>
- *
- * @author Bas Peters
- * @see MarcXmlConsumer
  */
 public class XmlMarcWriter {
 
-    /**
-     * <p>Provides a static entry point.  </p>
-     *
-     * <p>Arguments:</p>
-     * <ul>
-     * <li>First argument: input-file containing MARC records
-     * <li>Second argument: output-file [optional]
-     * </ul>
-     *
-     * @param args[] the command-line arguments
-     */
-    public static void main(String args[]) {
-	if(args.length < 1) {
-            System.out.println("Usage: XmlMarcWriter input-file [output-file]");
-            return;
-	}
-	String infile = args[0];
-        String outfile = (args.length > 1) ? args[1] : null;
-        try {
-	    Writer writer;
-	    // Create a Writer object
-            if (outfile == null) {
-                writer = new BufferedWriter(new OutputStreamWriter(System.out));
+    private static final String JAXP_SCHEMA_LANGUAGE =
+        "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+
+    private static final String W3C_XML_SCHEMA =
+        "http://www.w3.org/2001/XMLSchema";
+
+    private static final String JAXP_SCHEMA_SOURCE =
+        "http://java.sun.com/xml/jaxp/properties/schemaSource";
+
+    static public void main(String[] args) {
+        String input = null;
+	String output = null;
+        String schemaSource = null;
+        boolean dtdValidate = false;
+        boolean xsdValidate = false;
+
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("-dtd")) {
+                dtdValidate = true;
+            } else if (args[i].equals("-xsd")) {
+                xsdValidate = true;
+            } else if (args[i].equals("-xsdss")) {
+                if (i == args.length - 1) {
+                    usage();
+                }
+                xsdValidate = true;
+                schemaSource = args[++i];
+            } else if (args[i].equals("-out")) {
+                if (i == args.length - 1) {
+                    usage();
+                }
+                output = args[++i];
+            } else if (args[i].equals("-usage")) {
+                usage();
+            } else if (args[i].equals("-help")) {
+                usage();
             } else {
-		writer = new BufferedWriter(new FileWriter(outfile));
+                input = args[i];
+
+                // Must be last arg
+                if (i != args.length - 1) {
+                    usage();
+                }
             }
-	    // Create a new instance of the RecordHandler implementation
-	    RecordHandlerImpl handler = new RecordHandlerImpl(writer);
-	    // Create a new SAX2 content handler object
-            MarcXmlConsumer consumer = new MarcXmlConsumer();
-	    // Register the record hadler instance
-	    consumer.setRecordHandler(handler);
-	    // Create a new parser instance
-            XMLReader reader = XMLReaderFactory.createXMLReader();
-	    // Register the content handler
-            reader.setContentHandler(consumer);
-	    // Register the error handler
-            reader.setErrorHandler(new SaxErrorHandler());
-	    // Send the input file to the parser
-            reader.parse(new File(infile).toURL().toString());
-        } catch (SAXParseException e) {
-	    System.err.print(SaxErrorHandler.printParseException("FATAL", e));
-        } catch (SAXException e) {
-	    e.printStackTrace(System.err);
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
         }
+        if (input == null) {
+            usage();
+        }
+
+	try {
+	    // Create a JAXP SAXParserFactory instance
+	    SAXParserFactory factory = SAXParserFactory.newInstance();
+
+	    // JAXP is not by default namespace aware
+	    factory.setNamespaceAware(true);
+
+	    // Configure the validation
+	    factory.setValidating(dtdValidate || xsdValidate);
+
+	    // Create a JAXP SAXParser
+	    SAXParser saxParser = factory.newSAXParser();
+
+	    // Set the schema language if necessary
+	    if (xsdValidate)
+                saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
+
+	    // Set the schema source, if any.
+	    if (schemaSource != null)
+		saxParser.setProperty(JAXP_SCHEMA_SOURCE, new File(schemaSource));
+
+	    // Create a Writer.
+	    Writer writer;
+	    if (output == null) {
+		writer = new BufferedWriter(new OutputStreamWriter(System.out));
+	    } else {
+		writer = new BufferedWriter(new FileWriter(output));
+	    }
+	    
+	    // Create a new instance of the RecordHandler implementation.
+	    RecordHandlerImpl handler = new RecordHandlerImpl(writer);
+		
+	    // Create a new SAX2 consumer.
+	    MarcXmlConsumer consumer = new MarcXmlConsumer();
+
+	    // Set the record handler.
+	    consumer.setRecordHandler(handler);
+
+	    // Get the encapsulated SAX XMLReader.
+	    XMLReader xmlReader = saxParser.getXMLReader();
+
+	    // Set the ContentHandler of the XMLReader.
+	    xmlReader.setContentHandler(consumer);
+
+	    // Set the ErrorHandler of the XMLReader.
+	     xmlReader.setErrorHandler(new SaxErrorHandler());
+
+	    // Parse the XML document
+	    xmlReader.parse(new File(input).toURL().toString());
+
+	} catch (ParserConfigurationException e) {	    
+	    e.printStackTrace();
+	} catch (SAXNotSupportedException e) {
+	    e.printStackTrace();
+	} catch (SAXNotRecognizedException e) {
+	    e.printStackTrace();
+	} catch (SAXException e) {
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
     }
+
+    private static void usage() {
+        System.err.println("Usage: MarcXmlWriter [-options] <file.xml>");
+        System.err.println("       -dtd = DTD validation");
+        System.err.println("       -xsd | -xsdss <file.xsd> = W3C XML Schema validation using xsi: hints");
+        System.err.println("           in instance document or schema source <file.xsd>");
+        System.err.println("       -xsdss <file> = W3C XML Schema validation using schema source <file>");
+        System.err.println("       -out <file> = Output using <file>");
+        System.err.println("       -usage or -help = this message");
+        System.exit(1);
+    }
+   
 }
