@@ -27,9 +27,9 @@ package org.marc4j.helpers;
 
 import java.io.*;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.XMLFilterImpl;
 import org.xml.sax.helpers.AttributesImpl;
 import org.marc4j.MarcHandler;
@@ -48,23 +48,19 @@ import org.marc4j.marc.Tag;
  */
 public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
 
-    /** Namespace and XML Schema location */
+    /** Namespaces for MARCXML */
     private static final String NS_URI = 
 	"http://www.loc.gov/MARC21/slim";
+
+    /** Namespace for XML Schema instance */
     private static final String NS_XSI = 
 	"http://www.w3.org/2001/XMLSchema-instance";
-    private static final String schemaLocation = 
-	"http://www.loc.gov/MARC21/slim " +  
-	"http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd";
 
-    private boolean xmlSchema = false;
-    private String name = null;
-    private String publicId = null;
-    private String systemId = null;
+    /** Schema location */
+    private String schemaLocation = null;
 
     /** ContentHandler object */
     private ContentHandler ch;
-    private DTDHandler dh;
 
     /**
      * <p>If true the schema location and the namespace 
@@ -72,21 +68,8 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
      *
      * @param xmlSchema the boolean value
      */
-    public void setSchemaLocation(boolean xmlSchema) {
-	this.xmlSchema = xmlSchema;
-    }
-
-    /**
-     * <p>If set a Documenttype definition is written to output.</p>
-     *
-     * @param name the name of the root element
-     * @param publicId the public idetifier
-     * @param systemId the system identifier
-     */
-    public void setDTD(String name, String publicId, String systemId) {
-	this.name = name;
-	this.publicId = publicId;
-	this.systemId = systemId;
+    public void setSchemaLocation(String schemaLocation) {
+	this.schemaLocation = schemaLocation;
     }
 
     /**
@@ -98,12 +81,12 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
     	try {
             ch = getContentHandler();
             ch.startDocument();
-            ch.ignorableWhitespace("\n".toCharArray(), 0, 1);
+
 	    AttributesImpl atts = new AttributesImpl();
 
 	    // Outputting namespace declarations through the attribute object,
 	    // since the startPrefixMapping refuses to output namespace declarations.	    
-	    if (xmlSchema) {
+	    if (schemaLocation != null) {
 		atts.addAttribute("", "xsi", "xmlns:xsi", "CDATA", NS_XSI);
 		atts.addAttribute(NS_XSI, "schemaLocation", "xsi:schemaLocation", 
 				  "CDATA", schemaLocation);
@@ -225,7 +208,7 @@ public class MarcXmlProducer extends XMLFilterImpl implements MarcHandler {
 	try {
             ch.ignorableWhitespace("\n".toCharArray(), 0, 1);
 	    ch.endElement(NS_URI,"collection","collection");
-	    if (xmlSchema) ch.endPrefixMapping("xsi");
+	    if (schemaLocation != null) ch.endPrefixMapping("xsi");
 	    ch.endPrefixMapping("");
 	    ch.endDocument();
 	} catch (SAXException e) {
