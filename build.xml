@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="marc4j" default="jar" basedir=".">
 
-  <!-- $Id: build.xml,v 1.10 2002/08/03 15:19:32 bpeters Exp $ -->
+  <!-- $Id: build.xml,v 1.11 2002/08/18 12:41:51 bpeters Exp $ -->
   <target name="init">
     <tstamp/>
     <property name="src" value="src"/>
     <property name="build" value="build"/>
     <property name="dist" value="dist"/>
     <property name="apidoc" value="${dist}/doc/apidoc"/>
-    <property name="version" value="b6a"/>
+    <property name="version" value="b6b"/>
     <property name="name" value="marc4j"/>
   </target>
 

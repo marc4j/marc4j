@@ -1,4 +1,4 @@
-// $Id: MarcWriter.java,v 1.8 2002/08/03 15:14:39 bpeters Exp $
+// $Id: MarcWriter.java,v 1.9 2002/08/18 12:42:21 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -32,7 +32,7 @@ import org.marc4j.MarcHandler;
  * to write record objects to tape format (ISO 2709).</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  *
  * @see MarcHandler
  */
@@ -146,12 +146,7 @@ public class MarcWriter
 
     public void subfield(char code, char[] data) {
 	if (convert)
-	    try {
-		datafield.add(new Subfield(code, 
-		    UnicodeToAnsel.convert(data)));
-	    } catch (IOException e) {
-		e.printStackTrace();
-	    }
+	    datafield.add(new Subfield(code, UnicodeToAnsel.convert(data)));
 	else
 	    datafield.add(new Subfield(code, data));
     }

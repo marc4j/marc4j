@@ -1,4 +1,4 @@
-// $Id: UnicodeToAnsel.java,v 1.5 2002/08/15 20:06:49 bpeters Exp $
+// $Id: UnicodeToAnsel.java,v 1.6 2002/08/18 12:42:21 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -27,12 +27,14 @@ import java.io.IOException;
  * <p>A utility to convert UCS/Unicode data to MARC-8.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class UnicodeToAnsel {
 
     /**
      * <p>Converts UCS/Unicode data to MARC-8.</p>
+     *
+     * <p>A question mark (0x3F) is returned if there is no match.</p> 
      *
      * @param data the UCS/Unicode data
      * @return {@link String} - the MARC-8 data
@@ -43,6 +45,8 @@ public class UnicodeToAnsel {
 
     /**
      * <p>Converts UCS/Unicode data to MARC-8.</p>
+     *
+     * <p>A question mark (0x3F) is returned if there is no match.</p> 
      *
      * @param data the UCS/Unicode data
      * @return char[] - the MARC-8 data
@@ -436,7 +440,7 @@ public class UnicodeToAnsel {
         case 0xFE22: return 0xFA;    // double tilde left half
         case 0xFE23: return 0xFB;    // double tilde right half
 	default: 
-	    return 0x00F3;           // if no match, return question mark
+	    return 0x3F;             // if no match, return question mark
 	}
 
     }
