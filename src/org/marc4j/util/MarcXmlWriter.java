@@ -27,7 +27,9 @@ package org.marc4j.util;
 
 import java.io.*;
 import org.xml.sax.*;
-import gnu.xml.util.XMLWriter;
+import javax.xml.transform.*;
+import javax.xml.transform.sax.*;
+import javax.xml.transform.stream.*;
 import org.marc4j.MarcReader;
 import org.marc4j.helpers.ErrorHandlerImpl;
 import org.marc4j.helpers.MarcXmlProducer;
@@ -35,15 +37,14 @@ import org.marc4j.helpers.MarcXmlProducer;
 
 /**
  * <p>Provides a driver for <code>MarcXmlProducer</code> 
- * to convert MARC records to XML.    </p>
+ * to convert MARC records to a different format using 
+ * an XSLT stylesheet.    </p>
  *
  * <p>Run the utility from the command-line with the following command:</p>
- * <p><code>java org.marc4j.util.MarcXmlWriter input-file [output-file]</code></p>
+ * <p><code>java org.marc4j.util.MarcXslWriter input-file [stylesheet] [output-file]</code></p>
  *
- * <p>Note: this class requires a SAX2 parser and
- * <code>gnu.xml.util.XMLWriter</code> 
- * which is part of the GNUJAXP XML parser.</p>
- * 
+ * <p>Note: this class requires a JAXP compliant XSLT processor.</p> 
+ *
  * @author Bas Peters
  * @see MarcXmlProducer
  */
@@ -52,45 +53,94 @@ public class MarcXmlWriter {
     /**
      * <p>Provides a static entry point.  </p>
      *
-     * <p>Arguments:</p>
-     * <ul>
-     * <li>First argument: input-file containing MARC records
-     * <li>Second argument: output-file [optional]
-     * </ul>
-     *
-     * @param args[] the command-line arguments
      */
     public static void main(String args[]) {
-        if(args.length < 1) {
-            System.out.println("Usage: MarcXmlWriter input-file [output-file]");
-            return;
-	    }
-        String infile = args[0];
-        String outfile = (args.length > 1) ? args[1] : null;
-        try {
-            // Set the destination for the XML writer.
-            XMLWriter consumer;
-            if (outfile == null) {
-                consumer = new XMLWriter(System.out);
+        String input = null;
+        String output = null;
+        String stylesheet = null;
+        
+	for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("-xsl")) {
+                if (i == args.length - 1) {
+                    usage();
+                }
+                stylesheet = args[++i].trim();
+            } else if (args[i].equals("-out")) {
+                if (i == args.length - 1) {
+                    usage();
+                }
+                output = args[++i].trim();
+            } else if (args[i].equals("-usage")) {
+                usage();
+            } else if (args[i].equals("-help")) {
+                usage();
             } else {
-                FileOutputStream fos = new FileOutputStream(outfile);
-                Writer w = new OutputStreamWriter(fos, "UTF8");
-                consumer = new XMLWriter(w);
+                input = args[i].trim();
+
+                // Must be last arg
+                if (i != args.length - 1) {
+                    usage();
+                }
             }
+        }
+        if (input == null) {
+            usage();
+        }
+
+        try {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            if (! tf.getFeature(SAXTransformerFactory.FEATURE)) {
+                System.err.println("SAXTransformerFactory is not supported.");
+                System.exit(1);
+            }
+            SAXTransformerFactory saxtf = (SAXTransformerFactory)tf;
+            TransformerHandler th = null;
+            if (stylesheet == null) {
+                th = saxtf.newTransformerHandler();
+            } else {
+                th = saxtf.newTransformerHandler(
+		    new StreamSource(new File(stylesheet).toURL().toString()));
+            }
+
+            // Set the destination for the XSLT transformer
+	    if (output == null) {
+		th.setResult(new StreamResult(System.out));
+	    } else {
+		FileOutputStream fos = new FileOutputStream(output);
+		Writer w = new OutputStreamWriter(fos, "UTF-8");
+		th.setResult(new StreamResult(w));
+	    }
+
             // Create a new MarcHandler object.
             MarcXmlProducer producer = new MarcXmlProducer();
+
             // Attach the consumer to the handler object.
-            producer.setContentHandler(consumer);
+            producer.setContentHandler(th);
+
             // Create a new  MarcReader object.
             MarcReader marcReader = new MarcReader();
+
             // Register the MarcHandler implementation.
             marcReader.setMarcHandler(producer);
+
             // Register the ErrorHandler implementation.
             marcReader.setErrorHandler(new ErrorHandlerImpl());
+
             // Send the file to the parse method.
-	    marcReader.parse(infile);
+	    marcReader.parse(input);
+
+	} catch (TransformerConfigurationException e) {
+            e.printStackTrace(System.err);
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
+    }
+
+    private static void usage() {
+        System.err.println("Usage: MarcXmlWriter [-options] <file.xml>");
+        System.err.println("       -xsl <file> = Perform XSLT transformation using <file>");
+        System.err.println("       -out <file> = Output using <file>");
+        System.err.println("       -usage or -help = this message");
+        System.exit(1);
     }
 }
