@@ -166,7 +166,7 @@ class Driver {
     <p>Run the program with the following command for help:</p>
     <pre>java org.marc4j.util.XmlMarcWriter -usage</pre>
     <p>It is also possible to use XSLT to preprocess a document, for example to transform OAI MARC XML to MARCXML, before the input is converted to MARC tape format.</p>
-    <p>The conversion between MARC and MARCXML is provided through the <a href="apidoc/org/marc4j/marcxml/Converter.html">Converter</a> class. This class can be compared with the <code>javax.xml.transform.Transformer</code> class in JAXP. You can even use the same <code>javax.xml.transform.Source</code> and <code>javax.xml.transform.Result</code> implementations. For MARC support MARC4J provides a <a href="apidoc/org/marc4j/marcxml/MarcSource.html">MarcSource</a> and a <a href="apidoc/org/marc4j/marcxml/MarcResult.html">MarcResult</a> class. <code>MarcSource</code> and <code>MarcResult</code> are modelled after the <code>javax.xml.transform.SAXSource</code> and <code>javax.xml.transform.SAXResult</code> classes. A <code>MarcSource</code> takes a <code>org.marc4j.MarcReader</code> object and an input source as parameters and the MarcResult takes a <code>MarcHandler</code> as parameter.</p>
+    <p>The conversion between MARC and MARCXML is provided through the <a href="apidoc/org/marc4j/marcxml/Converter.html">Converter</a> class. This class is similar to the <code>javax.xml.transform.Transformer</code> class in JAXP. You can even use the same <code>javax.xml.transform.Source</code> and <code>javax.xml.transform.Result</code> implementations. For MARC support MARC4J provides a <a href="apidoc/org/marc4j/marcxml/MarcSource.html">MarcSource</a> and a <a href="apidoc/org/marc4j/marcxml/MarcResult.html">MarcResult</a> class. <code>MarcSource</code> and <code>MarcResult</code> are modelled after the <code>javax.xml.transform.SAXSource</code> and <code>javax.xml.transform.SAXResult</code> classes. A <code>MarcSource</code> takes a <code>org.marc4j.MarcReader</code> object and an input source as parameters and the MarcResult takes a <code>MarcHandler</code> as parameter.</p>
     <p>The following code sample performs the same task as the first example, now using the <code>Conversion</code> class:</p>
 <pre>
 class Driver {
@@ -274,7 +274,7 @@ class Driver {
 
 </pre>
     <h1><a name="charconv">Character conversions</a></h1>
-    <p>MARC4J supports character conversions between MARC-8, also known as ANSEL and UCS/Unicode. The current release of MARC4J implements a significant part of the MARC-8 character set, but not all code tables are implemented. Converting a character array or string is simple. Both the convert method of <a href="apidoc/org/marc4j/util/AnselToUnicode.html">AnseltoUnicode</a> and <a href="apidoc/org/marc4j/util/UnicodeToAnsel.html">UnicodeToAnsel</a> take a character array or string as parameter.</p>
+    <p>MARC4J supports character conversions between MARC-8, also known as ANSEL and UCS/Unicode. The current release of MARC4J implements a significant part of the MARC-8 character set, but not all code tables are implemented. Converting a character array or string is simple. Both the convert method of <a href="apidoc/org/marc4j/util/AnselToUnicode.html">AnselToUnicode</a> and <a href="apidoc/org/marc4j/util/UnicodeToAnsel.html">UnicodeToAnsel</a> take a character array or string as parameter.</p>
     <p>The following code sample implements the subfield method in the <code>MarcHandler</code> interface and converts MARC-8 to UCS/Unicode:</p>
 <pre>
     public void subfield(char code, char[] data) {
@@ -351,8 +351,8 @@ class Driver {
 </pre>
     <p>If you want to work with Record objects in your program consider using the <a href="apidoc/org/marc4j/helpers/RecordBuilder.html">RecordBuilder</a> together with a <a href="apidoc/org/marc4j/helpers/RecordHandler.html">RecordHandler</a> implementation. The <code>RecordBuilder</code> creates MARC record objects and reports them to the <code>RecordHandler</code> interface. By using the record handler it is possible to handle large records sets. If you need access to a collection of record objects you can use the <a href="apidoc/org/marc4j/marc/Collection.html">Collection</a> class which serves as a container for a collection of record objects.</p>
     <p>Copyright &#169; 2002 <a href="mailto:mail@bpeters.com">Bas Peters</a>. All Rights Reserved.</p>
-    <p>Last updated: $Date: 2002/07/29 15:27:14 $</p>
-    <!-- $Id: index.html,v 1.5 2002/07/29 15:27:14 bpeters Exp $ -->
+    <p>Last updated: $Date: 2002/08/01 18:34:17 $</p>
+    <!-- $Id: index.html,v 1.6 2002/08/01 18:34:17 bpeters Exp $ -->
   </body>
 </html>
 
