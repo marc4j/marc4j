@@ -3,7 +3,8 @@
 <html>
   <head>
     <title>MARC4J</title>
-    <style>h1 {font-size: 16pt; font-family: Helvetica, Arial, san-serif }</style>
+    <style>h1 {font-size: 16pt; font-family: Helvetica, Arial, san-serif }
+           h2 {font-size: 14pt; font-family: Helvetica, Arial, san-serif }</style>
   </head>
   <body>
     <h1>Contents</h1>
@@ -12,7 +13,18 @@
       <li><a href="#download">Download</a></li>
       <li><a href="#installing">Installing MARC4J</a></li>
       <li><a href="#example">A first example</a></li>
-      <li><a href="#marcxml">Converting between MARC and MARCXML</a></li>
+      <li><a href="#marcxml">Converting between MARC and MARCXML</a>
+<ul>
+	  <li><a href="#commandline">Command-line utilities</a></li>
+	  <li><a href="#converter">The Converter class</a></li>
+	  <li><a href="#marctomarcxml">Converting MARC to MARCXML</a></li>
+	  <li><a href="#postprocess">Postprocessing MARCXML using XSLT</a></li>
+	  <li><a href="#marcxmltomarc">Converting MARCXML to MARC</a></li>
+	  <li><a href="#preprocess">Preprocessing MARCXML using XSLT</a></li>
+	  <li><a href="#xmlschema">Validating against a W3C XML Schema</a></li>
+	  <li><a href="#relaxng">Validating against a RELAX NG schema</a></li>
+	</ul>
+</li>
       <li><a href="#charconv">Character conversions</a></li>
       <li><a href="#object">Using the record object model</a></li>
     </ul>
@@ -44,7 +56,7 @@
     public void endRecord();
 
     public void endCollection();</pre>
-    <p>The following code sample shows a basic <code>MarcHandler</code> that writes MARC records in tagged display format. This example implements all methods in the <code>MarcHandler</code> interface.</p>
+    <p>The following <a name="taggedwriter">code sample</a> shows a basic <code>MarcHandler</code> that writes MARC records in tagged display format. This example implements all methods in the <code>MarcHandler</code> interface.</p>
 <pre>
 import java.io.*;
 import org.marc4j.*;
@@ -155,6 +167,7 @@ class Driver {
     <p>Basically this is what MARC4J is about. The MarcReader takes care of reading MARC records and writing a program is simply a matter of implementing the two interfaces.</p>
     <h1><a name="marcxml">Converting between MARC and MARCXML</a></h1>
     <p>Besides working with MARC records in tape format, MARC4J also provides SAX2 producers and consumers for working with MARCXML documents. MARCXML is a simple format to represent a MARC record in XML. It is part of a larger <a href="http://www.loc.gov/standards/marcxml//marcxml-architecture.html">framework</a> developed by the Library of Congress. Click <a href="http://www.loc.gov/standards/marcxml//Sandburg/sandburg.xml">here</a> to see what a MARCXML document looks like.</p>
+    <h2><a name="commandline">Command-line utilities</a></h2>
     <p>MARC4J provides a command-line utility to convert records in MARC tape format to MARCXML and back. To convert MARC to MARCXML use the following command from the command-line:</p>
     <pre>java org.marc4j.util.MarcXmlWriter &lt;input-file&gt;</pre>
     <p>Run the program with the following command for help:</p>
@@ -166,16 +179,22 @@ class Driver {
     <p>Run the program with the following command for help:</p>
     <pre>java org.marc4j.util.XmlMarcWriter -usage</pre>
     <p>It is also possible to use XSLT to preprocess a document, for example to transform OAI MARC XML to MARCXML, before the input is converted to MARC tape format.</p>
+    <h2><a name="converter">The Converter class</a></h2>
     <p>The conversion between MARC and MARCXML is provided through the <a href="apidoc/org/marc4j/marcxml/Converter.html">Converter</a> class. This class is similar to the <code>javax.xml.transform.Transformer</code> class in JAXP. You can even use the same <code>javax.xml.transform.Source</code> and <code>javax.xml.transform.Result</code> implementations. For MARC support MARC4J provides a <a href="apidoc/org/marc4j/marcxml/MarcSource.html">MarcSource</a> and a <a href="apidoc/org/marc4j/marcxml/MarcResult.html">MarcResult</a> class. <code>MarcSource</code> and <code>MarcResult</code> are modelled after the <code>javax.xml.transform.SAXSource</code> and <code>javax.xml.transform.SAXResult</code> classes. A <code>MarcSource</code> takes a <code>org.marc4j.MarcReader</code> object and an input source as parameters and the MarcResult takes a <code>MarcHandler</code> as parameter.</p>
-    <p>The following code sample performs the same task as the first example, now using the <code>Conversion</code> class:</p>
+    <p>The following code sample performs the same task as the <a href="#taggedwriter">first example</a>, now using the <code>Converter</code> class:</p>
 <pre>
 class Driver {
     public static void main(String args[]) {
+        if(args.length < 1) {
+	    System.out.println("Driver &lt;input-file&gt;");
+	    return;
+	}
+        String input = args[0];
 	try {
 	    MarcReader reader = new MarcReader();
 	    TaggedWriter handler = new TaggedWriter();
 	    Writer out = new BufferedWriter(new OutputStreamWriter(System.out));
-            MarcSource source = new MarcSource(reader, in);
+            MarcSource source = new MarcSource(reader, input);
             MarcResult result = new MarcResult();
             result.setHandler(handler);
             Converter converter = new Converter();
@@ -185,13 +204,19 @@ class Driver {
 	}
     }  
 }</pre>
+    <h2><a name="marctomarcxml">Converting MARC to MARCXML</a></h2>
     <p>To convert MARC to MARCXML use <a href="apidoc/org/marc4j/marcxml/MarcXmlFilter.html">MarcXmlFilter</a>. This class is a subclass of <code>org.sax.xml.helpers.XmlFilterImpl</code> and produces SAX2 events that can be delivered to an XSLT processor or to another program that consumes SAX2 events. To output XML you can use a null-transform, or use an XMLWriter program. The following code sample shows the basic use of the <code>org.marc4j.marcxml.MarcXmlFilter</code>:</p>
 <pre>
 class Driver {
     public static void main(String args[]) {
+	if(args.length < 1) {
+	    System.out.println("Driver &lt;input-file&gt;");
+	    return;
+	}
+        String input = args[0];
         try {
             MarcXmlFilter producer = new MarcXmlFilter();
-	    InputSource in = new InputSource(new InputStreamReader(new FileInputStream(args[0])));
+	    InputSource in = new InputSource(new InputStreamReader(new FileInputStream(input)));
 	    Source source = new SAXSource(producer, in);
 	    Writer writer = new BufferedWriter(new OutputStreamWriter(System.out));
 	    Result result = new StreamResult(writer);
@@ -202,15 +227,21 @@ class Driver {
 	}
     }
 }</pre>
-    <p>This sample perfoms a null transform, which means that it will output well-formed XML. Provide an XSLT stylesheet to postprocess the SAX2 events with XSLT:</p>
+    <p>This sample perfoms a null transform, which means that it will output well-formed XML. </p>
+    <h2><a name="postprocess">Postprocessing MARCXML using XSLT</a></h2>
+    <p>Provide an XSLT stylesheet to postprocess the SAX2 events with XSLT:</p>
 <pre>
 class Driver {
     public static void main(String args[]) {
-	String stylesheet = null;
-        String input = null;
+	if(args.length < 1) {
+	    System.out.println("Driver &lt;input-file&gt; [&lt;stylesheet&gt;]");
+	    return;
+	}
+        String input = args[0];
+        String stylesheet = (args.length > 1) ? args[1] : null;
         try {
             MarcXmlFilter producer = new MarcXmlFilter();
-	    InputSource in = new InputSource(new InputStreamReader(new FileInputStream(args[0])));
+	    InputSource in = new InputSource(new InputStreamReader(new FileInputStream(input)));
 	    Source source = new SAXSource(producer, in);
 	    Writer writer = new BufferedWriter(new OutputStreamWriter(System.out));
 	    Result result = new StreamResult(writer);
@@ -226,12 +257,46 @@ class Driver {
 	}
     }
 }</pre>
+    <h2><a name="marcxmltomarc">Converting MARCXML to MARC</a></h2>
     <p>To convert MARCXML back to MARC tape format the <a href="apidoc/org/marc4j/util/MarcWriter.html">MarcWriter</a> can be used to consume the <code>org.marc4j.MarcHandler</code> events produced by the <a href="apidoc/org/marc4j/marcxml/MarcXmlHandler.html">MarcXmlHandler</a>, a SAX2 content handler that can be used with any SAX2 compliant XML parser. <code>MarcXmlHandler</code> reports events to the <code>MarcHandler</code>, just like <code>MarcReader</code>. This means that you can use the same <code>MarcHandler</code> implementations. The following code sample uses a <code>SAXSource</code> and a <code>MarcResult</code> to convert MARCXML records to  MARC tape format:</p>
 <pre>
 class Driver {
     public static void main(String args[]) {
-        String stylesheet = null; 
-        String input = null;
+	if(args.length < 1) {
+	    System.out.println("Driver &lt;input-file&gt;");
+	    return;
+	}
+        String input = args[0];
+	try {
+	    Writer writer = new BufferedWriter(new OutputStreamWriter(System.out));
+	    MarcWriter handler = new MarcWriter(writer);
+
+	    SAXParserFactory factory = SAXParserFactory.newInstance();
+	    SAXParser saxParser = factory.newSAXParser();
+	    XMLReader xmlReader = saxParser.getXMLReader();
+	    xmlReader.setErrorHandler(new SaxErrorHandler());
+	    InputSource in = new InputSource(new File(input).toURL().toString());
+
+	    Source source = new SAXSource(xmlReader, in);
+	    Result result = new MarcResult(handler);
+	    Converter converter = new Converter();
+            converter.convert(source, result);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+}</pre>
+    <h2><a name="preprocess">Preprocessing MARCXML using XSLT</a></h2>
+    <p>To preprocess the input XML using an XSLT stylesheet that outputs MARCXML, provide a stylesheet:</p>
+<pre>
+class Driver {
+    public static void main(String args[]) {
+	if(args.length < 1) {
+	    System.out.println("Driver &lt;input-file&gt; [&lt;stylesheet&gt;]");
+	    return;
+	}
+        String input = args[0];
+        String stylesheet = (args.length > 1) ? args[1] : null;
 	try {
 	    Writer writer = new BufferedWriter(new OutputStreamWriter(System.out));
 	    MarcWriter handler = new MarcWriter(writer);
@@ -256,22 +321,75 @@ class Driver {
 	}
     }
 }</pre>
-    <p>If the stylesheet is not null, the program tries to preprocess the input XML using the XSLT stylesheet (it should output MARCXML).</p>
     <p>It is also possible to perform XML transformations without converting the result to MARC tape format using the <code>Converter</code> class, since it uses the <code>Transformer</code> class, but of course you can also directly use the <code>Transformer</code> class. It should even be possible to provide a <code>SAXSource</code> and collect the result in a <code>javax.xml.transform.dom.DOMResult</code>.</p>
+    <h2><a name="xmlschema">Validating against a W3C XML Schema</a></h2>
     <p>Since <code>MarcXmlHandler</code> is a standard SAX2 content handler, you can use standard SAX2 features like for example XML validation. Validating the MARCXML document against the W3C XML Schema for MARCXML as provided by the Library of Congress can be done as follows:</p>
 <pre>
+public class Driver {
+    public static void main(String args[]) throws Exception {
+	if(args.length < 1) {
+	    System.out.println("Driver &lt;input-file&gt;");
+	    return;
+	}
+	try {
+	    Writer writer = new BufferedWriter(new OutputStreamWriter(System.out));
+	    MarcWriter handler = new MarcWriter(writer);
+
 	    SAXParserFactory factory = SAXParserFactory.newInstance();
 	    factory.setNamespaceAware(true);
 	    factory.setValidating(true);
+
 	    SAXParser saxParser = factory.newSAXParser();
             saxParser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", 
                                   "http://www.w3.org/2001/XMLSchema");
             saxParser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", 
-                                  new File("MARC21slim.xsd"));
+                                  new File("<a href="http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">MARC21slim.xsd</a>"));
 	    XMLReader xmlReader = saxParser.getXMLReader();
 	    xmlReader.setErrorHandler(new SaxErrorHandler());
 	    InputSource in = new InputSource(new File(input).toURL().toString());
 
+	    Source source = new SAXSource(xmlReader, in);
+	    Result result = new MarcResult(handler);
+	    Converter converter = new Converter();
+	    converter.convert(source, result);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+}
+</pre>
+    <h2><a name="relaxng">Validating against a RELAX NG schema</a></h2>
+    <p>The following driver class validates a MARCXML document against a RELAX NG schema using Sun's Multi Schema validator (<a href="http://wwws.sun.com/software/xml/developers/multischema/">MSV</a>). The example uses the JAXP implementation provided by the MSV validator. The program outputs MARC ISO-2709 records.</p>
+    <pre>
+public class Driver {
+    public static void main(String args[]) throws Exception {
+	if(args.length < 1) {
+	    System.out.println("Driver &lt;input-file&gt;");
+	    return;
+	}
+	try {
+	    Writer writer = new BufferedWriter(new OutputStreamWriter(System.out));
+	    MarcWriter handler = new MarcWriter(writer);
+
+	    SAXParserFactory factory = new com.sun.msv.verifier.jaxp.SAXParserFactoryImpl();
+	    factory.setNamespaceAware(true);
+
+	    SAXParser saxParser = factory.newSAXParser();
+	    saxParser.setProperty("http://www.sun.com/xml/msv/schema",
+                                  new File("<a href="http://marc4j.tigris.org/files/documents/220/687/MARC21slim.rng">MARC21slim.rng</a>"));
+	    XMLReader xmlReader = saxParser.getXMLReader();
+	    xmlReader.setErrorHandler(new SaxErrorHandler());
+
+	    InputSource in = new InputSource(new File(args[0]).toURL().toString());
+	    Source source = new SAXSource(xmlReader, in);
+	    Result result = new MarcResult(handler);
+	    Converter converter = new Converter();
+	    converter.convert(source, result);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+}
 </pre>
     <h1><a name="charconv">Character conversions</a></h1>
     <p>MARC4J supports character conversions between MARC-8, also known as ANSEL and UCS/Unicode. The current release of MARC4J implements a significant part of the MARC-8 character set, but not all code tables are implemented. Converting a character array or string is simple. Both the convert method of <a href="apidoc/org/marc4j/util/AnselToUnicode.html">AnselToUnicode</a> and <a href="apidoc/org/marc4j/util/UnicodeToAnsel.html">UnicodeToAnsel</a> take a character array or string as parameter.</p>
@@ -349,10 +467,10 @@ class Driver {
 	out.write(s);
     }
 </pre>
-    <p>If you want to work with Record objects in your program consider using the <a href="apidoc/org/marc4j/helpers/RecordBuilder.html">RecordBuilder</a> together with a <a href="apidoc/org/marc4j/helpers/RecordHandler.html">RecordHandler</a> implementation. The <code>RecordBuilder</code> creates MARC record objects and reports them to the <code>RecordHandler</code> interface. By using the record handler it is possible to handle large records sets. If you need access to a collection of record objects you can use the <a href="apidoc/org/marc4j/marc/Collection.html">Collection</a> class which serves as a container for a collection of record objects.</p>
+    <p>If you want to work with Record objects in your program, consider using the <a href="apidoc/org/marc4j/helpers/RecordBuilder.html">RecordBuilder</a> together with a <a href="apidoc/org/marc4j/helpers/RecordHandler.html">RecordHandler</a> implementation. The <code>RecordBuilder</code> creates MARC record objects and reports them to the <code>RecordHandler</code> interface. By using the record handler it is possible to handle large records sets. If you need access to a collection of record objects you can use the <a href="apidoc/org/marc4j/marc/Collection.html">Collection</a> class which serves as a container for a collection of record objects.</p>
     <p>Copyright &#169; 2002 <a href="mailto:mail@bpeters.com">Bas Peters</a>. All Rights Reserved.</p>
-    <p>Last updated: $Date: 2002/08/01 18:34:17 $</p>
-    <!-- $Id: index.html,v 1.6 2002/08/01 18:34:17 bpeters Exp $ -->
+    <p>Last updated: $Date: 2002/08/09 16:43:49 $</p>
+    <!-- $Id: index.html,v 1.7 2002/08/09 16:43:49 bpeters Exp $ -->
   </body>
 </html>
 
