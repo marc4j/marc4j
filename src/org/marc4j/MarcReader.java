@@ -33,6 +33,7 @@ import java.io.IOException;
 import org.marc4j.marc.MarcConstants;
 import org.marc4j.marc.Tag;
 import org.marc4j.marc.Leader;
+import org.marc4j.marc.MarcException;
 
 
 /**
@@ -114,9 +115,18 @@ public class MarcReader {
 	    mh.startFile();
 
 	while(true) {
+	    Leader leader = null;
 	    char[] ldr = new char[24];
+
 	    if (input.read(ldr) == -1) break;
-	    Leader leader = new Leader(new String(ldr));
+
+	    try {
+	        leader = new Leader(new String(ldr));
+	    } catch (MarcException e) { 
+		if (eh != null) 
+		    reportFatalError("Unable to parse leader");
+		System.exit(0);
+	    } 
 	    int baseAddress = leader.getBaseAddressOfData();
 
 	    recordCounter += 24;
@@ -128,7 +138,7 @@ public class MarcReader {
 	    String[] tag = new String[dirEntries];
 	    int[] length = new int[dirEntries]; 
 
-	    if ((dirLength % 12) != 0)
+	    if ((dirLength % 12) != 0 && eh != null)
 		reportError("Invalid directory length");
      
 	    for (int i = 0; i < dirEntries; i++) {
@@ -143,11 +153,12 @@ public class MarcReader {
 		try {
 		    length[i] = Integer.parseInt(new String(e));
 		} catch (NumberFormatException nfe) {
-		    reportError("Invalid directory entry");
+		    if (eh != null) 
+			reportError("Invalid directory entry");
 		}
 	    }
 
-	    if (input.read() != FT)
+	    if (input.read() != FT && eh != null)
 		reportError("Directory not terminated");
 	    recordCounter++;
 
@@ -155,7 +166,7 @@ public class MarcReader {
 		char field[] = new char[length[i]];
 		input.read(field);
 
-		if (field[field.length -1] != FT)
+		if (field[field.length -1] != FT && eh != null)
 		    reportError("Field not terminated");
 
 		recordCounter += length[i];
@@ -166,11 +177,11 @@ public class MarcReader {
 		}
 	    }
 
-	    if (input.read() != RT)
+	    if (input.read() != RT && eh != null)
 		reportError("Record not terminated");
 	    recordCounter++;
 
-	    if (recordCounter != leader.getRecordLength())
+	    if (recordCounter != leader.getRecordLength() && eh != null)
 		reportError("Record length not equal to characters read");
 
 	    fileCounter += recordCounter;
@@ -185,6 +196,8 @@ public class MarcReader {
     }
 
     private void parseControlField(String tag, char[] field) {
+	if (field.length < 2 && eh != null)
+	    reportWarning("Control Field contains no data elements for tag " + tag);
 	if (Tag.isControlNumberField(tag))
 	    setControlNumber(new String(field).trim());
 	if (mh != null) 
@@ -193,20 +206,21 @@ public class MarcReader {
 
     private void parseDataField(String tag, char[] field) 
 	throws IOException {
-	char code = BLANK;
+	// indicators defaulting to a blank value
 	char ind1 = BLANK;
 	char ind2 = BLANK;
+	char code = BLANK;
 	StringBuffer data = null;
-	if (field.length >= 3) {
+	if (field.length < 4 && eh != null) {
+	    reportWarning("Data field contains no data elements for tag " + tag);
+	} else {
 	    ind1 = field[0];
 	    ind2 = field[1];
-	} else {
-	    reportWarning("Data Field contains no data elements");
 	}
-	if (field[2] != US)
-	    reportWarning("Expected a data element identifier");
 	if (mh != null)
 	    mh.startDataField(tag, ind1, ind2);
+	if (field[2] != US && field.length > 3 && eh != null)
+	    reportWarning("Expected a data element identifier");
 	for (int i = 2; i < field.length; i++) {
 	    char c = field[i];
 	    switch(c) {
@@ -222,7 +236,8 @@ public class MarcReader {
 		    reportSubfield(code, data);
 		break;
 	    default :
-		data.append(c);
+		if (data != null)
+		    data.append(c);
 	    }
 	}
 	if (mh != null) 
