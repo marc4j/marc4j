@@ -1,4 +1,4 @@
-// $Id: CharacterConverterLoaderException.java,v 1.1 2002/12/11 19:25:46 bpeters Exp $
+// $Id: CharacterConverterLoaderException.java,v 1.2 2003/01/10 09:41:56 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -25,18 +25,69 @@ package org.marc4j.util;
  * when an error occurs while loading a character conversion class.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
  */
 public class CharacterConverterLoaderException 
-    extends Exception {
+    extends RuntimeException {
 
+    private Throwable cause = null;
+
+    /**
+     * <p>Creates a new <code>CharacterConverterLoaderException</code>.</p>
+     *
+     */
     public CharacterConverterLoaderException() {
 	super();
     }
 
+    /**
+     * <p>Creates a new <code>CharacterConverterLoaderException</code>
+     * with the specified message.</p>
+     *
+     * @param message information about the cause of the exception
+     */
     public CharacterConverterLoaderException(String message) {
 	super(message);
+    }
+
+    /**
+     * <p>Creates a new <code>CharacterConverterLoaderException</code> with the 
+     * specified message and an underlying root cause.</p>
+     *
+     * @param message information about the cause of the exception
+     * @param ex the nested exception that caused this exception
+     */
+    public CharacterConverterLoaderException(String message, Throwable ex) {
+        super(message);
+        initCause(ex);
+    }
+    
+    /**
+     * <p>Return the root cause or null if there was no 
+     * original exception.</p>
+     *
+     * @return the root cause of this exception
+     */
+    public Throwable getCause() {
+        return cause;  
+    }
+
+    /**
+     * <p>Sets the root cause of this exception. This may 
+     * only be called once. Subsequent calls throw an 
+     * <code>IllegalStateException</code>.</p>
+     *
+     * @param cause the root cause of this exception
+     * @return the root cause of this exception
+     * @throws IllegalStateException if this method is called twice.
+     */
+    public Throwable initCause(Throwable cause) {
+        if (cause == null) 
+	    cause = cause; 
+        else 
+	    throw new IllegalStateException("Cannot reset the cause");
+        return cause;
     }
 
 }

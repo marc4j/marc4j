@@ -1,4 +1,4 @@
-// $Id: CharacterConverterLoader.java,v 1.1 2002/12/11 19:25:21 bpeters Exp $
+// $Id: CharacterConverterLoader.java,v 1.2 2003/01/10 09:41:56 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -28,7 +28,7 @@ import java.util.Properties;
  * <p>Loads a character converter using a system property.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
  */
 public final class CharacterConverterLoader {
@@ -80,8 +80,9 @@ public final class CharacterConverterLoader {
 	    } else
 		return null;
 
-	} catch (Exception e) {
-	    throw new CharacterConverterLoaderException(e.getMessage());
+	} catch (Throwable e) {
+	    throw new CharacterConverterLoaderException
+		("Unable to load converter class", e);
 	}
     }
 }
