@@ -40,19 +40,17 @@ import org.xml.sax.SAXNotRecognizedException;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.Source;
 import javax.xml.transform.Result;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 import org.marc4j.marcxml.SaxErrorHandler;
 import org.marc4j.marcxml.MarcXmlHandler;
 import org.marc4j.helpers.RecordBuilder;
 import org.marc4j.helpers.RecordMarshaller;
 import org.marc4j.MarcHandler;
+import org.marc4j.marcxml.MarcResult;
+import org.marc4j.marcxml.Converter;
 
 /**
  * <p>Provides a driver for <code>MarcXmlHandler</code> 
@@ -139,50 +137,30 @@ public class XmlMarcWriter {
 	    } else {
 		writer = new BufferedWriter(new FileWriter(output));
 	    }
-	    // Terminates the pipeline, consuming MarcHandler to build
-	    // Record objects and marshall them to MARC tape format. 
-	    RecordBuilder handler = new RecordBuilder();
-	    handler.setRecordHandler(new RecordMarshaller(writer));
-	    MarcXmlHandler consumer = new MarcXmlHandler();
-	    consumer.setMarcHandler(handler);
+	    RecordMarshaller handler = new RecordMarshaller(writer);
 
-	    // Create a JAXP SAXParserFactory instance
-	    // and configure the parser.
-	    // This part is related to the input source.
 	    SAXParserFactory factory = SAXParserFactory.newInstance();
 	    factory.setNamespaceAware(true);
-	    // Configure the validation.
 	    factory.setValidating(dtdValidate || xsdValidate);
-	    // Create a JAXP SAXParser.
 	    SAXParser saxParser = factory.newSAXParser();
-	    // Set the schema language if necessary.
 	    if (xsdValidate)
                 saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
-	    // Set the schema source, if any.
 	    if (schemaSource != null)
 		saxParser.setProperty(JAXP_SCHEMA_SOURCE, new File(schemaSource));
-	    // Get the encapsulated SAX XMLReader.
 	    XMLReader xmlReader = saxParser.getXMLReader();
 	    xmlReader.setErrorHandler(new SaxErrorHandler());
-	    InputSource source = new InputSource(new File(input).toURL().toString());
+	    InputSource in = new InputSource(new File(input).toURL().toString());
 
-	    // Check if there is a given stylesheet to pre-process the XML input source.
-	    // If null simply parse the XML document
+	    Source source = new SAXSource(xmlReader, in);
+	    Result result = new MarcResult(handler);
+	    Converter converter = new Converter();
 	    if (stylesheet != null) {
-		Source in = new SAXSource(xmlReader, source);
-		Result out = new SAXResult(consumer);
-		TransformerFactory tf = TransformerFactory.newInstance();
-		Transformer transformer;
 		Source style = new StreamSource(new File(stylesheet).toURL().toString());
-		transformer = tf.newTransformer(style);
-		transformer.transform(in, out);
+		converter.convert(style, source, result);
 	    } else {
-		xmlReader.setContentHandler(consumer);
-		xmlReader.parse(source);
+		converter.convert(source, result);
 	    }
 
-	} catch (TransformerException e) {
-	    e.printStackTrace();
 	} catch (ParserConfigurationException e) {	    
 	    e.printStackTrace();
 	} catch (SAXNotSupportedException e) {
@@ -191,7 +169,7 @@ public class XmlMarcWriter {
 	    e.printStackTrace();
 	} catch (SAXException e) {
 	    e.printStackTrace();
-	} catch (IOException e) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
     }
