@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="marc4j" default="dist" basedir=".">
+<project name="marc4j" default="jar" basedir=".">
+
   <target name="init">
     <property name="src" value="src"/>
     <property name="build" value="build"/>
@@ -17,9 +18,10 @@
     <javac srcdir="${src}" destdir="${build}"/>
   </target>
 
-  <target name="dist" depends="compile">
+  <target name="jar" depends="compile">
     <mkdir dir="${dist}/lib" />
     <jar jarfile="${dist}/lib/marc4j.jar" basedir="${build}"/>
+    <deltree dir="${build}" />
   </target>
 
   <target name="javadoc" depends="init">
@@ -32,8 +34,8 @@
            use="true"
            windowtitle="${name}"
            doctitle="${name}"
-           bottom="Copyright &#169; 2001 Bas Peters. All Rights Reserved">
-      <link offline="true" href="http://java.sun.com/products/jdk/1.4/docs/api/" packagelistLoc="../james"/>
+           bottom="Copyright &#169; 2001-2002 Bas Peters. All Rights Reserved">
+      <link offline="true" href="http://java.sun.com/products/jdk/1.4/docs/api/" packagelistLoc="."/>
     </javadoc>
   </target>
 
@@ -41,23 +43,23 @@
     <deltree dir="${dist}" />
   </target>
 
-  <target name="dist-all" depends="init">
+  <target name="dist" depends="init">
     <mkdir dir="${dist}"/>
-    <property name="prefix_all" value="marc4j-${version}"/>
-    <property name="tmpdir" value="${dist}/tmp"/>
-    <property name="dist_all_dir" value="${tmpdir}/${prefix_all}"/>
-    <property name="dist_all_arc" value="${dist}/${prefix_all}"/>
-    <mkdir dir="${dist_all_dir}"/>
-    <copydir src="${src}" includes="*.java,*.html,*.properties" dest="${dist_all_dir}/src"/>
-    <copydir src="${dist}/apidoc" dest="${dist_all_dir}/${dist}/apidoc"/>
-    <copydir src="${dist}/lib" dest="${dist_all_dir}/${dist}/lib"/>
-    <copydir src="../marc4j" includes="*.rng,*.xsl" dest="${dist_all_dir}"/>
-    <tar tarfile="${dist_all_arc}.tar" basedir="${tmpdir}"/>
-    <gzip zipfile="${dist_all_arc}.tar.gz" src="${dist_all_arc}.tar"/>
-    <delete file="${dist_all_arc}.tar"/>
-    <delete file="${dist_all_arc}.zip"/>
-    <zip compress="true" basedir="${tmpdir}" zipfile="${dist_all_arc}.zip"/>
-    <deltree dir="${tmpdir}"/>
+    <property name="prefix" value="marc4j-${version}"/>
+    <property name="tmp_dir" value="${dist}/tmp"/>
+    <property name="dist_dir" value="${tmp_dir}/${prefix}"/>
+    <property name="dist_arc" value="${dist}/${prefix}"/>
+    <mkdir dir="${dist_dir}"/>
+    <copydir src="${dist}/apidoc" dest="${dist_dir}/apidoc"/>
+    <copydir src="${dist}/lib" dest="${dist_dir}/lib"/>
+    <copydir src="${src}" dest="${dist_dir}/src"/>
+    <copydir src="." includes="lgpl.txt" dest="${dist_dir}/"/>
+    <tar tarfile="${dist_arc}.tar" basedir="${tmp_dir}"/>
+    <gzip zipfile="${dist_arc}.tar.gz" src="${dist_arc}.tar"/>
+    <delete file="${dist_arc}.tar"/>
+    <delete file="${dist_arc}.zip"/>
+    <zip compress="true" basedir="${tmp_dir}" zipfile="${dist_arc}.zip"/>
+    <deltree dir="${tmp_dir}"/>
   </target>
 
 </project>
