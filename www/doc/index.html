@@ -24,7 +24,7 @@
     <h1><a name="installing">Installing MARC4J</a></h1>
     <p>MARC4J requires no additional libraries. Simply make sure that your Java environment is able to locate the library, for example by adding the <code>marc4j.jar</code> to your Java classpath environment variable.</p>
     <p>If you plan to use the XML features that MARC4J offers, a SAX2 parser is needed with optionally a JAXP compatible XSLT processor to add XSLT support. Examples of SAX2 parsers are <a href="http://www.gnu.org/software/classpathx/jaxp/">GNU JAXP</a>, <a href="http://xml.apache.org/xerces2-j/index.html">Xerces</a>, <a href="http://xml.apache.org/crimson/index.html">Crimson</a> and <a href="http://piccolo.sourceforge.net/">Piccolo</a>. Examples of JAXP compatible XSLT engines are <a href="http://saxon.sourceforge.net/">Saxon</a> and <a href="http://xml.apache.org/xalan-j/index.html">Xalan</a>.</p>
-    <p>If you need W3C XML Schema support consider using Xerces 2. Also Sun's <a href="">Java API for XML Processing</a> (JAXP) v1.2 provides all the necessary libraries to use MARC4J with XML.</p>
+    <p>If you need W3C XML Schema support consider using Xerces 2. Also Sun's <a href="http://java.sun.com/xml/jaxp/">Java API for XML Processing</a> (JAXP) v1.2 provides all the necessary libraries to use MARC4J with XML.</p>
     <h1><a name="example">A first example</a></h1>
     <p>Using MARC4J one can write Java applications that involve MARC records simply by implementing the <a href="apidoc/org/marc4j/MarcHandler.html">MarcHandler</a> and optionally the <a href="apidoc/org/marc4j/ErrorHandler.html">ErrorHandler</a> interface. It is also possible to extend the <a <a href="apidoc/org/marc4j/helpers/DefaultHandler.html">DefaultHandler</a>, a class that implements all the methods in MarcHandler and ErrorHandler.</p>
     <p>The <code>MarcHandler</code> interface provides methods that receive MARC parser events (such as the start and the end of a record) from the MARC parser. The interface defines the following methods:</p>
@@ -185,7 +185,7 @@ class Driver {
 	}
     }  
 }</pre>
-    <p>To convert MARC to MARCXML use <a href="apidoc/org.marc4j/marcxml/MarcXmlFilter.html">MarcXmlFilter</a>. This class is a subclass of <code>org.sax.xml.helpers.XmlFilterImpl</code> and produces SAX2 events that can be delivered to an XSLT processor or to another program that consumes SAX2 events. To output XML you can use a null-transform, or use an XMLWriter program. The following code sample shows the basic use of the <code>org.marc4j.marcxml.MarcXmlFilter</code>:</p>
+    <p>To convert MARC to MARCXML use <a href="apidoc/org/marc4j/marcxml/MarcXmlFilter.html">MarcXmlFilter</a>. This class is a subclass of <code>org.sax.xml.helpers.XmlFilterImpl</code> and produces SAX2 events that can be delivered to an XSLT processor or to another program that consumes SAX2 events. To output XML you can use a null-transform, or use an XMLWriter program. The following code sample shows the basic use of the <code>org.marc4j.marcxml.MarcXmlFilter</code>:</p>
 <pre>
 class Driver {
     public static void main(String args[]) {
@@ -349,8 +349,8 @@ class Driver {
 </pre>
     <p>If you want to work with Record objects in your program consider using the <a href="apidoc/org/marc4j/helpers/RecordBuilder.html">RecordBuilder</a> together with a <a href="apidoc/org/marc4j/helpers/RecordHandler.html">RecordHandler</a> implementation. The <code>RecordBuilder</code> creates MARC record objects and reports them to the <code>RecordHandler</code> interface. By using the record handler it is possible to handle large records sets. If you need access to a collection of record objects you can use the <a href="apidoc/org/marc4j/marc/Collection.html">Collection</a> class which serves as a container for a collection of record objects.</p>
     <p>Copyright &#169; 2002 <a href="mailto:mail@bpeters.com">Bas Peters</a>. All Rights Reserved.</p>
-    <p>Last updated: $Date: 2002/07/10 20:29:21 $</p>
-    <!-- $Id: index.html,v 1.3 2002/07/10 20:29:21 bpeters Exp $ -->
+    <p>Last updated: $Date: 2002/07/10 20:37:27 $</p>
+    <!-- $Id: index.html,v 1.4 2002/07/10 20:37:27 bpeters Exp $ -->
   </body>
 </html>
 
