@@ -1,4 +1,4 @@
-// $Id: MarcXmlFilter.java,v 1.13 2002/12/11 19:26:48 bpeters Exp $
+// $Id: MarcXmlFilter.java,v 1.14 2003/02/26 23:22:43 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -47,7 +47,7 @@ import org.marc4j.util.AnselToUnicode;
  * a SAX2 <code>ContentHandler</code>.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  *
  * @see ExtendedFilter
  * @see MarcHandler
@@ -163,10 +163,10 @@ public class MarcXmlFilter extends ExtendedFilter
 	    if (input.getCharacterStream() != null) {
 		br = new BufferedReader(input.getCharacterStream());
 	    } else if (input.getByteStream() != null) {
-		br = new BufferedReader(new InputStreamReader(input.getByteStream()));
+		br = new BufferedReader(new InputStreamReader(input.getByteStream(), "ISO8859_1"));
 	    } else if (input.getSystemId() != null) {
 	    	java.net.URL url = new URL(input.getSystemId());
-		br = new BufferedReader(new InputStreamReader(url.openStream()));
+		br = new BufferedReader(new InputStreamReader(url.openStream(), "ISO8859_1"));
 	    } else {
 		throw new SAXException("Invalid InputSource object");
 	    }

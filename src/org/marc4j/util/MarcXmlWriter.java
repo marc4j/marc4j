@@ -1,4 +1,4 @@
-// $Id: MarcXmlWriter.java,v 1.15 2002/08/15 20:06:49 bpeters Exp $
+// $Id: MarcXmlWriter.java,v 1.16 2003/02/26 23:22:43 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -57,7 +57,7 @@ import org.marc4j.marcxml.Converter;
  * <p><b>Note:</b> this class requires a JAXP compliant XSLT processor.</p> 
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  *
  * @see MarcXmlFilter
  * @see Converter
@@ -128,7 +128,7 @@ public class MarcXmlWriter {
 	    BufferedReader reader;
 	    if (convert)
 		reader = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(input)));
+                    new FileInputStream(input), "ISO8859_1"));
 	    else
 		reader = new BufferedReader(new InputStreamReader(
                     new FileInputStream(input), "UTF8"));

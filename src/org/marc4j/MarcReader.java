@@ -1,4 +1,4 @@
-// $Id: MarcReader.java,v 1.14 2003/01/16 21:29:17 ceyates Exp $
+// $Id: MarcReader.java,v 1.15 2003/02/26 23:22:43 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -22,10 +22,11 @@ package org.marc4j;
 
 import java.io.Reader;
 import java.io.InputStreamReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import org.marc4j.marc.MarcConstants;
 import org.marc4j.marc.Tag;
 import org.marc4j.marc.Leader;
@@ -37,7 +38,7 @@ import org.marc4j.marc.MarcException;
  * and optionally the <code>ErrorHandler</code>.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  *
  * @see MarcHandler
  * @see ErrorHandler
@@ -94,7 +95,7 @@ public class MarcReader {
     public void parse(String fileName) 
 	throws IOException {
 	setFileName(fileName);
-	parse(new BufferedReader(new FileReader(fileName)));
+        parse(new FileInputStream(fileName));
      }
 
     /**
@@ -104,7 +105,7 @@ public class MarcReader {
      */
     public void parse(InputStream input) 
 	throws IOException {
-	parse(new BufferedReader(new InputStreamReader(input)));
+	parse(new BufferedReader(new InputStreamReader(input, "ISO8859_1")));
     }
 
    /**
@@ -114,6 +115,10 @@ public class MarcReader {
     */
     public void parse(InputStreamReader input) 
     	throws IOException {
+        if (!input.getEncoding().equals("ISO8859_1")) {
+            throw new UnsupportedEncodingException
+                 ("found " + input.getEncoding() + ", require ISO8859_1");
+        }
     	parse(new BufferedReader(input));
     }
 
