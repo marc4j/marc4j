@@ -41,6 +41,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 import org.marc4j.marcxml.MarcXmlHandler;
 import org.marc4j.marcxml.MarcResult;
+import org.marc4j.MarcReader;
 
 /**
  * <p><code>Converter</code> can be used to apply a conversion 
@@ -70,6 +71,8 @@ public class Converter {
      */
     public void convert(Source source, Result result) 
     	throws TransformerException, SAXException, IOException {
+	if (source instanceof MarcSource && result instanceof MarcResult)
+	    convert((MarcSource)source, (MarcResult)result);
 	Source stylesheet = null;
 	convert(stylesheet, source, result);
     }
@@ -111,6 +114,13 @@ public class Converter {
 	    reader.setContentHandler(handler);
 	    reader.parse(source.getInputSource());
 	}
+    }
+
+    public void convert(MarcSource source, MarcResult result)
+	throws IOException {
+	MarcReader reader = source.getMarcReader();
+	reader.setMarcHandler(result.getHandler());
+	reader.parse(source.getInputStream());
     }
 
     private synchronized Templates tryCache(Source stylesheet)
