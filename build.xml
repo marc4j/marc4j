@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="marc4j" default="jar" basedir=".">
 
-  <!-- $Id: build.xml,v 1.9 2002/08/03 12:47:33 bpeters Exp $ -->
+  <!-- $Id: build.xml,v 1.10 2002/08/03 15:19:32 bpeters Exp $ -->
   <target name="init">
     <tstamp/>
     <property name="src" value="src"/>
@@ -56,7 +56,7 @@
     <copydir src="${dist}/lib" dest="${dist_dir}/lib"/>
     <copydir src="${src}" dest="${dist_dir}/src"/>
     <copydir src="./www/doc" includes="index.html" dest="${dist_dir}/doc"/>
-    <copydir src="." includes="gpl.txt, build.xml, build.bat, MARC21slim.rng, MARC21slim.dtd" dest="${dist_dir}/"/>
+    <copydir src="." includes="lgpl.txt, build.xml, build.bat, MARC21slim.rng, MARC21slim.dtd" dest="${dist_dir}/"/>
     <tar tarfile="${dist_arc}.tar" basedir="${tmp_dir}"/>
     <gzip zipfile="${dist_arc}.tar.gz" src="${dist_arc}.tar"/>
     <delete file="${dist_arc}.tar"/>
