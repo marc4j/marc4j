@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.URL;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
@@ -43,11 +44,10 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 /**
- * <p><code>CodeTableHandler</code> is a SAX2 <code>ContentHandler</code>
- * that reports events to the <code>MarcHandler</code> interface.</p>
+ * <p><code>ReverseCodeTable</code> defines a data structure to facilitate UnicodeToAnsel character conversion.    </p>
  *
  * @author <a href="mailto:ckeith@loc.gov">Corey Keith</a> 
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
  * @see DefaultHandler
  */
@@ -98,6 +98,30 @@ public class ReverseCodeTable {
 	    return (char)marc.intValue();
 	}
 	return 0x20;
+    }
+
+    public ReverseCodeTable(InputStream byteStream) {
+	try {
+	    SAXParserFactory factory = SAXParserFactory.newInstance();
+	    factory.setNamespaceAware(true);
+	    factory.setValidating(false);
+	    SAXParser saxParser = factory.newSAXParser();
+	    XMLReader rdr = saxParser.getXMLReader();
+	    
+	    InputSource src = new InputSource( byteStream );
+	    
+	    ReverseCodeTableHandler saxUms = new ReverseCodeTableHandler();
+	    
+	    rdr.setContentHandler( saxUms );
+	    rdr.parse( src );
+	    
+	    charset = saxUms.getCharSets();
+	    combining = saxUms.getCombiningChars();
+
+	}catch( Exception exc ) {
+	    exc.printStackTrace(System.out);
+	    System.err.println( "Exception: " + exc );
+	}
     }
 
     public ReverseCodeTable(String filename) {

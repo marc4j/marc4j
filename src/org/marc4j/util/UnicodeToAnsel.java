@@ -1,4 +1,4 @@
-// $Id: UnicodeToAnsel.java,v 1.8 2003/03/04 18:33:19 coreykeith Exp $
+// $Id: UnicodeToAnsel.java,v 1.9 2003/03/23 12:05:54 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -29,7 +29,7 @@ import java.util.Hashtable;
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a>
  * @author <a href="mailto:ckeith@loc.gov">Corey Keith</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class UnicodeToAnsel implements CharacterConverter {
     protected ReverseCodeTable rct;
@@ -40,12 +40,13 @@ public class UnicodeToAnsel implements CharacterConverter {
     static final int ASCII = 0x42;
 
     public UnicodeToAnsel() {
-	try {
-	    rct = new ReverseCodeTable(new java.net.URI("http://www.loc.gov/marc/specifications/codetables.xml"));
-	} catch (java.net.URISyntaxException exp)  {
-	    System.err.println("Unable to load character code table");
-	    System.exit(1);
-	}
+	//try {
+	//  rct = new ReverseCodeTable(new java.net.URI("http://www.loc.gov/marc/specifications/codetables.xml"));
+	//} catch (java.net.URISyntaxException exp)  {
+	//  System.err.println("Unable to load character code table");
+	//  System.exit(1);
+	//}
+	rct = new ReverseCodeTable(getClass().getResourceAsStream("resources/codetables.xml"));
     }
 
     /**

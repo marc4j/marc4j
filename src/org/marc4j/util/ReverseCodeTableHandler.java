@@ -41,10 +41,10 @@ import javax.xml.transform.stream.StreamSource;
 
 /**
  * <p><code>ReverseCodeTableHandler</code> is a SAX2 <code>ContentHandler</code>
- * that builds a data structure to facilitate UnicodeToAnsel character conversion.
+ * that builds a data structure to facilitate <code>UnicodeToAnsel</code> character conversion.
  *
  * @author <a href="mailto:ckeith@loc.gov">Corey Keith</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
  * @see DefaultHandler
  */
