@@ -27,17 +27,24 @@ package org.marc4j.helpers;
 
 import java.io.Writer;
 import java.io.IOException;
-import org.marc4j.marc.Record;
-import org.marc4j.marc.MarcException;
+import org.marc4j.marc.*;
+import org.marc4j.MarcHandler;
 
 /**
- * <p>This class implements the <code>RecordHandler</code> interface
+ * <p>Implements the <code>MarcHandler</code> interface
  * to write record objects to tape format (ISO 2709).</p>
  *
  * @author Bas Peters
- * @see RecordHandler
+ * @see MarcHandler
  */
-public class RecordMarshaller implements RecordHandler {
+public class RecordMarshaller 
+    implements MarcHandler {
+
+    /** Record object */
+    private Record record;
+
+    /** Data field object */
+    private DataField datafield;
 
     /** The Writer object */
     private Writer out;
@@ -75,12 +82,28 @@ public class RecordMarshaller implements RecordHandler {
 	    System.exit(0);
     }
 
-    /**
-     * <p>Writes each record in MARC tape format (ISO 2709).</p>
-     *
-     * @param record the {@link Record} object
-     */
-    public void record(Record record) {
+    public void startRecord(Leader leader) {
+	this.record = new Record();
+	record.add(leader);
+    }
+
+    public void controlField(String tag, char[] data) {
+	record.add(new ControlField(tag, data));
+    }
+
+    public void startDataField(String tag, char ind1, char ind2) {
+	datafield = new DataField(tag, ind1, ind2);
+    }
+
+    public void subfield(char code, char[] data) {
+	datafield.add(new Subfield(code, data));
+    }
+
+    public void endDataField(String tag) {
+	record.add(datafield);
+    }
+
+    public void endRecord() {
 	try {
 	    rawWrite(record.marshal());
 	} catch (IOException e) {
@@ -99,7 +122,8 @@ public class RecordMarshaller implements RecordHandler {
 	}
     }
 
-    private void rawWrite(String s) throws IOException {
+    private void rawWrite(String s) 
+	throws IOException {
 	out.write(s);
     }
 
