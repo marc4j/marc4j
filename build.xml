@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="marc4j" default="jar" basedir=".">
 
-  <!-- $Id: build.xml,v 1.12 2002/11/15 13:24:58 bpeters Exp $ -->
+  <!-- $Id: build.xml,v 1.13 2003/01/10 09:44:37 bpeters Exp $ -->
   <target name="init">
     <tstamp/>
     <property name="src" value="src"/>
@@ -35,7 +35,7 @@
            use="true"
            windowtitle="${name}"
            doctitle="${name}"
-           bottom="Copyright &#169; 2001-2002 Bas Peters. All Rights Reserved.">
+           bottom="Copyright &#169; 2001-2003 Bas Peters. All Rights Reserved.">
       <link offline="true" href="http://java.sun.com/products/jdk/1.4/docs/api/" packagelistLoc="."/>
     </javadoc>
   </target>
