@@ -1,4 +1,4 @@
-// $Id: MarcReader.java,v 1.12 2002/08/18 12:53:11 bpeters Exp $
+// $Id: MarcReader.java,v 1.13 2003/01/10 09:39:09 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -37,7 +37,7 @@ import org.marc4j.marc.MarcException;
  * and optionally the <code>ErrorHandler</code>.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  *
  * @see MarcHandler
  * @see ErrorHandler
@@ -60,6 +60,7 @@ public class MarcReader {
     int recordCounter = 0;
     String controlNumber = null;
     String tag = null;
+    String fileName = null;
 
     /** The MarcHandler object. */
     private MarcHandler mh;
@@ -88,11 +89,12 @@ public class MarcReader {
     /**
      * <p>Sends a file to the MARC parser.</p>
      *
-     * @param filename the filename
+     * @param fileName the filename
      */
-    public void parse(String file) 
+    public void parse(String fileName) 
 	throws IOException {
-	parse(new BufferedReader(new FileReader(file)));
+	setFileName(fileName);
+	parse(new BufferedReader(new FileReader(fileName)));
      }
 
     /**
@@ -262,19 +264,22 @@ public class MarcReader {
 
     private void reportWarning(String message) {
 	if (eh != null) 
-	    eh.warning(new MarcReaderException(message, getPosition(), 
+	    eh.warning(new MarcReaderException(message, getFileName(), 
+					       getPosition(), 
 					       getControlNumber()));
     }
 
     private void reportError(String message) {
 	if (eh != null) 
-	    eh.error(new MarcReaderException(message, getPosition(),
+	    eh.error(new MarcReaderException(message, getFileName(),
+					     getPosition(),
 					     getControlNumber()));
     }
 
     private void reportFatalError(String message) {
 	if (eh != null) 
-	    eh.fatalError(new MarcReaderException(message, getPosition(),
+	    eh.fatalError(new MarcReaderException(message, getFileName(), 
+						  getPosition(),
 						  getControlNumber()));
     }
 
@@ -286,12 +291,20 @@ public class MarcReader {
 	this.controlNumber = new String(controlNumber);
     }
 
+    private void setFileName(String fileName) {
+	this.fileName = fileName;
+    }
+
     private String getControlNumber() {
 	return controlNumber;
     }
 
     private int getPosition() {
 	return fileCounter + recordCounter;
+    }
+
+    private String getFileName() {
+	return fileName;
     }
 
     private char[] trimFT(char[] field) {
