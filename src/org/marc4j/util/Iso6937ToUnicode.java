@@ -1,4 +1,4 @@
-// $Id: Iso6937ToUnicode.java,v 1.2 2002/12/13 12:30:21 ypratter Exp $
+// $Id: Iso6937ToUnicode.java,v 1.3 2002/12/13 13:33:56 ypratter Exp $
 /**
 * Copyright (C) 2002 Bas  Peters  (mail@bpeters.com)
 * Copyright (C) 2002 Yves Pratter (ypratter@club-internet.fr)
@@ -28,7 +28,7 @@ import java.util.*;
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
  * @author <a href="mailto:ypratter@club-internet.fr">Yves Pratter</a> 
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Iso6937ToUnicode implements CharacterConverter {
 
@@ -175,9 +175,10 @@ public class Iso6937ToUnicode implements CharacterConverter {
             case 0xFC: return 0x00FE;  // 15/12 LATIN SMALL LETTER THORN
             case 0xFD: return 0x0167;  // 15/13 LATIN SMALL LETTER T WITH STROKE
             case 0xFE: return 0x014B;  // 15/14 LATIN SMALL LETTER ENG
-            case 0xFF: return 0x00AD;  // 15/15 SOFT HYPHEN
-        default :
-            return (char)i;
+            case 0xFF: return 0x00AD;  // 15/15 SOFT HYPHEN$
+
+			default :
+				return (char)i;
         }
     }
 
@@ -191,13 +192,11 @@ public class Iso6937ToUnicode implements CharacterConverter {
             case 0xC149: return 0x00CC;  // LATIN CAPITAL LETTER I WITH GRAVE
             case 0xC14F: return 0x00D2;  // LATIN CAPITAL LETTER O WITH GRAVE
             case 0xC155: return 0x00D9;  // LATIN CAPITAL LETTER U WITH GRAVE
-            case 0xC161: return 0x00E0;  // small   a with grave accent
-            case 0xC165: return 0x00E8;  // small   e with grave accent
-            case 0xC169: return 0x00EC;  // small   i with grave accent
-            case 0xC16F: return 0x00F2;  // small   o with grave accent
-            case 0xC175: return 0x00F9;  // small   u with grave accent
-            case 0xC177: return 0x1E81;  // small   w with grave
-            case 0xC179: return 0x1EF3;  // small   y with grave
+            case 0xC161: return 0x00E0;  // LATIN SMALL LETTER A WITH GRAVE
+            case 0xC165: return 0x00E8;  // LATIN SMALL LETTER E WITH GRAVE
+            case 0xC169: return 0x00EC;  // LATIN SMALL LETTER I WITH GRAVE
+            case 0xC16F: return 0x00F2;  // LATIN SMALL LETTER O WITH GRAVE
+            case 0xC175: return 0x00F9;  // LATIN SMALL LETTER U WITH GRAVE
 
                                          // 12/02 non-spacing acute accent
             case 0xC220: return 0x00B4;  // ACUTE ACCENT
@@ -213,25 +212,19 @@ public class Iso6937ToUnicode implements CharacterConverter {
             case 0xC255: return 0x00DA;  // LATIN CAPITAL LETTER U WITH ACUTE
             case 0xC259: return 0x00DD;  // LATIN CAPITAL LETTER Y WITH ACUTE
             case 0xC25A: return 0x0179;  // LATIN CAPITAL LETTER Z WITH ACUTE
-            case 0xC261: return 0x00E1;  // small   a with acute accent
-            case 0xC263: return 0x0107;  // small   c with acute accent
-            case 0xC265: return 0x00E9;  // small   e with acute accent
-            case 0xC267: return 0x01F5;  // small   g with acute
-            case 0xC269: return 0x00ED;  // small   i with acute accent
-            case 0xC26B: return 0x1E31;  // small   k with acute
-            case 0xC26C: return 0x013A;  // small   l with acute accent
-            case 0xC26D: return 0x1E3F;  // small   m with acute
-            case 0xC26E: return 0x0144;  // small   n with acute accent
-            case 0xC26F: return 0x00F3;  // small   o with acute accent
-            case 0xC270: return 0x1E55;  // small   p with acute
-            case 0xC272: return 0x0155;  // small   r with acute accent
-            case 0xC273: return 0x015B;  // small   s with acute accent
-            case 0xC275: return 0x00FA;  // small   u with acute accent
-            case 0xC277: return 0x1E83;  // small   w with acute
-            case 0xC279: return 0x00FD;  // small   y with acute accent
-            case 0xC27A: return 0x017A;  // small   z with acute accent
-            case 0xC2E1: return 0x01FC;  // CAPITAL AE WITH ACUTE
-            case 0xC2F1: return 0x01FD;  // small   ae with acute
+            case 0xC261: return 0x00E1;  // LATIN SMALL LETTER A WITH ACUTE
+            case 0xC263: return 0x0107;  // LATIN SMALL LETTER C WITH ACUTE
+            case 0xC265: return 0x00E9;  // LATIN SMALL LETTER E WITH ACUTE
+            case 0xC267: return 0x01F5;  // LATIN SMALL LETTER G WITH CEDILLA(4)
+            case 0xC269: return 0x00ED;  // LATIN SMALL LETTER I WITH ACUTE
+            case 0xC26C: return 0x013A;  // LATIN SMALL LETTER L WITH ACUTE
+            case 0xC26E: return 0x0144;  // LATIN SMALL LETTER N WITH ACUTE
+            case 0xC26F: return 0x00F3;  // LATIN SMALL LETTER O WITH ACUTE
+            case 0xC272: return 0x0155;  // LATIN SMALL LETTER R WITH ACUTE
+            case 0xC273: return 0x015B;  // LATIN SMALL LETTER S WITH ACUTE
+            case 0xC275: return 0x00FA;  // LATIN SMALL LETTER U WITH ACUTE
+            case 0xC279: return 0x00FD;  // LATIN SMALL LETTER Y WITH ACUTE
+            case 0xC27A: return 0x017A;  // LATIN SMALL LETTER Z WITH ACUTE
 
                                          // 12/03 non-spacing circumflex accent
             case 0xC341: return 0x00C2;  // LATIN CAPITAL LETTER A WITH CIRCUMFLEX
@@ -246,35 +239,30 @@ public class Iso6937ToUnicode implements CharacterConverter {
             case 0xC355: return 0x00DB;  // LATIN CAPITAL LETTER U WITH CIRCUMFLEX       
             case 0xC357: return 0x0174;  // LATIN CAPITAL LETTER W WITH CIRCUMFLEX       
             case 0xC359: return 0x0176;  // LATIN CAPITAL LETTER Y WITH CIRCUMFLEX      
-            case 0xC361: return 0x00E2;  // small   a with circumflex accent
-            case 0xC363: return 0x0109;  // small   c with circumflex
-            case 0xC365: return 0x00EA;  // small   e with circumflex accent
-            case 0xC367: return 0x011D;  // small   g with circumflex
-            case 0xC368: return 0x0125;  // small   h with circumflex
-            case 0xC369: return 0x00EE;  // small   i with circumflex accent
-            case 0xC36A: return 0x0135;  // small   j with circumflex
-            case 0xC36F: return 0x00F4;  // small   o with circumflex accent
-            case 0xC373: return 0x015D;  // small   s with circumflex
-            case 0xC375: return 0x00FB;  // small   u with circumflex
-            case 0xC377: return 0x0175;  // small   w with circumflex
-            case 0xC379: return 0x0177;  // small   y with circumflex
-            case 0xC37A: return 0x1E91;  // small   z with circumflex
+            case 0xC361: return 0x00E2;  // LATIN SMALL LETTER A WITH CIRCUMFLEX
+            case 0xC363: return 0x0109;  // LATIN SMALL LETTER C WITH CIRCUMFLEX
+            case 0xC365: return 0x00EA;  // LATIN SMALL LETTER E WITH CIRCUMFLEX
+            case 0xC367: return 0x011D;  // LATIN SMALL LETTER G WITH CIRCUMFLEX
+            case 0xC368: return 0x0125;  // LATIN SMALL LETTER H WITH CIRCUMFLEX
+            case 0xC369: return 0x00EE;  // LATIN SMALL LETTER I WITH CIRCUMFLEX
+            case 0xC36A: return 0x0135;  // LATIN SMALL LETTER J WITH CIRCUMFLEX
+            case 0xC36F: return 0x00F4;  // LATIN SMALL LETTER O WITH CIRCUMFLEX
+            case 0xC373: return 0x015D;  // LATIN SMALL LETTER S WITH CIRCUMFLEX
+            case 0xC375: return 0x00FB;  // LATIN SMALL LETTER U WITH CIRCUMFLEX
+            case 0xC377: return 0x0175;  // LATIN SMALL LETTER W WITH CIRCUMFLEX
+            case 0xC379: return 0x0177;  // LATIN SMALL LETTER Y WITH CIRCUMFLEX
 
                                          // 12/04 non-spacing tilde
             case 0xC441: return 0x00C3;  // LATIN CAPITAL LETTER A WITH TILDE
             case 0xC449: return 0x0128;  // LATIN CAPITAL LETTER I WITH TILDE
             case 0xC44E: return 0x00D1;  // LATIN CAPITAL LETTER N WITH TILDE
+			case 0xC44F: return 0x00D5;  // LATIN CAPITAL LETTER O WITH TILDE
             case 0xC455: return 0x0168;  // LATIN CAPITAL LETTER U WITH TILDE
-            case 0xC456: return 0x1E7C;  // CAPITAL V WITH TILDE
-            case 0xC459: return 0x1EF8;  // CAPITAL Y WITH TILDE
-            case 0xC461: return 0x00E3;  // small   a with tilde
-            case 0xC465: return 0x1EBD;  // small   e with tilde
-            case 0xC469: return 0x0129;  // small   i with tilde
-            case 0xC46E: return 0x00F1;  // small   n with tilde
-            case 0xC46F: return 0x00F5;  // small   o with tilde
-            case 0xC475: return 0x0169;  // small   u with tilde
-            case 0xC476: return 0x1E7D;  // small   v with tilde
-            case 0xC479: return 0x1EF9;  // small   y with tilde
+            case 0xC461: return 0x00E3;  // LATIN SMALL LETTER A WITH TILDE
+            case 0xC469: return 0x0129;  // LATIN SMALL LETTER I WITH TILDE
+            case 0xC46E: return 0x00F1;  // LATIN SMALL LETTER N WITH TILDE
+            case 0xC46F: return 0x00F5;  // LATIN SMALL LETTER O WITH TILDE
+            case 0xC475: return 0x0169;  // LATIN SMALL LETTER U WITH TILDE
 
                                          // 12/05 non-spacing macron
             case 0xC541: return 0x0100;  // LATIN CAPITAL LETTER A WITH MACRON
@@ -282,26 +270,20 @@ public class Iso6937ToUnicode implements CharacterConverter {
             case 0xC549: return 0x012A;  // LATIN CAPITAL LETTER I WITH MACRON
             case 0xC54F: return 0x014C;  // LATIN CAPITAL LETTER O WITH MACRON 
             case 0xC555: return 0x016A;  // LATIN CAPITAL LETTER U WITH MACRON 
-            case 0xC561: return 0x0101;  // small   a with macron
-            case 0xC565: return 0x0113;  // small   e with macron
-            case 0xC567: return 0x1E21;  // small   g with macron
-            case 0xC569: return 0x012B;  // small   i with macron
-            case 0xC56F: return 0x014D;  // small   o with macron
-            case 0xC575: return 0x016B;  // small   u with macron
-            case 0xC5E1: return 0x01E2;  // CAPITAL AE WITH MACRON
-            case 0xC5F1: return 0x01E3;  // small   ae with macron
+            case 0xC561: return 0x0101;  // LATIN SMALL LETTER A WITH MACRON
+            case 0xC565: return 0x0113;  // LATIN SMALL LETTER E WITH MACRON
+            case 0xC569: return 0x012B;  // LATIN SMALL LETTER I WITH MACRON
+            case 0xC56F: return 0x014D;  // LATIN SMALL LETTER O WITH MACRON
+            case 0xC575: return 0x016B;  // LATIN SMALL LETTER U WITH MACRON
 
                                          // 12/06 non-spacing breve
             case 0xC620: return 0x02D8;  // BREVE
             case 0xC641: return 0x0102;  // LATIN CAPITAL LETTER A WITH BREVE
             case 0xC647: return 0x011E;  // LATIN CAPITAL LETTER G WITH BREVE
             case 0xC655: return 0x016C;  // LATIN CAPITAL LETTER U WITH BREVE
-            case 0xC661: return 0x0103;  // small   a with breve
-            case 0xC665: return 0x0115;  // small   e with breve
-            case 0xC667: return 0x011F;  // small   g with breve
-            case 0xC669: return 0x012D;  // small   i with breve
-            case 0xC66F: return 0x014F;  // small   o with breve
-            case 0xC675: return 0x016D;  // small   u with breve
+            case 0xC661: return 0x0103;  // LATIN SMALL LETTER A WITH BREVE
+            case 0xC667: return 0x011F;  // LATIN SMALL LETTER G WITH BREVE
+            case 0xC675: return 0x016D;  // LATIN SMALL LETTER U WITH BREVE
 
                                          // 12/07 non-spacing dot above
             case 0xC743: return 0x010A;  // LATIN CAPITAL LETTER C WITH DOT ABOVE
@@ -309,23 +291,10 @@ public class Iso6937ToUnicode implements CharacterConverter {
             case 0xC747: return 0x0120;  // LATIN CAPITAL LETTER G WITH DOT ABOVE
             case 0xC749: return 0x0130;  // LATIN CAPITAL LETTER I WITH DOT ABOVE
             case 0xC75A: return 0x017B;  // LATIN CAPITAL LETTER Z WITH DOT ABOVE
-            case 0xC762: return 0x1E03;  // small   b with dot above
-            case 0xC763: return 0x010B;  // small   c with dot above
-            case 0xC764: return 0x1E0B;  // small   d with dot above
-            case 0xC765: return 0x0117;  // small   e with dot above
-            case 0xC766: return 0x1E1F;  // small   f with dot above
-            case 0xC767: return 0x0121;  // small   g with dot above
-            case 0xC768: return 0x1E23;  // small   h with dot above
-            case 0xC76D: return 0x1E41;  // small   m with dot above
-            case 0xC76E: return 0x1E45;  // small   n with dot above
-            case 0xC770: return 0x1E57;  // small   p with dot above
-            case 0xC772: return 0x1E59;  // small   r with dot above
-            case 0xC773: return 0x1E61;  // small   s with dot above
-            case 0xC774: return 0x1E6B;  // small   t with dot above
-            case 0xC777: return 0x1E87;  // small   w with dot above
-            case 0xC778: return 0x1E8B;  // small   x with dot above
-            case 0xC779: return 0x1E8F;  // small   y with dot above
-            case 0xC77A: return 0x017C;  // small   z with dot above
+            case 0xC763: return 0x010B;  // LATIN SMALL LETTER C WITH DOT ABOVE
+            case 0xC765: return 0x0117;  // LATIN SMALL LETTER E WITH DOT ABOVE
+            case 0xC767: return 0x0121;  // LATIN SMALL LETTER G WITH DOT ABOVE
+            case 0xC77A: return 0x017C;  // LATIN SMALL LETTER Z WITH DOT ABOVE
 
                                          // 12/08 non-spacing diaeresis
             case 0xC820: return 0x00A8;  // DIAERESIS
@@ -335,26 +304,21 @@ public class Iso6937ToUnicode implements CharacterConverter {
             case 0xC84F: return 0x00D6;  // LATIN CAPITAL LETTER O WITH DIAERESIS
             case 0xC855: return 0x00DC;  // LATIN CAPITAL LETTER U WITH DIAERESIS
             case 0xC859: return 0x0178;  // LATIN CAPITAL LETTER Y WITH DIAERESIS
-            case 0xC861: return 0x00E4;  // small   a with diaeresis
-            case 0xC865: return 0x00EB;  // small   e with diaeresis
-            case 0xC868: return 0x1E27;  // small   h with diaeresis
-            case 0xC869: return 0x00EF;  // small   i with diaeresis
-            case 0xC86F: return 0x00F6;  // small   o with diaeresis
-            case 0xC874: return 0x1E97;  // small   t with diaeresis
-            case 0xC875: return 0x00FC;  // small   u with diaeresis
-            case 0xC877: return 0x1E85;  // small   w with diaeresis
-            case 0xC878: return 0x1E8D;  // small   x with diaeresis
-            case 0xC879: return 0x00FF;  // small   y with diaeresis
+            case 0xC861: return 0x00E4;  // LATIN SMALL LETTER A WITH DIAERESIS
+            case 0xC865: return 0x00EB;  // LATIN SMALL LETTER E WITH DIAERESIS
+            case 0xC869: return 0x00EF;  // LATIN SMALL LETTER I WITH DIAERESIS
+            case 0xC86F: return 0x00F6;  // LATIN SMALL LETTER O WITH DIAERESIS
+            case 0xC875: return 0x00FC;  // LATIN SMALL LETTER U WITH DIAERESIS
+            case 0xC879: return 0x00FF;  // LATIN SMALL LETTER Y WITH DIAERESIS
 
                                          // 12/09 (This position shall not be used)
 
                                          // 12/10 non-spacing ring above
+			case 0xCA20: return 0x02DA;  // RING ABOVE
             case 0xCA41: return 0x00C5;  // LATIN CAPITAL LETTER A WITH RING ABOVE
             case 0xCAAD: return 0x016E;  // LATIN CAPITAL LETTER U WITH RING ABOVE
-            case 0xCA61: return 0x00E5;  // small   a with ring above
-            case 0xCA75: return 0x016F;  // small   u with ring above
-            case 0xCA77: return 0x1E98;  // small   w with ring above
-            case 0xCA79: return 0x1E99;  // small   y with ring above
+            case 0xCA61: return 0x00E5;  // LATIN SMALL LETTER A WITH RING ABOVE
+            case 0xCA75: return 0x016F;  // LATIN SMALL LETTER U WITH RING ABOVE
 
                                          // 12/11 non-spacing cedilla
             case 0xCB20: return 0x00B8;  // CEDILLA
@@ -366,24 +330,22 @@ public class Iso6937ToUnicode implements CharacterConverter {
             case 0xCB52: return 0x0156;  // LATIN CAPITAL LETTER R WITH CEDILLA               
             case 0xCB53: return 0x015E;  // LATIN CAPITAL LETTER S WITH CEDILLA               
             case 0xCB54: return 0x0162;  // LATIN CAPITAL LETTER T WITH CEDILLA              
-            case 0xCB63: return 0x00E7;  // small   c with cedilla
-            case 0xCB64: return 0x1E11;  // small   d with cedilla
-            case 0xCB67: return 0x0123;  // small   g with cedilla
-            case 0xCB68: return 0x1E29;  // small   h with cedilla
-            case 0xCB6B: return 0x0137;  // small   k with cedilla
-            case 0xCB6C: return 0x013C;  // small   l with cedilla
-            case 0xCB6E: return 0x0146;  // small   n with cedilla
-            case 0xCB72: return 0x0157;  // small   r with cedilla
-            case 0xCB73: return 0x015F;  // small   s with cedilla
-            case 0xCB74: return 0x0163;  // small   t with cedilla
+            case 0xCB63: return 0x00E7;  // LATIN SMALL LETTER C WITH CEDILLA
+//          case 0xCB67: return 0x0123;  // small   g with cedilla
+            case 0xCB6B: return 0x0137;  // LATIN SMALL LETTER K WITH CEDILLA
+            case 0xCB6C: return 0x013C;  // LATIN SMALL LETTER L WITH CEDILLA
+            case 0xCB6E: return 0x0146;  // LATIN SMALL LETTER N WITH CEDILLA
+            case 0xCB72: return 0x0157;  // LATIN SMALL LETTER R WITH CEDILLA
+            case 0xCB73: return 0x015F;  // LATIN SMALL LETTER S WITH CEDILLA
+            case 0xCB74: return 0x0163;  // LATIN SMALL LETTER T WITH CEDILLA
 
                                          // 12/12 (This position shall not be used)
 
                                          // 12/13 non-spacing double acute accent
             case 0xCD4F: return 0x0150;  // LATIN CAPITAL LETTER O WITH DOUBLE ACUTE
             case 0xCD55: return 0x0170;  // LATIN CAPITAL LETTER U WITH DOUBLE ACUTE
-            case 0xCD6F: return 0x0151;  // small   o with double acute
-            case 0xCD75: return 0x0171;  // small   u with double acute
+            case 0xCD6F: return 0x0151;  // LATIN SMALL LETTER O WITH DOUBLE ACUTE
+            case 0xCD75: return 0x0171;  // LATIN SMALL LETTER U WITH DOUBLE ACUTE
 
                                          // 12/14 non-spacing ogonek
             case 0xCE20: return 0x02DB;  // ogonek
@@ -391,11 +353,10 @@ public class Iso6937ToUnicode implements CharacterConverter {
             case 0xCE45: return 0x0118;  // LATIN CAPITAL LETTER E WITH OGONEK
             case 0xCE49: return 0x012E;  // LATIN CAPITAL LETTER I WITH OGONEK
             case 0xCE55: return 0x0172;  // LATIN CAPITAL LETTER U WITH OGONEK 
-            case 0xCE61: return 0x0105;  // small   a with ogonek
-            case 0xCE65: return 0x0119;  // small   e with ogonek
-            case 0xCE69: return 0x012F;  // small   i with ogonek
-            case 0xCE6F: return 0x01EB;  // small   o with ogonek
-            case 0xCE75: return 0x0173;  // small   u with ogonek
+            case 0xCE61: return 0x0105;  // LATIN SMALL LETTER A WITH OGONEK
+            case 0xCE65: return 0x0119;  // LATIN SMALL LETTER E WITH OGONEK
+            case 0xCE69: return 0x012F;  // LATIN SMALL LETTER I WITH OGONEK
+            case 0xCE75: return 0x0173;  // LATIN SMALL LETTER U WITH OGONEK
 
                                          // 12/15 non-spacing caron
             case 0xCF20: return 0x02C7;  // CARON
@@ -408,24 +369,18 @@ public class Iso6937ToUnicode implements CharacterConverter {
             case 0xCF53: return 0x0160;  // LATIN CAPITAL LETTER S WITH CARON
             case 0xCF54: return 0x0164;  // LATIN CAPITAL LETTER T WITH CARON
             case 0xCF5A: return 0x017D;  // LATIN CAPITAL LETTER Z WITH CARON
-            case 0xCF61: return 0x01CE;  // small   a with caron
-            case 0xCF63: return 0x010D;  // small   c with caron
-            case 0xCF64: return 0x010F;  // small   d with caron
-            case 0xCF65: return 0x011B;  // small   e with caron
-            case 0xCF67: return 0x01E7;  // small   g with caron
-            case 0xCF69: return 0x01D0;  // small   i with caron
-            case 0xCF6A: return 0x01F0;  // small   j with caron
-            case 0xCF6B: return 0x01E9;  // small   k with caron
-            case 0xCF6C: return 0x013E;  // small   l with caron
-            case 0xCF6E: return 0x0148;  // small   n with caron
-            case 0xCF6F: return 0x01D2;  // small   o with caron
-            case 0xCF72: return 0x0159;  // small   r with caron
-            case 0xCF73: return 0x0161;  // small   s with caron
-            case 0xCF74: return 0x0165;  // small   t with caron
-            case 0xCF75: return 0x01D4;  // small   u with caron
-            case 0xCF7A: return 0x017E;  // small   z with caron                            
-        default :
-            return 0;
+            case 0xCF63: return 0x010D;  // LATIN SMALL LETTER C WITH CARON
+            case 0xCF64: return 0x010F;  // LATIN SMALL LETTER D WITH CARON
+            case 0xCF65: return 0x011B;  // LATIN SMALL LETTER E WITH CARON
+            case 0xCF6C: return 0x013E;  // LATIN SMALL LETTER L WITH CARON
+            case 0xCF6E: return 0x0148;  // LATIN SMALL LETTER N WITH CARON
+            case 0xCF72: return 0x0159;  // LATIN SMALL LETTER R WITH CARON
+            case 0xCF73: return 0x0161;  // LATIN SMALL LETTER S WITH CARON
+            case 0xCF74: return 0x0165;  // LATIN SMALL LETTER T WITH CARON
+            case 0xCF7A: return 0x017E;  // LATIN SMALL LETTER Z WITH CARON                            
+
+			default :
+				return 0;
         }
     }
 }
