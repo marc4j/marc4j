@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="marc4j" default="dist" basedir=".">
+  <target name="init">
+    <property name="src" value="src"/>
+    <property name="build" value="build"/>
+    <property name="dist" value="dist"/>
+    <property name="apidoc" value="${dist}/apidoc"/>
+    <property name="version" value="b6"/>
+    <property name="name" value="marc4j"/>
+  </target>
+
+  <target name="prepare" depends="init">
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="prepare">
+    <javac srcdir="${src}" destdir="${build}"/>
+  </target>
+
+  <target name="dist" depends="compile">
+    <mkdir dir="${dist}/lib" />
+    <jar jarfile="${dist}/lib/marc4j.jar" basedir="${build}"/>
+  </target>
+
+  <target name="javadoc" depends="init">
+    <mkdir dir="${apidoc}"/>
+    <javadoc packagenames="com.bpeters.marc4j.*,com.bpeters.marc.*,com.bpeters.samples.*,com.bpeters.util.*"
+           sourcepath="src"
+           destdir="${dist}/apidoc"
+           author="true"
+           version="true"
+           use="true"
+           windowtitle="${name}"
+           doctitle="${name}"
+           bottom="Copyright &#169; 2001 Bas Peters. All Rights Reserved">
+      <link offline="true" href="http://java.sun.com/products/jdk/1.4/docs/api/" packagelistLoc="../james"/>
+    </javadoc>
+  </target>
+
+  <target name="clean" depends="init">
+    <deltree dir="${dist}" />
+  </target>
+
+  <target name="dist-all" depends="init">
+    <mkdir dir="${dist}"/>
+    <property name="prefix_all" value="marc4j-${version}"/>
+    <property name="tmpdir" value="${dist}/tmp"/>
+    <property name="dist_all_dir" value="${tmpdir}/${prefix_all}"/>
+    <property name="dist_all_arc" value="${dist}/${prefix_all}"/>
+    <mkdir dir="${dist_all_dir}"/>
+    <copydir src="${src}" includes="*.java,*.html,*.properties" dest="${dist_all_dir}/src"/>
+    <copydir src="${dist}/apidoc" dest="${dist_all_dir}/${dist}/apidoc"/>
+    <copydir src="${dist}/lib" dest="${dist_all_dir}/${dist}/lib"/>
+    <copydir src="../marc4j" includes="*.rng,*.xsl" dest="${dist_all_dir}"/>
+    <tar tarfile="${dist_all_arc}.tar" basedir="${tmpdir}"/>
+    <gzip zipfile="${dist_all_arc}.tar.gz" src="${dist_all_arc}.tar"/>
+    <delete file="${dist_all_arc}.tar"/>
+    <delete file="${dist_all_arc}.zip"/>
+    <zip compress="true" basedir="${tmpdir}" zipfile="${dist_all_arc}.zip"/>
+    <deltree dir="${tmpdir}"/>
+  </target>
+
+</project>
