@@ -34,6 +34,7 @@ package org.marc4j;
 public class MarcReaderException extends Exception {
 
     int pos;
+    String controlNumber;
 
     /**
      * <p>Creates an <code>Exception</code> indicating that an error
@@ -47,7 +48,17 @@ public class MarcReaderException extends Exception {
 	setPosition(pos);
     }
 
-    /**
+    public MarcReaderException(String message, int pos, String controlNumber) {
+	super(message);
+	setPosition(pos);
+	setControlNumber(controlNumber);
+    }
+
+    private void setPosition(int pos) {
+	this.pos = pos;
+    }
+
+   /**
      * <p>Returns the position in the character stream where the exception is thrown.</p>
      *
      * @return <code>int</code> - the position
@@ -56,8 +67,16 @@ public class MarcReaderException extends Exception {
 	return pos;
     }
 
-    private void setPosition(int pos) {
-	this.pos = pos;
+    private void setControlNumber(String controlNumber) {
+	this.controlNumber = controlNumber;
     }
 
+   /**
+     * <p>Returns the control number (tag 001).</p>
+     *
+     * @return <code>String</code> - the control number
+     */    
+    public String getControlNumber() {
+	return controlNumber;
+    }
 }
