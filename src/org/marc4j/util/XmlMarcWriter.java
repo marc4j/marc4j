@@ -1,4 +1,4 @@
-// $Id: XmlMarcWriter.java,v 1.15 2002/08/15 20:06:49 bpeters Exp $
+// $Id: XmlMarcWriter.java,v 1.16 2003/03/23 12:06:49 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -58,7 +58,7 @@ import org.marc4j.marcxml.Converter;
  * MARCXML</a> for more information about the MARCXML format.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  *
  * @see MarcXmlHandler
  * @see MarcWriter
@@ -80,10 +80,11 @@ public class XmlMarcWriter {
 	String output = null;
 	String stylesheet = null;
         String schemaSource = null;
-	boolean convert = false;
+	String convert = null;
 	boolean ansel = false;
         boolean dtdValidate = false;
         boolean xsdValidate = false;
+	long start = System.currentTimeMillis();
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-dtd")) {
@@ -102,7 +103,10 @@ public class XmlMarcWriter {
                 }
                 output = args[++i];
             } else if (args[i].equals("-convert")) {
-                convert = true;
+                if (i == args.length - 1) {
+                    usage();
+                }
+                convert = args[++i].trim();
             } else if (args[i].equals("-xsl")) {
                 if (i == args.length - 1) {
                     usage();
@@ -128,21 +132,33 @@ public class XmlMarcWriter {
 	try {
 	    Writer writer;
 	    if (output == null) {
-		if (convert)
-		    writer = new BufferedWriter(new OutputStreamWriter(System.out));
+		if (convert != null)
+		    writer = new BufferedWriter(new OutputStreamWriter(System.out, "ISO8859_1"));
 		else
 		    writer = new BufferedWriter(new OutputStreamWriter(System.out, "UTF8"));
 	    } else {
-		if (convert)
+		if (convert != null)
 		    writer = new BufferedWriter(new OutputStreamWriter(
-                        new FileOutputStream(output)));
+                        new FileOutputStream(output), "ISO8859_1"));
 		else
 		    writer = new BufferedWriter(new OutputStreamWriter(
                         new FileOutputStream(output), "UTF8"));
 	    }
 	    MarcWriter handler = new MarcWriter(writer);
-	    if (convert)
-		handler.setUnicodeToAnsel(true);
+	    if (convert != null) {
+		CharacterConverter charconv = null;
+		if ("ANSEL".equals(convert))
+		    charconv = new UnicodeToAnsel();
+		else if ("ISO5426".equals(convert))
+		    charconv = new UnicodeToIso5426();
+		else if ("ISO6937".equals(convert))
+		    charconv = new UnicodeToIso6937();
+		else {
+		    System.err.println("Unknown character set");
+		    System.exit(1);
+		}
+	    	handler.setCharacterConverter(charconv);
+	    }
 
 	    SAXParserFactory factory = SAXParserFactory.newInstance();
 	    factory.setNamespaceAware(true);
@@ -177,19 +193,20 @@ public class XmlMarcWriter {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
+	System.err.println("Total time: " + (System.currentTimeMillis() - start) + " miliseconds");
     }
 
     private static void usage() {
-	System.err.println("MARC4J version beta 6b, Copyright (C) 2002 Bas Peters");
+	System.err.println("MARC4J version beta 7, Copyright (C) 2002-2003 Bas Peters");
         System.err.println("Usage: org.marc4j.util.XmlMarcWriter [-options] <file.xml>");
         System.err.println("Usage: MarcXmlWriter [-options] <file.xml>");
         System.err.println("       -dtd = DTD validation");
-        System.err.println("       -xsd | -xsdss <file.xsd> = W3C XML Schema validation using xsi: hints");
-        System.err.println("           in instance document or schema source <file.xsd>");
+        System.err.println("       -xsd = W3C XML Schema validation: hints in instance document");
         System.err.println("       -xsdss <file> = W3C XML Schema validation using schema source <file>");
         System.err.println("       -xsl <file> = Preprocess XML using XSLT stylesheet <file>");
         System.err.println("       -out <file> = Output using <file>");
-        System.err.println("       -convert = Convert UTF-8 to ANSEL");
+        System.err.println("       -convert [ANSEL | ISO5426 | ISO6937] = convert from UTF-8");
+	System.err.println("          to specified character set");
         System.err.println("       -usage or -help = this message");
 	System.err.println("See http://marc4j.tigris.org for more information.");
         System.exit(1);
