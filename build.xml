@@ -21,8 +21,7 @@
 
   <target name="jar" depends="compile">
     <mkdir dir="${dist}/lib"/>
-    <jar jarfile="${dist}/lib/marc4j.jar" basedir="${build}" excludes="org/marc4j/marcxml/**"/>
-    <jar jarfile="${dist}/lib/marcxml.jar" basedir="${build}" includes="org/marc4j/marcxml/**"/>
+    <jar jarfile="${dist}/lib/marc4j.jar" basedir="${build}"/>
   </target>
 
   <target name="javadoc" depends="init">
