@@ -396,16 +396,11 @@ public class Driver {
     <p>The following code sample implements the subfield method in the <code>MarcHandler</code> interface and converts MARC-8 to UCS/Unicode:</p>
 <pre>
     public void subfield(char code, char[] data) {
-	try {
-	    rawWrite('$');
-	    rawWrite(code);
-            char[] ch = AnselToUnicode.convert(data)
-	    rawWrite(new String(ch)));
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
+        rawWrite('$');
+	rawWrite(code);
+        char[] ch = AnselToUnicode.convert(data)
+	rawWrite(new String(ch)));
     }</pre>
-    <p><b>Note:</b> please note that the current character conversion in MARC4J is not yet 100% reliable.</p>
     <h1><a name="object">Using the record object model</a></h1>
     <p>The record object model can be used to edit MARC records as objects and to marshal record objects to MARC tape format. The following code sample implements the <code>MarcHandler</code> to build Record objects and marshal the objects to MARC tape format using the <code>marshal()</code> method in the <a href="apidoc/org/marc4j/marc/Record.html">Record</a> class:</p>
 <pre>
@@ -469,8 +464,8 @@ public class Driver {
 </pre>
     <p>If you want to work with Record objects in your program, consider using the <a href="apidoc/org/marc4j/helpers/RecordBuilder.html">RecordBuilder</a> together with a <a href="apidoc/org/marc4j/helpers/RecordHandler.html">RecordHandler</a> implementation. The <code>RecordBuilder</code> creates MARC record objects and reports them to the <code>RecordHandler</code> interface. By using the record handler it is possible to handle large records sets. If you need access to a collection of record objects you can use the <a href="apidoc/org/marc4j/marc/Collection.html">Collection</a> class which serves as a container for a collection of record objects.</p>
     <p>Copyright &#169; 2002 <a href="mailto:mail@bpeters.com">Bas Peters</a>. All Rights Reserved.</p>
-    <p>Last updated: $Date: 2002/08/09 16:43:49 $</p>
-    <!-- $Id: index.html,v 1.7 2002/08/09 16:43:49 bpeters Exp $ -->
+    <p>Last updated: $Date: 2002/08/18 12:55:40 $</p>
+    <!-- $Id: index.html,v 1.8 2002/08/18 12:55:40 bpeters Exp $ -->
   </body>
 </html>
 

@@ -1,4 +1,4 @@
-// $Id: MarcReader.java,v 1.11 2002/08/03 15:14:39 bpeters Exp $
+// $Id: MarcReader.java,v 1.12 2002/08/18 12:53:11 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -37,7 +37,7 @@ import org.marc4j.marc.MarcException;
  * and optionally the <code>ErrorHandler</code>.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  *
  * @see MarcHandler
  * @see ErrorHandler
@@ -96,29 +96,24 @@ public class MarcReader {
      }
 
     /**
-     * <p>Sends an input stream reader to the MARC parser.</p>
+     * <p>Sends an input stream to the MARC parser.</p>
      *
-     * @param input the input stream reader
+     * @param input the input stream
      */
     public void parse(InputStream input) 
 	throws IOException {
-	parse(new InputStreamReader(input));
+	parse(new BufferedReader(new InputStreamReader(input)));
     }
 
-    //    /**
-    //* <p>Sends an input stream reader to the MARC parser.</p>
-    //*
-    //* @param input the input stream reader
-    //*/
-    //public void parse(InputStreamReader input) 
-    //	throws IOException {
-    //	parse(input);
-    //}
-
-    //    public void parse(BufferedReader input) 
-    //	throws IOException {
-    //	parse((Reader)input);
-    //    }
+   /**
+    * <p>Sends an input stream reader to the MARC parser.</p>
+    *
+    * @param input the input stream reader
+    */
+    public void parse(InputStreamReader input) 
+    	throws IOException {
+    	parse(new BufferedReader(input));
+    }
 
     public void parse(Reader input) 
 	throws IOException {
