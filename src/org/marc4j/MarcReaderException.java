@@ -41,13 +41,21 @@ public class MarcReaderException extends Exception {
      * occured while parsing MARC records.</p>
      *
      * @param message the reason why the exception is thrown
-     * @param position position in the character stream where the exception is thrown
+     * @param pos position in the character stream where the exception is thrown
      */
     public MarcReaderException(String message, int pos) {
 	super(message);
 	setPosition(pos);
     }
 
+    /**
+     * <p>Creates an <code>Exception</code> indicating that an error
+     * occured while parsing MARC records.</p>
+     *
+     * @param message the reason why the exception is thrown
+     * @param pos position in the character stream where the exception is thrown
+     * @param controlNumber the control number (tag 001)
+     */
     public MarcReaderException(String message, int pos, String controlNumber) {
 	super(message);
 	setPosition(pos);
