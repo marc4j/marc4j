@@ -1,4 +1,4 @@
-// $Id: MarcReader.java,v 1.15 2003/02/26 23:22:43 ceyates Exp $
+// $Id: MarcReader.java,v 1.16 2004/06/06 09:34:21 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -38,7 +38,7 @@ import org.marc4j.marc.MarcException;
  * and optionally the <code>ErrorHandler</code>.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  *
  * @see MarcHandler
  * @see ErrorHandler
@@ -72,7 +72,7 @@ public class MarcReader {
     /**
      * <p>Registers the <code>MarcHandler</code> implementation.</p>
      *
-     * @param marcHandler the {@link MarcHandler} implementation
+     * @param mh the {@link MarcHandler} implementation
      */
     public void setMarcHandler(MarcHandler mh) {
 	this.mh = mh;
@@ -81,7 +81,7 @@ public class MarcReader {
      /**
      * <p>Registers the <code>ErrorHandler</code> implementation.</p>
      *
-     * @param errorHandler the {@link ErrorHandler} implementation
+     * @param eh the {@link ErrorHandler} implementation
      */
     public void setErrorHandler(ErrorHandler eh) {
 	this.eh = eh;

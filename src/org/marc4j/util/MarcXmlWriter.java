@@ -1,4 +1,4 @@
-// $Id: MarcXmlWriter.java,v 1.18 2003/04/11 20:42:01 bpeters Exp $
+// $Id: MarcXmlWriter.java,v 1.19 2004/06/06 09:34:22 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -50,13 +50,23 @@ import org.marc4j.marcxml.Converter;
  * <p>For usage, run from the command-line with the following command:</p>
  * <p><code>java org.marc4j.util.MarcXmlWriter -usage</code></p>
  *
+ * <p><b>A note about character encodings:</b><br/>
+ * If no input or output encoding is specified on the command-line the 
+ * default charset is used. To specify input or output encodings use
+ * charset names supported by your Java virtual machine. The following 
+ * command-line example convert ANSEL to UTF-8:<br/>
+ * <pre>
+ * java org.marc4j.util.MarcXmlWriter -ie ISO8859_1 -oe UTF8 -convert ANSEL -out output.xml input.mrc
+ * </pre><b>Note:</b> the Latin-1 encoding (ISO8859_1) is used since ANSEL is not a 
+ * supported character encoding.</p>
+ *
  * <p>Check the home page for <a href="http://www.loc.gov/standards/marcxml/">
  * MARCXML</a> for more information about the MARCXML format.</p>
  *
  * <p><b>Note:</b> this class requires a JAXP compliant XSLT processor.</p> 
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  *
  * @see MarcXmlReader
  * @see Converter
@@ -69,7 +79,9 @@ public class MarcXmlWriter {
      */
     public static void main(String args[]) {
         String input = null;
+	String inputEncoding = null;
         String output = null;
+	String outputEncoding = null;
         String stylesheet = null;
 	boolean dtd = false;
 	boolean xsd = false;
@@ -87,6 +99,16 @@ public class MarcXmlWriter {
                     usage();
                 }
                 output = args[++i].trim();
+            } else if (args[i].equals("-ie")) {
+                if (i == args.length - 1) {
+                    usage();
+                }
+                inputEncoding = args[++i].trim();
+            } else if (args[i].equals("-oe")) {
+                if (i == args.length - 1) {
+                    usage();
+                }
+                outputEncoding = args[++i].trim();
             } else if (args[i].equals("-dtd")) {
                 dtd = true;
             } else if (args[i].equals("-xsd")) {
@@ -137,21 +159,39 @@ public class MarcXmlWriter {
 
 	    // If convert is true ISO8859_1 is used to read the incoming stream.
 	    BufferedReader reader;
-	    if (convert != null)
-		reader = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(input), "ISO8859_1"));
+	    //if (convert != null)
+	    //	reader = new BufferedReader(new InputStreamReader(
+            //        new FileInputStream(input), "ISO8859_1"));
+	    //else
+	    //		reader = new BufferedReader(new InputStreamReader(
+            //        new FileInputStream(input), "UTF8"));
+
+	    if (inputEncoding != null)
+		reader = new BufferedReader(new InputStreamReader(new FileInputStream(input), inputEncoding));
 	    else
-		reader = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(input), "UTF8"));
+		reader = new BufferedReader(new InputStreamReader(new FileInputStream(input)));
+
 	    InputSource in = new InputSource(reader);
 	    Source source = new SAXSource(producer, in);
 	    Writer writer;
-	    if (output == null)
-		writer = new BufferedWriter(new OutputStreamWriter(System.out, "UTF8"));
+
+	    //if (output == null)
+	    //	writer = new BufferedWriter(new OutputStreamWriter(System.out, "UTF8"));
+	    //else
+	    //	writer = new BufferedWriter(new OutputStreamWriter(
+            //        new FileOutputStream(output), "UTF8"));
+
+	    if (output == null && outputEncoding != null)
+		writer = new BufferedWriter(new OutputStreamWriter(System.out, outputEncoding));
+	    else if (output != null && outputEncoding == null)
+		writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output)));
+	    else if (output != null && outputEncoding != null)
+		writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output), outputEncoding));
 	    else
-		writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(output), "UTF8"));
+		writer = new BufferedWriter(new OutputStreamWriter(System.out));
+
 	    Result result = new StreamResult(writer);
+
 	    Converter converter = new Converter();
 	    if (stylesheet != null) {
 		Source style = new StreamSource(new File(stylesheet).toURL().toString());
@@ -180,6 +220,8 @@ public class MarcXmlWriter {
         System.err.println("       -xsd = Add W3C XML Schema Location to root element");
         System.err.println("       -xsl <file> = Postprocess MARCXML using XSLT stylesheet <file>");
         System.err.println("       -out <file> = Output using <file>");
+        System.err.println("       -ie <encoding> = Input using charset <encoding>");
+        System.err.println("       -oe <encoding> = Output using charset <encoding>");
         System.err.println("       -convert [ANSEL | ISO5426 | ISO6937] = convert to UTF-8 using");
 	System.err.println("          specified character set");
         System.err.println("       -usage or -help = this message");

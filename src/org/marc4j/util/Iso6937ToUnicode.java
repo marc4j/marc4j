@@ -1,4 +1,4 @@
-// $Id: Iso6937ToUnicode.java,v 1.3 2002/12/13 13:33:56 ypratter Exp $
+// $Id: Iso6937ToUnicode.java,v 1.4 2004/06/06 09:34:22 bpeters Exp $
 /**
 * Copyright (C) 2002 Bas  Peters  (mail@bpeters.com)
 * Copyright (C) 2002 Yves Pratter (ypratter@club-internet.fr)
@@ -28,7 +28,7 @@ import java.util.*;
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
  * @author <a href="mailto:ypratter@club-internet.fr">Yves Pratter</a> 
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Iso6937ToUnicode implements CharacterConverter {
 
@@ -38,8 +38,8 @@ public class Iso6937ToUnicode implements CharacterConverter {
      * @param data the ISO 6937 data
      * @return {@link String} - the UCS/Unicode data
      */
-    public String convert(String s) {
-	return new String(convert(s.toCharArray()));
+    public String convert(String data) {
+	return new String(convert(data.toCharArray()));
     }
 
     /**

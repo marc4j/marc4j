@@ -1,4 +1,4 @@
-// $Id: MarcXmlReader.java,v 1.1 2003/04/11 20:41:29 bpeters Exp $
+// $Id: MarcXmlReader.java,v 1.2 2004/06/06 09:34:22 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -53,7 +53,7 @@ import org.marc4j.util.AnselToUnicode;
  * a SAX2 <code>ContentHandler</code>.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
  * @see MarcHandler
  * @see ContentHandler
@@ -167,7 +167,7 @@ public class MarcXmlReader
     /**
      * <p>Not supported.</p>
      *
-     * @param eh
+     * @param seh
      */
     public void setErrorHandler(org.xml.sax.ErrorHandler seh) {}
 

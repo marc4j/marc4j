@@ -1,4 +1,4 @@
-// $Id: IllegalAddException.java,v 1.4 2002/08/03 15:14:39 bpeters Exp $
+// $Id: IllegalAddException.java,v 1.5 2004/06/06 09:34:22 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -25,7 +25,7 @@ package org.marc4j.marc;
  * supplied object is illegal.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
  */
 public class IllegalAddException extends IllegalArgumentException {
@@ -34,7 +34,7 @@ public class IllegalAddException extends IllegalArgumentException {
      * <p>Creates an <code>Exception</code> indicating that the addttion
      * of the supplied object is illegal.</p>
      *
-     * @param tag the tag name
+     * @param name the object name
      * @param reason the reason why the exception is thrown
      */
     public IllegalAddException(String name, String reason) {

@@ -1,4 +1,4 @@
-// $Id: AnselToUnicode.java,v 1.13 2003/03/23 12:05:54 bpeters Exp $
+// $Id: AnselToUnicode.java,v 1.14 2004/06/06 09:34:22 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -27,7 +27,7 @@ import java.util.*;
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a>
  * @author <a href="mailto:ckeith@loc.gov">Corey Keith</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class AnselToUnicode
     implements CharacterConverter {
@@ -123,8 +123,8 @@ public class AnselToUnicode
      * @param data the MARC-8 data
      * @return {@link String} - the UCS/Unicode data
      */
-    public String convert(String s) {
-	return new String(convert(s.toCharArray()));
+    public String convert(String data) {
+	return new String(convert(data.toCharArray()));
     }
 
     private void checkMode(char[] data, CodeTracker cdt) {

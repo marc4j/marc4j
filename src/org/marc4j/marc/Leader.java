@@ -1,4 +1,4 @@
-// $Id: Leader.java,v 1.10 2003/03/31 19:55:26 ceyates Exp $
+// $Id: Leader.java,v 1.11 2004/06/06 09:34:22 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -43,7 +43,7 @@ import java.io.Serializable;
  * <p>This structure is returned by the {@link #marshal()} method.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  *
  */
 public class Leader implements Serializable {
@@ -111,7 +111,7 @@ public class Leader implements Serializable {
     /**
      * <p>Registers the type of record (position 06).</p>
      *
-     * @param recordLength character representing the
+     * @param typeOfRecord character representing the
      *                     type of record
      */
     public void setTypeOfRecord(char typeOfRecord) {

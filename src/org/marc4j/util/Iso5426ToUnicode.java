@@ -1,4 +1,4 @@
-// $Id: Iso5426ToUnicode.java,v 1.4 2002/12/12 13:47:19 ypratter Exp $
+// $Id: Iso5426ToUnicode.java,v 1.5 2004/06/06 09:34:22 bpeters Exp $
 /**
 * Copyright (C) 2002 Bas  Peters  (mail@bpeters.com)
 * Copyright (C) 2002 Yves Pratter (ypratter@club-internet.fr)
@@ -28,7 +28,7 @@ import java.util.*;
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
  * @author <a href="mailto:ypratter@club-internet.fr">Yves Pratter</a> 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Iso5426ToUnicode implements CharacterConverter {
 
@@ -38,8 +38,8 @@ public class Iso5426ToUnicode implements CharacterConverter {
      * @param data the UNIMARC data
      * @return {@link String} - the UCS/Unicode data
      */
-    public String convert(String s) {
-	return new String(convert(s.toCharArray()));
+    public String convert(String data) {
+	return new String(convert(data.toCharArray()));
     }
 
     /**
