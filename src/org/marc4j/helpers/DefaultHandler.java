@@ -31,7 +31,7 @@ import org.marc4j.MarcReaderException;
 import org.marc4j.marc.Leader;
 
 /**
- * <p>This provides default implementations for the callbacks 
+ * <p>Provides default implementations for the callbacks 
  * in the <code>MarcHandler</code> and <code>ErrorHandler</code>
  * interface.   </p>
  *

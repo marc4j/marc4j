@@ -70,8 +70,8 @@ import org.marc4j.marcxml.Converter;
  *
  * @author Bas Peters
  * @see MarcXmlHandler
- * @see RecordBuilder
  * @see RecordMarshaller
+ * @see Converter
  */
 public class XmlMarcWriter {
 

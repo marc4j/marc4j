@@ -63,6 +63,7 @@ import org.marc4j.marcxml.Converter;
  *
  * @author Bas Peters
  * @see MarcXmlFilter
+ * @see Converter
  */
 public class MarcXmlWriter {
 

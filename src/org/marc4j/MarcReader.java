@@ -29,6 +29,7 @@ import java.io.Reader;
 import java.io.InputStreamReader;
 import java.io.FileReader;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.IOException;
 import org.marc4j.marc.MarcConstants;
 import org.marc4j.marc.Tag;
@@ -92,7 +93,8 @@ public class MarcReader {
      *
      * @param filename the filename
      */
-    public void parse(String file) throws IOException {
+    public void parse(String file) 
+	throws IOException {
 	parse(new BufferedReader(new FileReader(file)));
      }
 
@@ -101,11 +103,28 @@ public class MarcReader {
      *
      * @param input the input stream reader
      */
-    public void parse(InputStreamReader input) throws IOException {
-	parse(new BufferedReader(input));
+    public void parse(InputStream input) 
+	throws IOException {
+	parse(new InputStreamReader(input));
     }
 
-    public void parse(BufferedReader input) throws IOException {
+    //    /**
+    //* <p>Sends an input stream reader to the MARC parser.</p>
+    //*
+    //* @param input the input stream reader
+    //*/
+    //public void parse(InputStreamReader input) 
+    //	throws IOException {
+    //	parse(input);
+    //}
+
+    //    public void parse(BufferedReader input) 
+    //	throws IOException {
+    //	parse((Reader)input);
+    //    }
+
+    public void parse(Reader input) 
+	throws IOException {
 	int ldrLength = 24;
 
 	if (! input.ready())

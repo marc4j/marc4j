@@ -48,6 +48,7 @@ import org.marc4j.MarcReader;
  * or transformation from a source, populating a result.  </p>
  *
  * @author Bas Peters
+ * @see Transformer
  */
 public class Converter {
 
@@ -64,7 +65,7 @@ public class Converter {
     public Converter() {}
 
     /**
-     * <p>This converts a <code>Source</code> into a <code>Result</code>.</p>
+     * <p>Converts a <code>Source</code> into a <code>Result</code>.</p>
      *
      * @param source the {@link Source} object
      * @param result the {@link Result} object
@@ -81,7 +82,8 @@ public class Converter {
     }
 
     /**
-     * <p>This converts a <code>Source</code> into a <code>Result</code>.</p>
+     * <p>Converts and transforms or transforms and converts a <code>Source</code> 
+     * into a <code>Result</code>.</p>
      *
      * @param stylesheet the stylesheet {@link Source} object
      * @param source the {@link Source} object
@@ -119,9 +121,13 @@ public class Converter {
 	}
     }
 
-    public void convert(MarcSource source, MarcResult result)
+    private void convert(MarcSource source, MarcResult result)
 	throws IOException {
-	MarcReader reader = source.getMarcReader();
+	MarcReader reader;
+	if (source.getMarcReader() != null)
+	     reader = source.getMarcReader();
+	else
+	    reader = new MarcReader();
 	reader.setMarcHandler(result.getHandler());
 	if (source.getReader() != null)
 	    reader.parse(source.getReader());
@@ -146,7 +152,7 @@ public class Converter {
     }
 
     /**
-     * <p>This clears the <code>Templates</code> cache.</p>
+     * <p>Clears the <code>Templates</code> cache.</p>
      *
      * @see Templates
      */
