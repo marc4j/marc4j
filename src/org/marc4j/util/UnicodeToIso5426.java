@@ -1,4 +1,4 @@
-// $Id: UnicodeToIso5426.java,v 1.3 2002/12/12 14:12:59 ypratter Exp $
+// $Id: UnicodeToIso5426.java,v 1.4 2002/12/12 14:20:49 ypratter Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -28,7 +28,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
  * @author <a href="mailto:ypratter@club-internet.fr">Yves Pratter</a> 
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class UnicodeToIso5426 implements CharacterConverter {
 
@@ -413,10 +413,10 @@ public class UnicodeToIso5426 implements CharacterConverter {
             case 0x1EF9: return 0xC479;  // small   y with tilde
             case 0x2017: return 0xD920;  // double underline
             case 0x2018: return 0xA9;    // 2/9	left high single quotation mark
-            case 0x2018: return 0xB2;    // 3/2	left low single quotation mark
+//          case 0x2018: return 0xB2;    // 3/2	left low single quotation mark
             case 0x2019: return 0xB9;    // 3/9	right high single quotation mark
             case 0x201C: return 0xA2;    // 2/2	left low double quotation mark
-            case 0x201C: return 0xAA;    // 2/10	left high double quotation mark
+//          case 0x201C: return 0xAA;    // 2/10	left high double quotation mark
             case 0x201D: return 0xBA;    // 3/10	right high double quotation mark
             case 0x2020: return 0xA6;    // 2/6	single dagger
             case 0x2021: return 0xB6;    // 3/6	double dagger
