@@ -1,4 +1,4 @@
-// $Id: MarcWriter.java,v 1.5 2002/07/07 15:23:16 bpeters Exp $
+// $Id: TaggedWriter.java,v 1.1 2002/07/07 15:23:38 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -30,26 +30,19 @@ import java.io.Writer;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
-import org.marc4j.marc.*;
 import org.marc4j.MarcHandler;
+import org.marc4j.marc.Leader;
 
 /**
  * <p>Implements the <code>MarcHandler</code> interface
- * to write record objects to tape format (ISO 2709).</p>
+ * to write MARC data in tagged display format.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.1 $
  *
  * @see MarcHandler
  */
-public class MarcWriter 
-    implements MarcHandler {
-
-    /** Record object */
-    private Record record;
-
-    /** Data field object */
-    private DataField datafield;
+public class TaggedWriter implements MarcHandler {
 
     /** The Writer object */
     private Writer out;
@@ -58,7 +51,7 @@ public class MarcWriter
      * <p>Default constructor.</p>
      *
      */
-    public MarcWriter() throws IOException { 
+    public TaggedWriter() throws IOException { 
 	this(System.out); 
     }
 
@@ -68,7 +61,7 @@ public class MarcWriter
      * @param out the {@link OutputStream} object
      *
      */
-    public MarcWriter(OutputStream out) throws IOException {
+    public TaggedWriter(OutputStream out) throws IOException {
 	this(new OutputStreamWriter(out));
     }
 
@@ -79,7 +72,7 @@ public class MarcWriter
      * @param encoding the encoding
      *
      */
-    public MarcWriter(OutputStream out, String encoding) 
+    public TaggedWriter(OutputStream out, String encoding) 
 	throws IOException {
 	this(new OutputStreamWriter(out, encoding));
     }
@@ -89,7 +82,7 @@ public class MarcWriter
      *
      * @param out the {@link Writer} object
      */
-    public MarcWriter(Writer out) {
+    public TaggedWriter(Writer out) {
 	setWriter(out);
     }
 
@@ -112,34 +105,37 @@ public class MarcWriter
     }
 
     public void startRecord(Leader leader) {
-	this.record = new Record();
-	record.add(leader);
+	rawWrite("Leader ");
+	rawWrite(leader.marshal());
+	rawWrite('\n');
     }
 
     public void controlField(String tag, char[] data) {
-	record.add(new ControlField(tag, data));
+	rawWrite(tag);
+	rawWrite(' ');
+	rawWrite(new String(data));
+	rawWrite('\n');
     }
 
     public void startDataField(String tag, char ind1, char ind2) {
-	datafield = new DataField(tag, ind1, ind2);
+	rawWrite(tag);
+	rawWrite(' ');
+	rawWrite(ind1);
+	rawWrite(ind2);
     }
 
     public void subfield(char code, char[] data) {
-	datafield.add(new Subfield(code, data));
+	rawWrite('$');
+	rawWrite(code);
+	rawWrite(new String(data));
     }
 
     public void endDataField(String tag) {
-	record.add(datafield);
+	rawWrite('\n');
     }
 
     public void endRecord() {
-	try {
-	    rawWrite(record.marshal());
-	} catch (IOException e) {
-	    e.printStackTrace();
-	} catch (MarcException e) {
-	    e.printStackTrace();
-	}
+	rawWrite('\n');
     }
 
     public void endCollection() {
@@ -151,9 +147,20 @@ public class MarcWriter
 	}
     }
 
-    private void rawWrite(String s)
-	throws IOException {
-	out.write(s);
+    private void rawWrite(char c) {
+	try {
+	    out.write(c);
+	} catch (IOException e) {
+	    e.printStackTrace();
+	} 
     }
 
+    private void rawWrite(String s) {
+	try {
+	    out.write(s);
+	} catch (IOException e) {
+	    e.printStackTrace();
+	} 
+    }
+    
 }
