@@ -21,12 +21,11 @@
   <target name="jar" depends="compile">
     <mkdir dir="${dist}/lib" />
     <jar jarfile="${dist}/lib/marc4j.jar" basedir="${build}"/>
-    <deltree dir="${build}" />
   </target>
 
   <target name="javadoc" depends="init">
     <mkdir dir="${apidoc}"/>
-    <javadoc packagenames="com.bpeters.marc4j.*,com.bpeters.marc.*,com.bpeters.samples.*,com.bpeters.util.*"
+    <javadoc packagenames="org.marc4j.*,org.marc4j.marc.*,org.marc4j.helpers.*,org.marc4j.util.*"
            sourcepath="src"
            destdir="${dist}/apidoc"
            author="true"
@@ -41,6 +40,7 @@
 
   <target name="clean" depends="init">
     <deltree dir="${dist}" />
+    <deltree dir="${build}" />
   </target>
 
   <target name="dist" depends="init">
@@ -53,7 +53,7 @@
     <copydir src="${dist}/apidoc" dest="${dist_dir}/apidoc"/>
     <copydir src="${dist}/lib" dest="${dist_dir}/lib"/>
     <copydir src="${src}" dest="${dist_dir}/src"/>
-    <copydir src="." includes="lgpl.txt" dest="${dist_dir}/"/>
+    <copydir src="." includes="lgpl.txt, build.xml, build.bat" dest="${dist_dir}/"/>
     <tar tarfile="${dist_arc}.tar" basedir="${tmp_dir}"/>
     <gzip zipfile="${dist_arc}.tar.gz" src="${dist_arc}.tar"/>
     <delete file="${dist_arc}.tar"/>
