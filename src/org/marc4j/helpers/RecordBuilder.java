@@ -1,4 +1,4 @@
-// $Id: RecordBuilder.java,v 1.4 2002/08/03 15:14:39 bpeters Exp $
+// $Id: RecordBuilder.java,v 1.5 2003/05/08 16:30:48 ceyates Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -30,7 +30,7 @@ import org.marc4j.marc.*;
  * events to the <code>RecordHandler</code>.   </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
  * @see RecordHandler
  */
@@ -40,10 +40,10 @@ public class RecordBuilder implements MarcHandler {
     private RecordHandler recordHandler;
 
     /** Record object */
-    private static Record record;
+    private Record record;
 
     /** Data field object */
-    private static DataField datafield;
+    private DataField datafield;
 
     /**
      * <p>Registers the <code>RecordHandler</code> object.  </p>
