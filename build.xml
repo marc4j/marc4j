@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="marc4j" default="jar" basedir=".">
 
-  <!-- $Id: build.xml,v 1.15 2003/03/31 19:57:15 ceyates Exp $ -->
+  <!-- $Id: build.xml,v 1.16 2004/06/06 09:35:06 bpeters Exp $ -->
   <target name="init">
     <tstamp/>
-    <property name="src" value="src"/>
-    <property name="build" value="build"/>
-    <property name="dist" value="dist"/>
-    <property name="apidoc" value="${dist}/doc/apidoc"/>
-    <property name="version" value="b7"/>
-    <property name="name" value="marc4j"/>
+    <record name="build.log" loglevel="verbose" append="no"/>
   </target>
 
+  <property file="build.properties"/>
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
   <target name="prepare" depends="init">
-    <mkdir dir="${build}"/>
+    <mkdir dir="${build.dir}"/>
   </target>
 
   <target name="compile" depends="prepare">
-    <javac srcdir="${src}" destdir="${build}">
-      <classpath>
-        <fileset dir="lib">
-          <include name="*.jar"/>
-        </fileset>
-      </classpath>
+    <javac srcdir="${src.dir}" destdir="${build.dir}">
+      <classpath refid="classpath"/>
     </javac>
-    <copy todir="${build}">
-      <fileset dir="src">
+    <copy todir="${build.dir}">
+      <fileset dir="${src.dir}">
         <include name="**/*.properties" />
         <include name="**/*.xml" />
         <exclude name="**/tests/*" />
@@ -35,77 +34,66 @@
   </target>
 
   <target name="jar" depends="compile">
-    <mkdir dir="${dist}/lib"/>
-    <jar jarfile="${dist}/lib/marc4j.jar" >
-      <fileset dir="${build}">
-        <include name="**/*.class" />
-        <include name="**/*.properties" />
-        <include name="**/*.xml" />
+    <jar jarfile="${project.name}.jar" >
+      <fileset dir="${build.dir}">
+	<include name="**/*.class" />
+	<include name="**/*.properties" />
+	<include name="**/*.xml" />
       </fileset>
     </jar>
   </target>
 
   <target name="javadoc" depends="init">
-    <mkdir dir="${apidoc}"/>
+    <mkdir dir="${apidoc.dir}"/>
     <javadoc packagenames="org.marc4j.*"
            excludepackagenames="org.marc4j.tests.*"
            sourcepath="src"
-           destdir="${dist}/apidoc"
+           destdir="${apidoc.dir}"
            author="true"
            version="true"
            use="true"
-           windowtitle="${name}"
-           doctitle="${name}"
-           bottom="Copyright &#169; 2001-2003 Bas Peters. All Rights Reserved.">
+           windowtitle="${project.name}"
+           doctitle="${project.name}"
+           bottom="Copyright &#169; 2001-2004 Bas Peters. All Rights Reserved.">
       <link offline="true" href="http://java.sun.com/products/jdk/1.4/docs/api/" packagelistLoc="."/>
     </javadoc>
   </target>
 
   <target name="clean" depends="init">
-    <delete dir="${dist}" />
-    <delete dir="${build}" />
+    <delete dir="${dist.dir}" />
+    <delete dir="${build.dir}" />
   </target>
 
-  <target name="dist" depends="init">
-    <mkdir dir="${dist}"/>
-    <property name="prefix" value="marc4j-${version}"/>
-    <property name="tmp_dir" value="${dist}/tmp"/>
-    <property name="dist_dir" value="${tmp_dir}/${prefix}"/>
-    <property name="dist_arc" value="${dist}/${prefix}"/>
-    <mkdir dir="${dist_dir}"/>
-    <copy todir="${dist_dir}/doc/apidoc">
-      <fileset dir="${dist}/apidoc"/>
-    </copy>
-    <copy todir="${dist_dir}/src">
-      <fileset dir="${src}">
-        <exclude name="**/tests/*" />
-        <exclude name="**/tests" />
-      </fileset>
-    </copy>
-    <copy todir="${dist_dir}/lib">
-      <fileset dir="lib"/>
-    </copy>
-    <copy todir="${dist_dir}">
-      <fileset dir="${dist}/lib" includes="${name}.jar"/>
-    </copy>
-    <copy todir="${dist_dir}/doc">
-      <fileset dir="www/doc/" includes="index.html"/>
-    </copy>
-    <copy todir="${dist_dir}/">
+ <target name="dist" depends="jar">
+    <property name="prefix" value="${project.name}-${version}"/>
+    <property name="tmp.dir" value="${dist.dir}/tmp"/>
+    <property name="tmp.arc.dir" value="${tmp.dir}/${prefix}"/>
+    <property name="dist.arc" value="${dist.dir}/${prefix}"/>
+    <mkdir dir="${tmp.arc.dir}"/>
+    <copy todir="${tmp.arc.dir}">
       <fileset dir=".">
-        <include name="lgpl.txt"/>
-        <include name="build.xml"/>
-        <include name="build.bat"/>
-        <include name="MARC21slim.rng"/>
-        <include name="MARC21slim.dtd"/>
+        <include name="LICENSE.*"/>
+        <include name="build.*"/>
+        <exclude name="*.log"/>
+        <include name="*.jar"/>
+        <include name="*.html"/>
       </fileset>
     </copy>
-    <tar tarfile="${dist_arc}.tar" basedir="${tmp_dir}"/>
-    <gzip zipfile="${dist_arc}.tar.gz" src="${dist_arc}.tar"/>
-    <delete file="${dist_arc}.tar"/>
-    <delete file="${dist_arc}.zip"/>
-    <zip compress="true" basedir="${tmp_dir}" zipfile="${dist_arc}.zip"/>
-    <delete dir="${tmp_dir}"/>
+    <copy todir="${tmp.arc.dir}/${src.dir}">
+      <fileset dir="${src.dir}"/>
+    </copy>
+    <copy todir="${tmp.arc.dir}/${lib.dir}">
+      <fileset dir="${lib.dir}"/>
+    </copy>
+    <copy todir="${tmp.arc.dir}/${apidoc.dir}">
+      <fileset dir="${apidoc.dir}"/>
+    </copy>
+    <tar tarfile="${dist.arc}.tar" basedir="${tmp.arc.dir}"/>
+    <gzip zipfile="${dist.arc}.tar.gz" src="${dist.arc}.tar"/>
+    <delete file="${dist.arc}.tar"/>
+    <delete file="${dist.arc}.zip"/>
+    <zip compress="true" basedir="${tmp.dir}" zipfile="${dist.arc}.zip"/>
+    <delete dir="${tmp.dir}"/>
   </target>
 
 </project>
