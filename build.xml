@@ -34,7 +34,7 @@
            use="true"
            windowtitle="${name}"
            doctitle="${name}"
-           bottom="Copyright &#169; 2001-2002 Bas Peters. All Rights Reserved">
+           bottom="Copyright &#169; 2001-2002 Bas Peters. All Rights Reserved.">
       <link offline="true" href="http://java.sun.com/products/jdk/1.4/docs/api/" packagelistLoc="."/>
     </javadoc>
   </target>

@@ -1,4 +1,4 @@
-// $Id: XmlMarcWriter.java,v 1.11 2002/07/07 15:23:16 bpeters Exp $
+// $Id: XmlMarcWriter.java,v 1.12 2002/07/09 20:26:43 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -69,7 +69,7 @@ import org.marc4j.marcxml.Converter;
  * MARCXML</a> for more information about the MARCXML format.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  *
  * @see MarcXmlHandler
  * @see MarcWriter
@@ -90,8 +90,8 @@ public class XmlMarcWriter {
         String input = null;
 	String output = null;
 	String stylesheet = null;
-	String encoding = null;
         String schemaSource = null;
+	boolean convert = false;
         boolean dtdValidate = false;
         boolean xsdValidate = false;
 
@@ -111,11 +111,8 @@ public class XmlMarcWriter {
                     usage();
                 }
                 output = args[++i];
-            } else if (args[i].equals("-encoding")) {
-                if (i == args.length - 1) {
-                    usage();
-                }
-                encoding = args[++i];
+            } else if (args[i].equals("-convert")) {
+                convert = true;
             } else if (args[i].equals("-xsl")) {
                 if (i == args.length - 1) {
                     usage();
@@ -141,17 +138,19 @@ public class XmlMarcWriter {
 	try {
 	    Writer writer;
 	    if (output == null) {
-		if (encoding != null)
-		    writer = new BufferedWriter(new OutputStreamWriter(System.out, encoding));
-		else
+		if (convert)
 		    writer = new BufferedWriter(new OutputStreamWriter(System.out));
-	    } else {
-		if (encoding != null)
-		    writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output), encoding));
 		else
+		    writer = new BufferedWriter(new OutputStreamWriter(System.out, "UTF8"));
+	    } else {
+		if (convert)
 		    writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output)));
+		else
+		    writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output), "UTF8"));
 	    }
 	    MarcWriter handler = new MarcWriter(writer);
+	    if (convert)
+		handler.setUnicodeToAnsel(true);
 
 	    SAXParserFactory factory = SAXParserFactory.newInstance();
 	    factory.setNamespaceAware(true);
@@ -196,7 +195,7 @@ public class XmlMarcWriter {
         System.err.println("       -xsdss <file> = W3C XML Schema validation using schema source <file>");
         System.err.println("       -xsl <file> = Preprocess XML using XSLT stylesheet <file>");
         System.err.println("       -out <file> = Output using <file>");
-        System.err.println("       -encoding <value> = Output using encoding <file>");
+        System.err.println("       -convert = Convert UTF-8 to ANSEL");
         System.err.println("       -usage or -help = this message");
         System.exit(1);
     }

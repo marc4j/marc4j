@@ -1,4 +1,4 @@
-// $Id: MarcWriter.java,v 1.5 2002/07/07 15:23:16 bpeters Exp $
+// $Id: MarcWriter.java,v 1.6 2002/07/09 20:26:43 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -38,7 +38,7 @@ import org.marc4j.MarcHandler;
  * to write record objects to tape format (ISO 2709).</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
  * @see MarcHandler
  */
@@ -53,6 +53,9 @@ public class MarcWriter
 
     /** The Writer object */
     private Writer out;
+
+    /** The character conversion option */
+    private boolean convert = false;
 
     /**
      * <p>Default constructor.</p>
@@ -103,6 +106,29 @@ public class MarcWriter
     }
 
     /**
+     * <p>Sets the character conversion option.</p>
+     *
+     * @param convert if true UTF-8 is converted to ANSEL
+     */
+    public void setUnicodeToAnsel(boolean convert) {
+	this.convert = convert;
+    }
+
+    /**
+     * <p>Registers the Writer object.</p>
+     *
+     * <p>If the encoding is ANSEL the input 
+     * stream will be converted.</p>
+     *
+     * @param out the {@link Writer} object
+     * @param convert the conversion option
+     */
+    public void setWriter(Writer out, boolean convert) {
+	this.out = out;
+	this.convert = convert;
+    }
+
+    /**
      * <p>System exits when the Writer object is null.</p>
      *
      */
@@ -125,7 +151,15 @@ public class MarcWriter
     }
 
     public void subfield(char code, char[] data) {
-	datafield.add(new Subfield(code, data));
+	if (convert)
+	    try {
+		datafield.add(new Subfield(code, 
+		    UnicodeToAnsel.convert(data)));
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
+	else
+	    datafield.add(new Subfield(code, data));
     }
 
     public void endDataField(String tag) {

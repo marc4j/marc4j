@@ -1,4 +1,4 @@
-// $Id: MarcXmlFilter.java,v 1.8 2002/07/08 20:16:23 bpeters Exp $
+// $Id: MarcXmlFilter.java,v 1.9 2002/07/09 20:27:02 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -50,7 +50,7 @@ import org.marc4j.util.AnselToUnicode;
  * a SAX2 <code>ContentHandler</code>.  </p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  *
  * @see ExtendedFilter
  * @see MarcHandler
@@ -304,8 +304,12 @@ public class MarcXmlFilter extends ExtendedFilter
 		ch.ignorableWhitespace("\n      ".toCharArray(), 0, 7);
 	    ch.startElement(NS_URI,"subfield","subfield", atts);
 	    if (convert) {
-                char[] unicodeData = AnselToUnicode.convert(data);
-                ch.characters(unicodeData, 0, unicodeData.length);
+		try {
+		    char[] unicodeData = AnselToUnicode.convert(data);
+		    ch.characters(unicodeData, 0, unicodeData.length);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
             } else {
                 ch.characters(data, 0, data.length);
             }

@@ -1,4 +1,4 @@
-// $Id: MarcXmlHandler.java,v 1.4 2002/07/06 14:05:30 bpeters Exp $
+// $Id: MarcXmlHandler.java,v 1.5 2002/07/09 20:27:02 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -36,13 +36,14 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import org.marc4j.MarcHandler;
 import org.marc4j.marc.Leader;
 import org.marc4j.marc.MarcException;
+import org.marc4j.util.UnicodeToAnsel;
 
 /**
  * <p><code>MarcXmlHandler</code> is a SAX2 <code>ContentHandler</code>
  * that reports events to the <code>MarcHandler</code> interface.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
  * @see MarcHandler
  * @see DefaultHandler
@@ -141,8 +142,9 @@ public class MarcXmlHandler extends DefaultHandler {
 		mh.endDataField(tag);
 	    tag = null;
 	} else if (name.equals("subfield")) {
+	    char[] ch = data.toString().toCharArray();
 	    if (mh != null)
-		mh.subfield(code.charAt(0), data.toString().toCharArray());
+		mh.subfield(code.charAt(0), ch);
 	    code = null;
 	}
 	data = null;
