@@ -7,7 +7,7 @@
     <property name="build" value="build"/>
     <property name="dist" value="dist"/>
     <property name="apidoc" value="${dist}/doc/apidoc"/>
-    <property name="version" value="20020627"/>
+    <property name="version" value="b6a"/>
     <property name="name" value="marc4j"/>
   </target>
 
@@ -46,7 +46,7 @@
 
   <target name="dist" depends="init">
     <mkdir dir="${dist}"/>
-    <property name="prefix" value="marc4j-${DSTAMP}"/>
+    <property name="prefix" value="marc4j-${version}"/>
     <property name="tmp_dir" value="${dist}/tmp"/>
     <property name="dist_dir" value="${tmp_dir}/${prefix}"/>
     <property name="dist_arc" value="${dist}/${prefix}"/>
@@ -55,7 +55,7 @@
     <copydir src="${dist}/lib" dest="${dist_dir}/lib"/>
     <copydir src="${src}" dest="${dist_dir}/src"/>
     <copydir src="./www/doc" includes="index.html" dest="${dist_dir}/doc"/>
-    <copydir src="." includes="lgpl.txt, build.xml, build.bat, MARC21slim.rng, MARC21slim.dtd" dest="${dist_dir}/"/>
+    <copydir src="." includes="gpl.txt, build.xml, build.bat, MARC21slim.rng, MARC21slim.dtd" dest="${dist_dir}/"/>
     <tar tarfile="${dist_arc}.tar" basedir="${tmp_dir}"/>
     <gzip zipfile="${dist_arc}.tar.gz" src="${dist_arc}.tar"/>
     <delete file="${dist_arc}.tar"/>
