@@ -1,3 +1,4 @@
+// $Id: ErrorHandler.java,v 1.2 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -28,7 +29,8 @@ package org.marc4j;
 /**
  * <p>Defines Java callbacks to handle exceptions.  </p>
  *
- * @author Bas Peters 
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.2 $
  */
 public interface ErrorHandler {
 

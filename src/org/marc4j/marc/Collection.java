@@ -1,3 +1,4 @@
+// $Id: Collection.java,v 1.4 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -35,7 +36,9 @@ import java.util.Iterator;
  * <p><code>Collection</code> defines behaviour for a collection of 
  * <code>Record</code> objects.  </p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.4 $
+ *
  */
 public class Collection {
 

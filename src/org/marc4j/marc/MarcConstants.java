@@ -1,3 +1,4 @@
+// $Id: MarcConstants.java,v 1.3 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -29,7 +30,9 @@ package org.marc4j.marc;
  * <p><code>MarcConstants</code> defines control characters 
  * as used in a record.  </p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.3 $
+ *
  */
 public class MarcConstants {
 

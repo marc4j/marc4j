@@ -1,3 +1,4 @@
+// $Id: DefaultHandler.java,v 1.4 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -38,7 +39,9 @@ import org.marc4j.marc.Leader;
  * <p>Application writers can extend this class when they need to
  * implement only part of an interface.</p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.4 $
+ *
  * @see MarcHandler
  * @see ErrorHandler
  */

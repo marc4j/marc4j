@@ -1,3 +1,4 @@
+// $Id: RecordHandler.java,v 1.3 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -28,9 +29,12 @@ package org.marc4j.helpers;
 import org.marc4j.marc.Record;
 
 /**
- * <p>Defines a set of Java callbacks to handle <code>Record</code> objects. </p>
+ * <p>Defines a set of Java callbacks to handle <code>Record</code> 
+ * objects. </p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.3 $
+ *
  * @see Record
  */
 public interface RecordHandler {

@@ -1,3 +1,4 @@
+// $Id: XmlMarcWriter.java,v 1.10 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -67,7 +68,9 @@ import org.marc4j.marcxml.Converter;
  * <p>Check the home page for <a href="http://www.loc.gov/standards/marcxml/">
  * MARCXML</a> for more information about the MARCXML format.</p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.10 $
+ *
  * @see MarcXmlHandler
  * @see MarcWriter
  * @see Converter

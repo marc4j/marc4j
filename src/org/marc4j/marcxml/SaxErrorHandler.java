@@ -1,3 +1,4 @@
+// $Id: SaxErrorHandler.java,v 1.3 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -35,8 +36,10 @@ import org.xml.sax.ErrorHandler;
  * <p><code>SaxErrorHandler</code> is a SAX2 <code>ErrorHandler</code> 
  * implementation.   </p>
  *
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.3 $
+ *
  * @see ErrorHandler
- * @author Bas Peters
  */
 public class SaxErrorHandler implements ErrorHandler {
 

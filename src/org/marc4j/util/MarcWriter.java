@@ -1,4 +1,4 @@
-// $Id: MarcWriter.java,v 1.3 2002/07/06 13:13:39 bpeters Exp $
+// $Id: MarcWriter.java,v 1.4 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -37,8 +37,9 @@ import org.marc4j.MarcHandler;
  * <p>Implements the <code>MarcHandler</code> interface
  * to write record objects to tape format (ISO 2709).</p>
  *
- * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.4 $
+ *
  * @see MarcHandler
  */
 public class MarcWriter 

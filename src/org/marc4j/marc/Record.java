@@ -1,3 +1,4 @@
+// $Id: Record.java,v 1.2 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -47,7 +48,9 @@ import java.util.Collections;
  * throws an {@link IllegalAddException} when more than one
  * control number field is supplied.</p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.2 $
+ *
  */
 public class Record {
 

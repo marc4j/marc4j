@@ -1,3 +1,4 @@
+// $Id: ExtendedFilter.java,v 1.3 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -35,7 +36,9 @@ import org.xml.sax.SAXNotSupportedException;
  * <p><code>ExtendedFilter</code> extends <code>XMLFilterImpl</code> 
  * with an implementation of the <code>LexicalHandler</code> interface.  </p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.3 $
+ *
  */
 public class ExtendedFilter extends XMLFilterImpl 
     implements LexicalHandler {

@@ -1,3 +1,4 @@
+// $Id: MarcHandler.java,v 1.3 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -30,7 +31,8 @@ import org.marc4j.marc.Leader;
 /**
  * <p>Defines Java callbacks to handle a collection of MARC records.  </p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.3 $
  */
 public interface MarcHandler {
 

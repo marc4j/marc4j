@@ -1,3 +1,4 @@
+// $Id: Converter.java,v 1.5 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -47,7 +48,9 @@ import org.marc4j.MarcReader;
  * <p><code>Converter</code> can be used to apply a conversion 
  * or transformation from a source, populating a result.  </p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.5 $
+ *
  * @see Transformer
  */
 public class Converter {

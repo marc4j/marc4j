@@ -1,3 +1,4 @@
+// $Id: DoctypeDecl.java,v 1.2 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -29,7 +30,9 @@ package org.marc4j.marcxml;
  * <p><code>DoctypeDecl</code> defines behaviour for a document type 
  * declaration.  </p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.2 $
+ *
  */
 public class DoctypeDecl {
 

@@ -1,3 +1,4 @@
+// $Id: RecordBuilder.java,v 1.2 2002/07/06 13:40:20 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -34,7 +35,9 @@ import org.marc4j.marc.*;
  * <p>Creates record objects from <code>MarcHandler</code> events and reports
  * events to the <code>RecordHandler</code>.   </p>
  *
- * @author Bas Peters
+ * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
+ * @version $Revision: 1.2 $
+ *
  * @see RecordHandler
  */
 public class RecordBuilder implements MarcHandler {
