@@ -1,4 +1,4 @@
-// $Id: MarcException.java,v 1.4 2002/08/03 15:14:39 bpeters Exp $
+// $Id: MarcException.java,v 1.5 2003/01/10 09:38:37 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -25,18 +25,68 @@ package org.marc4j.marc;
  * while processing a record object.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
  */
-public class MarcException extends Exception {
+public class MarcException extends RuntimeException {
+
+    private Throwable cause = null;
 
     /**
-     * <p>Creates an <code>Exception</code> indicating that an error
-     * occured while processing a Record object.</p>
+     * <p>Creates a new <code>MarcException</code>.</p>
      *
-     * @param message the reason why the exception is thrown
+     */
+    public MarcException() {
+	super();
+    }
+
+    /**
+     * <p>Creates a new <code>MarcException</code> with the 
+     * specified message.</p>
+     *
+     * @param message information about the cause of the exception
      */
     public MarcException(String message) {
 	super(message);
     }
+
+    /**
+     * <p>Creates a new <code>MarcException</code> with the 
+     * specified message and an underlying root cause.</p>
+     *
+     * @param message information about the cause of the exception
+     * @param ex the nested exception that caused this exception
+     */
+    public MarcException(String message, Throwable ex) {
+        super(message);
+        initCause(ex);
+    }
+    
+    /**
+     * <p>Return the root cause or null if there was no 
+     * original exception.</p>
+     *
+     * @return the root cause of this exception
+     */
+    public Throwable getCause() {
+        return cause;  
+    }
+
+    /**
+     * <p>Sets the root cause of this exception. This may 
+     * only be called once. Subsequent calls throw an 
+     * <code>IllegalStateException</code>.</p>
+     *
+     * @param cause the root cause of this exception
+     * @return the root cause of this exception
+     * @throws IllegalStateException if this method is called twice.
+     */
+    public Throwable initCause(Throwable cause) {
+        if (cause == null) 
+	    cause = cause; 
+        else 
+	    throw new IllegalStateException("Cannot reset the cause");
+        return cause;
+    }
+
 }
