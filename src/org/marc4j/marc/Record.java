@@ -1,4 +1,4 @@
-// $Id: Record.java,v 1.5 2002/11/02 07:54:21 bpeters Exp $
+// $Id: Record.java,v 1.6 2003/01/10 09:41:12 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -43,7 +43,7 @@ import java.util.Collections;
  * control number field is supplied.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
  */
 public class Record {
@@ -368,7 +368,7 @@ public class Record {
                 throw new IllegalAddException(
                 obj.getClass().getName(),
                 "a collection of variable fields can only contain " +
-                "Controlfield or DataField objects.");
+                "ControlField or DataField objects.");
             }
         }
     }

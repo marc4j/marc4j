@@ -1,4 +1,4 @@
-// $Id: Leader.java,v 1.8 2002/08/03 15:14:39 bpeters Exp $
+// $Id: Leader.java,v 1.9 2003/01/10 09:41:12 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -42,7 +42,7 @@ import java.io.ByteArrayInputStream;
  * <p>This structure is returned by the {@link #marshal()} method.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a> 
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  *
  */
 public class Leader {
@@ -86,14 +86,14 @@ public class Leader {
 	unmarshal(ldr);
     }
 
-     /**
+    /**
      * <p>Registers the logical record length (positions 00-04).  </p>
      *
      * @param recordLength integer representing the
      *                     record length
      */
     public void setRecordLength(int recordLength) {
-	    this.recordLength = recordLength;
+	this.recordLength = recordLength;
     }
 
     /**
@@ -103,7 +103,8 @@ public class Leader {
      *                     record status
      */
     public void setRecordStatus(char recordStatus) {
-	    this.recordStatus = recordStatus;
+	Verifier.checkDataElement(recordStatus);
+	this.recordStatus = recordStatus;
     }
 
     /**
@@ -113,7 +114,8 @@ public class Leader {
      *                     type of record
      */
     public void setTypeOfRecord(char typeOfRecord) {
-	    this.typeOfRecord = typeOfRecord;
+	Verifier.checkDataElement(typeOfRecord);
+	this.typeOfRecord = typeOfRecord;
     }
 
     /**
@@ -123,7 +125,8 @@ public class Leader {
      *                     implementation defined data
      */
     public void setImplDefined1(char[] implDefined1) {
-	    this.implDefined1 = implDefined1;
+	Verifier.checkDataElement(implDefined1);
+	this.implDefined1 = implDefined1;
     }
 
     /**
@@ -134,7 +137,8 @@ public class Leader {
      *                         character encoding
      */
     public void setCharCodingScheme(char charCodingScheme) {
-	    this.charCodingScheme = charCodingScheme;
+	Verifier.checkDataElement(charCodingScheme);
+	this.charCodingScheme = charCodingScheme;
     }
 
     /**
@@ -145,7 +149,7 @@ public class Leader {
      *                       in a data field
      */
     public void setIndicatorCount(int indicatorCount) {
-	    this.indicatorCount = indicatorCount;
+	this.indicatorCount = indicatorCount;
     }
 
     /**
@@ -155,7 +159,7 @@ public class Leader {
      *                           subfield code length
      */
     public void setSubfieldCodeLength(int subfieldCodeLength) {
-	    this.subfieldCodeLength = subfieldCodeLength;
+	this.subfieldCodeLength = subfieldCodeLength;
     }
 
     /**
@@ -165,7 +169,7 @@ public class Leader {
      *                          base address of data
      */
     public void setBaseAddressOfData(int baseAddressOfData) {
-	    this.baseAddressOfData = baseAddressOfData;
+	this.baseAddressOfData = baseAddressOfData;
     }
 
     /**
@@ -175,6 +179,7 @@ public class Leader {
      *                     implementation defined data
      */
     public void setImplDefined2(char[] implDefined2) {
+	Verifier.checkDataElement(implDefined2);
     	this.implDefined2 = implDefined2;
     }
 
@@ -185,7 +190,8 @@ public class Leader {
      *                 entry map
      */
     public void setEntryMap(char[] entryMap) {
-	    this.entryMap = entryMap;
+	Verifier.checkDataElement(entryMap);
+	this.entryMap = entryMap;
     }
 
     /**
@@ -194,7 +200,7 @@ public class Leader {
      * @return <code>int</code> - the record length
      */
     public int getRecordLength() {
-	    return recordLength;
+	return recordLength;
     }
 
     /**
@@ -203,7 +209,7 @@ public class Leader {
      * @return <code>char</code> - the record status
      */
     public char getRecordStatus() {
-	    return recordStatus;
+	return recordStatus;
     }
 
     /**
@@ -212,7 +218,7 @@ public class Leader {
      * @return <code>char</code> - the record type
      */
     public char getTypeOfRecord() {
-	    return typeOfRecord;
+	return typeOfRecord;
     }
 
     /**
@@ -258,7 +264,7 @@ public class Leader {
      * @return <code>int</code> - the base address of data
      */
     public int getBaseAddressOfData() {
-	    return baseAddressOfData;
+	return baseAddressOfData;
     }
 
     /**
@@ -268,7 +274,7 @@ public class Leader {
      * @return <code>char</code> - implementation defined values
      */
     public char[] getImplDefined2() {
-	    return implDefined2;
+	return implDefined2;
     }
 
     /**
@@ -277,13 +283,13 @@ public class Leader {
      * @return <code>char[]</code> - the entry map
      */
     public char[] getEntryMap() {
-	    return entryMap;
+	return entryMap;
     }
 
     /**
      * <p>Creates a leader object from a string object.</p>
      *
-     * <p>Indicator coutn and subfield code length are defaulted to 2 
+     * <p>Indicator count and subfield code length are defaulted to 2 
      * if they are not integer values.</p>
      * @param ldr the leader
      */
@@ -317,7 +323,7 @@ public class Leader {
 	    setImplDefined2(ldr.substring(17, 20).toCharArray());
 	    setEntryMap(ldr.substring(20, 24).toCharArray());
 	} catch (NumberFormatException e) {
-	    throw new MarcException("Unable to parse leader");
+	    throw new MarcException("Unable to parse leader", e);
 	}
     }
 
