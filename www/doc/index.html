@@ -205,7 +205,7 @@ class Driver {
     }  
 }</pre>
     <h2><a name="marctomarcxml">Converting MARC to MARCXML</a></h2>
-    <p>To convert MARC to MARCXML use <a href="apidoc/org/marc4j/marcxml/MarcXmlFilter.html">MarcXmlFilter</a>. This class is a subclass of <code>org.sax.xml.helpers.XmlFilterImpl</code> and produces SAX2 events that can be delivered to an XSLT processor or to another program that consumes SAX2 events. To output XML you can use a null-transform, or use an XMLWriter program. The following code sample shows the basic use of the <code>org.marc4j.marcxml.MarcXmlFilter</code>:</p>
+    <p>To convert MARC to MARCXML use <a href="apidoc/org/marc4j/marcxml/MarcXmlReader.html">MarcXmlReader</a>. This class is a subclass of <code>org.sax.xml.helpers.XmlFilterImpl</code> and produces SAX2 events that can be delivered to an XSLT processor or to another program that consumes SAX2 events. To output XML you can use a null-transform, or use an XMLWriter program. The following code sample shows the basic use of the <code>org.marc4j.marcxml.MarcXmlReader</code>:</p>
 <pre>
 class Driver {
     public static void main(String args[]) {
@@ -215,7 +215,7 @@ class Driver {
 	}
         String input = args[0];
         try {
-            MarcXmlFilter producer = new MarcXmlFilter();
+            MarcXmlReader producer = new MarcXmlReader();
 	    InputSource in = new InputSource(new InputStreamReader(new FileInputStream(input)));
 	    Source source = new SAXSource(producer, in);
 	    Writer writer = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -240,7 +240,7 @@ class Driver {
         String input = args[0];
         String stylesheet = (args.length > 1) ? args[1] : null;
         try {
-            MarcXmlFilter producer = new MarcXmlFilter();
+            MarcXmlReader producer = new MarcXmlReader();
 	    InputSource in = new InputSource(new InputStreamReader(new FileInputStream(input)));
 	    Source source = new SAXSource(producer, in);
 	    Writer writer = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -392,7 +392,7 @@ public class Driver {
 }
 </pre>
     <h1><a name="charconv">Character conversions</a></h1>
-    <p>MARC4J supports character conversions between MARC-8, also known as ANSEL and UCS/Unicode. The current release of MARC4J implements a significant part of the MARC-8 character set, but not all code tables are implemented. Converting a character array or string is simple. Both the convert method of <a href="apidoc/org/marc4j/util/AnselToUnicode.html">AnselToUnicode</a> and <a href="apidoc/org/marc4j/util/UnicodeToAnsel.html">UnicodeToAnsel</a> take a character array or string as parameter.</p>
+    <p>MARC4J provides full support for character conversions between MARC-8 (ANSEL) and UCS/Unicode. Converting a character array or string is simple. Both the convert method of <a href="apidoc/org/marc4j/util/AnselToUnicode.html">AnselToUnicode</a> and <a href="apidoc/org/marc4j/util/UnicodeToAnsel.html">UnicodeToAnsel</a> take a character array or string as parameter.</p>
     <p>The following code sample implements the subfield method in the <code>MarcHandler</code> interface and converts MARC-8 to UCS/Unicode:</p>
 <pre>
     public void subfield(char code, char[] data) {
@@ -401,6 +401,7 @@ public class Driver {
         char[] ch = AnselToUnicode.convert(data)
 	rawWrite(new String(ch)));
     }</pre>
+    <p>Besides conversions between MARC-8 and UCS/Unicode, MARC4J also provides character conversions between UCS/Unicode and ISO-5426 (<a href="apidoc/org/marc4j/util/Iso5426ToUnicode.html">Iso5426ToUnicode</a> and <a href="apidoc/org/marc4j/util/UnicodeToIso5426.html">UnicodeToIso5426</a>) and ISO-6937 (<a href="apidoc/org/marc4j/util/Iso6937ToUnicode.html">Iso6937ToUnicode</a> and <a href="apidoc/org/marc4j/util/UnicodeToIso6937.html">UnicodeToIso6937</a>).</p>
     <h1><a name="object">Using the record object model</a></h1>
     <p>The record object model can be used to edit MARC records as objects and to marshal record objects to MARC tape format. The following code sample implements the <code>MarcHandler</code> to build Record objects and marshal the objects to MARC tape format using the <code>marshal()</code> method in the <a href="apidoc/org/marc4j/marc/Record.html">Record</a> class:</p>
 <pre>
@@ -463,9 +464,9 @@ public class Driver {
     }
 </pre>
     <p>If you want to work with Record objects in your program, consider using the <a href="apidoc/org/marc4j/helpers/RecordBuilder.html">RecordBuilder</a> together with a <a href="apidoc/org/marc4j/helpers/RecordHandler.html">RecordHandler</a> implementation. The <code>RecordBuilder</code> creates MARC record objects and reports them to the <code>RecordHandler</code> interface. By using the record handler it is possible to handle large records sets. If you need access to a collection of record objects you can use the <a href="apidoc/org/marc4j/marc/Collection.html">Collection</a> class which serves as a container for a collection of record objects.</p>
-    <p>Copyright &#169; 2002 <a href="mailto:mail@bpeters.com">Bas Peters</a>. All Rights Reserved.</p>
-    <p>Last updated: $Date: 2002/08/18 12:55:40 $</p>
-    <!-- $Id: index.html,v 1.8 2002/08/18 12:55:40 bpeters Exp $ -->
+    <p>Copyright &#169; 2002-2003 <a href="mailto:mail@bpeters.com">Bas Peters</a>. All Rights Reserved.</p>
+    <p>Last updated: $Date: 2003/04/11 20:26:02 $</p>
+    <!-- $Id: index.html,v 1.9 2003/04/11 20:26:02 bpeters Exp $ -->
   </body>
 </html>
 
