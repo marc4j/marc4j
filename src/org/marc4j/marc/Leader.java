@@ -290,14 +290,23 @@ public class Leader {
      */
     public void unmarshal(String ldr) throws MarcException {
 	try {
-	    setRecordLength(Integer.parseInt(ldr.substring(0, 5)));
+	    String s;
+	    s = ldr.substring(0, 5);
+	    if (isInteger(s))
+		setRecordLength(Integer.parseInt(s));
+	    else
+		setRecordLength(0);
 	    setRecordStatus(ldr.charAt(5));
 	    setTypeOfRecord(ldr.charAt(6));
 	    setImplDefined1(ldr.substring(7, 9).toCharArray());
 	    setCharCodingScheme(ldr.charAt(9));
 	    setIndicatorCount(Integer.parseInt(String.valueOf(ldr.charAt(10))));
 	    setSubfieldCodeLength(Integer.parseInt(String.valueOf(ldr.charAt(11))));
-	    setBaseAddressOfData(Integer.parseInt(ldr.substring(12, 17)));
+	    s = ldr.substring(12, 17);
+	    if (isInteger(s))
+		setBaseAddressOfData(Integer.parseInt(s));
+	    else
+		setBaseAddressOfData(0);
 	    setImplDefined2(ldr.substring(17, 20).toCharArray());
 	    setEntryMap(ldr.substring(20, 24).toCharArray());
 	} catch (NumberFormatException e) {
@@ -326,4 +335,28 @@ public class Leader {
             .toString();
     }
 
+    private boolean isInteger(String value) {
+	int len = value.length();
+	if (len == 0)
+	    return false;
+	int i = 0;
+	do {
+	    switch (value.charAt(i)) {
+	    case '0':
+	    case '1':
+	    case '2':
+	    case '3':
+	    case '4':
+	    case '5':
+	    case '6':
+	    case '7':
+	    case '8':
+	    case '9':
+		break;
+	    default:
+		return false;
+	    }
+	} while (++i < len);
+	return true;
+    }
 }

@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * <p>Defines behaviour for a collection of <code>Record</code> objects.</p>
+ * <p><code>Collection</code> defines behaviour for a collection of 
+ * <code>Record</code> objects.  </p>
  *
  * @author Bas Peters
  */

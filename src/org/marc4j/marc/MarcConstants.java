@@ -26,7 +26,8 @@
 package org.marc4j.marc;
 
 /**
- * <p>Defines control characters as used in a record.  </p>
+ * <p><code>MarcConstants</code> defines control characters 
+ * as used in a record.  </p>
  *
  * @author Bas Peters
  */

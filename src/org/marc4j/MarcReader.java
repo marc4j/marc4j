@@ -112,7 +112,7 @@ public class MarcReader {
 	    reportFatalError("Unable to read input");
 
 	if (mh != null) 
-	    mh.startFile();
+	    mh.startCollection();
 
 	while(true) {
 	    Leader leader = null;
@@ -192,7 +192,7 @@ public class MarcReader {
 	}
 	input.close();
 	if (mh != null) 
-	    mh.endFile();
+	    mh.endCollection();
     }
 
     private void parseControlField(String tag, char[] field) {

@@ -28,21 +28,21 @@ package org.marc4j;
 import org.marc4j.marc.Leader;
 
 /**
- * <p>Defines Java callbacks to handle MARC records.  </p>
+ * <p>Defines Java callbacks to handle a collection of MARC records.  </p>
  *
  * @author Bas Peters
  */
 public interface MarcHandler {
 
     /**
-     * <p>Receives notification at the start of the file.</p>
+     * <p>Receives notification at the start of the collection.</p>
      */
-    public abstract void startFile();
+    public abstract void startCollection();
 
     /**
-     * <p>Receives notification at the end of the file.</p>
+     * <p>Receives notification at the end of the collection.</p>
      */
-    public abstract void endFile();
+    public abstract void endCollection();
 
     /**
      * <p>Receives notification at the start of each record.</p>
