@@ -85,7 +85,7 @@ public class Leader {
 
     public Leader() {}
 
-    public Leader(String ldr) {
+    public Leader(String ldr) throws MarcException {
 	unmarshal(ldr);
     }
 
@@ -288,17 +288,21 @@ public class Leader {
      *
      * @param ldr the leader
      */
-    public void unmarshal(String ldr) {
-	setRecordLength(Integer.parseInt(ldr.substring(0, 5)));
-        setRecordStatus(ldr.charAt(5));
-        setTypeOfRecord(ldr.charAt(6));
-        setImplDefined1(ldr.substring(7, 9).toCharArray());
-        setCharCodingScheme(ldr.charAt(9));
-        setIndicatorCount(Integer.parseInt(String.valueOf(ldr.charAt(10))));
-        setSubfieldCodeLength(Integer.parseInt(String.valueOf(ldr.charAt(11))));
-        setBaseAddressOfData(Integer.parseInt(ldr.substring(12, 17)));
-        setImplDefined2(ldr.substring(17, 20).toCharArray());
-        setEntryMap(ldr.substring(20, 24).toCharArray());
+    public void unmarshal(String ldr) throws MarcException {
+	try {
+	    setRecordLength(Integer.parseInt(ldr.substring(0, 5)));
+	    setRecordStatus(ldr.charAt(5));
+	    setTypeOfRecord(ldr.charAt(6));
+	    setImplDefined1(ldr.substring(7, 9).toCharArray());
+	    setCharCodingScheme(ldr.charAt(9));
+	    setIndicatorCount(Integer.parseInt(String.valueOf(ldr.charAt(10))));
+	    setSubfieldCodeLength(Integer.parseInt(String.valueOf(ldr.charAt(11))));
+	    setBaseAddressOfData(Integer.parseInt(ldr.substring(12, 17)));
+	    setImplDefined2(ldr.substring(17, 20).toCharArray());
+	    setEntryMap(ldr.substring(20, 24).toCharArray());
+	} catch (NumberFormatException e) {
+	    throw new MarcException("Unable to parse leader");
+	}
     }
 
     /**
