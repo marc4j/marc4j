@@ -18,13 +18,9 @@ public class MarcSource implements Source {
 	"http://org.marc4j.marcxml.MarcSource/feature";
 
     private String publicId = null;
-
     private String systemId = null;
-
     private InputStream	inputStream = null;
-
     private Reader reader = null;
-
     private MarcReader marcReader = null;
 
     public MarcSource() {}
@@ -54,6 +50,11 @@ public class MarcSource implements Source {
 
     public MarcSource(Reader reader) {
 	this.reader = reader;
+    }
+
+    public MarcSource(MarcReader marcReader, Reader reader) {
+	this.reader = reader;
+	setMarcReader(marcReader);
     }
 
     public MarcSource(Reader reader, String systemID) {
@@ -102,12 +103,7 @@ public class MarcSource implements Source {
     }
 
     public void setSystemId(File file) {
-	try {
-	    this.systemId = file.toURL().toString();
-	} catch (IOException e) {
-	    // can't happen
-	    throw new RuntimeException (e.getMessage());
-	}
+	this.systemId = file.getAbsolutePath();
     }
 
     public void setSystemId(String systemID) {

@@ -71,10 +71,13 @@ public class Converter {
      */
     public void convert(Source source, Result result) 
     	throws TransformerException, SAXException, IOException {
-	if (source instanceof MarcSource && result instanceof MarcResult)
+	if (source instanceof MarcSource && 
+	    result instanceof MarcResult) {
 	    convert((MarcSource)source, (MarcResult)result);
-	Source stylesheet = null;
-	convert(stylesheet, source, result);
+	} else {
+	    Source stylesheet = null;
+	    convert(stylesheet, source, result);
+	}
     }
 
     /**
@@ -120,12 +123,18 @@ public class Converter {
 	throws IOException {
 	MarcReader reader = source.getMarcReader();
 	reader.setMarcHandler(result.getHandler());
-	reader.parse(source.getInputStream());
+	if (source.getReader() != null)
+	    reader.parse(source.getReader());
+	else if (source.getInputStream() != null)
+	    reader.parse(source.getInputStream());
+	else if (source.getSystemId() != null)
+	    reader.parse(source.getSystemId());
+	else
+	    throw new IOException("Invalid MarcSource object");
     }
 
     private synchronized Templates tryCache(Source stylesheet)
 	throws TransformerException {
-
 	String uri = stylesheet.getSystemId();
         Templates templates = (Templates)cache.get(uri);
         if (templates == null) {
