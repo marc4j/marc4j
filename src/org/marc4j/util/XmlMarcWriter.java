@@ -38,7 +38,6 @@ import org.xml.sax.SAXNotRecognizedException;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.ParserConfigurationException;
-import org.marc4j.helpers.MarcXmlConsumer;
 import org.marc4j.helpers.SaxErrorHandler;
 import org.marc4j.util.RecordHandlerImpl;
 

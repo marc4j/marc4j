@@ -26,14 +26,16 @@
 package org.marc4j.util;
 
 import java.io.*;
-import org.xml.sax.*;
+import org.xml.sax.XMLReader;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.InputSource;
 import javax.xml.transform.*;
 import javax.xml.transform.sax.*;
 import javax.xml.transform.stream.*;
-import org.marc4j.MarcReader;
 import org.marc4j.helpers.ErrorHandlerImpl;
-import org.marc4j.helpers.MarcXmlProducer;
-
+import org.marc4j.helpers.DocType;
 
 /**
  * <p>Provides a driver for <code>MarcXmlProducer</code> 
@@ -61,6 +63,7 @@ public class MarcXmlWriter {
         String input = null;
         String output = null;
         String stylesheet = null;
+	boolean dtd = false;
         
 	for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-xsl")) {
@@ -73,6 +76,8 @@ public class MarcXmlWriter {
                     usage();
                 }
                 output = args[++i].trim();
+            } else if (args[i].equals("-dtd")) {
+                dtd = true;
             } else if (args[i].equals("-usage")) {
                 usage();
             } else if (args[i].equals("-help")) {
@@ -117,21 +122,27 @@ public class MarcXmlWriter {
             // Create a new MarcHandler object.
             MarcXmlProducer producer = new MarcXmlProducer();
 
+	    if (dtd) {
+		// Add a doctype declaration for DTD support
+		producer.setProperty("http://xml.org/sax/properties/lexical-handler", th);
+		producer.setDTD(new DocType("collection","-//MARC4J/DTD MARC21slim 0.1/EN","MARC21slim.dtd"));
+		// Turn validation on
+		//producer.setFeature("http://xml.org/sax/features/validation", true);
+	    }
+
             // Attach the consumer to the handler object.
             producer.setContentHandler(th);
 
-            // Create a new  MarcReader object.
-            MarcReader marcReader = new MarcReader();
+	    // Register the ErrorHandler
+	    producer.setMarcErrorHandler(new ErrorHandlerImpl());
 
-            // Register the MarcHandler implementation.
-            marcReader.setMarcHandler(producer);
+	    InputSource inputSource = new InputSource(new FileReader(input));
+	    producer.parse(inputSource);
 
-            // Register the ErrorHandler implementation.
-            marcReader.setErrorHandler(new ErrorHandlerImpl());
-
-            // Send the file to the parse method.
-	    marcReader.parse(input);
-
+	} catch (SAXNotSupportedException e) {
+            e.printStackTrace(System.err);
+	} catch (SAXNotRecognizedException e) {
+            e.printStackTrace(System.err);
 	} catch (TransformerConfigurationException e) {
             e.printStackTrace(System.err);
         } catch (IOException e) {
@@ -141,6 +152,7 @@ public class MarcXmlWriter {
 
     private static void usage() {
         System.err.println("Usage: MarcXmlWriter [-options] <file.xml>");
+        System.err.println("       -dtd = Add Document Type Declaration for MARC21slim.dtd");
         System.err.println("       -xsl <file> = Perform XSLT transformation using <file>");
         System.err.println("       -out <file> = Output using <file>");
         System.err.println("       -usage or -help = this message");
