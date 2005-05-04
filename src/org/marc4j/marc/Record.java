@@ -1,0 +1,139 @@
+//$Id: Record.java,v 1.9 2005/05/04 10:06:47 bpeters Exp $
+/**
+ * Copyright (C) 2004 Bas Peters
+ *
+ * This file is part of MARC4J
+ *
+ * MARC4J is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public 
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * MARC4J is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with MARC4J; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+package org.marc4j.marc;
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.marc4j.marc.Leader;
+
+/**
+ * Represents a MARC record.
+ * 
+ * @author Bas Peters
+ * @version $Revision: 1.9 $
+ */
+public interface Record extends Serializable {
+
+  /**
+   * Sets the type of record.
+   * 
+   * @param type
+   *          the type of record
+   */
+  public void setType(String type);
+
+  /**
+   * Returns the type of record.
+   * 
+   * @return String - the type of record
+   */
+  public String getType();
+
+  /**
+   * Adds a <code>VariableField</code>.
+   * 
+   * @param field
+   *          the <code>VariableField</code>
+   * @throws IllegalAddException
+   *           when the parameter is not a <code>VariableField</code> instance
+   */
+  public void addVariableField(VariableField field);
+
+  /**
+   * Removes a variable field from the collection.
+   * 
+   * @param field
+   *          the variable field
+   * @return true if the field is removed from the collection
+   */
+  public void removeVariableField(VariableField field);
+
+  /**
+   * Returns a list of variable fields
+   * 
+   * @return List - the variable fields
+   */
+  public List getVariableFields();
+
+  /**
+   * Returns a list of control fields
+   * 
+   * @return List - the control fields
+   */
+  public List getControlFields();
+
+  /**
+   * Returns a list of data fields
+   * 
+   * @return List - the data fields
+   */
+  public List getDataFields();
+
+  /**
+   * Returns the control number field or <code>null</code> if no control
+   * number field is available.
+   * 
+   * @return ControlField - the control number field
+   */
+  public ControlField getControlNumberField();
+
+  /**
+   * Returns the control number or <code>null</code> if no control number is
+   * available.
+   * 
+   * This method returns the data for a <code>ControlField</code>
+   * with tag 001.
+   * 
+   * @return String - the control number
+   */
+  public String getControlNumber();
+
+  /**
+   * Returns the first instance of the variable field with the given tag.
+   * 
+   * @return VariableField - the variable field
+   */
+  public VariableField getVariableField(String tag);
+
+  /**
+   * Returns a list of variable fields with the given tag.
+   * 
+   * @return List - the variable fields
+   */
+  public List getVariableFields(String tag);
+
+  /**
+   * Returns the <code>Leader</code>.
+   * 
+   * @return Leader - the <code>Leader</code>
+   */
+  public Leader getLeader();
+
+  /**
+   * Sets the <code>Leader</code>.
+   * 
+   * @param leader
+   *          the <code>Leader</code>
+   */
+  public void setLeader(Leader leader);
+
+}

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="marc4j" default="jar" basedir=".">
 
-  <!-- $Id: build.xml,v 1.16 2004/06/06 09:35:06 bpeters Exp $ -->
   <target name="init">
     <tstamp/>
     <record name="build.log" loglevel="verbose" append="no"/>
@@ -46,16 +45,18 @@
   <target name="javadoc" depends="init">
     <mkdir dir="${apidoc.dir}"/>
     <javadoc packagenames="org.marc4j.*"
-           excludepackagenames="org.marc4j.tests.*"
            sourcepath="src"
            destdir="${apidoc.dir}"
            author="true"
            version="true"
+	   overview="overview.html"
            use="true"
-           windowtitle="${project.name}"
-           doctitle="${project.name}"
-           bottom="Copyright &#169; 2001-2004 Bas Peters. All Rights Reserved.">
+           windowtitle="MARC4J API"
+           doctitle="MARC4J API"
+           bottom="Copyright &#169; 2002-2005 Bas Peters. All Rights Reserved.">
+      <classpath refid="classpath"/>
       <link offline="true" href="http://java.sun.com/products/jdk/1.4/docs/api/" packagelistLoc="."/>
+      <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
     </javadoc>
   </target>
 
@@ -83,7 +84,9 @@
       <fileset dir="${src.dir}"/>
     </copy>
     <copy todir="${tmp.arc.dir}/${lib.dir}">
-      <fileset dir="${lib.dir}"/>
+      <fileset dir="${lib.dir}">
+	<exclude name="junit.jar"/>
+      </fileset>
     </copy>
     <copy todir="${tmp.arc.dir}/${apidoc.dir}">
       <fileset dir="${apidoc.dir}"/>
