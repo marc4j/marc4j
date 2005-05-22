@@ -1,0 +1,608 @@
+<book revision="0.1">
+  <bookinfo>
+    <title>MARC4J</title>
+    <author>
+      <firstname>Bas</firstname>
+      <surname>Peters</surname>
+    </author>
+    <copyright>
+      <year>2005</year>
+      <holder>Bas Peters</holder>
+    </copyright>
+  </bookinfo>
+  <preface>
+    <title>Preface</title>
+    <para>This book is for library programmers who want to learn to use MARC4J to process MARC and XML data. MARC4J (<ulink url="http://marc4j.tigris.org">http://marc4j.tigris.org</ulink>) is an open source software library for working with MARC records in Java, a popular platform independent programming language. The MARC (Machine Readable Cataloging) format was originally designed to enable the exchange of bibliographic data between computer systems by providing a structure and format for the storage of bibliographic records on half-inch magnetic tape. Though today most records are transferred by other media, the exchange format has not changed since its first release in 1967 and is still widely used worldwide. At the same time, there is a growing interest in the use of XML in libraries, mainly because the Web is moving towards a platform- and application-independent interface for information services, with XML as its universal data format.</para>
+    <para>MARC4J is designed to bridge the gap between MARC and XML. The software library has build-in support for reading and writing MARC and MARC XML data. MARC XML is a simple XML schema for MARC data published by the Library of Congress. MARC4J also provides a "pipeline" to enable MARC records to go through further transformations using XSLT, for example to convert MARC records to MODS (Metadata Object Description Schema). This feature is particular useful since there is currently no agreed-upon standard for XML in library applications.</para>
+    <para>Although MARC4J can be used as a command-line tool for conversions between MARC and XML, its main goal is to provide an Application Programming Interface (API) to develop any kind of Java application or servlet that involves reading or writing MARC data. The core piece is a MARC reader that hides the complexity of the MARC record by providing a simple interface to extract information from MARC records. Support for XML is implemented using the standard Java XML interfaces as specified in Sun's Java API for XML Processing (JAXP). By limiting itself to the JAXP API, MARC4J is XML processor-independent and easy to integrate in applications that build on industry standards such as SAX (Simple API for XML) or DOM (Document Object Model).</para>
+    <sect1>
+      <title>What You Should Already Know</title>
+      <para>This book assumes that you are interested in developing Java applications that involve MARC and XML. You have a basic understanding of a MARC format like MARC 21 or UNIMARC and you are familiar with the basics of XML and related standards like XML Namespaces and XSLT. Working with MARC4J does not require exceptional skills in Java programming, but this book will not be of much use for you if you have no experience at all. If this is the case you should start with getting familiar with the basic concepts of the Java programming language. Sun's <ulink url="http://java.sun.com/">Java Technology</ulink> site provides some good introductory tutorials on Java.</para>
+    </sect1>
+    <sect1>
+      <title>Organization of This Book</title>
+      <para>This book is divided into seven chapters:</para>
+      <para><xref linkend="C1"/> focuses on the bibliographic formats that are supported by the MARC4J API. If you are already familiar with standards like MARC, ISO 2709 and MARC XML you can skip this chapter.</para>
+      <para><xref linkend="C2"/> is a step-by-step tutorial that will you bring up to speed with the basic concepts of reading and writing MARC and XML data both from the command line and from Java applications.</para>
+      <para><xref linkend="C3"/> presents the <classname>org.marc4j.marc.Record</classname> interface to manipulate MARC records.</para>
+      <para><xref linkend="C4"/> concentrates on the details of reading MARC and XML data.</para>
+      <para><xref linkend="C5"/> explores integration with some important Java XML API's including JAXP, SAX and DOM.</para>
+      <para><xref linkend="C6"/> provides more extensive examples using technologies discussed in the earlier chapters.</para>
+      <para><xref linkend="C7"/> dicusses the use of MARC4J in J2EE web applications.</para>
+    </sect1>
+    <sect1>
+      <title>Conventions Used in This Book</title>
+      <para></para>
+    </sect1>
+    <sect1>
+      <title>Getting the Software</title>
+      <para>You can download a MARC4J distribution at <ulink url="http://marc4j.tigris.org">http://marc4j.tigris.org</ulink>. On the project home page you can find a direct link to the distribution at the Download section. You can also find links to MARC4J distributions on the Documents &amp; Files page. A link to this page can be found in the Project tools menu. The latest version at the time of this writing is 2.0rc1, the first release candidate of version 2.0. The download includes documentation, source code and two JAR files: <filename>marc4j.jar</filename> and <filename>normalizer.jar</filename>. Add both files to your CLASSPATH environment variable.</para>
+      <note> 
+	<para>Starting from release 2.0rc1 MARC4J is completely rebuild. The 2.0 releases are not compatible with older versions of MARC4J. That is why, although there has never been a 1.0 release, new releases continue with 2.0. The event based parser is replaced by an easier to use interface that uses a simple iterator over a collection of MARC records.</para> 
+      </note>
+      <para>In addition to a Java programming environment, MARC4J requires a JAXP and SAX2 compliant XML parser and XSLT processor. If you use Sun JDK 1.4 or JDK 1.5 you already have the required XML support. If you use an older JDK you can add a parser and XSLT processor to your CLASSPATH environment variable. MARC4J was tested with both the Crimson and Xerces XML parsers with the Xalan XSLT processor and with Saxon 6.5.3. Crimson is the default parser in the JDK 1.4 release. Xerces and Xalan are available for download at the <ulink url="http://xml.apache.org/">Apache XML</ulink> site, Saxon is available for download at the <ulink url="http://saxon.sourceforge.net/">Saxon</ulink> site.</para>
+    </sect1>
+  </preface>
+  <chapter id="C1">
+    <title>Bibliographic Formats</title>
+    <sect1>
+      <title>MARC</title>
+      <para>MARC records consist of structure, markup and content. These components are specified in MARC formats. The first MARC format was developed by the Library of Congress in the sixties for the exchange of bibliographic data using half-inch magnetic tape. Work on the standard was directed towards the development of an international standard, but most countries have since developed national formats. To enable the exchange of bibliographic records between national agencies the UNIMARC standard was developed. The first UNIMARC edition was published in 1977. The national formats used by the United States (USMARC), Canada (CANMARC) and the United Kingdom (UKMARC) are now merged into the MARC 21 standard. The structure of all MARC records is based on an exchange format for bibliographic records as specified in the ANSI/NISO X39.2 and ISO 2709 standards. The markup and content differs for the different national formats and reflects the standards used related to cataloguing like cataloguing rules, classification scheme's and subject headings. Since all MARC formats use the same structure MARC4J should have no problem reading them. Most examples in this book are based on the MARC 21 format.</para>
+      <para>The structure of a MARC record is pretty straight forward, but it's not human readable. <xref linkend="F1.1"/> shows a slightly modified MARC 21 record from the Library of Congress catalogue for the book <emphasis>The amazing adventures of Kavalier and Clay</emphasis> by Michael Chabon.</para>
+      <example  id="F1.1">
+	<title>MARC 21 Record</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="images/record.gif" format="GIF"/> 
+	  </imageobject>
+	</mediaobject>	
+      </example>
+      <para>The general structure of a MARC record consists of the following four building blocks:</para>
+      <figure>
+	<title>General structure of a MARC record</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="images/record-overview.gif" format="GIF"/> 
+	  </imageobject>
+	</mediaobject>	
+      </figure>
+      <para>The leader is a fixed length field of 24 characters containing record processing information like the record length, the status of the record and the base address of data. The base address of data is the starting position for the variable fields. In the example above the leader consists of the following data: </para>
+      <para>
+	<computeroutput>00531cam  2200169 a 4500</computeroutput> 
+      </para>
+      <para>The directory immediately follows the leader and provides an index to the fields. For each field the directory provides an entry containing the field identifier (the tag), the field length and the starting position. Here is an example of a directory entry for a data field containing the title and statement of responsibility:</para>
+      <example>
+	<title>Directory Entry</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="images/directory-entry.gif" format="GIF"/> 
+	  </imageobject>
+	</mediaobject>
+      </example>
+      <para>In this example a variable field identified by tag 245 has a length of 78 characters and starts at character position 172 relative to the base address of data. This entry refers to the following variable field data:</para>
+      <example>
+	<title>Variable Field Data</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="images/datafield-example.gif" format="GIF"/> 
+	  </imageobject>
+	</mediaobject>
+      </example>
+      <para>In MARC formats tags always consist of three digits. The directory is terminated by a field separator. After the directory follow the variable fields containing the actual record content. There are three kinds of variable fields:</para>
+      <itemizedlist>
+	<listitem>
+	  <para>control number field (a special control field identified by tag 001)</para>
+	</listitem>
+	<listitem>
+	  <para>control fields (identified by tags 002 through 009)</para>
+	</listitem>
+	<listitem>
+	  <para>data fields (identified by tags 010 through 999)</para>
+	</listitem>
+      </itemizedlist>
+      <para>Each variable field is terminated by a field separator. The control number field should always be the first field. Control fields contain only data, but the structure of a data field is slightly more complex. A data field can contain indicators and subfields. Indicators are single character data elements that can contain additional data for a field. In MARC 21, for example, fields with title information use an indicator for the number of non-filing characters to enable a computer program to ignore articles. A subfield is identified by a single character, a data element identifier, preceded by a subfield delimiter. <xref linkend="F1.4"/> illustrates the parts of a data field in MARC 21 format for the title and statement of responsibility:</para>
+      <example id="F1.4">
+	<title>MARC 21 Data Field</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="images/datafield.gif" format="GIF"/> 
+	  </imageobject>
+	</mediaobject>	
+      </example>
+      <para>The '245' is the tag identifying the data field. The two numbers after the tag are the indicators. The first indicator indicates that there should be a separate entry for the title in the catalogue and the second indicator tells the computer to ignore the first four characters for sorting or filing purposes. After the indicators follow three subfields. In this example the subfield identier is displayed using a dollar sign. Subfield 'a' contains the title, subfield 'b' the subtitle and subfield 'c' the author statement. Depending on the MARC format specification variable fields and subfields can be repeatable. The only exception is the control number field. This field is required and non-repeatable. Each record is terminated by a record separator that immediately follows the last field separator. The meaning of tags, indicators and subfields varies between the different MARC formats. In UNIMARC, for example, the data field for the title and statement of responsibility for Michael Chabon's book looks like this:</para>
+      <example id="F1.5">
+	<title>UNIMARC Data Field</title>
+	<mediaobject >
+	  <imageobject>
+	    <imagedata fileref="images/unimarc-datafield.gif" format="GIF"/> 
+	  </imageobject>
+	</mediaobject>
+      </example>
+      <para>MARC4J is not tested for all the different MARC formats, but since most formats are based on either USMARC of UNIMARC it is expected that MARC4J will be able to process most formats.</para>
+    </sect1>
+    <sect1>
+      <title>MARC 21 XML Schema</title>
+      <para>The <ulink url="http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">MARC 21 XML schema</ulink> was published in June 2002 by the Library of Congress to encourage the standardization of MARC 21 records in the XML environment. The schema was developed in collaboration with OCLC and RLG after a survey of schema's that where used in various projects trying to bridge the gap between MARC and XML, including a MARC XML schema developed by the OAI (Open Archives Initiative) and the one used in early versions of MARC4J, published between October 2001 and May 2002 under the name James (Java MARC Events). The MARC 21 XML schema is specified in a <ulink url="http://www.w3.org/TR/xmlschema-0/">W3C XML Schema</ulink> and provides lossless conversion between MARC ISO 2709 and MARC XML. As a consequence of the lossless conversion, information in a MARC XML record enables recreation of a MARC ISO 2709 record without loss of data. Here is the MARC record for the book by Michael Chabon in MARC XML format:</para>
+      <example>
+	<title>MARC XML Record</title>
+	<programlisting>
+	  <![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record>
+    <leader>00531cam  2200169 a 4500</leader>
+    <controlfield tag="001">11939876</controlfield>
+    <controlfield tag="005">20041229190604.0</controlfield>
+    <controlfield tag="008">000313s2000    nyu           000 1 eng  </controlfield>
+    <datafield tag="010" ind1=" " ind2=" ">
+      <subfield code="a">   00029063 </subfield>
+    </datafield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">0679450041 (acid-free paper)</subfield>
+    </datafield>
+    <datafield tag="040" ind1=" " ind2=" ">
+      <subfield code="a">DLC</subfield>
+      <subfield code="c">DLC</subfield>
+      <subfield code="d">DLC</subfield>
+    </datafield>
+    <datafield tag="082" ind1="0" ind2="0">
+      <subfield code="a">813/.54</subfield>
+      <subfield code="2">21</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Chabon, Michael.</subfield>
+    </datafield>
+    <datafield tag="245" ind1="1" ind2="4">
+      <subfield code="a">The amazing adventures of Kavalier and Clay :</subfield>
+      <subfield code="b">a novel /</subfield>
+      <subfield code="c">Michael Chabon.</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2=" ">
+      <subfield code="a">New York :</subfield>
+      <subfield code="b">Random House,</subfield>
+      <subfield code="c">c2000.</subfield>
+    </datafield>
+    <datafield tag="300" ind1=" " ind2=" ">
+      <subfield code="a">639 p. ;</subfield>
+      <subfield code="c">25 cm.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Comic books, strips, etc.</subfield>
+      <subfield code="x">Authorship</subfield>
+      <subfield code="v">Fiction.</subfield>
+    </datafield>
+  </record>
+</collection>]]>
+	</programlisting>
+      </example>
+      <para>As you can see the markup and content are still the same. The variable fields have tags and the data fields have indicators and subfields identified by a code. The only difference from the record in ISO 2709 format is that it is structured using XML markup. There is even data present that has no meaning outside the ISO 2709 format, like the record length and the base address of data in the leader. A MARC XML record is more readable than a record in ISO 2709, but it's still not very user friendly. It is not the goal of MARC XML to provide a markup that is end user oriented. The only purpose of MARC XML is to bridge the gap between MARC and XML. Where ISO 2709 is an exchange format, MARC XML is an intermediary format. MARC XML forms part of a framework that is developed by the Library of Congress&apos; Network Development and MARC Standards Office for working with MARC data in XML environments. A diagram of the architecture of this framework clearly illustrates MARC XML as the intermediary message format:</para>
+      <figure>
+	<title>MARC XML framework architecture (source: Library of Congress web site)</title>
+	<mediaobject>
+	  <imageobject role="html">
+	    <imagedata fileref="images/marcxml-architecture.gif" format="GIF" srccredit="Library of Congress"/>
+	  </imageobject>
+	</mediaobject>
+      </figure>
+      <para>This architecture is fully supported by MARC4J. It provides a message translator to enable conversions between MARC ISO 2709 and MARC XML and other formats as long as they can consume or produce MARC XML. The Library of Congress provides a number of XSLT stylesheets for this purpose, including translators for MODS (Metadata Object Description Schema), Dublin Core and OAI (Open Archives Initiative).</para>
+    </sect1>
+    <sect1>
+      <title>Other Formats</title>
+      <para>[briefly discuss mods, mads, mets and dublin core]</para>	
+    </sect1>
+  </chapter>
+  <chapter id="C2">
+    <title>A Brief Tutorial</title>
+    <sect1>
+      <title>Packages in MARC4J</title>
+      <para>MARC4J consists of six packages:</para>
+      <variablelist>
+	<varlistentry>
+	  <term><classname>org.marc4j</classname></term>
+	<listitem>
+	  <para>Provides interfaces and classes to read and write MARC and MARC XML records.</para>
+	</listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><classname>org.marc4j.marc</classname></term>
+	<listitem>
+	  <para>A record object model to create, store and edit MARC records or parts of records as objects.</para>
+	</listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><classname>org.marc4j.marc.impl</classname></term>
+	<listitem>
+	  <para>Default implementation of the MARC record object model.</para>
+	</listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><classname>org.marc4j.converter</classname></term>
+	<listitem>
+	  <para>Provides interfaces for character converters.</para>
+	</listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><classname>org.marc4j.converter.impl</classname></term>
+	<listitem>
+	  <para>Provides several character converter implementations.</para>
+	</listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><classname>org.marc4j.util</classname></term>
+	<listitem>
+	  <para>Provides some basic command line utilities for converting MARC and MARC XML records.</para>
+	</listitem>
+	</varlistentry>
+      </variablelist>
+    </sect1>
+    <sect1>
+      <title>Using the Command Line Interface</title>
+      <para>MARC4J provides a command line interface through two Java classes. To use them you need a Java Virtual Machine and the MARC4J distribution. Make sure to add both <filename>marc4j.jar</filename> and <filename>normalizer.jar</filename> to the <envar>CLASSPATH</envar> environment variable. The <classname>org.marc4j.util.MarcXmlDriver</classname> class can be used to convert a file containing MARC records to MARC XML or to a different format, like MODS or Dublin Core, by processing the result through an XSLT. The <classname>org.marc4j.util.XmlMarcDriver</classname> class can be used to convert a file containing MARC XML data back to MARC in ISO 2709 format. It is also possible to process the input source through XSLT to create MARC XML from a different source format, like MODS or Dublin Core.</para>
+      <sect2>
+	<title>MARC to XML</title>
+	<para>The <classname>org.marc4j.util.MarcXmlDriver</classname> requires at least an input file containing one or more MARC records in ISO 2709 format. In addition the class takes zero or more of the following options:</para>
+	<variablelist>
+	  <varlistentry>
+	    <term><command>-usage</command></term>
+	    <listitem>
+	      <para>Show the usage text.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term><command>-out&#xA0;<replaceable>output-file</replaceable></command></term>
+	    <listitem>
+	      <para>Specify the name of the output file. If this argument is not present output is wrtten to the console.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term><command>-convert&#xA0;<replaceable>encoding</replaceable></command></term>
+	    <listitem>
+	      <para>Convert the data elements to UTF-8 using the given encoding. MARC4J supports the following encodings:</para>
+	      <itemizedlist>
+		<listitem>
+		  <para><replaceable>MARC8</replaceable> (MARC-8 ANSEL used by MARC 21)</para>
+		</listitem>
+		<listitem>
+		  <para><replaceable>ISO5426</replaceable> (ISO 5426 used by UNIMARC records)</para>
+		</listitem>
+		<listitem>
+		  <para><replaceable>ISO6937</replaceable> (ISO 6937 used by UNIMARC records)</para>
+		</listitem>
+	      </itemizedlist>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term><command>-normalize</command></term>
+	    <listitem>
+	      <para>Perform Unicode normalization. With Unicode normalization text is transformed into the canonical composed form. For example "a´bc" is normalized to "ábc".</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term><command>-xsl&#xA0;<replaceable>stylesheet</replaceable></command></term>
+	    <listitem>
+	      <para>Process the result through an XSLT stylesheet located at the given URI. The stylesheet should consume well-formed MARC XML data.</para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+	<para>The examples below assume that you use Sun's Java Virtual Machine. The following command simply converts the given file with MARC records to MARC XML and writes output to the "standard" output stream:</para>
+	<screen>
+	  <command>java org.marc4j.util.MarcXmlDriver <replaceable>input.mrc</replaceable></command>
+	</screen>
+	<para>To write the result to a file add a file name and optional path:</para>
+	<screen>
+	  <command>java org.marc4j.util.MarcXmlDriver -out <replaceable>output.xml</replaceable> <replaceable>input.mrc</replaceable></command>
+	</screen>
+	<para>To convert MARC 21 records encoded in MARC-8 ANSEL to UTF-8 add the <command>-convert</command> argument with the <replaceable>MARC8</replaceable> encoding value:</para>
+	<screen>
+	  <command>java org.marc4j.util.MarcXmlDriver -convert <replaceable>MARC8</replaceable> -out <replaceable>output.xml</replaceable> <replaceable>input.mrc</replaceable></command>
+	</screen>
+	<para>To perform Unicode normalization:</para>
+	<screen>
+	  <command>java org.marc4j.util.MarcXmlDriver -convert <replaceable>MARC8</replaceable> -normalize -out <replaceable>output.xml</replaceable> <replaceable>input.mrc</replaceable></command>
+	</screen>
+	<para>This command converts a file containing MARC 21 records to MODS using the XSLT stylesheet provided by the Library of Congress. The MARC-8 ANSEL character data is converted to normalized UTF-8:</para>
+	<screen>
+	  <command>java org.marc4j.util.MarcXmlDriver -convert <replaceable>MARC8</replaceable> -normalize -xsl <replaceable>http://www.loc.gov/standards/mods/v3/MARC21slim2MODS3.xsl</replaceable> -out <replaceable>output.xml</replaceable> <replaceable>input.mrc</replaceable></command>
+	</screen>
+      </sect2>
+      <sect2>
+      	<title>XML back to MARC</title>
+	<para>The <classname>org.marc4j.util.XmlMarcDriver</classname> requires at least an input file containing MARC XML. In addition the class takes zero or more of the following options:</para>
+	<variablelist>
+	  <varlistentry>
+	    <term><command>-usage</command></term>
+	    <listitem>
+	      <para>Show the usage text.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term><command>-out&#xA0;<replaceable>output-file</replaceable></command></term>
+	    <listitem>
+	      <para>Specify the name of the output file. If this argument is not present output is wrtten to the console.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term><command>-convert&#xA0;<replaceable>encoding</replaceable></command></term>
+	    <listitem>
+	      <para>Convert the data elements from UTF-8 back to the given encoding. MARC4J supports the following encodings:</para>
+	      <itemizedlist>
+		<listitem>
+		  <para><replaceable>MARC8</replaceable> (MARC-8 ANSEL used by MARC 21)</para>
+		</listitem>
+		<listitem>
+		  <para><replaceable>ISO5426</replaceable> (ISO 5426 used by UNIMARC records)</para>
+		</listitem>
+		<listitem>
+		  <para><replaceable>ISO6937</replaceable> (ISO 6937 used by UNIMARC records)</para>
+		</listitem>
+	      </itemizedlist>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term><command>-xsl&#xA0;<replaceable>stylesheet</replaceable></command></term>
+	    <listitem>
+	      <para>Process the XML data source through the XSLT stylesheet located at the given URI. The stylesheet should produce well-formed MARC XML data.</para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+	<para>The following command simply converts the given file with MARC XML data to MARC in ISO 2709 format and writes output to the "standard" output stream:</para>
+	<screen>
+	  <command>java org.marc4j.util.XmlMarcDriver <replaceable>input.xml</replaceable></command>
+	</screen>
+	<para>To write the result to a file add a file name and optional path:</para>
+	<screen>
+	  <command>java org.marc4j.util.XmlMarcDriver -out <replaceable>output.mrc</replaceable> <replaceable>input.xml</replaceable></command>
+	</screen>
+	<para>To convert MARC XML data encoded in UTF-8 to MARC-8 ANSEL add the <command>-convert</command> argument with the <replaceable>MARC8</replaceable> encoding value:</para>
+	<screen>
+	  <command>java org.marc4j.util.XmlMarcDriver -convert <replaceable>MARC8</replaceable> -out <replaceable>output.mrc</replaceable> <replaceable>input.xml</replaceable></command>
+	</screen>
+	<para>This command converts a file containing MODS data using the XSLT stylesheet provided by the Library of Congress to MARC in ISO 2709 format. The UTF-8 data is converted to MARC-8 ANSEL:</para>
+	<screen>
+	  <command>java org.marc4j.util.XmlMarcDriver -convert <replaceable>MARC8</replaceable> -xsl <replaceable>http://www.loc.gov/standards/marcxml/xslt/MODS2MARC21slim.xsl</replaceable> -out <replaceable>output.mrc</replaceable> <replaceable>input.xml</replaceable></command>
+	</screen>
+      </sect2>
+    </sect1>
+    <sect1>
+      <title>Using the MARC4J API</title>
+      <para>Although the command line utilites can be pretty useful, MARC4J was primarily developed to be invoked from Java applications using a defined API.</para>
+      <sect2>
+	<title>Reading MARC and MARC XML</title>
+      <para>For reading both MARC and MARC XML data MARC4J provides implementations of an interface called <classname>org.marc4j.MarcReader</classname>. This interface has two methods that provide an iterator to read MARC data from an input source:</para>
+      <variablelist>
+	<varlistentry>
+	  <term><methodname>hasNext()</methodname></term>
+	  <listitem>
+	    <para>Returns true if the iteration has more records, false otherwise.</para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><methodname>next()</methodname></term>
+	  <listitem>
+	    <para>Returns the next record in the iteration as a <classname>org.marc4j.marc.Record</classname> object.</para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+      <para>If you are familiar with the Java Collections Framework you might have used iterators. For example when you have <classname>java.util.List</classname> in Java you can access the items on the list through a <classname>java.util.Iterator</classname> that can be obtained from the <classname>List</classname> object:</para>
+      <programlisting lang="Java">
+Iterator i = list.iterator();
+while (i.hasNext()) {
+    Object item = i.next();
+    // do something with the item object
+}	
+      </programlisting>
+      <para>MARC4J provides two classes that implement <classname>MarcReader</classname>:</para>
+      <variablelist>
+	<varlistentry>
+	  <term><classname>org.marc4j.MarcStreamReader</classname></term>
+	  <listitem>
+	    <para>An iterator over a collection of MARC records in ISO 2709 format.</para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><classname>org.marc4j.MarcXmlReader</classname></term>
+	  <listitem>
+	    <para>An iterator over a collection of MARC records in MARC XML format.</para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+      <para>Each class has several constructors. The most important are shown in the examples below. See <xref linkend="C4"/> for a detailed overview of the <classname>MarcReader</classname> implementations.</para> 
+      <para>The first code example shows the most basic use of <classname>org.marc4j.MarcStreamReader</classname> to read a file with MARC records.</para>
+      <programlisting lang="Java">
+InputStream input = new FileInputStream("input.mrc");
+MarcReader reader = new MarcStreamReader(input);
+while (reader.hasNext()) {
+    Record record = reader.next();
+    // do something with the record object
+}
+      </programlisting>
+      <para>The <classname>org.marc4j.marc.Record</classname> interface provides access to the leader values and the variable field data. This interface is covered in <xref linkend="C3"/>. If, instead of MARC records, we want to read MARC XML data, we use the <classname>org.marc4j.MarcXmlReader</classname> implementation:</para>
+      <programlisting lang="Java">
+InputStream input = new FileInputStream("input.xml");
+MarcReader reader = new MarcXmlReader(input);
+while (reader.hasNext()) {
+    Record record = reader.next();
+    // do something with the record object
+}	
+      </programlisting>
+      <para>Add a stylesheet location to process the XML data source through an XSLT stylesheet to create MARC XML data. In the following example the <classname>org.marc4j.marc.Record</classname> objects returned by the reader are created from a file containing MODS data:</para>
+      <programlisting lang="Java">
+InputStream in = new FileInputStream("modsfile.xml");
+
+MarcReader reader = new MarcXmlReader(in, "http://www.loc.gov/standards/marcxml/xslt/MODS2MARC21slim.xsl");
+while (reader.hasNext()) {
+    Record record = reader.next();
+    // do something with the record object
+ }
+      </programlisting>
+      </sect2>
+      <sect2>
+	<title>Writing MARC XML and MARC</title>
+	<para>For writing both MARC XML and MARC data, MARC4J provides implementations of an interface called <classname>org.marc4j.MarcWriter</classname>. The following class diagram provides an overview of the implementations available in MARC4J. There is a class for writing MARC records in ISO 2709 format and there is a class for writing MARC XML data.</para>
+      <figure>
+	<title>Writer Interface</title>
+	<mediaobject>
+	  <imageobject role="html">
+	    <imagedata fileref="images/marcwriter-class.gif" format="GIF"/>
+	  </imageobject>
+	</mediaobject>
+      </figure>
+      <para>Using the writer classes is pretty straight forward. You create an instance with an output stream, write each record using the <classname>MarcWriter</classname><methodname>.write(Record record)</methodname> method and when you&apos;re done you close the writer using the <classname>MarcWriter</classname><methodname>.close()</methodname> method. When using an <classname>java.io.OutputStream</classname> to create MARC XML the writer performs a null-transform. This is a feature provided by the JAXP API to serialize an XML document without using a stylesheet. The writer for MARC XML also provides constructors that take a <classname>javax.xml.transform.Result</classname> implementation as an argument. Since a null-transform only provides basic formatting options it is recommended to use a dedicated XML serializer, for example by using the <classname>org.apache.xml.serialize</classname> package provided by the Apache <ulink url="http://xml.apache.org/xerces2-j">Xerces2 Java Parser</ulink>. The <classname>org.marc4j.MarcWriter</classname> interface also supports character conversions, for example to convert MARC-8 ANSEL data to UTF-8. MARC4J provides converters between Unicode and the following encodings:</para>
+      <itemizedlist>
+	<listitem>
+	  <para>MARC-8 ANSEL used by MARC 21</para>
+	</listitem>
+	<listitem>
+	  <para>ISO 5426 used by UNIMARC</para>
+	</listitem>
+	<listitem>
+	  <para>ISO 6937 used by UNIMARC</para>
+	</listitem>
+      </itemizedlist>
+      <para>The MARC-8 ANSEL converter is based on the <ulink url="http://www.loc.gov/marc/specifications/specchartables.html">MARC-8 to Unicode XML mapping file</ulink> as published by the Library of Congress. It is possible to create converters for other encodings by implementing the <classname>org.marc4j.converter.CharConverter</classname> method. This topic is covered in <xref linkend="C4"/>. Let's look at some code examples illustrating the use of the writer classes. The first example reads a file with MARC records in ISO 2709 format and outputs the records in MARC XML format. Output is written to the &quot;standard&quot; output stream:</para>
+      <programlisting lang="Java">
+InputStream input = new FileInputStream("input.mrc");
+MarcReader reader = new MarcStreamReader(input);
+
+MarcWriter writer = new MarcXmlWriter(System.out, true);
+while (reader.hasNext()) {
+    Record record = reader.next();
+    writer.write(record);
+}
+writer.close();
+      </programlisting>
+      <para>The boolean argument in the <classname>MarcXmlWriter</classname> constructor sets indentation to true. With <classname>MarcXmlWriter</classname> you connect an <classname>OutputStream</classname> to the location where you want to store the data. If you, for example, want to write the output to a file you can use a <classname>java.io.FileOutputStream</classname>:</para>
+      <programlisting lang="Java">
+OutputStream out = new FileOutputStream("output.xml");
+MarcWriter writer = new MarcXmlWriter(out, true);
+      </programlisting>
+      <para>The formatting options directly provided by <classname>MarcXmlWriter</classname> are very limited. There are several constructors to set indentation and to specify the output encoding:</para>
+<programlisting>
+MarcXmlWriter(OutputStream out)
+MarcXmlWriter(OutputStream out, boolean indent)
+MarcXmlWriter(OutputStream out, String encoding)
+MarcXmlWriter(OutputStream out, String encoding, boolean indent)
+</programlisting>
+<para>If you want more control over the XML output you can wrap a dedicated XML serializer into a <classname>javax.xml.transform.sax.SAXResult</classname>. The following example uses <classname>org.apache.xml.serialize.XMLSerializer</classname> to write MARC records to XML. This code example also illustrates the use of a character converter. An instance of <classname>org.marc4j.converter.impl.AnselToUnicode</classname> is registered to convert the MARC input encoded in MARC-8 ANSEL to UTF-8:</para>
+      <programlisting>
+InputStream input = new FileInputStream("input.mrc")
+MarcReader reader = new MarcStreamReader(input);
+             
+OutputFormat format = new OutputFormat("xml","UTF-8", true);
+OutputStream out = new FileOutputStream("output.xml");
+XMLSerializer serializer = new XMLSerializer(out, format);
+Result result = new SAXResult(serializer.asContentHandler());
+              
+MarcWriter writer = new MarcXmlWriter(result);
+writer.setConverter(new AnselToUnicode());
+while (reader.hasNext()) {
+    Record record = reader.next();
+    writer.write(record);
+}
+writer.close();
+      </programlisting>
+      <para>It is also possible to convert a file containing MARC records in ISO 2709 format to MODS using the stylesheet available from the Library of Congress:</para>
+      <programlisting>
+String stylesheetUrl = "http://www.loc.gov/standards/mods/v3/MARC21slim2MODS3.xsl";
+Source stylesheet = new StreamSource(stylesheetUrl);
+
+OutputStream out = new FileOutputStream("output.xml");      
+Result result = new StreamResult(out);
+          
+InputStream input = new FileInputStream("input.mrc")
+MarcReader reader = new MarcStreamReader(input);
+
+MarcWriter writer = new MarcXmlWriter(result, stylesheet);
+writer.setConverter(new AnselToUnicode());
+while (reader.hasNext()) {
+    Record record = (Record) reader.next();
+    writer.write(record);
+}
+writer.close();
+      </programlisting>
+      <para>If needed you can perform Unicode normalization. With Unicode normalization text is transformed into the canonical composed form. For example "a´bc" is normalized to "ábc". This is not done by the MARC-8 ANSEL to UCS/Unicode converter <classname>AnselToUnicode</classname>. To perform normalization set Unicode normalization to true:</para>
+      <programlisting>
+writer.setUnicodeNormalization(true);
+      </programlisting>
+      <note>
+	<para>It is not garanteed to work if you try to convert normalized Unicode back to MARC-8 ANSEL encoding using <classname>org.marc4j.converter.impl.UnicodeToAnsel</classname>.</para>
+      </note>
+      <para>Of course you can use any stylesheet that transforms MARC XML data. The Library of Congress provides stylesheets to create MODS, Dublin Core, OAI MARC and ONIX. In addition there are stylesheets available to validate MARC data and to transform MARC XML data to a MARC tagged view rendered in HTML.</para> 
+      <para>Once you created MARC XML data you can convert it back to MARC using <classname>org.marc4j.MarcStreamWriter</classname>. This class has two contructors:</para>
+      <programlisting>
+MarcStreamWriter(OutputStream out);
+MarcStreamWriter(OutputStream out, String encoding);	
+      </programlisting>
+      <para>The following code example reads a file containing MARC XML data and writes MARC records to the "standard" output stream:</para>
+      <programlisting>
+InputStream input = new FileInputStream("input.xml");
+MarcReader reader = new MarcXmlReader(input);
+
+MarcWriter writer = new MarcStreamWriter(System.out);
+while (reader.hasNext()) {
+    Record record = reader.next();
+    writer.write(record);
+}
+writer.close();	
+      </programlisting>
+      <para>Just like <classname>MarcXmlWriter</classname> you connect an <classname>OutputStream</classname> to the location where you want to store the data. If you, for example, want to write the output to a file you can use a <classname>java.io.FileOutputStream</classname>:</para>
+      <programlisting lang="Java">
+OutputStream out = new FileOutputStream("output.mrc");
+MarcWriter writer = new MarcStreamWriter(out);
+      </programlisting>
+      <para>And to convert character data, for example, from UTF-8 to MARC-8 ANSEL:</para>
+      <programlisting>
+InputStream input = new FileInputStream("input.xml");
+MarcReader reader = new MarcXmlReader(input);
+
+MarcWriter writer = new MarcStreamWriter(System.out);
+writer.setConverter(new UnicodeToAnsel());
+while (reader.hasNext()) {
+    Record record = reader.next();
+    writer.write(record);
+}
+writer.close();	
+      </programlisting>
+      </sect2>
+    </sect1>
+  </chapter>
+  <chapter id="C3">
+    <title>Using the Record Object Model</title>
+    <para>[explanation of the objetc model using class diagram, creating records from scratch, manipulating record objects rom other sources]</para>
+  </chapter>
+  <chapter id="C4">
+    <title>Reading and writing MARC and MARC XML Data</title>
+    <para>[writing to different output streams, covnerters and unicode normalization]</para>
+  </chapter>
+  <chapter id="C5">
+    <title>MARC4J and JAXP, SAX and DOM</title>
+    <para>[how marc4j integrates with the Java XML API's]</para>
+      <para>The <classname>javax.xml.transform.Source</classname> class is part of the <ulink url="http://java.sun.com/xml/jaxp/index.jsp">JAXP</ulink> (Java API for XML Processing) API, a vendor independent programming interface for developing XML applications. When developing XML applications in Java you should always program against the JAXP interface to create code that is independent of a particular XML processor implementation.</para>
+      <para>Because <classname>MarcXmlWriter</classname> is build on top of the JAXP API it is very flexible. You can even write MARC XML data to a DOM document directly from a file containing MARC records in ISO 2709 format:</para>
+      <programlisting>
+InputStream input = new FileInputStream("input.mrc")
+MarcReader reader = new MarcStreamReader(input);
+
+DOMResult result = new DOMResult();
+
+MarcXmlWriter writer = new MarcXmlWriter(result);
+writer.setConverter(new AnselToUnicode());
+while (reader.hasNext()) {
+    Record record = (Record) reader.next();
+    writer.write(record);
+}
+writer.close();
+
+Document doc = (Document) result.getNode();
+      </programlisting>
+      <para>You can read more about MARC4J and the JAXP API in <xref linkend="C5"/>.</para>
+  </chapter>
+  <chapter id="C6">
+    <title>Putting it all together</title>
+    <para>[uing pipeline models, add validation, etc.]</para>
+  </chapter>
+  <chapter id="C7">
+    <title>Using MARC4J in Web Applications</title>
+    <para>[how marc4j integrates in Servlet applications and web services, for exapmle by providing a SOAP wrapper around marcxml]</para>
+  </chapter>
+</book>
