@@ -1,4 +1,4 @@
-// $Id: MarcXmlReader.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
+// $Id: MarcXmlReader.java,v 1.2 2005/05/22 12:13:56 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -28,6 +28,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamSource;
 
 import org.marc4j.marc.Record;
 import org.xml.sax.InputSource;
@@ -48,20 +49,17 @@ import org.xml.sax.InputSource;
  * </pre>
  * 
  * <p>
- * You can also pre-process the source to create MARCXML from a different format
+ * You can also pre-process the source to create MARC XML from a different format
  * using an XSLT stylesheet. The following example creates an iterator over a
- * collection of MARC records in MARCXML format from a MODS source and outputs
+ * collection of MARC records in MARC XML format from a MODS source and outputs
  * MARC records in MARC21 format:
  * </p>
  * 
  * <pre>
- * String stylesheetUrl = &quot;http://www.loc.gov/standards/marcxml/xslt/MODS2MARC21slim.xsl&quot;;
- * Source stylesheet = new StreamSource(stylesheetUrl);
- * 
  * InputStream in = new FileInputStream(&quot;modsfile.xml&quot;);
  * 
  * MarcStreamWriter writer = new MarcStreamWriter(System.out, Constants.MARC8);
- * MarcXmlReader reader = new MarcXmlReader(in, stylesheet);
+ * MarcXmlReader reader = new MarcXmlReader(in, &quot;http://www.loc.gov/standards/marcxml/xslt/MODS2MARC21slim.xsl&quot;);
  * while (reader.hasNext()) {
  *   Record record = reader.next();
  *   writer.write(record);
@@ -70,7 +68,7 @@ import org.xml.sax.InputSource;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *  
  */
 public class MarcXmlReader implements MarcReader {
@@ -101,6 +99,23 @@ public class MarcXmlReader implements MarcReader {
 
   /**
    * Constructs an instance with the specified input stream and stylesheet
+   * location.
+   * 
+   * The stylesheet is used to transform the source file and should produce
+   * valid MARC XML records. The result is then used to create
+   * <code>Record</code> objects.
+   * 
+   * @param input
+   *          the input stream
+   * @param stylesheet
+   *          the stylesheet location
+   */
+  public MarcXmlReader(InputStream input, String stylesheetUrl) {
+  	this(new InputSource(input), new StreamSource(stylesheetUrl));
+  }
+
+  /**
+   * Constructs an instance with the specified input stream and stylesheet
    * source.
    * 
    * The stylesheet is used to transform the source file and should produce
@@ -115,7 +130,7 @@ public class MarcXmlReader implements MarcReader {
   public MarcXmlReader(InputStream input, Source stylesheet) {
     this(new InputSource(input), stylesheet);
   }
-
+  
   /**
    * Constructs an instance with the specified input source and stylesheet
    * source.
