@@ -1,4 +1,4 @@
-// $Id: MarcStreamReader.java,v 1.2 2005/06/13 10:33:01 bpeters Exp $
+// $Id: MarcStreamReader.java,v 1.3 2005/06/21 18:21:13 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -56,7 +56,7 @@ import org.marc4j.marc.impl.Verifier;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *  
  */
 public class MarcStreamReader implements MarcReader {
@@ -119,13 +119,18 @@ public class MarcStreamReader implements MarcReader {
 			bytesRead = input.read(byteArray);
 
 			if (bytesRead == -1)
-				throw new MarcException("No data to read");
+				throw new MarcException("no data to read");
 
 			while (bytesRead != -1 && bytesRead != byteArray.length)
 				bytesRead += input.read(byteArray, bytesRead, byteArray.length
 						- bytesRead);
 
-			ldr = parseLeader(byteArray);
+			try {
+				ldr = parseLeader(byteArray);
+			} catch (IOException e) {
+				throw new MarcException("error parsing leader with data: "
+						+ new String(byteArray) + "\n" + e.getMessage());
+			}
 
 			switch (ldr.getCharCodingScheme()) {
 			case '#':
@@ -141,7 +146,7 @@ public class MarcStreamReader implements MarcReader {
 
 			int directoryLength = ldr.getBaseAddressOfData() - (24 + 1);
 			if ((directoryLength % 12) != 0)
-				throw new MarcException("Directory invalid");
+				throw new MarcException("invalid directory");
 			int size = directoryLength / 12;
 
 			String[] tags = new String[size];
@@ -211,9 +216,10 @@ public class MarcStreamReader implements MarcReader {
 						record.addVariableField(parseDataField(tags[i],
 								byteArray));
 					} catch (IOException e) {
-						throw new MarcException("error parsing data field for tag: "
-								+ tags[i] + " with data:" + new String(byteArray)
-								+ "\n" + e.getMessage());
+						throw new MarcException(
+								"error parsing data field for tag: " + tags[i]
+										+ " with data:" + new String(byteArray)
+										+ "\n" + e.getMessage());
 					}
 				}
 			}
@@ -293,20 +299,36 @@ public class MarcStreamReader implements MarcReader {
 		Leader ldr = factory.newLeader();
 		char[] tmp = new char[5];
 		isr.read(tmp);
-		ldr.setRecordLength(Integer.parseInt(new String(tmp)));
+		try {
+			ldr.setRecordLength(Integer.parseInt(new String(tmp)));
+		} catch (NumberFormatException e) {
+			throw new IOException("unable to parse record length");
+		}
 		ldr.setRecordStatus((char) isr.read());
 		ldr.setTypeOfRecord((char) isr.read());
 		tmp = new char[2];
 		isr.read(tmp);
 		ldr.setImplDefined1(tmp);
 		ldr.setCharCodingScheme((char) isr.read());
-		ldr.setIndicatorCount(Integer.parseInt(String
-				.valueOf((char) isr.read())));
-		ldr.setSubfieldCodeLength(Integer.parseInt(String.valueOf((char) isr
-				.read())));
+		try {
+			ldr.setIndicatorCount(Integer.parseInt(String.valueOf((char) isr
+					.read())));
+		} catch (NumberFormatException e) {
+			throw new IOException("unable to parse indicator count");
+		}
+		try {
+			ldr.setSubfieldCodeLength(Integer.parseInt(String
+					.valueOf((char) isr.read())));
+		} catch (NumberFormatException e) {
+			throw new IOException("unable to parse subfield code length");
+		}
 		tmp = new char[5];
 		isr.read(tmp);
-		ldr.setBaseAddressOfData(Integer.parseInt(new String(tmp)));
+		try {
+			ldr.setBaseAddressOfData(Integer.parseInt(new String(tmp)));
+		} catch (NumberFormatException e) {
+			throw new IOException("unable to parse base address of data");
+		}
 		tmp = new char[3];
 		isr.read(tmp);
 		ldr.setImplDefined2(tmp);
