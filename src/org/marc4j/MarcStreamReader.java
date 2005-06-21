@@ -1,4 +1,4 @@
-// $Id: MarcStreamReader.java,v 1.4 2005/06/21 20:22:17 bpeters Exp $
+// $Id: MarcStreamReader.java,v 1.5 2005/06/21 20:31:35 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -56,7 +56,7 @@ import org.marc4j.marc.impl.Verifier;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *  
  */
 public class MarcStreamReader implements MarcReader {
@@ -185,7 +185,8 @@ public class MarcStreamReader implements MarcReader {
 			}
 
 			if (input.read() != Constants.FT)
-				throw new MarcException("directory not terminated");
+				throw new MarcException(
+						"expected field terminator at end of directory");
 
 			for (int i = 0; i < size; i++) {
 				if (Verifier.isControlField(tags[i])) {
@@ -197,7 +198,7 @@ public class MarcStreamReader implements MarcReader {
 								byteArray.length - bytesRead);
 
 					if (input.read() != Constants.FT)
-						throw new MarcException("field not terminated");
+						throw new MarcException("expected field terminator at end of field");
 
 					ControlField field = factory.newControlField();
 					field.setTag(tags[i]);
@@ -218,13 +219,14 @@ public class MarcStreamReader implements MarcReader {
 					} catch (IOException e) {
 						throw new MarcException(
 								"error parsing data field for tag: " + tags[i]
-										+ " with data: " + new String(byteArray), e);
+										+ " with data: "
+										+ new String(byteArray), e);
 					}
 				}
 			}
 
 			if (input.read() != Constants.RT)
-				throw new MarcException("record not terminated");
+				throw new MarcException("expected record terminator");
 
 		} catch (IOException e) {
 			throw new MarcException("an error occured reading input", e);
@@ -297,14 +299,11 @@ public class MarcStreamReader implements MarcReader {
 				leaderData));
 		Leader ldr = factory.newLeader();
 		char[] tmp = new char[5];
-		String value = null;
 		isr.read(tmp);
 		try {
-			value = new String(tmp);
-			ldr.setRecordLength(Integer.parseInt(value));
+			ldr.setRecordLength(Integer.parseInt(new String(tmp)));
 		} catch (NumberFormatException e) {
-			throw new MarcException(
-					"unable to parse record length with value: " + value, e);
+			throw new MarcException("unable to parse record length", e);
 		}
 		ldr.setRecordStatus((char) isr.read());
 		ldr.setTypeOfRecord((char) isr.read());
@@ -313,29 +312,23 @@ public class MarcStreamReader implements MarcReader {
 		ldr.setImplDefined1(tmp);
 		ldr.setCharCodingScheme((char) isr.read());
 		try {
-			value = String.valueOf((char) isr.read());
-			ldr.setIndicatorCount(Integer.parseInt(value));
+			ldr.setIndicatorCount(Integer.parseInt(String.valueOf((char) isr
+					.read())));
 		} catch (NumberFormatException e) {
-			throw new MarcException(
-					"unable to parse indicator count with value: " + value, e);
+			throw new MarcException("unable to parse indicator count", e);
 		}
 		try {
-			value = String.valueOf((char) isr.read());
-			ldr.setSubfieldCodeLength(Integer.parseInt(value));
+			ldr.setSubfieldCodeLength(Integer.parseInt(String
+					.valueOf((char) isr.read())));
 		} catch (NumberFormatException e) {
-			throw new MarcException(
-					"unable to parse subfield code length with value: " + value,
-					e);
+			throw new MarcException("unable to parse subfield code length", e);
 		}
 		tmp = new char[5];
 		isr.read(tmp);
 		try {
-			value = new String(tmp);
-			ldr.setBaseAddressOfData(Integer.parseInt(value));
+			ldr.setBaseAddressOfData(Integer.parseInt(new String(tmp)));
 		} catch (NumberFormatException e) {
-			throw new MarcException(
-					"unable to parse base address of data with value: " + value,
-					e);
+			throw new MarcException("unable to parse base address of data", e);
 		}
 		tmp = new char[3];
 		isr.read(tmp);
