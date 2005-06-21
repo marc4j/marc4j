@@ -1,4 +1,4 @@
-// $Id: MarcStreamReader.java,v 1.3 2005/06/21 18:21:13 bpeters Exp $
+// $Id: MarcStreamReader.java,v 1.4 2005/06/21 20:22:17 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -56,7 +56,7 @@ import org.marc4j.marc.impl.Verifier;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *  
  */
 public class MarcStreamReader implements MarcReader {
@@ -129,7 +129,7 @@ public class MarcStreamReader implements MarcReader {
 				ldr = parseLeader(byteArray);
 			} catch (IOException e) {
 				throw new MarcException("error parsing leader with data: "
-						+ new String(byteArray) + "\n" + e.getMessage());
+						+ new String(byteArray), e);
 			}
 
 			switch (ldr.getCharCodingScheme()) {
@@ -218,8 +218,7 @@ public class MarcStreamReader implements MarcReader {
 					} catch (IOException e) {
 						throw new MarcException(
 								"error parsing data field for tag: " + tags[i]
-										+ " with data:" + new String(byteArray)
-										+ "\n" + e.getMessage());
+										+ " with data: " + new String(byteArray), e);
 					}
 				}
 			}
@@ -228,7 +227,7 @@ public class MarcStreamReader implements MarcReader {
 				throw new MarcException("record not terminated");
 
 		} catch (IOException e) {
-			throw new RuntimeException("an error occured reading input", e);
+			throw new MarcException("an error occured reading input", e);
 		}
 		return record;
 	}
@@ -298,11 +297,14 @@ public class MarcStreamReader implements MarcReader {
 				leaderData));
 		Leader ldr = factory.newLeader();
 		char[] tmp = new char[5];
+		String value = null;
 		isr.read(tmp);
 		try {
-			ldr.setRecordLength(Integer.parseInt(new String(tmp)));
+			value = new String(tmp);
+			ldr.setRecordLength(Integer.parseInt(value));
 		} catch (NumberFormatException e) {
-			throw new IOException("unable to parse record length");
+			throw new MarcException(
+					"unable to parse record length with value: " + value, e);
 		}
 		ldr.setRecordStatus((char) isr.read());
 		ldr.setTypeOfRecord((char) isr.read());
@@ -311,23 +313,29 @@ public class MarcStreamReader implements MarcReader {
 		ldr.setImplDefined1(tmp);
 		ldr.setCharCodingScheme((char) isr.read());
 		try {
-			ldr.setIndicatorCount(Integer.parseInt(String.valueOf((char) isr
-					.read())));
+			value = String.valueOf((char) isr.read());
+			ldr.setIndicatorCount(Integer.parseInt(value));
 		} catch (NumberFormatException e) {
-			throw new IOException("unable to parse indicator count");
+			throw new MarcException(
+					"unable to parse indicator count with value: " + value, e);
 		}
 		try {
-			ldr.setSubfieldCodeLength(Integer.parseInt(String
-					.valueOf((char) isr.read())));
+			value = String.valueOf((char) isr.read());
+			ldr.setSubfieldCodeLength(Integer.parseInt(value));
 		} catch (NumberFormatException e) {
-			throw new IOException("unable to parse subfield code length");
+			throw new MarcException(
+					"unable to parse subfield code length with value: " + value,
+					e);
 		}
 		tmp = new char[5];
 		isr.read(tmp);
 		try {
-			ldr.setBaseAddressOfData(Integer.parseInt(new String(tmp)));
+			value = new String(tmp);
+			ldr.setBaseAddressOfData(Integer.parseInt(value));
 		} catch (NumberFormatException e) {
-			throw new IOException("unable to parse base address of data");
+			throw new MarcException(
+					"unable to parse base address of data with value: " + value,
+					e);
 		}
 		tmp = new char[3];
 		isr.read(tmp);
