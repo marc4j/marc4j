@@ -1,4 +1,4 @@
-// $Id: DataFieldImpl.java,v 1.2 2005/07/18 04:56:18 bpeters Exp $
+// $Id: DataFieldImpl.java,v 1.3 2005/08/03 18:56:10 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -32,129 +32,143 @@ import org.marc4j.marc.Subfield;
  * Represents a data field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DataFieldImpl extends VariableFieldImpl implements DataField {
 
-  private char ind1;
+	private char ind1;
 
-  private char ind2;
+	private char ind2;
 
-  private List subfields;
+	private List subfields;
 
-  /**
-   * Creates a new <code>DataField</code>.
-   */
-  public DataFieldImpl() {
-    subfields = new ArrayList();
-  }
+	/**
+	 * Creates a new <code>DataField</code>.
+	 */
+	public DataFieldImpl() {
+		subfields = new ArrayList();
+	}
 
-  /**
-   * Creates a new <code>DataField</code> and sets the tag name and the first
-   * and second indicator.
-   * 
-   * @param tag
-   *          the tag name
-   * @param ind1
-   *          the first indicator
-   * @param ind2
-   *          the second indicator
-   */
-  public DataFieldImpl(String tag, char ind1, char ind2) {
-    this();
-    this.setTag(tag);
-    this.setIndicator1(ind1);
-    this.setIndicator2(ind2);
-  }
+	/**
+	 * Creates a new <code>DataField</code> and sets the tag name and the
+	 * first and second indicator.
+	 * 
+	 * @param tag
+	 *            the tag name
+	 * @param ind1
+	 *            the first indicator
+	 * @param ind2
+	 *            the second indicator
+	 */
+	public DataFieldImpl(String tag, char ind1, char ind2) {
+		this();
+		this.setTag(tag);
+		this.setIndicator1(ind1);
+		this.setIndicator2(ind2);
+	}
 
-  /**
-   * Sets the first indicator.
-   * 
-   * @param ind1
-   *          the first indicator
-   */
-  public void setIndicator1(char ind1) {
-    this.ind1 = ind1;
-  }
+	/**
+	 * Sets the first indicator.
+	 * 
+	 * @param ind1
+	 *            the first indicator
+	 */
+	public void setIndicator1(char ind1) {
+		this.ind1 = ind1;
+	}
 
-  /**
-   * Returns the first indicator
-   * 
-   * @return char - the first indicator
-   */
-  public char getIndicator1() {
-    return ind1;
-  }
+	/**
+	 * Returns the first indicator
+	 * 
+	 * @return char - the first indicator
+	 */
+	public char getIndicator1() {
+		return ind1;
+	}
 
-  /**
-   * Sets the second indicator.
-   * 
-   * @param ind2
-   *          the second indicator
-   */
-  public void setIndicator2(char ind2) {
-    this.ind2 = ind2;
-  }
+	/**
+	 * Sets the second indicator.
+	 * 
+	 * @param ind2
+	 *            the second indicator
+	 */
+	public void setIndicator2(char ind2) {
+		this.ind2 = ind2;
+	}
 
-  /**
-   * Returns the second indicator
-   * 
-   * @return char - the second indicator
-   */
-  public char getIndicator2() {
-    return ind2;
-  }
+	/**
+	 * Returns the second indicator
+	 * 
+	 * @return char - the second indicator
+	 */
+	public char getIndicator2() {
+		return ind2;
+	}
 
-  /**
-   * Adds a <code>Subfield</code>.
-   * 
-   * @param subfield
-   *          the <code>Subfield</code> object
-   * @throws IllegalAddException
-   *           when the parameter is not a <code>Subfield</code> instance
-   */
-  public void addSubfield(Subfield subfield) {
-    if (subfield instanceof SubfieldImpl)
-      subfields.add(subfield);
-    else
-      throw new IllegalAddException("Subfield");
-  }
+	/**
+	 * Adds a <code>Subfield</code>.
+	 * 
+	 * @param subfield
+	 *            the <code>Subfield</code> object
+	 * @throws IllegalAddException
+	 *             when the parameter is not a <code>Subfield</code> instance
+	 */
+	public void addSubfield(Subfield subfield) {
+		if (subfield instanceof SubfieldImpl)
+			subfields.add(subfield);
+		else
+			throw new IllegalAddException("Subfield");
+	}
 
-  /**
-   * Removes a <code>Subfield</code>.
-   */
-  public void removeSubfield(Subfield subfield) {
-    subfields.remove(subfield);
-  }
+	/**
+	 * Inserts a <code>Subfield</code> at the specified position.
+	 * 
+	 * @param index
+	 *            the position within the list
+	 * @param subfield
+	 *            the <code>Subfield</code> object
+	 * @throws IllegalAddException
+	 *             when the parameter is not a <code>Subfield</code> instance
+	 */
+	public void addSubfield(int index, Subfield subfield) {
+		subfields.add(index, subfield);
+	}
 
-  /**
-   * Returns the list of <code>Subfield</code> objects.
-   * 
-   * @return List - the list of <code>Subfield</code> objects
-   */
-  public List getSubfields() {
-    return subfields;
-  }
+	/**
+	 * Removes a <code>Subfield</code>.
+	 */
+	public void removeSubfield(Subfield subfield) {
+		subfields.remove(subfield);
+	}
 
-  public List getSubfields(char code) {
-    List retSubfields = new ArrayList();
-    Iterator i = subfields.iterator();
-    while (i.hasNext()) {
-      Subfield sf = (Subfield) i.next();
-      if (sf.getCode() == code)
-        retSubfields.add(sf);
-    }
-    return retSubfields;
-  }
+	/**
+	 * Returns the list of <code>Subfield</code> objects.
+	 * 
+	 * @return List - the list of <code>Subfield</code> objects
+	 */
+	public List getSubfields() {
+		return subfields;
+	}
 
-  public Subfield getSubfield(char code) {
-    Iterator i = subfields.iterator();
-    while (i.hasNext()) {
-      Subfield sf = (Subfield) i.next();
-      if (sf.getCode() == code)
-        return sf;
-    }
-    return null;
-  }
+	public List getSubfields(char code) {
+		List retSubfields = new ArrayList();
+		Iterator i = subfields.iterator();
+		while (i.hasNext()) {
+			Subfield sf = (Subfield) i.next();
+			if (sf.getCode() == code)
+				retSubfields.add(sf);
+		}
+		return retSubfields;
+	}
+
+	public Subfield getSubfield(char code) {
+		Iterator i = subfields.iterator();
+		while (i.hasNext()) {
+			Subfield sf = (Subfield) i.next();
+			if (sf.getCode() == code)
+				return sf;
+		}
+		return null;
+	}
 
 }
