@@ -1,4 +1,4 @@
-// $Id: MarcXmlReader.java,v 1.2 2005/05/22 12:13:56 bpeters Exp $
+// $Id: MarcXmlReader.java,v 1.3 2005/08/03 19:10:18 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -68,7 +68,7 @@ import org.xml.sax.InputSource;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *  
  */
 public class MarcXmlReader implements MarcReader {
@@ -107,7 +107,7 @@ public class MarcXmlReader implements MarcReader {
    * 
    * @param input
    *          the input stream
-   * @param stylesheet
+   * @param stylesheetUrl
    *          the stylesheet location
    */
   public MarcXmlReader(InputStream input, String stylesheetUrl) {
