@@ -1,4 +1,4 @@
-//$Id: Subfield.java,v 1.8 2005/05/04 10:06:47 bpeters Exp $
+//$Id: Subfield.java,v 1.9 2005/12/14 17:14:36 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -26,11 +26,11 @@ import java.io.Serializable;
  * Represents a subfield in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public interface Subfield extends Serializable {
   
-  /**
+/**
    * Returns the data element identifier.
    * 
    * @return char - the data element identifier
