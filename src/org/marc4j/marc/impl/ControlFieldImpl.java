@@ -1,4 +1,4 @@
-// $Id: ControlFieldImpl.java,v 1.1 2005/05/04 10:06:47 bpeters Exp $
+// $Id: ControlFieldImpl.java,v 1.2 2005/12/14 17:15:12 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -26,7 +26,7 @@ import org.marc4j.marc.ControlField;
  * Represents a control field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ControlFieldImpl extends VariableFieldImpl implements ControlField {
 
@@ -72,6 +72,18 @@ public class ControlFieldImpl extends VariableFieldImpl implements ControlField 
    */
   public String getData() {
     return data;
+  }
+  
+  /**
+   * Returns a string representation of this control field.
+   * 
+   * <p>Example:
+   * <pre>001 12883376</pre>
+   * 
+   * @return String - a string representation of this control field
+   */
+  public String toString() {
+      return super.toString() + " " + getData();
   }
 
 }

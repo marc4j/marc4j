@@ -1,4 +1,4 @@
-// $Id: VariableFieldImpl.java,v 1.1 2005/05/04 10:06:47 bpeters Exp $
+// $Id: VariableFieldImpl.java,v 1.2 2005/12/14 17:15:13 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -26,7 +26,7 @@ import org.marc4j.marc.VariableField;
  * Represents a variable field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class VariableFieldImpl implements VariableField {
 
@@ -63,4 +63,14 @@ public class VariableFieldImpl implements VariableField {
   public String getTag() {
     return tag;
   }
+  
+  /**
+   * Returns a string representation of this variable field.
+   * 
+   * @return String - a string representation of this variable field
+   */
+  public String toString() {
+      return tag;
+  }
+  
 }
