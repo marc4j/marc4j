@@ -1,4 +1,4 @@
-// $Id: ReverseCodeTable.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
+// $Id: ReverseCodeTable.java,v 1.2 2005/12/14 17:11:30 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -30,6 +30,7 @@ import java.util.Vector;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.marc4j.MarcException;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
@@ -41,7 +42,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * </p>
  * 
  * @author Corey Keith
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * 
  * @see DefaultHandler
  */
@@ -114,10 +115,10 @@ public class ReverseCodeTable {
       charset = saxUms.getCharSets();
       combining = saxUms.getCombiningChars();
 
-    } catch (Exception exc) {
-      exc.printStackTrace(System.out);
-      System.err.println("Exception: " + exc);
+    } catch (Exception e) {
+        throw new MarcException(e.getMessage(), e);
     }
+
   }
 
   public ReverseCodeTable(String filename) {
@@ -139,9 +140,8 @@ public class ReverseCodeTable {
       charset = saxUms.getCharSets();
       combining = saxUms.getCombiningChars();
 
-    } catch (Exception exc) {
-      exc.printStackTrace(System.out);
-      System.err.println("Exception: " + exc);
+    } catch (Exception e) {
+        throw new MarcException(e.getMessage(), e);
     }
   }
 
@@ -163,9 +163,8 @@ public class ReverseCodeTable {
       charset = saxUms.getCharSets();
       combining = saxUms.getCombiningChars();
 
-    } catch (Exception exc) {
-      exc.printStackTrace(System.out);
-      System.err.println("Exception: " + exc);
+    } catch (Exception e) {
+        throw new MarcException(e.getMessage(), e);
     }
   }
 }

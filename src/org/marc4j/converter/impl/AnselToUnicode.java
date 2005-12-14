@@ -1,4 +1,4 @@
-// $Id: AnselToUnicode.java,v 1.2 2005/11/28 16:50:22 bpeters Exp $
+// $Id: AnselToUnicode.java,v 1.3 2005/12/14 17:11:30 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -37,7 +37,7 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Corey Keith
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AnselToUnicode implements CharConverter {
 
@@ -106,7 +106,7 @@ public class AnselToUnicode implements CharConverter {
     protected boolean loadedMultibyte = false;
 
     /**
-     * Creates a new instance and loads the MARC4J supplied Ansel/Unicode
+     * Creates a new instance and loads the MARC4J supplied
      * conversion tables based on the official LC tables.
      *  
      */

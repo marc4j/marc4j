@@ -1,4 +1,4 @@
-// $Id: CodeTable.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
+// $Id: CodeTable.java,v 1.2 2005/12/14 17:11:30 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -30,6 +30,7 @@ import java.util.Vector;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.marc4j.MarcException;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -40,126 +41,125 @@ import org.xml.sax.XMLReader;
  * </p>
  * 
  * @author Corey Keith
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *  
  */
 public class CodeTable {
-  protected static Hashtable charsets = null;
+    protected static Hashtable charsets = null;
 
-  protected static Hashtable combining = null;
+    protected static Hashtable combining = null;
 
-  public boolean isCombining(int i, int g0, int g1) {
-    if (i <= 0x7E) {
-      Vector v = (Vector) combining.get(new Integer(g0));
-      return v.contains(new Integer(i));
-    } else {
-      Vector v = (Vector) combining.get(new Integer(g1));
-      return v.contains(new Integer(i));
+    public boolean isCombining(int i, int g0, int g1) {
+        if (i <= 0x7E) {
+            Vector v = (Vector) combining.get(new Integer(g0));
+            return v.contains(new Integer(i));
+        } else {
+            Vector v = (Vector) combining.get(new Integer(g1));
+            return v.contains(new Integer(i));
+        }
     }
-  }
 
-  public char getChar(int c, int mode) {
-    if (c == 0x20)
-      return (char) c;
-    else {
-      Hashtable charset = (Hashtable) charsets.get(new Integer(mode));
-
-      if (charset == null) {
-        System.err.println("Hashtable not found: " + Integer.toHexString(mode));
-        return (char) c;
-      } else {
-        Character ch = (Character) charset.get(new Integer(c));
-        if (ch == null) {
-
-          int newc;
-          if (c < 0x80)
-            newc = c + 0x80;
-          else
-            newc = c - 0x80;
-          ch = (Character) charset.get(new Integer(newc));
-          if (ch == null) {
-            System.err.println("Character not found: " + Integer.toHexString(c)
-                + " in Code Table: " + Integer.toHexString(mode));
+    public char getChar(int c, int mode) {
+        if (c == 0x20)
             return (char) c;
-          } else
-            return ch.charValue();
-        } else
-          return ch.charValue();
-      }
+        else {
+            Hashtable charset = (Hashtable) charsets.get(new Integer(mode));
+
+            if (charset == null) {
+//                System.err.println("Hashtable not found: "
+//                        + Integer.toHexString(mode));
+                return (char) c;
+            } else {
+                Character ch = (Character) charset.get(new Integer(c));
+                if (ch == null) {
+
+                    int newc;
+                    if (c < 0x80)
+                        newc = c + 0x80;
+                    else
+                        newc = c - 0x80;
+                    ch = (Character) charset.get(new Integer(newc));
+                    if (ch == null) {
+//                        System.err.println("Character not found: "
+//                                + Integer.toHexString(c) + " in Code Table: "
+//                                + Integer.toHexString(mode));
+                        return (char) c;
+                    } else
+                        return ch.charValue();
+                } else
+                    return ch.charValue();
+            }
+        }
     }
-  }
 
-  public CodeTable(InputStream byteStream) {
-    try {
+    public CodeTable(InputStream byteStream) {
+        try {
 
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setNamespaceAware(true);
-      factory.setValidating(false);
-      SAXParser saxParser = factory.newSAXParser();
-      XMLReader rdr = saxParser.getXMLReader();
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setValidating(false);
+            SAXParser saxParser = factory.newSAXParser();
+            XMLReader rdr = saxParser.getXMLReader();
 
-      InputSource src = new InputSource(byteStream);
+            InputSource src = new InputSource(byteStream);
 
-      CodeTableHandler saxUms = new CodeTableHandler();
+            CodeTableHandler saxUms = new CodeTableHandler();
 
-      rdr.setContentHandler(saxUms);
-      rdr.parse(src);
+            rdr.setContentHandler(saxUms);
+            rdr.parse(src);
 
-      charsets = saxUms.getCharSets();
-      combining = saxUms.getCombiningChars();
-    } catch (Exception exc) {
-      exc.printStackTrace(System.out);
-      System.err.println("Exception: " + exc);
+            charsets = saxUms.getCharSets();
+            combining = saxUms.getCombiningChars();
+        } catch (Exception e) {
+            throw new MarcException(e.getMessage(), e);
+        }
     }
-  }
 
-  public CodeTable(String filename) {
-    try {
+    public CodeTable(String filename) {
+        try {
 
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setNamespaceAware(true);
-      factory.setValidating(false);
-      SAXParser saxParser = factory.newSAXParser();
-      XMLReader rdr = saxParser.getXMLReader();
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setValidating(false);
+            SAXParser saxParser = factory.newSAXParser();
+            XMLReader rdr = saxParser.getXMLReader();
 
-      File file = new File(filename);
-      InputSource src = new InputSource(new FileInputStream(file));
+            File file = new File(filename);
+            InputSource src = new InputSource(new FileInputStream(file));
 
-      CodeTableHandler saxUms = new CodeTableHandler();
+            CodeTableHandler saxUms = new CodeTableHandler();
 
-      rdr.setContentHandler(saxUms);
-      rdr.parse(src);
+            rdr.setContentHandler(saxUms);
+            rdr.parse(src);
 
-      charsets = saxUms.getCharSets();
-      combining = saxUms.getCombiningChars();
-    } catch (Exception exc) {
-      exc.printStackTrace(System.out);
-      System.err.println("Exception: " + exc);
+            charsets = saxUms.getCharSets();
+            combining = saxUms.getCombiningChars();
+        } catch (Exception e) {
+            throw new MarcException(e.getMessage(), e);
+        }
     }
-  }
 
-  public CodeTable(URI uri) {
-    try {
+    public CodeTable(URI uri) {
+        try {
 
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setNamespaceAware(true);
-      factory.setValidating(false);
-      SAXParser saxParser = factory.newSAXParser();
-      XMLReader rdr = saxParser.getXMLReader();
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setValidating(false);
+            SAXParser saxParser = factory.newSAXParser();
+            XMLReader rdr = saxParser.getXMLReader();
 
-      InputSource src = new InputSource(uri.toURL().openStream());
+            InputSource src = new InputSource(uri.toURL().openStream());
 
-      CodeTableHandler saxUms = new CodeTableHandler();
+            CodeTableHandler saxUms = new CodeTableHandler();
 
-      rdr.setContentHandler(saxUms);
-      rdr.parse(src);
+            rdr.setContentHandler(saxUms);
+            rdr.parse(src);
 
-      charsets = saxUms.getCharSets();
-      combining = saxUms.getCombiningChars();
-    } catch (Exception exc) {
-      exc.printStackTrace(System.out);
-      System.err.println("Exception: " + exc);
+            charsets = saxUms.getCharSets();
+            combining = saxUms.getCombiningChars();
+        } catch (Exception e) {
+            throw new MarcException(e.getMessage(), e);
+        }
     }
-  }
 
 }
