@@ -1,4 +1,4 @@
-//$Id: Leader.java,v 1.13 2005/05/04 10:06:47 bpeters Exp $
+//$Id: Leader.java,v 1.14 2005/12/14 17:12:29 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -26,7 +26,7 @@ import java.io.Serializable;
  * Represents a record label in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  *  
  */
 public interface Leader extends Serializable {  
@@ -181,5 +181,26 @@ public interface Leader extends Serializable {
    * @return <code>char[]</code>- the entry map
    */
   public char[] getEntryMap();  
+  
+  /**
+   * <p>
+   * Creates a leader object from a string object.
+   * </p>
+   * 
+   * <p>
+   * Indicator count and subfield code length are defaulted to 2 if they are not
+   * integer values.
+   * </p>
+   * 
+   * @param ldr the leader
+   */
+  public void unmarshal(String ldr);
+  
+  /**
+   * Creates a string object from this leader object.
+   * 
+   * @return String - the string object from this leader object
+   */
+  public String marshal();
   
 }
