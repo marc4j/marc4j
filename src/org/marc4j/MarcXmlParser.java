@@ -1,4 +1,4 @@
-// $Id: MarcXmlParser.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
+// $Id: MarcXmlParser.java,v 1.2 2006/05/20 09:26:22 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -38,60 +38,62 @@ import org.xml.sax.XMLReader;
  * underlying SAX2 parser should be namespace aware.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MarcXmlParser {
 
-  private ContentHandler handler = null;
+    private ContentHandler handler = null;
 
-  /**
-   * Default constructor.
-   * 
-   * @param handler
-   *          the <code>MarcXmlHandler</code> object
-   */
-  public MarcXmlParser(MarcXmlHandler handler) {
-    this.handler = handler;
-  }
-
-  /**
-   * Calls the parser.
-   * 
-   * @param input
-   *          the input source
-   */
-  public void parse(InputSource input) {
-    parse(handler, input);
-  }
-
-  /**
-   * Calls the parser and tries to transform the source into MARCXML using the
-   * given stylesheet source before creating <code>Record</code> objects.
-   * 
-   * @param input
-   *          the input source
-   * @param th
-   *          the transformation content handler
-   */
-  public void parse(InputSource input, TransformerHandler th) {
-    SAXResult result = new SAXResult();
-    result.setHandler(handler);
-    th.setResult(result);
-    parse(th, input);
-  }
-
-  private void parse(ContentHandler handler, InputSource input) {
-    SAXParserFactory spf = SAXParserFactory.newInstance();
-    XMLReader reader = null;
-    try {
-      reader = spf.newSAXParser().getXMLReader();
-      reader.setFeature("http://xml.org/sax/features/namespaces", true);
-      reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-      reader.setContentHandler(handler);
-      reader.parse(input);
-    } catch (Exception e) {
-      throw new MarcException("Unable to parse input", e);
+    /**
+     * Default constructor.
+     * 
+     * @param handler
+     *            the <code>MarcXmlHandler</code> object
+     */
+    public MarcXmlParser(MarcXmlHandler handler) {
+        this.handler = handler;
     }
-  }
+
+    /**
+     * Calls the parser.
+     * 
+     * @param input
+     *            the input source
+     */
+    public void parse(InputSource input) {
+        parse(handler, input);
+    }
+
+    /**
+     * Calls the parser and tries to transform the source into MARCXML using the
+     * given stylesheet source before creating <code>Record</code> objects.
+     * 
+     * @param input
+     *            the input source
+     * @param th
+     *            the transformation content handler
+     */
+    public void parse(InputSource input, TransformerHandler th) {
+        SAXResult result = new SAXResult();
+        result.setHandler(handler);
+        th.setResult(result);
+        parse(th, input);
+
+    }
+
+    private void parse(ContentHandler handler, InputSource input) {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        XMLReader reader = null;
+        try {
+            reader = spf.newSAXParser().getXMLReader();
+            reader.setFeature("http://xml.org/sax/features/namespaces", true);
+            reader.setFeature("http://xml.org/sax/features/namespace-prefixes",
+                    true);
+            reader.setContentHandler(handler);
+            reader.parse(input);
+        } catch (Exception e) {
+            throw new MarcException("Unable to parse input", e);
+        }
+    }
 
 }
