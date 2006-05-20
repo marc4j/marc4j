@@ -1,4 +1,4 @@
-// $Id: MarcXmlParserThread.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
+// $Id: MarcXmlParserThread.java,v 1.2 2006/05/20 09:25:46 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  * 
@@ -30,90 +30,94 @@ import org.xml.sax.InputSource;
  * MARCXML data.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MarcXmlParserThread extends Thread {
 
-  private RecordStack queue;
+    private RecordStack queue;
 
-  private InputSource input;
+    private InputSource input;
 
-  private TransformerHandler th = null;
+    private TransformerHandler th = null;
 
-  /**
-   * Creates a new instance and registers the <code>RecordQueue</code>.
-   * 
-   * @param queue
-   *          the record queue
-   */
-  public MarcXmlParserThread(RecordStack queue) {
-    this.queue = queue;
-  }
+    /**
+     * Creates a new instance and registers the <code>RecordQueue</code>.
+     * 
+     * @param queue
+     *            the record queue
+     */
+    public MarcXmlParserThread(RecordStack queue) {
+        this.queue = queue;
+    }
 
-  /**
-   * Creates a new instance and registers the <code>RecordQueue</code> and the
-   * <code>InputStream</code>.
-   * 
-   * @param queue
-   *          the record queue
-   * @param input
-   *          the input stream
-   */
-  public MarcXmlParserThread(RecordStack queue, InputSource input) {
-    this.queue = queue;
-    this.input = input;
-  }
+    /**
+     * Creates a new instance and registers the <code>RecordQueue</code> and
+     * the <code>InputStream</code>.
+     * 
+     * @param queue
+     *            the record queue
+     * @param input
+     *            the input stream
+     */
+    public MarcXmlParserThread(RecordStack queue, InputSource input) {
+        this.queue = queue;
+        this.input = input;
+    }
 
-  /**
-   * Returns the content handler to transform the source to MARCXML.
-   * 
-   * @return TransformerHandler - the transformation content handler
-   */
-  public TransformerHandler getTransformerHandler() {
-    return th;
-  }
+    /**
+     * Returns the content handler to transform the source to MARCXML.
+     * 
+     * @return TransformerHandler - the transformation content handler
+     */
+    public TransformerHandler getTransformerHandler() {
+        return th;
+    }
 
-  /**
-   * Sets the content handler to transform the source to MARCXML.
-   * 
-   * @param th -
-   *          the transformation content handler
-   */
-  public void setTransformerHandler(TransformerHandler th) {
-    this.th = th;
-  }
+    /**
+     * Sets the content handler to transform the source to MARCXML.
+     * 
+     * @param th -
+     *            the transformation content handler
+     */
+    public void setTransformerHandler(TransformerHandler th) {
+        this.th = th;
+    }
 
-  /**
-   * Returns the input stream.
-   * 
-   * @return InputSource - the input source
-   */
-  public InputSource getInputSource() {
-    return input;
-  }
+    /**
+     * Returns the input stream.
+     * 
+     * @return InputSource - the input source
+     */
+    public InputSource getInputSource() {
+        return input;
+    }
 
-  /**
-   * Sets the input stream.
-   * 
-   * @param input
-   *          the input stream
-   */
-  public void setInputSource(InputSource input) {
-    this.input = input;
-  }
+    /**
+     * Sets the input stream.
+     * 
+     * @param input
+     *            the input stream
+     */
+    public void setInputSource(InputSource input) {
+        this.input = input;
+    }
 
-  /**
-   * Creates a new <code>MarcXmlHandler</code> instance, registers the
-   * <code>RecordQueue</code> and sends the <code>InputStream</code> to the
-   * <code>MarcXmlParser</code> parser.
-   */
-  public void run() {
-    MarcXmlHandler handler = new MarcXmlHandler(queue);
-    MarcXmlParser parser = new MarcXmlParser(handler);
-    if (th == null)
-      parser.parse(input);
-    else
-      parser.parse(input, th);
-  }
+    /**
+     * Creates a new <code>MarcXmlHandler</code> instance, registers the
+     * <code>RecordQueue</code> and sends the <code>InputStream</code> to
+     * the <code>MarcXmlParser</code> parser.
+     */
+    public void run() {
+        try {
+            MarcXmlHandler handler = new MarcXmlHandler(queue);
+            MarcXmlParser parser = new MarcXmlParser(handler);
+            if (th == null)
+                parser.parse(input);
+            else
+                parser.parse(input, th);
+        } finally {
+            queue.end();
+        }
+    }
 
 }
