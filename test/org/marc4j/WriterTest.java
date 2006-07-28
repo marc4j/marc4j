@@ -1,5 +1,7 @@
 package org.marc4j;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import junit.framework.Test;
@@ -37,6 +39,32 @@ public class WriterTest extends TestCase {
         writer.close();
     }
 
+    public void testWriteAndRead() throws Exception {
+        InputStream input = getClass().getResourceAsStream(
+                "resources/summerland.xml");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MarcStreamWriter writer = new MarcStreamWriter(out);
+        MarcXmlReader reader = new MarcXmlReader(input);
+        while (reader.hasNext()) {
+            Record record = reader.next();
+            writer.write(record);
+        }
+        input.close();
+        writer.close();
+        
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        MarcStreamReader marcReader = new MarcStreamReader(in);
+        MarcStreamWriter marcWriter = new MarcStreamWriter(System.out);
+        while (marcReader.hasNext()) {
+            Record record = marcReader.next();
+            marcWriter.write(record);
+        }
+        in.close();
+        marcWriter.close();
+        
+        out.close();        
+    }
+    
     public static Test suite() {
         return new TestSuite(WriterTest.class);
     }
