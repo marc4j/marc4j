@@ -9,13 +9,18 @@
    */
   -->
   <body>
-    <p>A record object model to create, store and edit MARC records or parts of records as objects.</p>
-    <p>The <code>org.marc4j.marc.Record</code> object provides access to the leader and variable fields for each record returned by the <code>org.marc4j.MarcReader</code> implementation.</p>
+    <p>A record object model to create, store and edit MARC records or parts of 
+    records as objects. The examples below can help you to get started using the 
+    object model.</p>
+    <h3>Reading records</h3>
+    <p>The <code>org.marc4j.marc.Record</code> interface provides access to the 
+    leader and variable fields for each record returned by the <code>org.marc4j.MarcReader</code> implementation.</p>
     <p>The following example retrieves all control fields (tags 001 through 009):<p>
     <pre>
     List fields = record.getControlFields();
     </pre>
-    <p>This method rerutns the fields as an <code>java.util.List</code>. The following code sample prints the tags and data for each control field to standard output:</p>
+    <p>This method rerutns the fields as an <code>java.util.List</code>. 
+    The following code sample prints the tags and data for each control field to standard output:</p>
     <pre>
     Iterator i = fields.iterator();
     while (i.hasNext()) {
@@ -83,11 +88,30 @@
     	// there is no specific find for a specific subfield
     	// so to check if it is the orignal cataloging agency
     	DataField field = (DataField)result.get(0);
-    	String agency = field.getSubfield('a');
+    	String agency = field.getSubfield('a').getData();
     	if (agency.matches("DLC"))
     		System.out.println("DLC is the original agency");    	
     }
     </pre>
     <p>You can use Java regular expressions in <code>find()</code> methods. Check the <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/package-summary.html">java.util.regex</a> package for more information and examples.</p>
+    <h3>Creating or updating records</h3>
+	<p>You can also create or update records using the <code>org.marc4j.marc.MarcFactory</code>. For example:</p>
+	<pre>
+    // create a factory instance
+    MarcFactory factory = MarcFactory.newInstance();
+	
+    // create a record with leader
+    Record record = factory.newRecord("00000cam a2200000 a 4500");
+	
+    // add a control field
+    record.addVariableField(factory.newControlField("001", "12883376"));
+	
+    // add a data field
+    DataField df = factory.newDataField("245", '1', '0');
+    df.addSubfield(factory.newSubfield('a', "Summerland /"));
+    df.addSubfield(factory.newSubfield('c', "Michael Chabon."));
+    record.addVariableField(df);
+    </pre>
+  	<p>Check the Javadoc documentation for the interfaces in this package for more details.</p>
   </body>
 </html>
