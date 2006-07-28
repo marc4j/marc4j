@@ -1,4 +1,4 @@
-// $Id: ControlFieldImpl.java,v 1.2 2005/12/14 17:15:12 bpeters Exp $
+// $Id: ControlFieldImpl.java,v 1.3 2006/07/28 12:28:40 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -20,70 +20,72 @@
  */
 package org.marc4j.marc.impl;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.marc4j.marc.ControlField;
 
 /**
  * Represents a control field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ControlFieldImpl extends VariableFieldImpl implements ControlField {
 
-  private String data;
+    private String data;
 
-  /**
-   * Creates a new <code>ControlField</code>.
-   */
-  public ControlFieldImpl() {
-  }
+    /**
+     * Creates a new <code>ControlField</code>.
+     */
+    public ControlFieldImpl() {
+    }
 
-  /**
-   * Creates a new <code>ControlField</code> and sets the tag name.
-   */
-  public ControlFieldImpl(String tag) {
-    this.setTag(tag);
-  }
+    /**
+     * Creates a new <code>ControlField</code> and sets the tag name.
+     */
+    public ControlFieldImpl(String tag) {
+        this.setTag(tag);
+    }
 
-  /**
-   * Creates a new <code>ControlField</code> and sets the tag name and the
-   * data element.
-   *  
-   */
-  public ControlFieldImpl(String tag, String data) {
-    this.setTag(tag);
-    this.setData(data);
-  }
+    /**
+     * Creates a new <code>ControlField</code> and sets the tag name and the
+     * data element.
+     * 
+     */
+    public ControlFieldImpl(String tag, String data) {
+        this.setTag(tag);
+        this.setData(data);
+    }
 
-  /**
-   * Sets the data element.
-   * 
-   * @param data
-   *          the data element
-   */
-  public void setData(String data) {
-    this.data = data;
-  }
+    public void setData(String data) {
+        this.data = data;
+    }
 
-  /**
-   * Returns the data element
-   * 
-   * @return String - the data element
-   */
-  public String getData() {
-    return data;
-  }
-  
-  /**
-   * Returns a string representation of this control field.
-   * 
-   * <p>Example:
-   * <pre>001 12883376</pre>
-   * 
-   * @return String - a string representation of this control field
-   */
-  public String toString() {
-      return super.toString() + " " + getData();
-  }
+    public String getData() {
+        return data;
+    }
+
+    /**
+     * Returns a string representation of this control field.
+     * 
+     * <p>
+     * Example:
+     * 
+     * <pre>
+     *     001 12883376
+     * </pre>
+     * 
+     * @return String - a string representation of this control field
+     */
+    public String toString() {
+        return super.toString() + " " + getData();
+    }
+
+    public boolean find(String pattern) {
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(getData());
+        return m.find();
+    }
 
 }

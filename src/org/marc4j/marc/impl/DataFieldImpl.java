@@ -1,4 +1,4 @@
-// $Id: DataFieldImpl.java,v 1.4 2005/12/14 17:15:12 bpeters Exp $
+// $Id: DataFieldImpl.java,v 1.5 2006/07/28 12:28:40 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -32,7 +32,7 @@ import org.marc4j.marc.Subfield;
  * Represents a data field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class DataFieldImpl extends VariableFieldImpl implements DataField {
 
@@ -171,11 +171,25 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
         return null;
     }
 
+    public boolean find(String pattern) {
+        Iterator i = subfields.iterator();
+        while (i.hasNext()) {
+            Subfield sf = (Subfield) i.next();
+            if (sf.find(pattern))
+                return true;
+        }
+        return false;
+    }
+
     /**
      * Returns a string representation of this data field.
      * 
-     * <p>Example:
-     * <pre>245 10$aSummerland /$cMichael Chabon.</pre>
+     * <p>
+     * Example:
+     * 
+     * <pre>
+     *    245 10$aSummerland /$cMichael Chabon.
+     * </pre>
      * 
      * @return String - a string representation of this data field
      */
@@ -192,4 +206,5 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
         }
         return sb.toString();
     }
+
 }

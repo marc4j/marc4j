@@ -1,4 +1,4 @@
-// $Id: RecordImpl.java,v 1.2 2005/12/14 17:15:13 bpeters Exp $
+// $Id: RecordImpl.java,v 1.3 2006/07/28 12:28:40 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -34,7 +34,7 @@ import org.marc4j.marc.VariableField;
  * Represents a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class RecordImpl implements Record {
 
@@ -54,40 +54,18 @@ public class RecordImpl implements Record {
         dataFields = new ArrayList();
     }
 
-    /**
-     * Sets the type of record.
-     * 
-     * @param type
-     *            the type of record
-     */
     public void setType(String type) {
         this.type = type;
     }
 
-    /**
-     * Returns the type of record.
-     * 
-     * @return String - the type of record
-     */
     public String getType() {
         return type;
     }
 
-    /**
-     * Sets the <code>Leader</code>.
-     * 
-     * @param leader
-     *            the <code>Leader</code>
-     */
     public void setLeader(Leader leader) {
         this.leader = leader;
     }
 
-    /**
-     * Returns the <code>Leader</code>.
-     * 
-     * @return Leader - the <code>Leader</code>
-     */
     public Leader getLeader() {
         return leader;
     }
@@ -122,12 +100,6 @@ public class RecordImpl implements Record {
             throw new IllegalAddException("Invalid object");
     }
 
-    /**
-     * Removes a variable field from the collection.
-     * 
-     * @param field
-     *            the variable field
-     */
     public void removeVariableField(VariableField field) {
         String tag = field.getTag();
         if (Verifier.isControlField(tag))
@@ -149,29 +121,14 @@ public class RecordImpl implements Record {
             return null;
     }
 
-    /**
-     * Returns a list of control fields
-     * 
-     * @return List - the control fields
-     */
     public List getControlFields() {
         return controlFields;
     }
 
-    /**
-     * Returns a list of data fields
-     * 
-     * @return List - the data fields
-     */
     public List getDataFields() {
         return dataFields;
     }
 
-    /**
-     * Returns the first instance of the variable field with the given tag.
-     * 
-     * @return VariableField - the variable field
-     */
     public VariableField getVariableField(String tag) {
         Iterator i;
         if (Verifier.isControlField(tag))
@@ -186,11 +143,6 @@ public class RecordImpl implements Record {
         return null;
     }
 
-    /**
-     * Returns a list of variable fields with the given tag.
-     * 
-     * @return List - the variable fields
-     */
     public List getVariableFields(String tag) {
         List fields = new ArrayList();
         Iterator i;
@@ -206,11 +158,6 @@ public class RecordImpl implements Record {
         return fields;
     }
 
-    /**
-     * Returns a list of variable fields
-     * 
-     * @return List - the variable fields
-     */
     public List getVariableFields() {
         List fields = new ArrayList();
         Iterator i;
@@ -227,11 +174,6 @@ public class RecordImpl implements Record {
         return new String(getControlNumberField().getData());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.marc4j.marc.Record#getVariableFields(java.lang.String[])
-     */
     public List getVariableFields(String[] tags) {
         List list = new ArrayList();
         for (int i = 0; i < tags.length; i++) {
@@ -246,26 +188,27 @@ public class RecordImpl implements Record {
     /**
      * Returns a string representation of this record.
      * 
-     * <p>Example:
+     * <p>
+     * Example:
      * 
      * <pre>
-     * 
-     *  LEADER 00714cam a2200205 a 4500 
-     *  001 12883376 
-     *  005 20030616111422.0
-     *  008 020805s2002 nyu j 000 1 eng 
-     *  020   $a0786808772 
-     *  020   $a0786816155 (pbk.) 
-     *  040   $aDLC$cDLC$dDLC 
-     *  100 1 $aChabon, Michael. 
-     *  245 10$aSummerland /$cMichael Chabon. 
-     *  250   $a1st ed. 
-     *  260   $aNew York :$bMiramax Books/Hyperion Books for Children,$cc2002. 
-     *  300   $a500 p. ;$c22 cm. 
-     *  650  1$aFantasy. 
-     *  650  1$aBaseball$vFiction. 
-     *  650  1$aMagic$vFiction.
-     *  
+     *   
+     *    LEADER 00714cam a2200205 a 4500 
+     *    001 12883376 
+     *    005 20030616111422.0
+     *    008 020805s2002 nyu j 000 1 eng 
+     *    020   $a0786808772 
+     *    020   $a0786816155 (pbk.) 
+     *    040   $aDLC$cDLC$dDLC 
+     *    100 1 $aChabon, Michael. 
+     *    245 10$aSummerland /$cMichael Chabon. 
+     *    250   $a1st ed. 
+     *    260   $aNew York :$bMiramax Books/Hyperion Books for Children,$cc2002. 
+     *    300   $a500 p. ;$c22 cm. 
+     *    650  1$aFantasy. 
+     *    650  1$aBaseball$vFiction. 
+     *    650  1$aMagic$vFiction.
+     *    
      * </pre>
      * 
      * @return String - a string representation of this record
@@ -283,4 +226,44 @@ public class RecordImpl implements Record {
         }
         return sb.toString();
     }
+
+    public List find(String pattern) {
+        List result = new ArrayList();
+        Iterator i = controlFields.iterator();
+        while (i.hasNext()) {
+            VariableField field = (VariableField) i.next();
+            if (field.find(pattern))
+                result.add(field);
+        }
+        i = dataFields.iterator();
+        while (i.hasNext()) {
+            VariableField field = (VariableField) i.next();
+            if (field.find(pattern))
+                result.add(field);
+        }
+        return result;
+    }
+
+    public List find(String tag, String pattern) {
+        List result = new ArrayList();
+        Iterator i = getVariableFields(tag).iterator();
+        while (i.hasNext()) {
+            VariableField field = (VariableField) i.next();
+            if (field.find(pattern))
+                result.add(field);
+        }
+        return result;
+    }
+
+    public List find(String[] tag, String pattern) {
+        List result = new ArrayList();
+        Iterator i = getVariableFields(tag).iterator();
+        while (i.hasNext()) {
+            VariableField field = (VariableField) i.next();
+            if (field.find(pattern))
+                result.add(field);
+        }
+        return result;
+    }
+
 }

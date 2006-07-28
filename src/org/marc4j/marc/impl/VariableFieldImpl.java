@@ -1,4 +1,4 @@
-// $Id: VariableFieldImpl.java,v 1.2 2005/12/14 17:15:13 bpeters Exp $
+// $Id: VariableFieldImpl.java,v 1.3 2006/07/28 12:28:40 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -26,51 +26,40 @@ import org.marc4j.marc.VariableField;
  * Represents a variable field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class VariableFieldImpl implements VariableField {
+public abstract class VariableFieldImpl implements VariableField {
 
-  private String tag;
+    private String tag;
 
-  /**
-   * Creates a new <code>VariableField</code>.
-   */
-  public VariableFieldImpl() {
-  }
+    /**
+     * Creates a new <code>VariableField</code>.
+     */
+    public VariableFieldImpl() {
+    }
 
-  /**
-   * Creates a new <code>VariableField</code> and sets the tag name.
-   */
-  public VariableFieldImpl(String tag) {
-    this.setTag(tag);
-  }
+    /**
+     * Creates a new <code>VariableField</code> and sets the tag name.
+     */
+    public VariableFieldImpl(String tag) {
+        this.setTag(tag);
+    }
 
-  /**
-   * Sets the tag name.
-   * 
-   * @param tag
-   *          the tag name
-   */
-  public void setTag(String tag) {
-    this.tag = tag;
-  }
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 
-  /**
-   * Returns the tag name.
-   * 
-   * @return String - the tag name
-   */
-  public String getTag() {
-    return tag;
-  }
-  
-  /**
-   * Returns a string representation of this variable field.
-   * 
-   * @return String - a string representation of this variable field
-   */
-  public String toString() {
-      return tag;
-  }
-  
+    public String getTag() {
+        return tag;
+    }
+
+    /**
+     * Returns a string representation of this variable field.
+     * 
+     * @return String - a string representation of this variable field
+     */
+    public String toString() {
+        return tag;
+    }
+
 }

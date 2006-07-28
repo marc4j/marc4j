@@ -1,4 +1,4 @@
-// $Id: SubfieldImpl.java,v 1.2 2005/12/14 17:15:12 bpeters Exp $
+// $Id: SubfieldImpl.java,v 1.3 2006/07/28 12:28:40 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -20,99 +20,90 @@
  */
 package org.marc4j.marc.impl;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.marc4j.marc.Subfield;
 
 /**
  * Represents a subfield in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SubfieldImpl implements Subfield {
 
-  private char code;
+    private char code;
 
-  private String data;
+    private String data;
 
-  /**
-   * Creates a new <code>Subfield</code>.
-   */
-  public SubfieldImpl() {
-  }
+    /**
+     * Creates a new <code>Subfield</code>.
+     */
+    public SubfieldImpl() {
+    }
 
-  /**
-   * Creates a new <code>Subfield</code> and sets the data element identifier.
-   * 
-   * @param code
-   *          the data element identifier
-   */
-  public SubfieldImpl(char code) {
-    this.setCode(code);
-  }
+    /**
+     * Creates a new <code>Subfield</code> and sets the data element
+     * identifier.
+     * 
+     * @param code
+     *            the data element identifier
+     */
+    public SubfieldImpl(char code) {
+        this.setCode(code);
+    }
 
-  /**
-   * Creates a new <code>Subfield</code> and sets the data element identifier
-   * and the data element.
-   * 
-   * @param code
-   *          the data element identifier
-   * @param data
-   *          the data element
-   */
-  public SubfieldImpl(char code, String data) {
-    this.setCode(code);
-    this.setData(data);
-  }
+    /**
+     * Creates a new <code>Subfield</code> and sets the data element
+     * identifier and the data element.
+     * 
+     * @param code
+     *            the data element identifier
+     * @param data
+     *            the data element
+     */
+    public SubfieldImpl(char code, String data) {
+        this.setCode(code);
+        this.setData(data);
+    }
 
-  /**
-   * Sets the data element identifier.
-   * 
-   * @param code
-   *          the data element identifier
-   */
-  public void setCode(char code) {
-    this.code = code;
-  }
+    public void setCode(char code) {
+        this.code = code;
+    }
 
-  /**
-   * Returns the data element identifier.
-   * 
-   * @return char - the data element identifier
-   */
-  public char getCode() {
-    return code;
-  }
+    public char getCode() {
+        return code;
+    }
 
-  /**
-   * Sets the data element.
-   * 
-   * @param data
-   *          the data element
-   */
-  public void setData(String data) {
-    this.data = data;
-  }
+    public void setData(String data) {
+        this.data = data;
+    }
 
-  /**
-   * Returns the data element.
-   * 
-   * @return String - the data element
-   */
-  public String getData() {
-    return data;
-  }
+    public String getData() {
+        return data;
+    }
 
-  /**
-   * Returns a string representation of this subfield.
-   * 
-   * <p>Example:
-   * 
-   * <pre>$aSummerland /</pre>
-   * 
-   * @return String - a string representation of this subfield
-   */
-  public String toString() {
-      return "$" + getCode() + getData();
-  }
+    public boolean find(String pattern) {
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(getData());
+        return m.find();
+    }
+
+    /**
+     * Returns a string representation of this subfield.
+     * 
+     * <p>
+     * Example:
+     * 
+     * <pre>
+     * $aSummerland /
+     * </pre>
+     * 
+     * @return String - a string representation of this subfield
+     */
+    public String toString() {
+        return "$" + getCode() + getData();
+    }
 
 }
