@@ -4,11 +4,90 @@
   </head>
   <!--
   /*
-   * Copyright (C) 2004 Bas Peters. All rights reserved.
+   * Copyright (C) 2004-2006 Bas Peters. All rights reserved.
    *
    */
   -->
   <body>
     <p>A record object model to create, store and edit MARC records or parts of records as objects.</p>
+    <p>The <code>org.marc4j.marc.Record</code> object provides access to the leader and variable fields for each record returned by the <code>org.marc4j.MarcReader</code> implementation.</p>
+    <p>The following example retrieves all control fields (tags 001 through 009):<p>
+    <pre>
+    List fields = record.getControlFields();
+    </pre>
+    <p>This method rerutns the fields as an <code>java.util.List</code>. The following code sample prints the tags and data for each control field to standard output:</p>
+    <pre>
+    Iterator i = fields.iterator();
+    while (i.hasNext()) {
+    	ControlField field = (ControlField) i.next();
+    	System.out.println("Tag: " + field.getTag() + " Data: " + field.getData());
+    }
+    </pre>
+    <p>The following code sample writes all the data fields to standard output:</p>
+    <pre>
+    List fields = record.getDataFields();
+    Iterator i = fields.iterator();
+    while (i.hasNext()) {
+    	DataField field = (ControlField) i.next();
+    	System.out.println("Tag: " + field.getTag() + " ind1: " + field.getIndicator1() + 
+    	  " ind2: " + field.getIndicator2());
+    	List subfields = field.getSubfields();
+    	Iterator j = subfields.iterator();
+    	while (j.hasNext()) {
+    		Subfield subfield = (Subfield) j.next();
+    		System.out.println("Subfield code: " + subfield.getCode() + "Data: "+ subfield.getData());
+    	}
+    }
+    </pre>
+    <p>If you want to retrieve specific fields you can use one of the following methods:</p>
+    <pre>
+    // get the first field occurence for a given tag
+    DataField title = (DataField)record.getVariableField("245");
+    
+    // get all occurences for a particular tag
+    List subjects = record.getVariableFields("650");
+    
+    // get all occurences for a given list of tags
+    String[] tags = {"010", "100", "245", "250", "260", "300"};
+    List fields = record.getVariableFields(tags);
+    </pre>
+    <p>In addition you can use simple searches using the <code>find()</code> methods 
+    to retrieve fields that meet certain criteria. The search capabilities are very 
+    limited, but it can be useful when processing records. The following code snippet 
+    provides some examples:</p>
+    <pre>
+    // find any field containing 'Chabon'
+    List fields = record.find("Chabon");
+    
+    // find 'Summerland' in a title field
+    List fields = record.find("245", "Summerland");
+    
+    // find 'Graham, Paul' in main or added entries for a personal name:
+    String tags = {"100", "600"};
+    List fields = record.find(tags, "Graham, Paul")  
+    </pre>
+    <p>The find method is also useful if you want to retrieve records that meeting 
+    certain criteria, such as a specific control number, title words or a particular publisher 
+    or subject:</p>
+    <pre>
+    InputStream input = new FileInputStream("file.mrc");
+    MarcReader reader = new MarcStreamReader(input);
+    while (reader.hasNext()) {
+    	Record record = reader.next();
+    	
+    	// check if the cataloging agency is DLC
+    	List result = record.find("040", "DLC");
+    	if (result.size() > 0)
+    		System.out.println("Agency for this record is DLC");
+    	
+    	// there is no specific find for a specific subfield
+    	// so to check if it is the orignal cataloging agency
+    	DataField field = (DataField)result.get(0);
+    	String agency = field.getSubfield('a');
+    	if (agency.matches("DLC"))
+    		System.out.println("DLC is the original agency");    	
+    }
+    </pre>
+    <p>You can use Java regular expressions in <code>find()</code> methods. Check the <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/package-summary.html">java.util.regex</a> package for more information and examples.</p>
   </body>
 </html>
