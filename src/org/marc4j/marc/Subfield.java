@@ -1,4 +1,4 @@
-//$Id: Subfield.java,v 1.9 2005/12/14 17:14:36 bpeters Exp $
+//$Id: Subfield.java,v 1.10 2006/07/28 12:27:57 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -26,7 +26,7 @@ import java.io.Serializable;
  * Represents a subfield in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public interface Subfield extends Serializable {
   
@@ -59,5 +59,17 @@ public interface Subfield extends Serializable {
    *          the data element
    */
   public void setData(String data);
+ 
+  /**
+   * Returns true if the given regular expression matches a subsequence of the
+   * data element.
+   * 
+   * See (@link java.util.regex.Pattern} for regular expressions.
+   * 
+   * @param pattern
+   *            the regular expression
+   * @return true if the pattern matches, false othewise
+   */
+  public boolean find(String pattern);
   
 }

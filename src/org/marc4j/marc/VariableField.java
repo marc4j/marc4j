@@ -1,4 +1,4 @@
-//$Id: VariableField.java,v 1.8 2005/05/04 10:06:47 bpeters Exp $
+//$Id: VariableField.java,v 1.9 2006/07/28 12:27:57 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -24,25 +24,40 @@ import java.io.Serializable;
 
 /**
  * Represents a variable field in a MARC record.
- *
+ * 
  * @author Bas Peters
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public interface VariableField extends Serializable {
 
-  /**
-   * Returns the tag name.
-   * 
-   * @return String - the tag name
-   */
-  public String getTag();
-  
-  /**
-   * Sets the tag name.
-   * 
-   * @param tag
-   *          the tag name
-   */
-  public void setTag(String tag); 
-  
+    /**
+     * Returns the tag name.
+     * 
+     * @return String - the tag name
+     */
+    public String getTag();
+
+    /**
+     * Sets the tag name.
+     * 
+     * @param tag
+     *            the tag name
+     */
+    public void setTag(String tag);
+
+    /**
+     * Returns true if the given regular expression matches a subsequence of a
+     * data element within the variable field.
+     * 
+     * <p>
+     * See {@link java.util.regex.Pattern} for more information about Java
+     * regular expressions.
+     * </p>
+     * 
+     * @param pattern
+     *            the regular expression
+     * @return true if the pattern matches, false othewise
+     */
+    public abstract boolean find(String pattern);
+
 }

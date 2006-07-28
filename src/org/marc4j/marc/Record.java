@@ -1,4 +1,4 @@
-//$Id: Record.java,v 1.10 2005/12/14 17:13:11 bpeters Exp $
+//$Id: Record.java,v 1.11 2006/07/28 12:27:57 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -29,123 +29,176 @@ import org.marc4j.marc.Leader;
  * Represents a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public interface Record extends Serializable {
 
-  /**
-   * Sets the type of record.
-   * 
-   * @param type
-   *          the type of record
-   */
-  public void setType(String type);
+    /**
+     * Sets the type of record.
+     * 
+     * @param type
+     *            the type of record
+     */
+    public void setType(String type);
 
-  /**
-   * Returns the type of record.
-   * 
-   * @return String - the type of record
-   */
-  public String getType();
+    /**
+     * Returns the type of record.
+     * 
+     * @return String - the type of record
+     */
+    public String getType();
 
-  /**
-   * Adds a <code>VariableField</code>.
-   * 
-   * @param field
-   *          the <code>VariableField</code>
-   * @throws IllegalAddException
-   *           when the parameter is not a <code>VariableField</code> instance
-   */
-  public void addVariableField(VariableField field);
+    /**
+     * Adds a <code>VariableField</code>.
+     * 
+     * @param field
+     *            the <code>VariableField</code>
+     * @throws IllegalAddException
+     *             when the parameter is not a <code>VariableField</code>
+     *             instance
+     */
+    public void addVariableField(VariableField field);
 
-  /**
-   * Removes a variable field from the collection.
-   * 
-   * @param field
-   *          the variable field
-   */
-  public void removeVariableField(VariableField field);
+    /**
+     * Removes a variable field from the collection.
+     * 
+     * @param field
+     *            the variable field
+     */
+    public void removeVariableField(VariableField field);
 
-  /**
-   * Returns a list of variable fields
-   * 
-   * @return List - the variable fields
-   */
-  public List getVariableFields();
+    /**
+     * Returns a list of variable fields
+     * 
+     * @return List - the variable fields
+     */
+    public List getVariableFields();
 
-  /**
-   * Returns a list of control fields
-   * 
-   * @return List - the control fields
-   */
-  public List getControlFields();
+    /**
+     * Returns a list of control fields
+     * 
+     * @return List - the control fields
+     */
+    public List getControlFields();
 
-  /**
-   * Returns a list of data fields
-   * 
-   * @return List - the data fields
-   */
-  public List getDataFields();
+    /**
+     * Returns a list of data fields
+     * 
+     * @return List - the data fields
+     */
+    public List getDataFields();
 
-  /**
-   * Returns the control number field or <code>null</code> if no control
-   * number field is available.
-   * 
-   * @return ControlField - the control number field
-   */
-  public ControlField getControlNumberField();
+    /**
+     * Returns the control number field or <code>null</code> if no control
+     * number field is available.
+     * 
+     * @return ControlField - the control number field
+     */
+    public ControlField getControlNumberField();
 
-  /**
-   * Returns the control number or <code>null</code> if no control number is
-   * available.
-   * 
-   * This method returns the data for a <code>ControlField</code>
-   * with tag 001.
-   * 
-   * @return String - the control number
-   */
-  public String getControlNumber();
+    /**
+     * Returns the control number or <code>null</code> if no control number is
+     * available.
+     * 
+     * This method returns the data for a <code>ControlField</code> with tag
+     * 001.
+     * 
+     * @return String - the control number
+     */
+    public String getControlNumber();
 
-  /**
-   * Returns the first instance of the variable field with the given tag.
-   * 
-   * @return VariableField - the variable field
-   */
-  public VariableField getVariableField(String tag);
+    /**
+     * Returns the first instance of the variable field with the given tag.
+     * 
+     * @return VariableField - the variable field
+     */
+    public VariableField getVariableField(String tag);
 
-  /**
-   * Returns a list of variable fields with the given tag.
-   * 
-   * @return List - the variable fields
-   */
-  public List getVariableFields(String tag);
+    /**
+     * Returns a list of variable fields with the given tag.
+     * 
+     * @return List - the variable fields
+     */
+    public List getVariableFields(String tag);
 
-  /**
-   * Returns a list of variable fields for the given tags.
-   * 
-   * <p>For example:
-   * <pre>
-   * String tags = {"100", "245", "260", "300"};
-   * List fields = record.getVariableFields(tags);
-   * </pre>
-   * 
-   * @return List - the variable fields
-   */
-  public List getVariableFields(String[] tag);
-  
-  /**
-   * Returns the <code>Leader</code>.
-   * 
-   * @return Leader - the <code>Leader</code>
-   */
-  public Leader getLeader();
+    /**
+     * Returns a list of variable fields for the given tags.
+     * 
+     * <p>
+     * For example:
+     * 
+     * <pre>
+     * String tags = { &quot;100&quot;, &quot;245&quot;, &quot;260&quot;, &quot;300&quot; };
+     * 
+     * List fields = record.getVariableFields(tags);
+     * </pre>
+     * 
+     * @return List - the variable fields
+     */
+    public List getVariableFields(String[] tag);
 
-  /**
-   * Sets the <code>Leader</code>.
-   * 
-   * @param leader
-   *          the <code>Leader</code>
-   */
-  public void setLeader(Leader leader);
+    /**
+     * Returns the <code>Leader</code>.
+     * 
+     * @return Leader - the <code>Leader</code>
+     */
+    public Leader getLeader();
+
+    /**
+     * Sets the <code>Leader</code>.
+     * 
+     * @param leader
+     *            the <code>Leader</code>
+     */
+    public void setLeader(Leader leader);
+
+    /**
+     * Returns a List of VariableField objects that have a data element that
+     * matches the given regular expression.
+     * 
+     * <p>
+     * See {@link java.util.regex.Pattern} for more information about Java
+     * regular expressions.
+     * </p>
+     * 
+     * @param pattern
+     *            the regular expression
+     * @return List - the result list
+     */
+    public List find(String pattern);
+
+    /**
+     * Returns a List of VariableField objects with the given tag that have a
+     * data element that matches the given regular expression.
+     * 
+     * <p>
+     * See {@link java.util.regex.Pattern} for more information about Java
+     * regular expressions.
+     * </p>
+     * 
+     * @param tag
+     *            the tag value
+     * @param pattern
+     *            the regular expression
+     * @return List - the result list
+     */
+    public List find(String tag, String pattern);
+
+    /**
+     * Returns a List of VariableField objects with the given tags that have a
+     * data element that matches the given regular expression.
+     * 
+     * <p>
+     * See {@link java.util.regex.Pattern} for more information about Java
+     * regular expressions.
+     * </p>
+     * 
+     * @param tag
+     *            the tag values
+     * @param pattern
+     *            the regular expression
+     * @return List - the result list
+     */
+    public List find(String[] tag, String pattern);
 
 }
