@@ -1,4 +1,4 @@
-//$Id: MarcFactory.java,v 1.1 2005/05/04 10:06:47 bpeters Exp $
+//$Id: MarcFactory.java,v 1.2 2006/07/28 16:29:01 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -44,7 +44,7 @@ import java.util.Properties;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class MarcFactory {
 
@@ -183,6 +183,20 @@ public abstract class MarcFactory {
    */
   public abstract Record newRecord();
 
+  /**
+   * Returns a new record instance.
+   * 
+   * @return Record
+   */
+  public abstract Record newRecord(Leader leader);
+    
+  /**
+   * Returns a new record instance.
+   * 
+   * @return Record
+   */
+  public abstract Record newRecord(String leader);
+  
   /**
    * Returns a new subfield instance.
    * 
