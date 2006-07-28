@@ -8,7 +8,16 @@
 
   <property file="build.properties"/>
 
+  <property name="test.class.name" value="org.marc4j.AllTests"/>
+
   <path id="classpath">
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="test.classpath">
+    <pathelement location="${build.dir}"/>
     <fileset dir="${lib.dir}">
       <include name="**/*.jar"/>
     </fileset>
@@ -32,6 +41,14 @@
     </copy>
   </target>
 
+  <target name="test">
+    <junit fork="yes" haltonfailure="yes">
+      <test name="${test.class.name}"/>
+      <formatter type="plain" usefile="false"/>
+      <classpath refid="test.classpath"/>
+    </junit>
+  </target>
+
   <target name="jar" depends="compile">
     <jar jarfile="${project.name}.jar" >
       <fileset dir="${build.dir}">
@@ -53,7 +70,7 @@
            use="true"
            windowtitle="MARC4J API"
            doctitle="MARC4J API"
-           bottom="Copyright &#169; 2002-2005 Bas Peters. All Rights Reserved.">
+           bottom="Copyright &#169; 2002-2006 Bas Peters. All Rights Reserved.">
       <classpath refid="classpath"/>
       <link offline="true" href="http://java.sun.com/products/jdk/1.4/docs/api/" packagelistLoc="."/>
       <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
