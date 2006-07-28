@@ -9,6 +9,8 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.VariableField;
 
@@ -77,6 +79,27 @@ public class RecordTest extends TestCase {
         String[] tags = { "100", "260", "300" };
         result = record.find(tags, "Chabon");
         assertEquals(1, result.size());
+        
+        result = record.find("040", "DLC");
+        assertTrue(result.size() > 0);
+        
+        DataField df = (DataField)result.get(0);
+        String agency = df.getSubfield('a').getData();
+        assertTrue(agency.matches("DLC"));
+        
+    }
+    
+    public void testCreateRecord() throws Exception {
+        MarcFactory factory = MarcFactory.newInstance();
+        Record record = factory.newRecord("00000cam a2200000 a 4500");
+        assertEquals("00000cam a2200000 a 4500", record.getLeader().marshal());
+
+        record.addVariableField(factory.newControlField("001", "12883376"));
+        
+        DataField df = factory.newDataField("245", '1', '0');
+        df.addSubfield(factory.newSubfield('a', "Summerland /"));
+        df.addSubfield(factory.newSubfield('c', "Michael Chabon."));
+        record.addVariableField(df);
     }
 
     public void tearDown() {
