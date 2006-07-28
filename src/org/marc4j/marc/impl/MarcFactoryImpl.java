@@ -1,4 +1,4 @@
-//$Id: MarcFactoryImpl.java,v 1.1 2005/05/04 10:06:47 bpeters Exp $
+//$Id: MarcFactoryImpl.java,v 1.2 2006/07/28 16:28:29 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -31,116 +31,126 @@ import org.marc4j.marc.Subfield;
  * Factory for creating MARC record objects.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MarcFactoryImpl extends MarcFactory {
 
-  /**
-   * Default constructor.
-   *  
-   */
-  public MarcFactoryImpl() {
-  }
+    /**
+     * Default constructor.
+     * 
+     */
+    public MarcFactoryImpl() {
+    }
 
-  /**
-   * Returns a new control field instance.
-   * 
-   * @return ControlField
-   */
-  public ControlField newControlField() {
-    return new ControlFieldImpl();
-  }
+    /**
+     * Returns a new control field instance.
+     * 
+     * @return ControlField
+     */
+    public ControlField newControlField() {
+        return new ControlFieldImpl();
+    }
 
-  /**
-   * Creates a new control field with the given tag and returns the instance.
-   * 
-   * @return ControlField
-   */
-  public ControlField newControlField(String tag) {
-    return new ControlFieldImpl(tag);
-  }
+    /**
+     * Creates a new control field with the given tag and returns the instance.
+     * 
+     * @return ControlField
+     */
+    public ControlField newControlField(String tag) {
+        return new ControlFieldImpl(tag);
+    }
 
-  /**
-   * Creates a new control field with the given tag and data and returns the
-   * instance.
-   * 
-   * @return ControlField
-   */
-  public ControlField newControlField(String tag, String data) {
-    return new ControlFieldImpl(tag, data);
-  }
+    /**
+     * Creates a new control field with the given tag and data and returns the
+     * instance.
+     * 
+     * @return ControlField
+     */
+    public ControlField newControlField(String tag, String data) {
+        return new ControlFieldImpl(tag, data);
+    }
 
-  /**
-   * Returns a new data field instance.
-   * 
-   * @return DataField
-   */
-  public DataField newDataField() {
-    return new DataFieldImpl();
-  }
+    /**
+     * Returns a new data field instance.
+     * 
+     * @return DataField
+     */
+    public DataField newDataField() {
+        return new DataFieldImpl();
+    }
 
-  /**
-   * Creates a new data field with the given tag and indicators and returns the
-   * instance.
-   * 
-   * @return DataField
-   */
-  public DataField newDataField(String tag, char ind1, char ind2) {
-    return new DataFieldImpl(tag, ind1, ind2);
-  }
+    /**
+     * Creates a new data field with the given tag and indicators and returns
+     * the instance.
+     * 
+     * @return DataField
+     */
+    public DataField newDataField(String tag, char ind1, char ind2) {
+        return new DataFieldImpl(tag, ind1, ind2);
+    }
 
-  /**
-   * Returns a new leader instance.
-   * 
-   * @return Leader
-   */
-  public Leader newLeader() {
-    return new LeaderImpl();
-  }
+    /**
+     * Returns a new leader instance.
+     * 
+     * @return Leader
+     */
+    public Leader newLeader() {
+        return new LeaderImpl();
+    }
 
-  /**
-   * Creates a new leader with the given <code>String</code> object.
-   * 
-   * @return Leader
-   */
-  public Leader newLeader(String ldr) {
-    return new LeaderImpl(ldr);
-  }
+    /**
+     * Creates a new leader with the given <code>String</code> object.
+     * 
+     * @return Leader
+     */
+    public Leader newLeader(String ldr) {
+        return new LeaderImpl(ldr);
+    }
 
-  /**
-   * Returns a new record instance.
-   * 
-   * @return Record
-   */
-  public Record newRecord() {
-    return new RecordImpl();
-  }
+    /**
+     * Returns a new record instance.
+     * 
+     * @return Record
+     */
+    public Record newRecord() {
+        return new RecordImpl();
+    }
 
-  /**
-   * Returns a new subfield instance.
-   * 
-   * @return Leader
-   */
-  public Subfield newSubfield() {
-    return new SubfieldImpl();
-  }
+    /**
+     * Returns a new subfield instance.
+     * 
+     * @return Leader
+     */
+    public Subfield newSubfield() {
+        return new SubfieldImpl();
+    }
 
-  /**
-   * Creates a new subfield with the given identifier.
-   * 
-   * @return Subfield
-   */
-  public Subfield newSubfield(char code) {
-    return new SubfieldImpl(code);
-  }
+    /**
+     * Creates a new subfield with the given identifier.
+     * 
+     * @return Subfield
+     */
+    public Subfield newSubfield(char code) {
+        return new SubfieldImpl(code);
+    }
 
-  /**
-   * Creates a new subfield with the given identifier and data.
-   * 
-   * @return Subfield
-   */
-  public Subfield newSubfield(char code, String data) {
-    return new SubfieldImpl(code, data);
-  }
+    /**
+     * Creates a new subfield with the given identifier and data.
+     * 
+     * @return Subfield
+     */
+    public Subfield newSubfield(char code, String data) {
+        return new SubfieldImpl(code, data);
+    }
+
+    public Record newRecord(Leader leader) {
+        Record record = new RecordImpl();
+        record.setLeader(leader);
+        return record;
+    }
+
+    public Record newRecord(String leader) {
+        return newRecord(new LeaderImpl(leader));
+    }
 
 }
