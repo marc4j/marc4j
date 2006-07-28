@@ -1,4 +1,4 @@
-//$Id: MarcXmlDriver.java,v 1.3 2006/07/28 12:44:24 bpeters Exp $
+//$Id: MarcXmlDriver.java,v 1.4 2006/07/28 13:20:29 bpeters Exp $
 /**
  * Copyright (C) 2005 Bas Peters
  *
@@ -45,7 +45,7 @@ import org.marc4j.converter.impl.Iso6937ToUnicode;
 import org.marc4j.marc.Record;
 
 /**
- * Provides a basic driver to convert MARC records to MARCXML.
+ * Provides a basic driver to convert MARC records to MARCXML. Output is encoded in UTF-8.
  * <p>
  * The following example reads input.mrc and writes output to the console:
  * 
@@ -81,7 +81,7 @@ import org.marc4j.marc.Record;
  * MARCXML </a> for more information about the MARCXML format.
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
  */
 public class MarcXmlDriver {
@@ -181,7 +181,7 @@ public class MarcXmlDriver {
             if (convert != null)
                 writer = new MarcXmlWriter(out, "UTF8");
             else
-                writer = new MarcXmlWriter(out);
+                writer = new MarcXmlWriter(out, "UTF8");
         } else {
             Writer outputWriter = null;
             if (convert != null) {
