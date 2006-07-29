@@ -14,13 +14,13 @@
     create, store and edit MARC records or parts of records as objects. 
     See the examples below to get started using the object model.</p>
     <h3>Reading records</h3>
-    <p>The <code>org.marc4j.marc.Record</code> interface provides access to the 
-    leader and variable fields for each record returned by the <code>org.marc4j.MarcReader</code> implementation.</p>
+    <p>The {@link org.marc4j.marc.Record}&nbsp;interface provides access to the 
+    leader and variable fields for each record returned by the {@link org.marc4j.MarcReader}&nbsp;implementation.</p>
     <p>The following example retrieves all control fields (tags 001 through 009):<p>
     <pre>
     List fields = record.getControlFields();
     </pre>
-    <p>This method retuns the fields as a <code>java.util.List</code>, thus enabling the use of the standard Java collections 
+    <p>This method retuns the fields as a {@link java.util.List}, thus enabling the use of the standard Java collections 
     framework to iterate over collections of records, fields or subfields. 
     The following code snippet prints the tag and data for each control field to standard output:</p>
     <pre>
@@ -31,7 +31,7 @@
     }
     </pre>
     <p>The <code>getDataFields()</code> method returns all data fields (tags 010 through 999). 
-    An <code>org.marc4j.marc.DataField</code> provides access to the tag, the indicators and the subfields.
+    An {@link org.marc4j.marc.DataField}&nbsp;provides access to the tag, the indicators and the subfields.
     For example to write all the data field information to standard output:</p>
     <pre>
     List fields = record.getDataFields();
@@ -101,11 +101,13 @@
     	
     }
     </pre>
-    <p>You can use Java regular expressions in <code>find()</code> methods. Check the 
+    <p>By using <code>find()</code> you can also implement a kind of search and replace to batch 
+    update records that meet certain criteria. You can use Java regular expressions in <code>find()</code> methods. 
+    Check the 
     <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/package-summary.html">java.util.regex</a> 
     package for more information and examples.</p>
     <h3>Creating or updating records</h3>
-	<p>You can also create or update records using the <code>org.marc4j.marc.MarcFactory</code>. For example:</p>
+	<p>You can also create or update records using the {@link org.marc4j.marc.MarcFactory}. For example:</p>
 	<pre>
     // create a factory instance
     MarcFactory factory = MarcFactory.newInstance();
@@ -122,6 +124,13 @@
     df.addSubfield(factory.newSubfield('c', "Michael Chabon."));
     record.addVariableField(df);
     </pre>
-  	<p>Check the Javadoc documentation for the interfaces in this package for more details.</p>
+  	<p>You can use a {@link org.marc4j.MarcWriter} implementation to serialize your records for example to MARC or MARC XML.
+  	The code snippet below writes a single record in MARC format to standard output:</p>
+  	<pre>
+    MarcWriter writer = new MarcStreamWriter(System.out);
+    writer.write(record);
+    writer.close(); 
+    </pre>
+    <p>Check the Javadoc for {@link org.marc4j.MarcStreamWriter}&nbsp;and {@link org.marc4j.MarcXmlWriter}&nbsp;for more information.</p>
   </body>
 </html>
