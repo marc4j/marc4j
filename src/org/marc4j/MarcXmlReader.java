@@ -1,4 +1,4 @@
-// $Id: MarcXmlReader.java,v 1.3 2005/08/03 19:10:18 bpeters Exp $
+// $Id: MarcXmlReader.java,v 1.4 2006/07/29 10:58:24 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -48,6 +48,9 @@ import org.xml.sax.InputSource;
  * }
  * </pre>
  * 
+ * <p>Check the {@link org.marc4j.marc}&nbsp;package for examples about the use of 
+ * the {@link org.marc4j.marc.Record}&nbsp;object model.</p>
+ *
  * <p>
  * You can also pre-process the source to create MARC XML from a different format
  * using an XSLT stylesheet. The following example creates an iterator over a
@@ -68,7 +71,7 @@ import org.xml.sax.InputSource;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *  
  */
 public class MarcXmlReader implements MarcReader {

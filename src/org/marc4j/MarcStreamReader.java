@@ -1,4 +1,4 @@
-// $Id: MarcStreamReader.java,v 1.5 2005/06/21 20:31:35 bpeters Exp $
+// $Id: MarcStreamReader.java,v 1.6 2006/07/29 10:58:24 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -48,6 +48,9 @@ import org.marc4j.marc.impl.Verifier;
  * }
  * </pre>
  * 
+ * <p>Check the {@link org.marc4j.marc}&nbsp;package for examples about the use of 
+ * the {@link org.marc4j.marc.Record}&nbsp;object model.</p>
+ * 
  * <p>
  * When no encoding is given as an constructor argument the parser tries to
  * resolve the encoding by looking at the character coding scheme (leader
@@ -56,7 +59,7 @@ import org.marc4j.marc.impl.Verifier;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *  
  */
 public class MarcStreamReader implements MarcReader {
