@@ -1,4 +1,4 @@
-//$Id: MarcXmlWriter.java,v 1.3 2006/07/28 12:26:51 bpeters Exp $
+//$Id: MarcXmlWriter.java,v 1.4 2006/07/29 10:59:01 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -190,22 +190,22 @@ import com.ibm.icu.text.Normalizer;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
  */
 public class MarcXmlWriter implements MarcWriter {
 
-    private static final String CONTROL_FIELD = "controlfield";
+    protected static final String CONTROL_FIELD = "controlfield";
 
-    private static final String DATA_FIELD = "datafield";
+    protected static final String DATA_FIELD = "datafield";
 
-    private static final String SUBFIELD = "subfield";
+    protected static final String SUBFIELD = "subfield";
 
-    private static final String COLLECTION = "collection";
+    protected static final String COLLECTION = "collection";
 
-    private static final String RECORD = "record";
+    protected static final String RECORD = "record";
 
-    private static final String LEADER = "leader";
+    protected static final String LEADER = "leader";
 
     private boolean indent = false;
 
@@ -371,7 +371,7 @@ public class MarcXmlWriter implements MarcWriter {
         return normalize;
     }
 
-    private void setHandler(Result result, Source stylesheet)
+    protected void setHandler(Result result, Source stylesheet)
             throws MarcException {
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
@@ -398,7 +398,7 @@ public class MarcXmlWriter implements MarcWriter {
      * 
      * @throws SAXException
      */
-    private void writeStartDocument() {
+    protected void writeStartDocument() {
         try {
             AttributesImpl atts = new AttributesImpl();
             handler.startDocument();
@@ -419,7 +419,7 @@ public class MarcXmlWriter implements MarcWriter {
      * 
      * @throws SAXException
      */
-    private void writeEndDocument() {
+    protected void writeEndDocument() {
         try {
             if (indent)
                 handler.ignorableWhitespace("\n".toCharArray(), 0, 1);
@@ -468,7 +468,7 @@ public class MarcXmlWriter implements MarcWriter {
         this.indent = indent;
     }
 
-    private void toXml(Record record) throws SAXException {
+    protected void toXml(Record record) throws SAXException {
         char temp[];
         AttributesImpl atts = new AttributesImpl();
         if (indent)
@@ -550,7 +550,7 @@ public class MarcXmlWriter implements MarcWriter {
         handler.endElement(Constants.MARCXML_NS_URI, RECORD, RECORD);
     }
 
-    private char[] getDataElement(String data) {
+    protected char[] getDataElement(String data) {
         String dataElement = null;
         if (converter == null)
             return data.toCharArray();
