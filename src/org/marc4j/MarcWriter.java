@@ -1,4 +1,4 @@
-//$Id: MarcWriter.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
+//$Id: MarcWriter.java,v 1.2 2006/07/30 10:14:56 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -27,11 +27,11 @@ import org.marc4j.marc.Record;
  * Implement this interface to provide a writer for <code>Record</code>
  * objects.
  * 
- * See the <code>org.marc4j.marc</code> package Javadoc for more information
- * about the <code>Record</code> object model.
+ * <p>See the {@link org.marc4j.marc} package Javadoc for more information
+ * about the {@link org.marc4j.marc.Record} object model.</p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *  
  */
 public interface MarcWriter {
