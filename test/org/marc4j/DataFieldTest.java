@@ -1,5 +1,6 @@
 package org.marc4j;
 
+import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Subfield;
@@ -41,6 +42,16 @@ public class DataFieldTest extends TestCase {
 		assertEquals(2, df.getSubfields().size());
 		assertEquals('a', s.getCode());
 	}
+
+    public void testComparable() throws Exception {
+        DataField df1 = factory.newDataField("600", '0', '0');
+        DataField df2 = factory.newDataField("600", '0', '0');
+        assertEquals(0, df1.compareTo(df2));
+        df2.setTag("245");
+        assertEquals(4, df1.compareTo(df2));
+        df2.setTag("700");
+        assertEquals(-1, df1.compareTo(df2));
+    }
 
 	public void tearDown() {
 		factory = null;

@@ -27,6 +27,16 @@ public class ControlFieldTest extends TestCase {
 	    cf.setData("12883376");
 	    assertEquals("12883376", cf.getData());
 	}
+    
+    public void testComparable() throws Exception {
+        ControlField cf1 = factory.newControlField("008", "12345");
+        ControlField cf2 = factory.newControlField("008", "12345");
+        assertEquals(0, cf1.compareTo(cf2));
+        cf2.setTag("009");
+        assertEquals(-1, cf1.compareTo(cf2));
+        cf2.setTag("007");
+        assertEquals(1, cf1.compareTo(cf2));
+    }
 	
 	public void tearDown() {
 		factory = null;
