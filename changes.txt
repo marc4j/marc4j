@@ -1,0 +1,37 @@
+Changes to MARC4J 2.2
+
+MARC4J 2.2 is a minor release providing some bug fixes and some new functionality.
+
+There is a very short time between release 2.1 and 2.2, but during the writing of the 
+tutorial I fixed some small errors.
+ 
+Most important is the addition of a samples package. There is now also an extensive
+tutorial available on MARc4J. Check the Documentation section at 
+http://marc4j.tigris.org.
+
+- Fixed encoding issue in MarcXmlWriter. The default constructor did not use the default UTF-8 encoding.
+- Added the Comparable interface to VariableField
+- Implemented compareTo in VariableFieldImpl
+- Added sorting using the comparable implementation in Record when adding fields so that they appear in the right order
+- Added a package org.marc4j.samples containing sample programs
+- Added getters and setters for id in the record model to enable persistency models like Hibernate
+- Created an extensive tuorial on MARC4J
+
+Bas Peters (August 4, 2006)
+
+Changes to MARC4J 2.1
+
+MARC4J 2.1 is a minor release providing some bug fixes and some new functionality.
+Most important are properly support for non latin-1 encodings in MarcXStreamWriter and
+extensive code examples in the Javadoc for the org.marc4j.marc package.
+
+- Fixed bug in MarcXmlParserThreat that thread hangs if underlying XML parser throws Exception
+- Fixed MarcStreamWriter to properly support non-latin-1 encodings
+- Created more extensive Javadoc documentation for org.marc4j.marc package with many examples
+- Changed methods in MarcXmlWriter from private to protected to enable subclassing
+- Implemented find() methods in Record, VariableField and Subfield
+- Updated command-line usage text for MarcXmlDriver and XmlMarcDriver to include supported conversion encodings
+- Added newRecord methods in MarcFactory that take a leader or leader string value as parameter
+- Other minor Javadoc documentation changes
+
+Bas Peters (July 30, 2006)
