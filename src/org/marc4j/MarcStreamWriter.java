@@ -1,4 +1,4 @@
-// $Id: MarcStreamWriter.java,v 1.3 2006/07/28 12:26:23 bpeters Exp $
+// $Id: MarcStreamWriter.java,v 1.4 2006/08/04 12:24:05 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -71,13 +71,13 @@ import org.marc4j.marc.Subfield;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MarcStreamWriter implements MarcWriter {
 
     private OutputStream out = null;
 
-    private String encoding = "ISO_8859_1";
+    private String encoding = "ISO8859_1";
 
     private CharConverter converter = null;
 
