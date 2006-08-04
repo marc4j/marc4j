@@ -1,4 +1,4 @@
-//$Id: MarcXmlWriter.java,v 1.4 2006/07/29 10:59:01 bpeters Exp $
+//$Id: MarcXmlWriter.java,v 1.5 2006/08/04 08:13:16 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -190,7 +190,7 @@ import com.ibm.icu.text.Normalizer;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * 
  */
 public class MarcXmlWriter implements MarcWriter {
@@ -239,14 +239,7 @@ public class MarcXmlWriter implements MarcWriter {
      * @throws MarcException
      */
     public MarcXmlWriter(OutputStream out, boolean indent) {
-        if (out == null) {
-            throw new NullPointerException("Null OutputStream");
-        }
-        setIndent(indent);
-        Writer writer = new OutputStreamWriter(out);
-        writer = new BufferedWriter(writer);
-        setHandler(new StreamResult(writer), null);
-        writeStartDocument();
+        this(out, "UTF8", indent);
     }
 
     /**
