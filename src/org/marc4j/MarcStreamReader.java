@@ -1,4 +1,4 @@
-// $Id: MarcStreamReader.java,v 1.6 2006/07/29 10:58:24 bpeters Exp $
+// $Id: MarcStreamReader.java,v 1.7 2006/08/04 12:24:43 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -59,7 +59,7 @@ import org.marc4j.marc.impl.Verifier;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  *  
  */
 public class MarcStreamReader implements MarcReader {
@@ -142,7 +142,7 @@ public class MarcStreamReader implements MarcReader {
 				break;
 			case 'a':
 				if (encoding == null)
-					encoding = "UTF-8";
+					encoding = "UTF8";
 			}
 
 			record.setLeader(ldr);
