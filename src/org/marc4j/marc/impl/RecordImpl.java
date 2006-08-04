@@ -1,4 +1,4 @@
-// $Id: RecordImpl.java,v 1.3 2006/07/28 12:28:40 bpeters Exp $
+// $Id: RecordImpl.java,v 1.4 2006/08/04 12:29:01 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -21,6 +21,7 @@
 package org.marc4j.marc.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,9 +35,11 @@ import org.marc4j.marc.VariableField;
  * Represents a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class RecordImpl implements Record {
+
+    private Long id;
 
     private Leader leader;
 
@@ -85,19 +88,24 @@ public class RecordImpl implements Record {
      *             instance
      */
     public void addVariableField(VariableField field) {
-        if (field instanceof VariableField) {
-            String tag = field.getTag();
-            if (Verifier.isControlNumberField(tag)) {
-                if (Verifier.hasControlNumberField(controlFields))
-                    controlFields.set(0, field);
-                else
-                    controlFields.add(0, field);
-            } else if (Verifier.isControlField(tag))
-                controlFields.add(field);
+        if (!(field instanceof VariableField))
+            throw new IllegalAddException("Expected VariableField instance");
+
+        String tag = field.getTag();
+        if (Verifier.isControlNumberField(tag)) {
+            if (Verifier.hasControlNumberField(controlFields))
+                controlFields.set(0, field);
             else
-                dataFields.add(field);
-        } else
-            throw new IllegalAddException("Invalid object");
+                controlFields.add(0, field);
+            Collections.sort(controlFields);
+        } else if (Verifier.isControlField(tag)) {
+            controlFields.add(field);
+            Collections.sort(controlFields);
+        } else {
+            dataFields.add(field);
+            Collections.sort(dataFields);
+        }
+
     }
 
     public void removeVariableField(VariableField field) {
@@ -192,23 +200,23 @@ public class RecordImpl implements Record {
      * Example:
      * 
      * <pre>
-     *   
-     *    LEADER 00714cam a2200205 a 4500 
-     *    001 12883376 
-     *    005 20030616111422.0
-     *    008 020805s2002 nyu j 000 1 eng 
-     *    020   $a0786808772 
-     *    020   $a0786816155 (pbk.) 
-     *    040   $aDLC$cDLC$dDLC 
-     *    100 1 $aChabon, Michael. 
-     *    245 10$aSummerland /$cMichael Chabon. 
-     *    250   $a1st ed. 
-     *    260   $aNew York :$bMiramax Books/Hyperion Books for Children,$cc2002. 
-     *    300   $a500 p. ;$c22 cm. 
-     *    650  1$aFantasy. 
-     *    650  1$aBaseball$vFiction. 
-     *    650  1$aMagic$vFiction.
-     *    
+     *     
+     *      LEADER 00714cam a2200205 a 4500 
+     *      001 12883376 
+     *      005 20030616111422.0
+     *      008 020805s2002 nyu j 000 1 eng 
+     *      020   $a0786808772 
+     *      020   $a0786816155 (pbk.) 
+     *      040   $aDLC$cDLC$dDLC 
+     *      100 1 $aChabon, Michael. 
+     *      245 10$aSummerland /$cMichael Chabon. 
+     *      250   $a1st ed. 
+     *      260   $aNew York :$bMiramax Books/Hyperion Books for Children,$cc2002. 
+     *      300   $a500 p. ;$c22 cm. 
+     *      650  1$aFantasy. 
+     *      650  1$aBaseball$vFiction. 
+     *      650  1$aMagic$vFiction.
+     *      
      * </pre>
      * 
      * @return String - a string representation of this record
@@ -264,6 +272,14 @@ public class RecordImpl implements Record {
                 result.add(field);
         }
         return result;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 
 }
