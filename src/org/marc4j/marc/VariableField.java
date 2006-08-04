@@ -1,4 +1,4 @@
-//$Id: VariableField.java,v 1.9 2006/07/28 12:27:57 bpeters Exp $
+//$Id: VariableField.java,v 1.10 2006/08/04 12:28:17 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -22,13 +22,34 @@ package org.marc4j.marc;
 
 import java.io.Serializable;
 
+import org.marc4j.marc.impl.VariableFieldImpl;
+
 /**
  * Represents a variable field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
-public interface VariableField extends Serializable {
+public interface VariableField extends Serializable, Comparable {
+
+    /**
+     * Sets the identifier.
+     * 
+     * <p>
+     * The purpose of this identifier is to provide an identifier for
+     * persistency.
+     * 
+     * @param id
+     *            the identifier
+     */
+    public void setId(Long id);
+
+    /**
+     * Returns the identifier.
+     * 
+     * @return Long - the identifier
+     */
+    public Long getId();
 
     /**
      * Returns the tag name.
