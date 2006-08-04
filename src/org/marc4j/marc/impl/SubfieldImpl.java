@@ -1,4 +1,4 @@
-// $Id: SubfieldImpl.java,v 1.3 2006/07/28 12:28:40 bpeters Exp $
+// $Id: SubfieldImpl.java,v 1.4 2006/08/04 12:31:41 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -29,10 +29,12 @@ import org.marc4j.marc.Subfield;
  * Represents a subfield in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SubfieldImpl implements Subfield {
 
+    private Long id;
+    
     private char code;
 
     private String data;
@@ -104,6 +106,14 @@ public class SubfieldImpl implements Subfield {
      */
     public String toString() {
         return "$" + getCode() + getData();
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 
 }

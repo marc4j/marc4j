@@ -1,4 +1,4 @@
-// $Id: DataFieldImpl.java,v 1.5 2006/07/28 12:28:40 bpeters Exp $
+// $Id: DataFieldImpl.java,v 1.6 2006/08/04 12:31:41 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -32,10 +32,12 @@ import org.marc4j.marc.Subfield;
  * Represents a data field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class DataFieldImpl extends VariableFieldImpl implements DataField {
 
+    private Long id;
+    
     private char ind1;
 
     private char ind2;
@@ -205,6 +207,14 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
             sb.append(sf.toString());
         }
         return sb.toString();
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 
 }
