@@ -1,4 +1,4 @@
-// $Id: VariableFieldImpl.java,v 1.3 2006/07/28 12:28:40 bpeters Exp $
+// $Id: VariableFieldImpl.java,v 1.4 2006/08/04 12:29:16 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -26,7 +26,7 @@ import org.marc4j.marc.VariableField;
  * Represents a variable field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class VariableFieldImpl implements VariableField {
 
@@ -51,6 +51,14 @@ public abstract class VariableFieldImpl implements VariableField {
 
     public String getTag() {
         return tag;
+    }
+    
+    public int compareTo(Object obj) {
+        if (!(obj instanceof VariableFieldImpl))
+            throw new ClassCastException("A VariableField object expected");
+
+        VariableField field = (VariableField) obj;
+        return tag.compareTo(field.getTag());
     }
 
     /**
