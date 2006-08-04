@@ -1,4 +1,4 @@
-//$Id: Record.java,v 1.11 2006/07/28 12:27:57 bpeters Exp $
+//$Id: Record.java,v 1.12 2006/08/04 12:25:57 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -29,9 +29,27 @@ import org.marc4j.marc.Leader;
  * Represents a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public interface Record extends Serializable {
+
+    /**
+     * Sets the identifier.
+     * 
+     * <p>
+     * The purpose of this identifier is to provide an identifier for
+     * persistency.
+     * 
+     * @param id the identifier
+     */
+    public void setId(Long id);
+
+    /**
+     * Returns the identifier.
+     * 
+     * @return Long - the identifier
+     */
+    public Long getId();
 
     /**
      * Sets the type of record.
