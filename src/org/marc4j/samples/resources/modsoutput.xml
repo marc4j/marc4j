@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modsCollection xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3">
+  <mods version="3.0">
+    <titleInfo>
+      <title>Summerland</title>
+    </titleInfo>
+    <name type="personal">
+      <namePart>Chabon, Michael.</namePart>
+      <role>
+	<roleTerm authority="marcrelator" type="text">creator</roleTerm>
+      </role>
+    </name>
+    <typeOfResource>text</typeOfResource>
+    <originInfo>
+      <place>
+	<placeTerm type="code" authority="marccountry">nyu</placeTerm>
+      </place>
+      <place>
+	<placeTerm type="text">New York</placeTerm>
+      </place>
+      <publisher>Miramax Books/Hyperion Books for Children</publisher>
+      <dateIssued>c2002</dateIssued>
+      <dateIssued encoding="marc">2002</dateIssued>
+      <edition>1st ed.</edition>
+      <issuance>monographic</issuance>
+    </originInfo>
+    <language>
+      <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+    </language>
+    <physicalDescription>
+      <form authority="marcform">print</form>
+      <extent>500 p. ; 22 cm.</extent>
+    </physicalDescription>
+    <abstract>Ethan Feld, the worst baseball player in the history of the game, finds himself recruited by a 100-year-old scout to help a band of fairies triumph over an ancient enemy.</abstract>
+    <targetAudience authority="marctarget">juvenile</targetAudience>
+    <note type="statement of responsibility">Michael Chabon.</note>
+    <subject>
+      <topic>Fantasy</topic>
+    </subject>
+    <subject>
+      <topic>Baseball</topic>
+      <topic>Fiction</topic>
+    </subject>
+    <subject>
+      <topic>Magic</topic>
+      <topic>Fiction</topic>
+    </subject>
+    <identifier type="isbn">0786808772</identifier>
+    <identifier type="isbn">0786816155 (pbk.)</identifier>
+    <recordInfo>
+      <recordContentSource authority="marcorg">DLC</recordContentSource>
+      <recordCreationDate encoding="marc">020805</recordCreationDate>
+      <recordChangeDate encoding="iso8601">20030616111422.0</recordChangeDate>
+      <recordIdentifier>12883376</recordIdentifier>
+    </recordInfo>
+  </mods>
+</modsCollection>
