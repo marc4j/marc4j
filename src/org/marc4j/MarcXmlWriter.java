@@ -1,4 +1,4 @@
-//$Id: MarcXmlWriter.java,v 1.5 2006/08/04 08:13:16 bpeters Exp $
+//$Id: MarcXmlWriter.java,v 1.6 2006/09/23 10:04:43 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -190,7 +190,7 @@ import com.ibm.icu.text.Normalizer;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * 
  */
 public class MarcXmlWriter implements MarcWriter {
@@ -502,7 +502,7 @@ public class MarcXmlWriter implements MarcWriter {
             atts.addAttribute("", "tag", "tag", "CDATA", field.getTag());
             atts.addAttribute("", "ind1", "ind1", "CDATA", String.valueOf(field
                     .getIndicator1()));
-            atts.addAttribute("", "ind1", "ind2", "CDATA", String.valueOf(field
+            atts.addAttribute("", "ind2", "ind2", "CDATA", String.valueOf(field
                     .getIndicator2()));
 
             if (indent)
