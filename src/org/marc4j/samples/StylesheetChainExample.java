@@ -1,6 +1,9 @@
+// $Id: StylesheetChainExample.java,v 1.2 2006/09/23 11:07:26 bpeters Exp $
 package org.marc4j.samples;
 
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerFactory;
@@ -17,6 +20,12 @@ import org.marc4j.MarcWriter;
 import org.marc4j.MarcXmlWriter;
 import org.marc4j.marc.Record;
 
+/**
+ * A chain of transformation stages.
+ * 
+ * @author Bas Peters
+ * @version $Revision: 1.2 $
+ */
 public class StylesheetChainExample {
 
     public static void main(String args[]) throws Exception {
@@ -43,7 +52,9 @@ public class StylesheetChainExample {
             // chain the transformer handlers
             tHandler1.setResult(new SAXResult(tHandler2));
             tHandler2.setResult(new SAXResult(tHandler3));
-            tHandler3.setResult(new StreamResult(System.out));
+            
+            OutputStream out = new FileOutputStream("c:/temp/output.html");
+            tHandler3.setResult(new StreamResult(out));
 
             // create a SAXResult with the first handler
             Result result = new SAXResult(tHandler1);
@@ -60,6 +71,8 @@ public class StylesheetChainExample {
                 writer.write(record);
             }
             writer.close();
+            
+            out.close();
         }
     }
 

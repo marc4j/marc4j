@@ -1,3 +1,4 @@
+// $Id: TemplatesExample.java,v 1.2 2006/09/23 11:08:40 bpeters Exp $
 package org.marc4j.samples;
 
 import java.io.File;
@@ -18,6 +19,12 @@ import org.marc4j.MarcReader;
 import org.marc4j.MarcXmlReader;
 import org.marc4j.marc.Record;
 
+/**
+ * Transformation with compiled stylesheet.
+ * 
+ * @author Bas Peters
+ * @version $Revision: 1.2 $
+ */
 public class TemplatesExample {
 
     public static void main(String args[]) throws Exception {
@@ -25,7 +32,7 @@ public class TemplatesExample {
             throw new Exception("Usage: TemplatesExample: <input-dir>");
 
         String inputDir = args[0];
-        
+
         TransformerFactory tFactory = TransformerFactory.newInstance();
 
         if (tFactory.getFeature(SAXSource.FEATURE)
@@ -51,10 +58,10 @@ public class TemplatesExample {
             File[] files = dir.listFiles(filter);
 
             for (int i = 0; i < files.length; i++) {
+                InputStream input = new FileInputStream(files[i]);
+
                 TransformerHandler handler = saxTFactory
                         .newTransformerHandler(templates);
-
-                InputStream input = new FileInputStream(files[i]);
 
                 // parse the input
                 MarcReader reader = new MarcXmlReader(input, handler);
