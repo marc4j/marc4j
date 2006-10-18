@@ -1,4 +1,4 @@
-//$Id: MarcFactoryImpl.java,v 1.2 2006/07/28 16:28:29 bpeters Exp $
+//$Id: MarcFactoryImpl.java,v 1.3 2006/10/18 21:00:04 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -31,7 +31,7 @@ import org.marc4j.marc.Subfield;
  * Factory for creating MARC record objects.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MarcFactoryImpl extends MarcFactory {
 
@@ -108,12 +108,12 @@ public class MarcFactoryImpl extends MarcFactory {
     }
 
     /**
-     * Returns a new record instance.
+     * Returns a new record instance with a default leader.
      * 
      * @return Record
      */
     public Record newRecord() {
-        return new RecordImpl();
+        return newRecord(new LeaderImpl("00000nam a2200000 a 4500"));
     }
 
     /**
