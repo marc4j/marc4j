@@ -1,3 +1,14 @@
+Changes to MARC4J 2.3
+
+MARC4J 2.3 is a minor release mainly providing a bug fix in MarcXmlWriter.
+
+- Fixed bug in MarcXmlWriter. Changed second indicator attribute from ind1 to ind2 in SAX qualified name parameter. 
+  This bug created two ind1 attributes for a datafield in JDK 1.5 environments.
+- Added creation of default leader value to the MarcFactory.newRecord() method
+- Moved test classes to org.marc4j.test package
+- Added new examples in org.marc4j.samples package
+- Removed org.marc4j.samples classes from marc4j.jar
+
 Changes to MARC4J 2.2
 
 MARC4J 2.2 is a minor release providing some bug fixes and some new functionality.
