@@ -1,3 +1,14 @@
+Changes to MARC4J 2.3.1
+
+MARC4J 2.3.1 is a minor release with some encoding fixes
+
+- Fixed encoding bug in MarcStreamReader: now sets ISO8859_1 as default as alternative for MARC-8 and 
+  UNIMARC encoding alternative. For MARC 21 the ledare is checked: space is ISO 8859_1 and a is UTF-8.
+  When an encoding is provided in the MarcStreamReader constructor, this encoding overrides 
+  the default encoding and the leader encoding value.
+- MarcXmlDriver: when converting from MARC-8 to UTF-8 character coding scheme in leader (pos. 9) is set to 'a'.
+- XmlMarcDriver: when converting from UTF-8 to MARC-8 character coding scheme in leader (pos. 9) is set to space.
+
 Changes to MARC4J 2.3
 
 MARC4J 2.3 is a minor release mainly providing a bug fix in MarcXmlWriter.
