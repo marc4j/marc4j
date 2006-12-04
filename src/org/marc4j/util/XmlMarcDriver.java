@@ -1,4 +1,4 @@
-//$Id: XmlMarcDriver.java,v 1.2 2006/07/28 12:44:37 bpeters Exp $
+//$Id: XmlMarcDriver.java,v 1.3 2006/12/04 18:47:07 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -83,7 +83,7 @@ import org.marc4j.marc.Record;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  */
 public class XmlMarcDriver {
@@ -200,6 +200,8 @@ public class XmlMarcDriver {
 
         while (reader.hasNext()) {
             Record record = reader.next();
+            if (Constants.MARC_8_ENCODING.equals(convert))
+                record.getLeader().setCharCodingScheme(' ');
             writer.write(record);
         }
         writer.close();
