@@ -1,4 +1,4 @@
-//$Id: MarcXmlDriver.java,v 1.4 2006/07/28 13:20:29 bpeters Exp $
+//$Id: MarcXmlDriver.java,v 1.5 2006/12/04 18:46:39 bpeters Exp $
 /**
  * Copyright (C) 2005 Bas Peters
  *
@@ -81,7 +81,7 @@ import org.marc4j.marc.Record;
  * MARCXML </a> for more information about the MARCXML format.
  * 
  * @author Bas Peters
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * 
  */
 public class MarcXmlDriver {
@@ -221,6 +221,8 @@ public class MarcXmlDriver {
 
         while (reader.hasNext()) {
             Record record = reader.next();
+            if (Constants.MARC_8_ENCODING.equals(convert))
+                record.getLeader().setCharCodingScheme('a');
             writer.write(record);
         }
         writer.close();
