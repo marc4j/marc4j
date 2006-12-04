@@ -1,4 +1,4 @@
-// $Id: MarcStreamReader.java,v 1.8 2006/12/04 17:37:49 bpeters Exp $
+// $Id: MarcStreamReader.java,v 1.9 2006/12/04 17:39:33 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -61,7 +61,7 @@ import org.marc4j.marc.impl.Verifier;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * 
  */
 public class MarcStreamReader implements MarcReader {
@@ -72,7 +72,7 @@ public class MarcStreamReader implements MarcReader {
 
     private MarcFactory factory;
 
-    private String encoding = "ISO8859_1";
+    private String encoding = null;
 
     private boolean hasNext = true;
 
