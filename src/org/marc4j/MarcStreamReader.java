@@ -1,4 +1,4 @@
-// $Id: MarcStreamReader.java,v 1.9 2006/12/04 17:39:33 bpeters Exp $
+// $Id: MarcStreamReader.java,v 1.10 2006/12/04 18:45:44 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -61,7 +61,7 @@ import org.marc4j.marc.impl.Verifier;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * 
  */
 public class MarcStreamReader implements MarcReader {
@@ -72,7 +72,9 @@ public class MarcStreamReader implements MarcReader {
 
     private MarcFactory factory;
 
-    private String encoding = null;
+    private String encoding = "ISO8859_1";
+
+    private boolean override = false;
 
     private boolean hasNext = true;
 
@@ -90,8 +92,10 @@ public class MarcStreamReader implements MarcReader {
     public MarcStreamReader(InputStream input, String encoding) {
         this.input = input;
         factory = MarcFactory.newInstance();
-        if (encoding != null)
+        if (encoding != null) {
             this.encoding = encoding;
+            override = true;
+        }
     }
 
     /**
@@ -137,13 +141,14 @@ public class MarcStreamReader implements MarcReader {
                         + new String(byteArray), e);
             }
 
+            // if MARC 21 then check encoding
             switch (ldr.getCharCodingScheme()) {
             case ' ':
-                if (encoding == null)
+                if (!override)
                     encoding = "ISO8859_1";
                 break;
             case 'a':
-                if (encoding == null)
+                if (!override)
                     encoding = "UTF8";
             }
 
