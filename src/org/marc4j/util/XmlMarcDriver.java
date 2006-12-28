@@ -1,4 +1,4 @@
-//$Id: XmlMarcDriver.java,v 1.3 2006/12/04 18:47:07 bpeters Exp $
+//$Id: XmlMarcDriver.java,v 1.4 2006/12/28 08:09:10 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -83,7 +83,7 @@ import org.marc4j.marc.Record;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
  */
 public class XmlMarcDriver {
@@ -113,7 +113,7 @@ public class XmlMarcDriver {
         String output = null;
         String stylesheet = null;
         String convert = null;
-        String encoding = "ISO_8859_1";
+        String encoding = null;
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-xsl")) {
