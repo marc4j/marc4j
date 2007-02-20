@@ -1,4 +1,4 @@
-//$Id: MarcXmlWriter.java,v 1.7 2007/02/20 19:52:39 bpeters Exp $
+//$Id: MarcXmlWriter.java,v 1.8 2007/02/20 20:15:02 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -21,6 +21,7 @@
 package org.marc4j;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -190,7 +191,7 @@ import com.ibm.icu.text.Normalizer;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * 
  */
 public class MarcXmlWriter implements MarcWriter {
@@ -211,6 +212,9 @@ public class MarcXmlWriter implements MarcWriter {
 
     private TransformerHandler handler = null;
 
+    private Writer writer = null;
+    
+    
     /**
      * Character encoding. Default is UTF-8.
      */
@@ -267,7 +271,7 @@ public class MarcXmlWriter implements MarcWriter {
         }
         try {
             setIndent(indent);
-            Writer writer = new OutputStreamWriter(out, encoding);
+            writer = new OutputStreamWriter(out, encoding);
             writer = new BufferedWriter(writer);
             this.encoding = encoding;
             setHandler(new StreamResult(writer), null);
@@ -316,7 +320,12 @@ public class MarcXmlWriter implements MarcWriter {
     }
 
     public void close() {
-        writeEndDocument();
+    	writeEndDocument();
+    	try {
+    		writer.close();
+    	} catch (IOException e) {
+    		throw new MarcException(e.getMessage(), e);
+    	}
     }
 
     /**
