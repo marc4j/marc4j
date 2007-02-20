@@ -1,4 +1,4 @@
-//$Id: MarcXmlWriter.java,v 1.6 2006/09/23 10:04:43 bpeters Exp $
+//$Id: MarcXmlWriter.java,v 1.7 2007/02/20 19:52:39 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -190,7 +190,7 @@ import com.ibm.icu.text.Normalizer;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * 
  */
 public class MarcXmlWriter implements MarcWriter {
@@ -397,8 +397,8 @@ public class MarcXmlWriter implements MarcWriter {
             handler.startDocument();
             handler.startPrefixMapping("", Constants.MARCXML_NS_URI);
             // add namespace declaration using attribute - need better solution
-            atts.addAttribute(Constants.MARCXML_NS_URI, "xmlns", "xmlns",
-                    "CDATA", Constants.MARCXML_NS_URI);
+            //atts.addAttribute(Constants.MARCXML_NS_URI, "xmlns", "xmlns",
+            //        "CDATA", Constants.MARCXML_NS_URI);
             handler.startElement(Constants.MARCXML_NS_URI, COLLECTION,
                     COLLECTION, atts);
         } catch (SAXException e) {
