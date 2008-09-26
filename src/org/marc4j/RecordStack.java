@@ -1,4 +1,4 @@
-// $Id: RecordStack.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
+// $Id: RecordStack.java,v 1.2 2008/09/26 21:17:42 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -31,12 +31,12 @@ import org.marc4j.marc.Record;
  * <code>Record</code> objects created by <code>MarcXmlParser</code>.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RecordStack {
 
   private List list;
-
+  private RuntimeException re = null;
   private boolean eof = false;
 
   /**
@@ -77,6 +77,7 @@ public class RecordStack {
       } catch (Exception e) {
       }
     }
+    if (re != null) throw(re);
     Record record = null;
     if (list.size() > 0)
       record = (Record) list.remove(0);
@@ -98,10 +99,21 @@ public class RecordStack {
       } catch (Exception e) {
       }
     }
-
+    if (re != null) throw(re);
     if (!isEmpty() || !eof)
       return true;
     return false;
+  }
+
+  /**
+   * Passes the exception to the thread where the MarcXMLReader is running, so that the  next() call
+   * that is blocked waiting for this thread, will receive the exception.
+   *  
+   */
+  public synchronized void passException(RuntimeException e) {
+    re = e;
+    eof = true;
+    notifyAll();
   }
 
   /**

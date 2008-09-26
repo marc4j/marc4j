@@ -1,4 +1,4 @@
-// $Id: UnicodeToIso6937.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
+// $Id: UnicodeToIso6937.java,v 1.2 2008/09/26 21:17:42 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -29,9 +29,9 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Yves Pratter
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class UnicodeToIso6937 implements CharConverter {
+public class UnicodeToIso6937 extends CharConverter {
 
   /**
    * <p>
@@ -46,8 +46,7 @@ public class UnicodeToIso6937 implements CharConverter {
    *          the UCS/Unicode data
    * @return {@link String}- the ISO 6937 data
    */
-  public String convert(String dataElement) {
-    char[] data = dataElement.toCharArray();
+  public String convert(char data[]) {
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < data.length; i++) {
       char c = data[i];

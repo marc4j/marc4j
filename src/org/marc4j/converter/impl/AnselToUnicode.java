@@ -1,4 +1,4 @@
-// $Id: AnselToUnicode.java,v 1.3 2005/12/14 17:11:30 bpeters Exp $
+// $Id: AnselToUnicode.java,v 1.4 2008/09/26 21:17:42 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -21,8 +21,11 @@
 package org.marc4j.converter.impl;
 
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.util.Vector;
 
+import org.marc4j.ErrorHandler;
+import org.marc4j.MarcException;
 import org.marc4j.converter.CharConverter;
 
 /**
@@ -37,9 +40,9 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Corey Keith
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class AnselToUnicode implements CharConverter {
+public class AnselToUnicode extends CharConverter {
 
     class Queue extends Vector {
 
@@ -101,20 +104,80 @@ public class AnselToUnicode implements CharConverter {
         }
     }
 
-    protected CodeTable ct;
+    protected CodeTableInterface ct;
 
     protected boolean loadedMultibyte = false;
+
+    protected ErrorHandler errorList = null;
+    /**
+     * Creates a new instance and loads the MARC4J supplied
+     * conversion tables based on the official LC tables.
+     *  
+     */
+    public AnselToUnicode() 
+    {
+        ct = loadGeneratedTable(false);
+    }
+    
+    /**
+     * Creates a new instance and loads the MARC4J supplied
+     * conversion tables based on the official LC tables.
+     *  
+     */
+    public AnselToUnicode(boolean loadMultibyte) 
+    {
+        ct = loadGeneratedTable(loadMultibyte);
+    }
+    /**
+     * Creates a new instance and loads the MARC4J supplied
+     * conversion tables based on the official LC tables.
+     *  
+     */
+    public AnselToUnicode(ErrorHandler errorList) 
+    {
+        ct = loadGeneratedTable(false);
+        this.errorList = errorList;
+    }
 
     /**
      * Creates a new instance and loads the MARC4J supplied
      * conversion tables based on the official LC tables.
      *  
      */
-    public AnselToUnicode() {
-        this(AnselToUnicode.class
-                .getResourceAsStream("resources/codetablesnocjk.xml"));
+    public AnselToUnicode(ErrorHandler errorList, boolean loadMultibyte) 
+    {
+        ct = loadGeneratedTable(loadMultibyte);
+        this.errorList = errorList;
     }
 
+
+    private CodeTableInterface loadGeneratedTable(boolean loadMultibyte) 
+    {
+        try
+        {
+            Class generated = Class.forName("org.marc4j.converter.impl.CodeTableGenerated");
+            Constructor cons = generated.getConstructor();
+            Object ct = cons.newInstance();
+            loadedMultibyte = true;
+            return((CodeTableInterface)ct);
+        }
+        catch (Exception e)
+        {
+            CodeTableInterface ct;
+            if (loadMultibyte)
+            {
+                ct = new CodeTable(AnselToUnicode.class.getResourceAsStream("resources/codetables.xml"));                
+            }
+            else
+            {
+                ct = new CodeTable(AnselToUnicode.class.getResourceAsStream("resources/codetablesnocjk.xml"));
+            }
+            loadedMultibyte = loadMultibyte;
+            return(ct);
+         }
+
+    }
+    
     /**
      * Constructs an instance with the specified pathname.
      * 
@@ -144,7 +207,7 @@ public class AnselToUnicode implements CharConverter {
     }
 
     /**
-     * Loads the entire maping (including multibyte characters) from the Library
+     * Loads the entire mapping (including multibyte characters) from the Library
      * of Congress.
      */
     private void loadMultibyte() {
@@ -153,58 +216,146 @@ public class AnselToUnicode implements CharConverter {
     }
 
     private void checkMode(char[] data, CodeTracker cdt) {
-        while (cdt.offset < data.length && isEscape(data[cdt.offset])) {
-            switch (data[cdt.offset + 1]) {
-            case 0x28:
-            case 0x2c:
-                cdt.g0 = data[cdt.offset + 2];
-                cdt.offset += 3;
-                cdt.multibyte = false;
+        int extra = 0;
+        int extra2 = 0;
+        int extra3 = 0;
+        while (cdt.offset + extra + extra2< data.length && isEscape(data[cdt.offset])) {
+            switch (data[cdt.offset + 1 + extra]) {
+            case 0x28:  // '('
+            case 0x2c:  // ','
+                set_cdt(cdt, 0, data, 2 + extra, false); 
                 break;
-            case 0x29:
-            case 0x2d:
-                cdt.g1 = data[cdt.offset + 2];
-                cdt.offset += 3;
-                cdt.multibyte = false;
+            case 0x29:  // ')'
+            case 0x2d:  // '-'
+                set_cdt(cdt, 1, data, 2 + extra, false); 
                 break;
-            case 0x24:
-                cdt.multibyte = true;
+            case 0x24:  // '$'
                 if (!loadedMultibyte) {
                     loadMultibyte();
                     loadedMultibyte = true;
                 }
-                switch (data[cdt.offset + 1]) {
-                case 0x29:
-                case 0x2d:
-                    cdt.g1 = data[cdt.offset + 3];
-                    cdt.offset += 4;
+                switch (data[cdt.offset + 2 + extra + extra2]) {
+                case 0x29:  // ')'
+                case 0x2d:  // '-'
+                    set_cdt(cdt, 1, data, 3 + extra + extra2, true); 
                     break;
-                case 0x2c:
-                    cdt.g0 = data[cdt.offset + 3];
-                    cdt.offset += 4;
+                case 0x2c:  // ','
+                    set_cdt(cdt, 0, data, 3 + extra + extra2, true); 
                     break;
-                default:
-                    cdt.g0 = data[cdt.offset + 2];
-                    cdt.offset += 3;
+                case 0x31:  // '1'
+                    cdt.g0 = data[cdt.offset + 2 + extra + extra2];
+                    cdt.offset += 3 + extra + extra2;
+                    cdt.multibyte = true;
+                    break;
+                case 0x20:  // ' ' 
+                    // space found in escape code: look ahead and try to proceed
+                    extra2++;
+                    break;
+                default: 
+                    // unknown code character found: discard escape sequence and return
+                    cdt.offset += 1;
+                    if (errorList != null)
+                    {
+                        errorList.addError(ErrorHandler.MINOR_ERROR, "Unknown character set code found following escape character. Discarding escape character.");
+                    }
+                    else
+                    {
+                        throw new MarcException("Unknown character set code found following escape character.");
+                    }
                     break;
                 }
                 break;
-            case 0x67:
-            case 0x62:
-            case 0x70:
-                cdt.g0 = data[cdt.offset + 1];
-                cdt.offset += 2;
+            case 0x67:  // 'g'
+            case 0x62:  // 'b'
+            case 0x70:  // 'p'
+                cdt.g0 = data[cdt.offset + 1 + extra];
+                cdt.offset += 2 + extra;
                 cdt.multibyte = false;
                 break;
-            case 0x73:
+            case 0x73:  // 's'
                 cdt.g0 = 0x42;
-                cdt.offset += 2;
+                cdt.offset += 2 + extra;
                 cdt.multibyte = false;
+                break;
+            case 0x20:  // ' ' 
+                // space found in escape code: look ahead and try to proceed
+                if (errorList == null)
+                {
+                    throw new MarcException("Extraneous space character found within MARC8 character set escape sequence");
+                }
+                extra++;
+                break;
+            default: 
+                // unknown code character found: discard escape sequence and return
+                cdt.offset += 1;
+                if (errorList != null)
+                {
+                    errorList.addError(ErrorHandler.MINOR_ERROR, "Unknown character set code found following escape character. Discarding escape character.");
+                }
+                else
+                {
+                    throw new MarcException("Unknown character set code found following escape character.");
+                }
                 break;
             }
         }
+        if (errorList != null && ( extra != 0 || extra2 != 0))
+        {
+            errorList.addError(ErrorHandler.MINOR_ERROR, "" + (extra+extra2) + " extraneous space characters found within MARC8 character set escape sequence");
+        }
     }
 
+    private void set_cdt(CodeTracker cdt, int g0_or_g1, char[] data, int addnlOffset, boolean multibyte)
+    {
+        if (data[cdt.offset + addnlOffset] == '!' && data[cdt.offset + addnlOffset + 1] == 'E') 
+        {
+            addnlOffset++;
+        }
+        else if (data[cdt.offset + addnlOffset] == ' ') 
+        {
+            if (errorList != null)
+            {
+                errorList.addError(ErrorHandler.MINOR_ERROR, "Extraneous space character found within MARC8 character set escape sequence. Skipping over space.");
+            }           
+            else
+            {
+                throw new MarcException("Extraneous space character found within MARC8 character set escape sequence");
+            }
+            addnlOffset++;
+        }
+        else if ("(,)-$!".indexOf(data[cdt.offset + addnlOffset]) != -1) 
+        {
+            if (errorList != null)
+            {
+                errorList.addError(ErrorHandler.MINOR_ERROR, "Extraneaous intermediate character found following escape character. Discarding intermediate character.");
+            }           
+            else
+            {
+                throw new MarcException("Extraneaous intermediate character found following escape character.");
+            }
+            addnlOffset++;
+        }
+        if ("34BE1NQS2".indexOf(data[cdt.offset + addnlOffset]) == -1)
+        {
+            cdt.offset += 1;
+            cdt.multibyte = false;
+            if (errorList != null)
+            {
+                errorList.addError(ErrorHandler.MINOR_ERROR, "Unknown character set code found following escape character. Discarding escape character.");
+            }           
+            else
+            {
+                throw new MarcException("Unknown character set code found following escape character.");
+            }
+        }
+        else  // All is well, proceed normally
+        {
+            if (g0_or_g1 == 0) cdt.g0 = data[cdt.offset + addnlOffset];
+            else               cdt.g1 = data[cdt.offset + addnlOffset];
+            cdt.offset += 1 + addnlOffset;
+            cdt.multibyte = multibyte;
+        }
+    }
     /**
      * <p>
      * Converts MARC-8 data to UCS/Unicode.
@@ -214,9 +365,8 @@ public class AnselToUnicode implements CharConverter {
      *            the MARC-8 data
      * @return String - the UCS/Unicode data
      */
-    public String convert(String dataElement) {
-        char[] data = null;
-        data = dataElement.toCharArray();
+    public String convert(char  data[]) 
+    {
         StringBuffer sb = new StringBuffer();
         int len = data.length;
 
@@ -232,14 +382,17 @@ public class AnselToUnicode implements CharConverter {
 
         Queue diacritics = new Queue();
 
-        while (cdt.offset < data.length) {
+        while (cdt.offset < data.length) 
+        {
             if (ct.isCombining(data[cdt.offset], cdt.g0, cdt.g1)
-                    && hasNext(cdt.offset, len)) {
+                    && hasNext(cdt.offset, len)) 
+            {
 
                 while (ct.isCombining(data[cdt.offset], cdt.g0, cdt.g1)
-                        && hasNext(cdt.offset, len)) {
-                    diacritics.put(new Character(getChar(data[cdt.offset],
-                            cdt.g0, cdt.g1)));
+                        && hasNext(cdt.offset, len)) 
+                {
+                    char c = getChar(data[cdt.offset], cdt.g0, cdt.g1);
+                    if (c != 0) diacritics.put(new Character(c));
                     cdt.offset++;
                     checkMode(data, cdt);
                 }
@@ -247,23 +400,122 @@ public class AnselToUnicode implements CharConverter {
                 char c2 = getChar(data[cdt.offset], cdt.g0, cdt.g1);
                 cdt.offset++;
                 checkMode(data, cdt);
-                sb.append(c2);
+                if (c2 != 0) sb.append(c2);
 
-                while (!diacritics.isEmpty()) {
+                while (!diacritics.isEmpty()) 
+                {
                     char c1 = ((Character) diacritics.get()).charValue();
                     sb.append(c1);
                 }
 
-            } else if (cdt.multibyte) {
-                sb.append(ct.getChar(makeMultibyte(new String(data).substring(
-                        cdt.offset, cdt.offset + 4).toCharArray()), cdt.g0));
-                cdt.offset += 3;
-            } else {
-                sb.append(getChar(data[cdt.offset], cdt.g0, cdt.g1));
+            } 
+            else if (cdt.multibyte)
+            {
+                if (data[cdt.offset]== 0x20)
+                {
+                    // if a 0x20 byte occurs amidst a sequence of multibyte characters
+                    // skip over it and output a space.
+                    // Hmmm.  If the following line is present it seems to output two spaces 
+                    // when a space occurs in multibytes chars, without it one seems to be output.
+                    //    sb.append(getChar(data[cdt.offset], cdt.g0, cdt.g1));
+                    cdt.offset += 1;
+                }
+                else if (cdt.offset + 3 <= data.length && (errorList == null || data[cdt.offset+1]!= 0x20 && data[cdt.offset+2]!= 0x20)) 
+                {
+                    char c = getMBChar(makeMultibyte(data[cdt.offset], data[cdt.offset+1], data[cdt.offset+2]));
+                    if (errorList == null  || c != 0)
+                    { 
+                        sb.append(c);
+                        cdt.offset += 3;
+                    }
+                    else if (cdt.offset + 6 <= data.length && data[cdt.offset+4]!= 0x20 && data[cdt.offset+5]!= 0x20 &&
+                            getMBChar(makeMultibyte(data[cdt.offset+3], data[cdt.offset+4], data[cdt.offset+5])) != 0)
+                    {
+                        if (errorList != null)
+                        {
+                            errorList.addError(ErrorHandler.MAJOR_ERROR, "Erroneous MARC8 multibyte character, Discarding bad character and continuing reading Multibyte characters");
+                            sb.append("[?]");
+                            cdt.offset += 3;
+                        }
+                    }
+                    else if (cdt.offset + 4 <= data.length && data[cdt.offset] > 0x7f && 
+                            getMBChar(makeMultibyte(data[cdt.offset+1], data[cdt.offset+2], data[cdt.offset+3])) != 0)
+                    {
+                        if (errorList != null)
+                        {
+                            errorList.addError(ErrorHandler.MAJOR_ERROR, "Erroneous character in MARC8 multibyte character, Copying bad character and continuing reading Multibyte characters");
+                            sb.append(getChar(data[cdt.offset], 0x42, 0x45));
+                            cdt.offset += 1;
+                        }
+                    }
+                    else
+                    {
+                        if (errorList != null)
+                        {
+                            errorList.addError(ErrorHandler.MAJOR_ERROR, "Erroneous MARC8 multibyte character, inserting change to default character set");
+                        }
+                        cdt.multibyte = false;
+                        cdt.g0 = 0x42;
+                        cdt.g1 = 0x45;
+                    }
+                } 
+                else if (errorList != null && cdt.offset + 4 <= data.length && ( data[cdt.offset+1] == 0x20 || data[cdt.offset+2]== 0x20)) 
+                {
+                    int multiByte = makeMultibyte( data[cdt.offset], ((data[cdt.offset+1] != 0x20)? data[cdt.offset+1] : data[cdt.offset+2]),  data[cdt.offset+3]);
+                    char c = getMBChar(multiByte);
+                    if (c != 0) 
+                    {
+                        if (errorList != null)
+                        {
+                            errorList.addError(ErrorHandler.ERROR_TYPO, "Extraneous space found within MARC8 multibyte character");
+                        }
+                        sb.append(c);
+                        sb.append(' ');
+                        cdt.offset += 4;
+                    }
+                    else
+                    {
+                        if (errorList != null)
+                        {
+                            errorList.addError(ErrorHandler.MAJOR_ERROR, "Erroneous MARC8 multibyte character, inserting change to default character set");
+                        }
+                        cdt.multibyte = false;
+                        cdt.g0 = 0x42;
+                        cdt.g1 = 0x45;
+                    }
+                } 
+                else if (cdt.offset + 3 > data.length) 
+                {
+                    if (errorList != null)
+                    {
+                        errorList.addError(ErrorHandler.MAJOR_ERROR, "Partial MARC8 multibyte character, inserting change to default character set");
+                        cdt.multibyte = false;
+                        cdt.g0 = 0x42;
+                        cdt.g1 = 0x45;
+                    }
+                    // if a field ends with an incomplete encoding of a multibyte character
+                    // simply discard that final partial character.
+                    else 
+                    {
+                        cdt.offset += 3;
+                    }
+                } 
+            }
+            else 
+            {
+                char c = getChar(data[cdt.offset], cdt.g0, cdt.g1);
+                if (c != 0) sb.append(c);
+                else 
+                {
+                    String val = "0000"+Integer.toHexString((int)(data[cdt.offset]));
+                    sb.append("<U+"+ (val.substring(val.length()-4, val.length()))+ ">" );
+                }
                 cdt.offset += 1;
             }
             if (hasNext(cdt.offset, len))
+            {
                 checkMode(data, cdt);
+            }
         }
         return sb.toString();
     }
@@ -275,6 +527,15 @@ public class AnselToUnicode implements CharConverter {
         chars[2] = data[2];
         return chars[0] | chars[1] | chars[2];
     }
+    
+    public int makeMultibyte(char c1, char c2, char c3) 
+    {
+        int[] chars = new int[3];
+        chars[0] = c1 << 16;
+        chars[1] = c2 << 8;
+        chars[2] = c3;
+        return chars[0] | chars[1] | chars[2];
+    }
 
     private char getChar(int ch, int g0, int g1) {
         if (ch <= 0x7E)
@@ -283,7 +544,7 @@ public class AnselToUnicode implements CharConverter {
             return ct.getChar(ch, g1);
     }
 
-    private char getMBChar(int ch) {
+    public char getMBChar(int ch) {
         return ct.getChar(ch, 0x31);
     }
 

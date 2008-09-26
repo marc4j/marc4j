@@ -1,4 +1,4 @@
-// $Id: UnicodeToAnsel.java,v 1.2 2005/11/28 16:50:22 bpeters Exp $
+// $Id: UnicodeToAnsel.java,v 1.3 2008/09/26 21:17:42 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -36,9 +36,9 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Corey Keith
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class UnicodeToAnsel implements CharConverter {
+public class UnicodeToAnsel extends CharConverter {
     protected ReverseCodeTable rct;
 
     static final char ESC = 0x1b;
@@ -97,8 +97,7 @@ public class UnicodeToAnsel implements CharConverter {
      *            the UCS/Unicode data
      * @return String - the MARC-8 data
      */
-    public String convert(String dataElement) {
-        char[] data = dataElement.toCharArray();
+    public String convert(char data[]) {
         StringBuffer sb = new StringBuffer();
         CodeTableTracker ctt = new CodeTableTracker();
 

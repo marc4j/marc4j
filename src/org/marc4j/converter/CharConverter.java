@@ -1,4 +1,4 @@
-//$Id: CharConverter.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
+//$Id: CharConverter.java,v 1.2 2008/09/26 21:18:16 haschart Exp $
 /**
  * Copyright (C) 2005 Bas Peters
  *
@@ -25,9 +25,9 @@ package org.marc4j.converter;
  * Implement this class to create a character converter.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public interface CharConverter {
+public abstract class CharConverter {
 
   /**
    * Converts the dataElement and returns the result as a <code>String</code>
@@ -36,6 +36,25 @@ public interface CharConverter {
    * @param dataElement the data to convert
    * @return String the conversion result
    */
-  public String convert(String dataElement);
+    public abstract String convert(char[] dataElement);
+    
+    public String convert(byte[] data) 
+    {
+        char cData[] = new char[data.length];
+        for (int i = 0; i < data.length; i++)
+        {
+            byte b = data[i];
+            cData[i] =  (char)(b >= 0 ? b : 256 + b);
+        }
+        return convert(cData);
+    }
+
+    public String convert(String dataElement) 
+    {
+        char[] data = null;
+        data = dataElement.toCharArray();
+        return (convert(data));
+    }
+    
 
 }

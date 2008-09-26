@@ -27,10 +27,22 @@
 		<mkdir dir="${build.dir}" />
 	</target>
 
+	<target name="codetablegen"  unless="codegen.notrequired">
+		<java fork="true" classpath="${build.dir}" classname="org.marc4j.converter.impl.CodeTable" output="${src.dir}/org/marc4j/converter/impl/CodeTableGenerated.java" />
+	</target>
+	
 	<target name="compile" depends="prepare">
-		<javac srcdir="${src.dir}" destdir="${build.dir}">
-			<classpath refid="classpath" />
-		</javac>
+        <javac srcdir="${src.dir}" destdir="${build.dir}" includes="**/*.java" excludes="**/CodeTableGenerated.java" debug="true" debuglevel="source,lines,vars">
+            <classpath refid="classpath" />
+        </javac>
+		<uptodate property="codegen.notrequired" targetfile="${src.dir}/org/marc4j/converter/impl/CodeTableGenerated.java" >
+		    <srcfiles dir= "${src.dir}" includes="**/*.xml,**/CodeTable.java"/>
+		</uptodate>
+		<antcall target="codetablegen"/>
+	    
+        <javac srcdir="${src.dir}" destdir="${build.dir}" includes="**/CodeTableGenerated.java" debug="false">
+            <classpath refid="classpath" />
+        </javac>
 		<copy todir="${build.dir}">
 			<fileset dir="${src.dir}">
 				<include name="**/*.properties" />

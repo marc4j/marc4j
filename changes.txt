@@ -1,9 +1,34 @@
+Changes to MARC4J 2.4
+
+MARC4J 2.4 is a minor release providing some bug fixes and some new functionality.
+
+- Added MarcPermissiveStreamReader which is more capable of reading records that contain structural or
+  encoding errors, and is capable of translating the records to UTF-8 as they are read.
+- Added ErrorHandler which is used for tracking and reporting structural or encoding errors 
+  encountered by the MarcPermissiveStreamReader.
+- Added MarcDirStreamReader which iterates over all of the MARC record files in a given directory.
+- Modified MarcStreamReader so that if an exception is thrown for an error in one record you can
+  choose to catch the exception, discard the erroneous record and continue reading from the input file.
+- Modified AnselToUnicode to fix some problems that would occur when trying to handle Chinese characters,
+  to fix an infinite loop problem that would occur sometimes when extraneous characters appear within a
+  MARC8 character set escape sequence, and made many changes to support the MarcPermissiveStreamReader
+  to report and try to recover from encoding errors in the records being read.
+- Modified CodeTable (which is used by AnselToUnicode) so that rather than reading and parsing a large 
+  XML file to create the hash tables for mapping MARC8 to Unicode at runtime, the parsing is done once
+  at compile time, and a class that handles the mapping directly via switch statements is automatically 
+  generated.
+- Made minor changes to the MarcXmlReader so that if an exception occurs in the MarcXmlParserThread that
+  it starts, the exception is passed to the MarcXmlReader rather than simply hanging the parser thread.
+- Added PermissiveReaderExample which demonstrates how to use the MarcPermissiveReader to examine and/or
+  validate records for structural or encoding errors.  
+  
+
 Changes to MARC4J 2.3.1
 
 MARC4J 2.3.1 is a minor release with some encoding fixes
 
 - Fixed encoding bug in MarcStreamReader: now sets ISO8859_1 as default as alternative for MARC-8 and 
-  UNIMARC encoding alternative. For MARC 21 the ledare is checked: space is ISO 8859_1 and a is UTF-8.
+  UNIMARC encoding alternative. For MARC 21 the leader is checked: space is ISO 8859_1 and a is UTF-8.
   When an encoding is provided in the MarcStreamReader constructor, this encoding overrides 
   the default encoding and the leader encoding value.
 - MarcXmlDriver: when converting from MARC-8 to UTF-8 character coding scheme in leader (pos. 9) is set to 'a'.

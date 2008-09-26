@@ -1,4 +1,4 @@
-// $Id: RecordImpl.java,v 1.4 2006/08/04 12:29:01 bpeters Exp $
+// $Id: RecordImpl.java,v 1.5 2008/09/26 21:17:43 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -35,7 +35,7 @@ import org.marc4j.marc.VariableField;
  * Represents a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class RecordImpl implements Record {
 
@@ -179,7 +179,9 @@ public class RecordImpl implements Record {
     }
 
     public String getControlNumber() {
-        return new String(getControlNumberField().getData());
+        ControlField f = getControlNumberField();
+        String result = (f == null || f.getData() == null) ? null : new String(f.getData());
+        return(result);
     }
 
     public List getVariableFields(String[] tags) {

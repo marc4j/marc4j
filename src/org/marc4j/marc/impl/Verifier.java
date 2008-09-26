@@ -1,4 +1,4 @@
-// $Id: Verifier.java,v 1.1 2005/05/04 10:06:47 bpeters Exp $
+// $Id: Verifier.java,v 1.2 2008/09/26 21:17:42 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -29,7 +29,7 @@ import org.marc4j.marc.ControlField;
  * Handles MARC checks on tags, data elements and <code>Record</code> objects.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Verifier {
 
@@ -40,8 +40,8 @@ public class Verifier {
    * Returns true if the given <code>String</code> value identifies a tag for
    * a control field (001 through 009).
    */
-  public static boolean isControlField(String tag) throws NumberFormatException {
-    if (Integer.parseInt(tag) < 10)
+  public static boolean isControlField(String tag) {
+    if (tag.length() == 3 && tag.charAt(0) == '0' && tag.charAt(1) == '0' && tag.charAt(2) >= '0' && tag.charAt(2) <= '9')// if (Integer.parseInt(tag) < 10)
       return true;
     return false;
   }
@@ -50,14 +50,12 @@ public class Verifier {
    * Returns true if the given <code>String</code> value identifies a tag for
    * a control number field (001).
    */
-  public static boolean isControlNumberField(String tag)
-      throws NumberFormatException {
-    if (Integer.parseInt(tag) == 1)
+  public static boolean isControlNumberField(String tag){
+    if (tag.equals("001"))
       return true;
     return false;
   }
-
-  /**
+/**
    * Returns true if the given <code>Collection</code> contains an instance of
    * a <code>ControlField</code> with a control number field tag (001).
    * 
