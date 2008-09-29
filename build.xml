@@ -91,7 +91,7 @@
 		<delete dir="${build.dir}" />
 	</target>
 
-	<target name="dist" depends="jar">
+	<target name="dist" depends="jar,javadoc">
 		<property name="prefix" value="${project.name}-${version}" />
 		<property name="tmp.dir" value="${dist.dir}/tmp" />
 		<property name="tmp.arc.dir" value="${tmp.dir}/${prefix}" />
@@ -111,7 +111,7 @@
 		</copy>
 		<copy todir="${tmp.arc.dir}/${lib.dir}">
 			<fileset dir="${lib.dir}">
-				<exclude name="junit.jar" />
+				<exclude name="junit*.jar" />
 			</fileset>
 		</copy>
 		<copy todir="${tmp.arc.dir}/${apidoc.dir}">
