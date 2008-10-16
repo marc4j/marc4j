@@ -1,4 +1,4 @@
-// $Id: ErrorHandler.java,v 1.6 2008/09/26 21:17:42 haschart Exp $
+// $Id: ErrorHandler.java,v 1.7 2008/10/16 14:41:16 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -30,7 +30,7 @@ import java.util.List;
  * Used in conjunction with the MarcPermissiveReader class. 
  *
  * @author Robert Haschart
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ErrorHandler {
 
@@ -41,7 +41,7 @@ public class ErrorHandler {
     public final static int WARNING = 1;
     public final static int INFO = 0;
     
-    private List<Object> errors;
+    private List errors;
     private String curRecordID;
     private String curField;
     private String curSubfield;
@@ -122,7 +122,7 @@ public class ErrorHandler {
         return (maxSeverity);
     }
     
-    public List<Object> getErrors()
+    public List getErrors()
     {
         if (errors == null || errors.size() == 0) return null;        
         return(errors);
@@ -138,7 +138,7 @@ public class ErrorHandler {
     {
         if (errors == null) 
         {
-            errors = new LinkedList<Object>();
+            errors = new LinkedList();
             hasMissingID = false;
         }
         if (id != null && id.equals("unknown"))  hasMissingID = true;
@@ -164,7 +164,7 @@ public class ErrorHandler {
     {
         if (id != null)
         { 
-            Iterator<Object> iter = errors.iterator();       
+            Iterator iter = errors.iterator();       
             while (iter.hasNext())
             {
                 Error err = (Error)(iter.next());

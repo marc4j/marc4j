@@ -104,7 +104,7 @@ import com.ibm.icu.text.Normalizer;
  * </p>
  * 
  * @author Robert Haschart
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * 
  */
 public class MarcPermissiveStreamReader implements MarcReader {
@@ -1515,7 +1515,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
         return(errors.hasErrors());
     }
 
-    public List<Object> getErrors()
+    public List getErrors()
     {
         return(errors.getErrors());
     }
