@@ -27,19 +27,22 @@
 		<mkdir dir="${build.dir}" />
 	</target>
 
-	<target name="codetablegen"  unless="codegen.notrequired">
-		<java fork="true" classpath="${build.dir}" classname="org.marc4j.converter.impl.CodeTable" output="${src.dir}/org/marc4j/converter/impl/CodeTableGenerated.java" />
+	<target name="codetablegen">
+		<mkdir dir="${src.dir}/org/marc4j/converter/impl/new" />
+		<java fork="true" classpath="${build.dir}" classname="org.marc4j.converter.impl.CodeTableGenerator" output="${src.dir}/org/marc4j/converter/impl/new/CodeTableGenerated.java" />
+	    <copy todir="${src.dir}/org/marc4j/converter/impl/">
+	    	<fileset dir="${src.dir}/org/marc4j/converter/impl/new" includes="**/*.java">
+	        	<different targetdir="${src.dir}/org/marc4j/converter/impl" ignoreFileTimes="true"/>
+	    	</fileset>
+	    </copy>
+		<delete dir="${src.dir}/org/marc4j/converter/impl/new" />
 	</target>
 	
 	<target name="compile" depends="prepare">
         <javac srcdir="${src.dir}" destdir="${build.dir}" includes="**/*.java" excludes="**/CodeTableGenerated.java" debug="true" debuglevel="source,lines,vars">
             <classpath refid="classpath" />
         </javac>
-		<uptodate property="codegen.notrequired" targetfile="${src.dir}/org/marc4j/converter/impl/CodeTableGenerated.java" >
-		    <srcfiles dir= "${src.dir}" includes="**/*.xml,**/CodeTable.java"/>
-		</uptodate>
 		<antcall target="codetablegen"/>
-	    
         <javac srcdir="${src.dir}" destdir="${build.dir}" includes="**/CodeTableGenerated.java" debug="false">
             <classpath refid="classpath" />
         </javac>
@@ -65,6 +68,7 @@
 		<jar jarfile="${project.name}.jar">
 			<fileset dir="${build.dir}">
 				<include name="**/*.class" />
+				<exclude name="**/CodeTableGenerator.class" />
 				<exclude name="**/samples/**/*.*" />
 				<exclude name="**/test/**/*.*" />
 				<include name="**/*.properties" />
