@@ -1,4 +1,4 @@
-//$Id: MarcXmlWriter.java,v 1.8 2007/02/20 20:15:02 bpeters Exp $
+//$Id: MarcXmlWriter.java,v 1.9 2008/10/17 19:11:49 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -191,7 +191,7 @@ import com.ibm.icu.text.Normalizer;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * 
  */
 public class MarcXmlWriter implements MarcWriter {
@@ -404,12 +404,12 @@ public class MarcXmlWriter implements MarcWriter {
         try {
             AttributesImpl atts = new AttributesImpl();
             handler.startDocument();
-            handler.startPrefixMapping("", Constants.MARCXML_NS_URI);
+            // The next line duplicates the namespace declaration for Marc XML
+            // handler.startPrefixMapping("", Constants.MARCXML_NS_URI);
             // add namespace declaration using attribute - need better solution
-            //atts.addAttribute(Constants.MARCXML_NS_URI, "xmlns", "xmlns",
-            //        "CDATA", Constants.MARCXML_NS_URI);
-            handler.startElement(Constants.MARCXML_NS_URI, COLLECTION,
-                    COLLECTION, atts);
+            atts.addAttribute(Constants.MARCXML_NS_URI, "xmlns", "xmlns",
+                              "CDATA", Constants.MARCXML_NS_URI);            
+            handler.startElement(Constants.MARCXML_NS_URI, COLLECTION, COLLECTION, atts);
         } catch (SAXException e) {
             throw new MarcException(
                     "SAX error occured while writing start document", e);
