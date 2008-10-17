@@ -111,7 +111,9 @@
 			</fileset>
 		</copy>
 		<copy todir="${tmp.arc.dir}/${src.dir}">
-			<fileset dir="${src.dir}" />
+			<fileset dir="${src.dir}" >
+				<exclude name="**/CodeTableGenerated.java" />
+		    </fileset>
 		</copy>
 		<copy todir="${tmp.arc.dir}/${lib.dir}">
 			<fileset dir="${lib.dir}">
