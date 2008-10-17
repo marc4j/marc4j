@@ -77,7 +77,7 @@ import com.ibm.icu.text.Normalizer;
  * 
  * <pre>
  * InputStream input = new FileInputStream(&quot;file.mrc&quot;);
- * MarcReader reader = new MarcPermissiveReader(input, true, false);
+ * MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
  * while (reader.hasNext()) {
  *     Record record = reader.next();
  *     // Process record
@@ -88,7 +88,8 @@ import com.ibm.icu.text.Normalizer;
  * Check the {@link org.marc4j.marc}&nbsp;package for examples about the use of
  * the {@link org.marc4j.marc.Record}&nbsp;object model.
  * Check the file org.marc4j.samples.PermissiveReaderExample.java for an
- * example about using the MarcPermissiveStreamReader.
+ * example about using the MarcPermissiveStreamReader in conjunction with the 
+ * ErrorHandler class to report errors encountered while processing records.
  * </p>
  * 
  * <p>
@@ -104,7 +105,7 @@ import com.ibm.icu.text.Normalizer;
  * </p>
  * 
  * @author Robert Haschart
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  */
 public class MarcPermissiveStreamReader implements MarcReader {
@@ -274,7 +275,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 input.readFully(recordBuf);
                 if (recordBuf[recordBuf.length-1] != Constants.RT)
                 {
-                    errors.addError("unknown", "n/a", "n/a", ErrorHandler.ERROR_TYPO, 
+                    errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
                                     "Record terminator character not found at end of record length");
                     recordBuf = rereadPermissively(input, recordBuf, recordLength);
                     recordLength = recordBuf.length + 24;
@@ -308,7 +309,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
         int loc = arrayContainsAt(recordBuf, Constants.RT);
         if (loc != -1)  // stated record length is too long
         {
-            errors.addError("unknown", "n/a", "n/a", ErrorHandler.ERROR_TYPO, 
+            errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
                             "Record terminator appears before stated record length, using shorter record");
             recordLength = loc + 24;
             input.reset();
@@ -327,7 +328,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
  
             if (c == Constants.RT)
             {
-                errors.addError("unknown", "n/a", "n/a", ErrorHandler.ERROR_TYPO, 
+                errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
                                 "Record terminator appears after stated record length, reading extra bytes");
                 recordLength = loc + 24;
                 input.reset();
@@ -378,7 +379,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
             {
                 if (recordBuf[recordBuf.length-1] == Constants.RT && recordBuf[recordBuf.length-2] == Constants.FT)
                 {
-                    errors.addError("unknown", "n/a", "n/a", ErrorHandler.WARNING, 
+                    errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
                                     "Error parsing leader, trying to re-read leader either shorter or longer");
                     // make an attempt to recover record.
                     int offset = 0;
@@ -434,6 +435,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     }
                     else
                     {
+                        errors.addError("unknown", "n/a", "n/a", ErrorHandler.FATAL, 
+                                       "error parsing leader with data: " + new String(byteArray));
                         throw new MarcException("error parsing leader with data: "
                                 + new String(byteArray), e);
                     }
@@ -453,7 +456,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     tmp[2] >= '0' && tmp[2] <= '9' && 
                     tmp[3] >= '0' && tmp[3] <= '9')
             {
-                errors.addError("unknown", "n/a", "n/a", ErrorHandler.WARNING, 
+                errors.addError("unknown", "n/a", "n/a", ErrorHandler.ERROR_TYPO, 
                             "Unusual character found at end of leader [ "+tmp[0]+tmp[1]+tmp[2]+tmp[3]+" ]");
             }
             else
@@ -551,7 +554,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     {
                         if (recordBuf[i] == 0x1B)
                         {
-                            errors.addError("unknown", "n/a", "n/a", ErrorHandler.ERROR_TYPO, 
+                            errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
                                             "Record claims to be UTF-8, but its not. Its probably MARC8.");
                             encoding = "MARC8-Maybe";
                             foundESC = true;
@@ -565,7 +568,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     }
                     if (!foundESC)
                     {
-                        errors.addError("unknown", "n/a", "n/a", ErrorHandler.ERROR_TYPO, 
+                        errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
                                 "Record claims to be UTF-8, but its not. It may be MARC8, or maybe UNIMARC, or maybe raw ISO-8859-1 ");
                     }
                 }
@@ -595,7 +598,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
 	                    // need to check for byte < 0 to see if the high bit is set, because Java doesn't have unsigned types.
 	                    if (recordBuf[i] < 0x00 || byteCheck[i] != recordBuf[i])
 	                    {
-	                        errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
+	                        errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
                                             "Record claims not to be UTF-8, but it seems to be.");
 	                        encoding = "UTF8-Maybe";
 	                        break;
@@ -685,7 +688,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     else if (byteCompare(lenCheck, 5, 5, totalOffset)) // field length is 5 bytes!  Bad Marc record, proceed normally
                     {
                         discardOneSomewhereInDirectory = false;
-                        errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
+                        errors.addError("unknown", "n/a", "n/a", ErrorHandler.FATAL, 
                                         "Field is longer than 9999 bytes.  Writing this record out will result in a bad record.");
                         proceedNormally = false;
                     }
@@ -742,7 +745,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                                         "Field length found in record different from length stated in the directory.");
                         if (fieldLength+1 > 9999)
                         {
-                            errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
+                            errors.addError("unknown", "n/a", "n/a", ErrorHandler.FATAL, 
                                         "Field length is greater than 9999, record cannot be represented as a binary Marc record.");
                         }
                     }
@@ -966,8 +969,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
         if (permissive)
         {
             errors.setRecordID(record.getControlNumber());
-            errors.setField(tag); 
-            errors.setCurSubfield("n/a");
+            errors.setCurrentField(tag); 
+            errors.setCurrentSubfield("n/a");
             cleanupBadFieldSeperators(field);
         }
         ByteArrayInputStream bais = new ByteArrayInputStream(field);
@@ -999,7 +1002,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 data = new byte[size];
                 bais.read(data);
                 subfield = factory.newSubfield();
-                if (permissive) errors.setCurSubfield("" + (char)code);
+                if (permissive) errors.setCurrentSubfield("" + (char)code);
                 String dataAsString = getDataAsString(data);
                 if (permissive && code == Constants.US)
                 {
@@ -1158,7 +1161,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 bais.reset();
                 if (permissive)
                 {
-                    errors.addError(ErrorHandler.ERROR_TYPO, 
+                    errors.addError(ErrorHandler.MINOR_ERROR, 
                                     "Field not terminated trying to continue");
                     return (bytesRead);
                 }
@@ -1186,7 +1189,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 bais.reset();
                 if (permissive)
                 {
-                    errors.addError(ErrorHandler.ERROR_TYPO, "Subfield not terminated trying to continue");
+                    errors.addError(ErrorHandler.MINOR_ERROR, "Subfield not terminated trying to continue");
                     return (bytesRead);
                 }
                 else
@@ -1416,7 +1419,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 if (!newDataElement.equals(dataElement))
                 {
                     dataElement = newDataElement;
-                    errors.addError(ErrorHandler.ERROR_TYPO, "Subfield contains odd pattern of subscript or superscript escapes. ");
+                    errors.addError(ErrorHandler.MINOR_ERROR, "Subfield contains odd pattern of subscript or superscript escapes. ");
                 }
                 newDataElement = dataElement.replace((char)0xaf, (char)0xe5);
                 if (!newDataElement.equals(dataElement))
@@ -1498,26 +1501,6 @@ public class MarcPermissiveStreamReader implements MarcReader {
         int charNum = Integer.parseInt(charCodePoint, 16);
         String result = ""+((char)charNum);
         return(result);
-    }
-
-    public boolean isPermissive()
-    {
-        return permissive;
-    }
-
-    public void setPermissive(boolean permissive)
-    {
-        this.permissive = permissive;        
-    }
-    
-    public boolean hasErrors()
-    {
-        return(errors.hasErrors());
-    }
-
-    public List getErrors()
-    {
-        return(errors.getErrors());
     }
 
 }

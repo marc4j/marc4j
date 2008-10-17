@@ -1,4 +1,4 @@
-//$Id: CharConverter.java,v 1.2 2008/09/26 21:18:16 haschart Exp $
+//$Id: CharConverter.java,v 1.3 2008/10/17 06:47:06 haschart Exp $
 /**
  * Copyright (C) 2005 Bas Peters
  *
@@ -22,34 +22,51 @@
 package org.marc4j.converter;
 
 /**
- * Implement this class to create a character converter.
+ * Extend this class to create a character converter.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class CharConverter {
 
   /**
-   * Converts the dataElement and returns the result as a <code>String</code>
-   * object.
+   * The method that needs to be implemented in a subclass to create a CharConverter.
+   * Receives a data element extracted from a record as a array of characters, and 
+   * converts that data and returns the result as a <code>String</code> object.
    * 
    * @param dataElement the data to convert
    * @return String the conversion result
    */
     public abstract String convert(char[] dataElement);
     
-    public String convert(byte[] data) 
+   /**
+    * Alternate method for performing a character conversion.  Receives the incoming
+    * as a byte array, converts the bytes to characters, and calls the above convert method
+    * which must be implemented in the subclass.
+    * 
+    * @param dataElement the data to convert
+    * @return String the conversion result
+    */
+    final public String convert(byte[] dataElement) 
     {
-        char cData[] = new char[data.length];
-        for (int i = 0; i < data.length; i++)
+        char cData[] = new char[dataElement.length];
+        for (int i = 0; i < dataElement.length; i++)
         {
-            byte b = data[i];
+            byte b = dataElement[i];
             cData[i] =  (char)(b >= 0 ? b : 256 + b);
         }
         return convert(cData);
     }
 
-    public String convert(String dataElement) 
+   /**
+    * Alternate method for performing a character conversion.  Receives the incoming
+    * as a String, converts the String to a character array, and calls the above convert 
+    * method which must be implemented in the subclass.
+    * 
+    * @param dataElement the data to convert
+    * @return String the conversion result
+    */
+    final public String convert(String dataElement) 
     {
         char[] data = null;
         data = dataElement.toCharArray();

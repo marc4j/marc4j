@@ -1,4 +1,4 @@
-// $Id: Iso6937ToUnicode.java,v 1.2 2008/09/26 21:17:42 haschart Exp $
+// $Id: Iso6937ToUnicode.java,v 1.3 2008/10/17 06:47:06 haschart Exp $
 /**
  * Copyright (C) 2002 Bas  Peters  (mail@bpeters.com)
  * Copyright (C) 2002 Yves Pratter (ypratter@club-internet.fr)
@@ -30,7 +30,7 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Yves Pratter
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Iso6937ToUnicode extends CharConverter {
 
@@ -39,8 +39,7 @@ public class Iso6937ToUnicode extends CharConverter {
    * Converts ISO 6937 data to UCS/Unicode.
    * </p>
    * 
-   * @param dataElement
-   *          the ISO 6937 data
+   * @param data - the ISO 6937 data in an array of char
    * @return {@link String}- the UCS/Unicode data
    */
   public String convert(char data[]) {

@@ -1,4 +1,4 @@
-// $Id: UnicodeToAnsel.java,v 1.3 2008/09/26 21:17:42 haschart Exp $
+// $Id: UnicodeToAnsel.java,v 1.4 2008/10/17 06:47:06 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -36,7 +36,7 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Corey Keith
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class UnicodeToAnsel extends CharConverter {
     protected ReverseCodeTable rct;
@@ -93,8 +93,7 @@ public class UnicodeToAnsel extends CharConverter {
      * A question mark (0x3F) is returned if there is no match.
      * </p>
      * 
-     * @param dataElement
-     *            the UCS/Unicode data
+     * @param data - the UCS/Unicode data in an array of char
      * @return String - the MARC-8 data
      */
     public String convert(char data[]) {
