@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -105,7 +104,6 @@ public class PermissiveReaderExample
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        boolean done = false;
         if (args.length > 1)
         {
             try
@@ -209,7 +207,8 @@ public class PermissiveReaderExample
 
     }
     
-    public static void dumpErrors(PrintStream out, ErrorHandler errorHandler)
+    @SuppressWarnings("unchecked")
+	public static void dumpErrors(PrintStream out, ErrorHandler errorHandler)
     {
         List<Object> errors = errorHandler.getErrors();
         if (errors != null) 
@@ -218,10 +217,6 @@ public class PermissiveReaderExample
             while (iter.hasNext())
             {
                 Object error = iter.next();
-                if (((ErrorHandler.Error)(error)).getSeverity() >= ErrorHandler.MINOR_ERROR)
-                {
-                    int i = 10;
-                }
                 out.println(error.toString());
             }
         }
