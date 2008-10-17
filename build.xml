@@ -29,31 +29,33 @@
 
 	<target name="codetablegen">
 		<mkdir dir="${src.dir}/org/marc4j/converter/impl/new" />
-		<java fork="true" classpath="${build.dir}" classname="org.marc4j.converter.impl.CodeTableGenerator" output="${src.dir}/org/marc4j/converter/impl/new/CodeTableGenerated.java" />
+		<java fork="true" classname="org.marc4j.converter.impl.CodeTableGenerator" output="${src.dir}/org/marc4j/converter/impl/new/CodeTableGenerated.java" >
+			<classpath location="${build.dir}" />
+		</java>
 	    <copy todir="${src.dir}/org/marc4j/converter/impl/">
 	    	<fileset dir="${src.dir}/org/marc4j/converter/impl/new" includes="**/*.java">
 	        	<different targetdir="${src.dir}/org/marc4j/converter/impl" ignoreFileTimes="true"/>
 	    	</fileset>
 	    </copy>
-		<delete dir="${src.dir}/org/marc4j/converter/impl/new" />
+		<delete dir="${src.dir}/org/marc4j/converter/impl/new" /> 
 	</target>
 	
 	<target name="compile" depends="prepare">
         <javac srcdir="${src.dir}" destdir="${build.dir}" includes="**/*.java" excludes="**/CodeTableGenerated.java" debug="true" debuglevel="source,lines,vars">
             <classpath refid="classpath" />
         </javac>
+        <copy todir="${build.dir}">
+            <fileset dir="${src.dir}">
+                <include name="**/*.properties" />
+                <include name="**/*.xml" />
+                <exclude name="**/tests/*" />
+                <exclude name="**/tests" />
+            </fileset>
+        </copy>
 		<antcall target="codetablegen"/>
         <javac srcdir="${src.dir}" destdir="${build.dir}" includes="**/CodeTableGenerated.java" debug="false">
             <classpath refid="classpath" />
         </javac>
-		<copy todir="${build.dir}">
-			<fileset dir="${src.dir}">
-				<include name="**/*.properties" />
-				<include name="**/*.xml" />
-				<exclude name="**/tests/*" />
-				<exclude name="**/tests" />
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="test">
