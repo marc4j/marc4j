@@ -1,4 +1,4 @@
-// $Id: AnselToUnicode.java,v 1.5 2008/10/17 06:47:06 haschart Exp $
+// $Id: AnselToUnicode.java,v 1.6 2008/10/28 19:24:35 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -40,7 +40,7 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Corey Keith
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class AnselToUnicode extends CharConverter {
 
@@ -414,9 +414,7 @@ public class AnselToUnicode extends CharConverter {
                 {
                     // if a 0x20 byte occurs amidst a sequence of multibyte characters
                     // skip over it and output a space.
-                    // Hmmm.  If the following line is present it seems to output two spaces 
-                    // when a space occurs in multibytes chars, without it one seems to be output.
-                    //    sb.append(getChar(data[cdt.offset], cdt.g0, cdt.g1));
+                    sb.append(getChar(data[cdt.offset], cdt.g0, cdt.g1));
                     cdt.offset += 1;
                 }
                 else if (cdt.offset + 3 <= data.length && (errorList == null || data[cdt.offset+1]!= 0x20 && data[cdt.offset+2]!= 0x20)) 
