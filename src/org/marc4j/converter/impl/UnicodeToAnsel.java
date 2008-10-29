@@ -1,4 +1,4 @@
-// $Id: UnicodeToAnsel.java,v 1.4 2008/10/17 06:47:06 haschart Exp $
+// $Id: UnicodeToAnsel.java,v 1.5 2008/10/29 21:17:48 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -25,6 +25,8 @@ import java.util.Hashtable;
 
 import org.marc4j.converter.CharConverter;
 
+import com.ibm.icu.text.Normalizer;
+
 /**
  * <p>
  * A utility to convert UCS/Unicode data to MARC-8.
@@ -36,7 +38,8 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Corey Keith
- * @version $Revision: 1.4 $
+ * @author Robert Haschart
+ * @version $Revision: 1.5 $
  */
 public class UnicodeToAnsel extends CharConverter {
     protected ReverseCodeTable rct;
@@ -53,11 +56,14 @@ public class UnicodeToAnsel extends CharConverter {
 
     /**
      * Creates a new instance and loads the MARC4J supplied Ansel/Unicode
-     * conversion tables based on the official LC tables.
+     * conversion tables based on the official LC tables. Loads in the generated class
+     * ReverseCodeTableGenerated which contains switch statements to lookup 
+     * the MARC-8 encodings for given Unicode characters.
      */
     public UnicodeToAnsel() {
-        this(UnicodeToAnsel.class
-                .getResourceAsStream("resources/codetables.xml"));
+        rct = new ReverseCodeTableGenerated();
+        //this(UnicodeToAnsel.class
+        //        .getResourceAsStream("resources/codetables.xml"));
     }
 
     /**
@@ -70,7 +76,7 @@ public class UnicodeToAnsel extends CharConverter {
      *  
      */
     public UnicodeToAnsel(String pathname) {
-        rct = new ReverseCodeTable(pathname);
+        rct = new ReverseCodeTableHash(pathname);
     }
     
     /**
@@ -83,79 +89,144 @@ public class UnicodeToAnsel extends CharConverter {
      *  
      */
     public UnicodeToAnsel(InputStream in) {
-        rct = new ReverseCodeTable(in);
+        rct = new ReverseCodeTableHash(in);
     }
 
     /**
      * Converts UCS/Unicode data to MARC-8.
      * 
      * <p>
-     * A question mark (0x3F) is returned if there is no match.
+     * If there is no match for a Unicode character, it will be encoded as &#xXXXX; 
+     * so that if the data is translated back into Unicode, the original data 
+     * can be recreated. 
      * </p>
      * 
      * @param data - the UCS/Unicode data in an array of char
      * @return String - the MARC-8 data
      */
-    public String convert(char data[]) {
+    public String convert(char data[]) 
+    {
         StringBuffer sb = new StringBuffer();
-        CodeTableTracker ctt = new CodeTableTracker();
+        
+        rct.init();
+        
+        convertPortion(data, sb);
 
-        boolean technique1 = false;
-
-        for (int i = 0; i < data.length; i++) {
-            Character c = new Character(data[i]);
-            Integer table;
-            StringBuffer marc = new StringBuffer();
-            Hashtable h = rct.codeTableHash(c);
-
-            if (h.keySet().contains(ctt.getPrevious(CodeTableTracker.G0))) {
-                ctt.makePreviousCurrent();
-                marc.append((char[]) h
-                        .get(ctt.getPrevious(CodeTableTracker.G0)));
-            } else if (h.keySet()
-                    .contains(ctt.getPrevious(CodeTableTracker.G1))) {
-                ctt.makePreviousCurrent();
-                marc.append((char[]) h
-                        .get(ctt.getPrevious(CodeTableTracker.G1)));
-            } else {
-                table = (Integer) h.keySet().iterator().next();
-                char[] marc8 = (char[]) h.get(table);
-
-                if (marc8.length == 3) {
-                    marc.append(ESC);
-                    marc.append(G0multibyte);
-                    ctt.setPrevious(CodeTableTracker.G0, table);
-                } else if (marc8[0] < 0x80) {
-                    marc.append(ESC);
-                    if ((table.intValue() == 0x62)
-                            || (table.intValue() == 0x70)) {
-                        technique1 = true;
-                    } else {
-                        marc.append(G0);
-                    }
-                    ctt.setPrevious(CodeTableTracker.G0, table);
-                } else {
-                    marc.append(ESC);
-                    marc.append(G1);
-                    ctt.setPrevious(CodeTableTracker.G1, table);
-                }
-                marc.append((char) table.intValue());
-                marc.append(marc8);
-            }
-
-            if (rct.isCombining(c))
-                sb.insert(sb.length() - 1, marc);
-            else
-                sb.append(marc);
-        }
-
-        if (ctt.getPrevious(CodeTableTracker.G0).intValue() != ASCII) {
+        if (rct.getPreviousG0() != ASCII) {
             sb.append(ESC);
             sb.append(G0);
             sb.append((char) ASCII);
         }
 
         return sb.toString();
+    }
+    
+    /**
+     * Does the actual work of converting UCS/Unicode data to MARC-8.
+     * 
+     * <p>
+     * If the Unicode data has been normalized into composed form, and the composed character 
+     * does not have a corresponding MARC8 character, this routine will normalize that character into
+     * its decomposed form, and try to translate that equivalent string into MARC8. 
+     * </p>
+     * 
+     * @param data - the UCS/Unicode data in an array of char
+     * @return String - the MARC-8 data
+     */
+    private void convertPortion(char data[], StringBuffer sb)
+    {
+        for (int i = 0; i < data.length; i++) 
+        {
+            Character c = new Character(data[i]);
+            Integer table;
+            StringBuffer marc = new StringBuffer();
+            int charValue = (int)c.charValue();
+            if (charValue == 0x20 && rct.getPreviousG0() != (int)'1')
+            {
+                if (rct.getPreviousG0() == (int)'1')
+                {
+                    sb.append(ESC);
+                    sb.append(G0);
+                    sb.append((char) ASCII);
+                    rct.setPreviousG0(ASCII);
+                }
+                marc.append(" ");
+            }
+            else if (!rct.charHasMatch(c))
+            {
+                String tmpnorm = c.toString();
+                String tmpNormed = Normalizer.normalize(tmpnorm, Normalizer.NFD);
+                if (!tmpnorm.equals(tmpNormed))
+                {
+                    convertPortion(tmpNormed.toCharArray(), sb);
+                    continue;
+                }
+                if (rct.getPreviousG0() != ASCII)
+                {
+                    sb.append(ESC);
+                    sb.append(G0);
+                    sb.append((char) ASCII);
+                    rct.setPreviousG0(ASCII);
+                }
+                sb.append("&#x"+Integer.toHexString(charValue).toUpperCase()+";");
+                continue;
+            }            
+            else if (rct.inPreviousG0CharEntry(c))
+            {
+                marc.append(rct.getCurrentG0CharEntry(c));
+            } 
+            else if (rct.inPreviousG1CharEntry(c))
+            {
+                marc.append(rct.getCurrentG1CharEntry(c));
+            } 
+            else // need to change character set
+            {
+                // if several MARC-8 character sets contain the given Unicode character, select the
+                // best char set to use for encoding the character.  Preference is given to character
+                // sets that have been used previously in the field being encoded.  Since the default
+                // character sets for Basic and extended latin are pre-loaded, usually if a character
+                // can be encoded by one of those character sets, that is what will be chosen.
+                int charset = rct.getBestCharSet(c);
+                char[] marc8 = rct.getCharEntry(c, charset);
+
+                if (marc8.length == 3) 
+                {
+                    marc.append(ESC);
+                    marc.append(G0multibyte);
+                    rct.setPreviousG0(charset);
+                } 
+                else if (marc8[0] < 0x80) 
+                {
+                    marc.append(ESC);
+                    if (charset == 0x62 || charset == 0x70) 
+                    {
+//                        technique1 = true;
+                    } 
+                    else 
+                    {
+                        marc.append(G0);
+                    }
+                    rct.setPreviousG0(charset);
+                } 
+                else 
+                {
+                    marc.append(ESC);
+                    marc.append(G1);
+                    rct.setPreviousG1(charset);
+                }
+                marc.append((char) charset);
+                marc.append(marc8);
+            }
+
+            if (rct.isCombining(c) && sb.length() > 0)
+            {
+                sb.insert(sb.length() - 1, marc);
+            }
+            else
+            {
+                sb.append(marc);
+            }
+        }    
     }
 
 }

@@ -1,171 +1,293 @@
-// $Id: ReverseCodeTable.java,v 1.2 2005/12/14 17:11:30 bpeters Exp $
-/**
- * Copyright (C) 2002 Bas Peters
- *
- * This file is part of MARC4J
- *
- * MARC4J is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public 
- * License as published by the Free Software Foundation; either 
- * version 2.1 of the License, or (at your option) any later version.
- *
- * MARC4J is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public 
- * License along with MARC4J; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 package org.marc4j.converter.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.net.URI;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.marc4j.MarcException;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * <p>
- * <code>ReverseCodeTable</code> defines a data structure to facilitate
- * UnicodeToAnsel character conversion.
+ * <code>ReverseCodeTable</code> is a set of methods to facilitate Unicode to MARC-8
+ * character conversion, it tracks the current charset encodings that are in use, 
+ * and defines abstract methods isCombining() and getCharTable()which must be overridden
+ * in a sub-class to actually implement the Unicode to MARC8 character conversion.  
+ * There are two defined subclasses: ReverseCodeTableHash which reads in and parses a 
+ * large XML file at runtime, and ReverseCodeTableGenerated which consists of a couple of
+ * switch statements that implement the same two methods. The code for the second of these
+ * two sub-classes, ReverseCodeTableGenerated, is generated when the marc4j jar file is
+ * created using the same XML file that ReverseCodeTableHash uses. 
  * </p>
  * 
+ * @author Robert Haschart
  * @author Corey Keith
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @see DefaultHandler
  */
-public class ReverseCodeTable {
-  protected static Hashtable charset = null;
+public abstract class ReverseCodeTable 
+{
+    static final byte G0=0;
+    static final byte G1=1;
+    
+    /**
+     * Abstract method that must be defined in a sub-class, used in the conversion of Unicode
+     * to MARC-8.  For a given Unicode character, determine whether that character is a combining 
+     * character (an accent mark or diacritic)  
+     *  
+     * @param c - the UCS/Unicode character to look up
+     * @return boolean - true if character is a combining character
+     */
+    abstract public boolean isCombining(Character c);
+    
+    /**
+     * Abstract method that must be defined in a sub-class, used in the conversion of Unicode
+     * to MARC-8. For a given Unicode character, return ALL of the possible MARC-8 representations
+     * of that character.  Thes are represented in a Hashtable where the key is the ISOcode of the 
+     * character set in MARC-8 that the Unicode character appears in, and the value is the MARC-8
+     * character value in that character set that encodes the given Unicode character.
+     *  
+     * @param c - the UCS/Unicode character to look up
+     * @return Hashtable - contains all of the possible MARC-8 representations of that Unicode character
+     */
+    abstract public Hashtable getCharTable(Character c);
 
-  protected static Vector combining = null;
+    protected Character lastLookupKey = null;
+    protected Hashtable lastLookupValue = null;
+    protected byte g[];
+    protected String charsetsUsed;
+    
+    /**
+     * Default constructor for the abstract class, allocates and initializes the structures that 
+     * are used to track the current character sets in use. 
+     */
+    public ReverseCodeTable()
+    {
+        g = new byte[2];
+        init();
+    }
+    
+    /**
+     * Initializes the ReverseCodeTable state to the default value for encoding a field.
+     */
+    public void init()
+    {
+        g[0] = 0x42;
+        g[1] = 0x45;
+        charsetsUsed = "BE";
+    }
 
-  public boolean isCombining(Character c) {
-    return combining.contains(c);
-  }
+    /**
+     * Routine used for tracking which character set is currently in use for characters less than 0x80
+     * 
+     * @return byte - the current G0 character set in use.
+     */
+    public byte getPreviousG0() 
+    {
+        return g[G0];
+    }
 
-  public Hashtable codeTableHash(Character c) {
-    Hashtable chars = (Hashtable) charset.get(c);
-    if (chars == null) {
-      System.err.println("Not Found: " + c);
-      return chars;
-    } else
-      return chars;
-  }
+    /**
+     * Routine used for tracking which character set is currently in use for characters greater than 0x80
+     * 
+     * @return byte - the current G1 character set in use.
+     */
+    public byte getPreviousG1() 
+    {
+        return g[G1];
+    }
 
-  public static boolean inPreviousCharCodeTable(Character c,
-      CodeTableTracker ctt) {
-    Hashtable chars = (Hashtable) charset.get(c);
-    if (chars == null) {
-      System.out.println("Not Found: " + c);
-      return false;
-    } else {
+    /**
+     * Routine used for changing which character set is currently in use for characters less than 0x80
+     * 
+     * @param table - the current G0 character set to be used.
+     */
+    public void setPreviousG0(int table) 
+    {
+        g[G0] = (byte)table;
+    }
+    
+    /**
+     * Routine used for changing which character set is currently in use for characters greater than 0x80
+     * 
+     * @param table - the current G1 character set to be used.
+     */
+    public void setPreviousG1(int table) 
+    {
+        g[G1] = (byte)table;
+    }
+    
+    /**
+     * Performs a lookup of the MARC8 translation of a given Unicode character.  Caches the results 
+     * in lastLookupKey and lastLookupValue so that subsequent lookups made in processing the same
+     * character will proceed more quickly.
+     * 
+     * 
+     * @param c - the UCS/Unicode character to look up
+     * @return Hashtable - contains all of the possible MARC-8 representations of that Unicode character
+     */
+    public Hashtable codeTableHash(Character c) 
+    {
+        if (lastLookupKey != null && c.equals(lastLookupKey))
+        {
+            return(lastLookupValue);
+        }
+        lastLookupKey = c;
+        lastLookupValue = getCharTable(c);
+        return(lastLookupValue);
+    }
+    
+    /**
+     * Checks whether a MARC8 translation of a given Unicode character exists.
+     * 
+     * 
+     * @param c - the UCS/Unicode character to look up
+     * @return boolean - true if there is one or more MARC-8 representation of the given Unicode character.
+     */
+    public boolean charHasMatch(Character c)
+    {
+        return (codeTableHash(c) != null);
+    }
 
-      if ((chars.get(ctt.getPrevious(CodeTableTracker.G0)) != null)
-          || (chars.get(ctt.getPrevious(CodeTableTracker.G1)) != null)) {
-        ctt.makePreviousCurrent();
-        return true;
-      } else
+    /**
+     * Checks whether a MARC8 translation of a given Unicode character exists in the character set currently 
+     * loaded as the G0 character set.
+     * 
+     * @param c - the UCS/Unicode character to look up
+     * @return boolean - true if there is a MARC-8 representation of the given Unicode character in the 
+     *                   current G0 character set
+     */
+    public boolean inPreviousG0CharEntry(Character c) 
+    {
+        Hashtable chars = codeTableHash(c); 
+        if ( chars != null && chars.get((int)getPreviousG0()) != null)
+        {
+            return true;
+        }
         return false;
-
-    }
-  }
-
-  public static char getChar(Character c, CodeTableTracker ctt) {
-    Hashtable chars = (Hashtable) charset.get(c);
-
-    Integer marc = (Integer) chars.get(ctt.getCurrent(CodeTableTracker.G0));
-
-    if (marc != null) {
-      return (char) marc.intValue();
-    }
-    marc = (Integer) chars.get(ctt.getCurrent(CodeTableTracker.G1));
-    if (marc != null) {
-      return (char) marc.intValue();
-    }
-    return 0x20;
-  }
-
-  public ReverseCodeTable(InputStream byteStream) {
-    try {
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setNamespaceAware(true);
-      factory.setValidating(false);
-      SAXParser saxParser = factory.newSAXParser();
-      XMLReader rdr = saxParser.getXMLReader();
-
-      InputSource src = new InputSource(byteStream);
-
-      ReverseCodeTableHandler saxUms = new ReverseCodeTableHandler();
-
-      rdr.setContentHandler(saxUms);
-      rdr.parse(src);
-
-      charset = saxUms.getCharSets();
-      combining = saxUms.getCombiningChars();
-
-    } catch (Exception e) {
-        throw new MarcException(e.getMessage(), e);
     }
 
-  }
-
-  public ReverseCodeTable(String filename) {
-    try {
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setNamespaceAware(true);
-      factory.setValidating(false);
-      SAXParser saxParser = factory.newSAXParser();
-      XMLReader rdr = saxParser.getXMLReader();
-
-      File file = new File(filename);
-      InputSource src = new InputSource(new FileInputStream(file));
-
-      ReverseCodeTableHandler saxUms = new ReverseCodeTableHandler();
-
-      rdr.setContentHandler(saxUms);
-      rdr.parse(src);
-
-      charset = saxUms.getCharSets();
-      combining = saxUms.getCombiningChars();
-
-    } catch (Exception e) {
-        throw new MarcException(e.getMessage(), e);
+    /**
+     * Checks whether a MARC8 translation of a given Unicode character exists in the character set currently 
+     * loaded as the G1 character set.
+     * 
+     * @param c - the UCS/Unicode character to look up
+     * @return boolean - true if there is a MARC-8 representation of the given Unicode character in the 
+     *                   current G1 character set
+     */
+    public boolean inPreviousG1CharEntry(Character c) 
+    {
+        Hashtable chars = codeTableHash(c); 
+        if ( chars != null && chars.get((int)getPreviousG1()) != null)
+        {
+            return true;
+        }
+        return false;
     }
-  }
-
-  public ReverseCodeTable(URI uri) {
-    try {
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setNamespaceAware(true);
-      factory.setValidating(false);
-      SAXParser saxParser = factory.newSAXParser();
-      XMLReader rdr = saxParser.getXMLReader();
-
-      InputSource src = new InputSource(uri.toURL().openStream());
-
-      ReverseCodeTableHandler saxUms = new ReverseCodeTableHandler();
-
-      rdr.setContentHandler(saxUms);
-      rdr.parse(src);
-
-      charset = saxUms.getCharSets();
-      combining = saxUms.getCombiningChars();
-
-    } catch (Exception e) {
-        throw new MarcException(e.getMessage(), e);
+   
+    /**
+     * Returns the MARC8 translation of a given Unicode character from the character set currently 
+     * loaded as the G0 character set.
+     * 
+     * @param c - the UCS/Unicode character to look up
+     * @return boolean - true if there is a MARC-8 representation of the given Unicode character in the 
+     *                   current G0 character set
+     */
+    public char[] getCurrentG0CharEntry(Character c)
+    {
+        return getCharEntry(c, getPreviousG0());
     }
-  }
+    
+    /**
+     * Returns the MARC8 translation of a given Unicode character from the character set currently 
+     * loaded as the G0 character set.
+     * 
+     * @param c - the UCS/Unicode character to look up
+     * @return boolean - true if there is a MARC-8 representation of the given Unicode character in the 
+     *                   current G0 character set
+     */
+    public char[] getCurrentG1CharEntry(Character c)
+    {
+        return getCharEntry(c, getPreviousG1());
+    }
+    
+    /**
+     * Returns the MARC8 translation of a given Unicode character from the character set currently 
+     * loaded as either the G0 or the G1 character set, as specified by the second parameter.
+     * 
+     * @param c - the UCS/Unicode character to look up
+     * @param charset - whether to use the current G0 charset of the current G1 charset to perform the lookup
+     * @return boolean - true if there is a MARC-8 representation of the given Unicode character in the 
+     *                   current G0 character set
+     */
+    public char[] getCharEntry(Character c, int charset)
+    {
+        Hashtable chars = codeTableHash(c); 
+        if (chars == null) 
+        {
+            return (new char[0]);
+        }
+        return((char[])chars.get(charset));
+    }
+    
+    /**
+     * Lookups up the MARC8 translation of a given Unicode character and determines which of the MARC-8 
+     * character sets that have a translation for that Unicode character is the best one to use. 
+     * If one one charset has a translation, that one will be returned.  If more than one charset has a 
+     * translation
+     * 
+     * @param c - the UCS/Unicode character to look up
+     * @param charset - whether to use the current G0 charset of the current G1 charset to perform the lookup
+     * @return boolean - true if there is a MARC-8 representation of the given Unicode character in the 
+     *                   current G0 character set
+     */
+    public int getBestCharSet(Character c)
+    {
+        Hashtable chars = codeTableHash(c);
+        if (chars.keySet().size() == 1)  return(((Integer)chars.keySet().iterator().next()).intValue());
+        for (int i = 0; i < charsetsUsed.length(); i++)
+        {
+            char toUse = charsetsUsed.charAt(i);
+            if (chars.containsKey((int)toUse))
+            {
+                return((int)toUse);
+            }
+        }
+        int returnVal;
+        if (chars.containsKey((int)('S')))
+        {
+            returnVal = (int)'S';
+        }
+        else 
+        {
+            returnVal = (((Integer)chars.keySet().iterator().next()).intValue());
+        }
+        charsetsUsed = charsetsUsed + (char)returnVal;
+        return(returnVal);        
+    }
+        
+    /**
+     * Utility function for translating a String consisting of one or more two character hex string 
+     * of the character values into a character array containing those characters
+     * 
+     * @param str - A string containing the two-character hex strings of characters to decode
+     * @return char[] - an array of characters represented by the 
+     */
+    public static char[] deHexify(String str)
+    {
+        char result[] = null;
+        if (str.length() == 2) 
+        {
+            result = new char[1];
+            result[0] = (char)Integer.parseInt(str, 16);
+        }
+        else if (str.length() == 6)
+        {
+            result = new char[3];
+            result[0] = (char)Integer.parseInt(str.substring(0,2), 16);
+            result[1] = (char)Integer.parseInt(str.substring(2,4), 16);
+            result[2] = (char)Integer.parseInt(str.substring(4,6), 16);
+        }
+        return result;
+    }
+
 }
-
