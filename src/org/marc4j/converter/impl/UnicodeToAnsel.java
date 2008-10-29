@@ -1,4 +1,4 @@
-// $Id: UnicodeToAnsel.java,v 1.5 2008/10/29 21:17:48 haschart Exp $
+// $Id: UnicodeToAnsel.java,v 1.6 2008/10/29 21:22:33 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -21,6 +21,7 @@
 package org.marc4j.converter.impl;
 
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.util.Hashtable;
 
 import org.marc4j.converter.CharConverter;
@@ -39,7 +40,7 @@ import com.ibm.icu.text.Normalizer;
  * @author Bas Peters
  * @author Corey Keith
  * @author Robert Haschart
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class UnicodeToAnsel extends CharConverter {
     protected ReverseCodeTable rct;
@@ -61,7 +62,7 @@ public class UnicodeToAnsel extends CharConverter {
      * the MARC-8 encodings for given Unicode characters.
      */
     public UnicodeToAnsel() {
-        rct = new ReverseCodeTableGenerated();
+        rct = loadGeneratedTable();
         //this(UnicodeToAnsel.class
         //        .getResourceAsStream("resources/codetables.xml"));
     }
@@ -90,6 +91,23 @@ public class UnicodeToAnsel extends CharConverter {
      */
     public UnicodeToAnsel(InputStream in) {
         rct = new ReverseCodeTableHash(in);
+    }
+    
+    private ReverseCodeTable loadGeneratedTable() 
+    {
+        try
+        {
+            Class generated = Class.forName("org.marc4j.converter.impl.ReverseCodeTableGenerated");
+            Constructor cons = generated.getConstructor();
+            Object rct = cons.newInstance();
+            return((ReverseCodeTable)rct);
+        }
+        catch (Exception e)
+        {
+            ReverseCodeTable rct;
+            rct = new ReverseCodeTableHash(AnselToUnicode.class.getResourceAsStream("resources/codetables.xml"));                
+            return(rct);
+        }
     }
 
     /**
