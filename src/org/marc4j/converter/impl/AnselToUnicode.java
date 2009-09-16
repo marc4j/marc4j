@@ -1,4 +1,4 @@
-// $Id: AnselToUnicode.java,v 1.6 2008/10/28 19:24:35 haschart Exp $
+// $Id: AnselToUnicode.java,v 1.7 2009/09/16 18:23:14 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -40,7 +40,7 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Corey Keith
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class AnselToUnicode extends CharConverter {
 
@@ -481,7 +481,8 @@ public class AnselToUnicode extends CharConverter {
                         cdt.g1 = 0x45;
                     }
                 } 
-                else if (cdt.offset + 3 > data.length) 
+                else if (cdt.offset + 3 > data.length || 
+                         cdt.offset + 3 == data.length && (data[cdt.offset+1]== 0x20 || data[cdt.offset+2]== 0x20)) 
                 {
                     if (errorList != null)
                     {
