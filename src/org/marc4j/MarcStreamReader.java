@@ -1,4 +1,4 @@
-// $Id: MarcStreamReader.java,v 1.11 2008/09/26 21:17:42 haschart Exp $
+// $Id: MarcStreamReader.java,v 1.12 2009/09/16 18:20:45 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -70,7 +70,7 @@ import org.marc4j.marc.impl.Verifier;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * 
  */
 public class MarcStreamReader implements MarcReader {
@@ -98,7 +98,7 @@ public class MarcStreamReader implements MarcReader {
      * Constructs an instance with the specified input stream.
      */
     public MarcStreamReader(InputStream input, String encoding) {
-        this.input = new DataInputStream(new BufferedInputStream(input));
+        this.input = new DataInputStream((input.markSupported()) ? input : new BufferedInputStream(input));
         factory = MarcFactory.newInstance();
         if (encoding != null) {
             this.encoding = encoding;
@@ -111,8 +111,10 @@ public class MarcStreamReader implements MarcReader {
      */
     public boolean hasNext() {
         try {
-            if (input.available() == 0)
+            input.mark(10);
+            if (input.read() == -1)
                 return false;
+            input.reset();
         } catch (IOException e) {
             throw new MarcException(e.getMessage(), e);
         }
@@ -339,8 +341,7 @@ public class MarcStreamReader implements MarcReader {
     }
 
     private int parseRecordLength(byte[] leaderData) throws IOException {
-        InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(
-                leaderData));
+        InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), "ISO-8859-1");
         int length = -1;
         char[] tmp = new char[5];
         isr.read(tmp);
@@ -353,8 +354,7 @@ public class MarcStreamReader implements MarcReader {
     }
     
     private void parseLeader(Leader ldr, byte[] leaderData) throws IOException {
-        InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(
-                leaderData));
+        InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData),"ISO-8859-1");
         char[] tmp = new char[5];
         isr.read(tmp);
         //  Skip over bytes for record length, If we get here, its already been computed.
