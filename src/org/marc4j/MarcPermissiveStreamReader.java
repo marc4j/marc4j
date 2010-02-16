@@ -105,7 +105,7 @@ import com.ibm.icu.text.Normalizer;
  * </p>
  * 
  * @author Robert Haschart
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * 
  */
 public class MarcPermissiveStreamReader implements MarcReader {
@@ -741,15 +741,28 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 {
                     if (numBadLengths < 3 && (totalLength + fieldLength < recordLength + 26))
                     {
-                        numBadLengths++;
-                        lengths[i] = fieldLength+1;
-                        errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
-                                        "Field length found in record different from length stated in the directory.");
-                        if (fieldLength+1 > 9999)
+                        inputrec.mark(9999);
+                        byteArray = new byte[lengths[i]];
+                        inputrec.readFully(byteArray);
+                        inputrec.reset();
+                        if (fieldLength+1 < lengths[i] && byteArray[lengths[i]-1] == Constants.FT)
                         {
-                            errors.addError("unknown", "n/a", "n/a", ErrorHandler.FATAL, 
-                                        "Field length is greater than 9999, record cannot be represented as a binary Marc record.");
+                            errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
+                                            "Field Terminator character found in the middle of a field.");
                         }
+                        else 
+                        {
+                            numBadLengths++;
+                            lengths[i] = fieldLength+1;
+                            errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
+                                            "Field length found in record different from length stated in the directory.");
+                            if (fieldLength+1 > 9999)
+                            {
+                                errors.addError("unknown", "n/a", "n/a", ErrorHandler.FATAL, 
+                                            "Field length is greater than 9999, record cannot be represented as a binary Marc record.");
+                            }
+                        }
+
                     }
                 }
                 totalLength += lengths[i];
@@ -1244,13 +1257,27 @@ public class MarcPermissiveStreamReader implements MarcReader {
         try {
             ldr.setIndicatorCount(Integer.parseInt(String.valueOf(indicatorCount)));
         } catch (NumberFormatException e) {
-            throw new MarcException("unable to parse indicator count", e);
+            if (permissive) {
+                // All Marc21 records should have indicatorCount '2'
+                errors.addError(ErrorHandler.ERROR_TYPO, "bogus indicator count - byte value =  " + Integer.toHexString(indicatorCount & 0xff));
+                ldr.setIndicatorCount(2);  
+            }
+            else {
+                throw new MarcException("unable to parse indicator count", e);
+            }
         }
         try {
             ldr.setSubfieldCodeLength(Integer.parseInt(String
                     .valueOf(subfieldCodeLength)));
         } catch (NumberFormatException e) {
-            throw new MarcException("unable to parse subfield code length", e);
+            if (permissive) {
+                // All Marc21 records should have subfieldCodeLength '2' 
+                errors.addError(ErrorHandler.ERROR_TYPO, "bogus subfield count - byte value =  " + Integer.toHexString(subfieldCodeLength & 0xff));
+                ldr.setSubfieldCodeLength(2);
+            }
+            else {
+                throw new MarcException("unable to parse subfield code length", e);
+            }
         }
         try {
             ldr.setBaseAddressOfData(Integer.parseInt(new String(baseAddr)));

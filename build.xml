@@ -8,7 +8,9 @@
 
 	<property file="build.properties" />
 
-	<property name="test.class.name" value="org.marc4j.AllTests" />
+	<!-- <property name="test.class.name" value="org.marc4j.AllTests" /> -->
+    <property name="test.class.name" value="org.marc4j.test.AllTests" />
+
 
 	<path id="classpath">
 		<fileset dir="${lib.dir}">
@@ -49,6 +51,7 @@
         </javac>
         <copy todir="${build.dir}">
             <fileset dir="${src.dir}">
+                <include  name="org/marc4j/test/resources/"/>
                 <include name="**/*.properties" />
                 <include name="**/*.xml" /> 
                 <exclude name="**/tests/*" />
@@ -61,7 +64,7 @@
         </javac>
 	</target>
 
-	<target name="test">
+	<target name="test" depends="compile">
 		<junit fork="yes" haltonfailure="yes">
 			<test name="${test.class.name}" />
 			<formatter type="plain" usefile="false" />

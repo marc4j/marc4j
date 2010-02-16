@@ -16,6 +16,7 @@ public class AllTests {
         suite.addTest(ReaderTest.suite());
         suite.addTest(WriterTest.suite());
         suite.addTest(RoundtripTest.suite());
+        suite.addTest(PermissiveReaderTest.suite());
         return suite;
     }
 
