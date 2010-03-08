@@ -1,4 +1,4 @@
-// $Id: AnselToUnicode.java,v 1.7 2009/09/16 18:23:14 haschart Exp $
+// $Id: AnselToUnicode.java,v 1.8 2010/03/08 22:31:48 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -40,7 +40,7 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Corey Keith
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class AnselToUnicode extends CharConverter {
 
@@ -219,7 +219,21 @@ public class AnselToUnicode extends CharConverter {
         int extra = 0;
         int extra2 = 0;
         int extra3 = 0;
-        while (cdt.offset + extra + extra2< data.length && isEscape(data[cdt.offset])) {
+        while (cdt.offset + extra + extra2 < data.length && isEscape(data[cdt.offset])) 
+        {
+            if (cdt.offset + extra + extra2 + 1 == data.length)
+            {
+                cdt.offset += 1;
+                if (errorList != null)
+                {
+                    errorList.addError(ErrorHandler.MINOR_ERROR, "Escape character found at end of field, discarding it.");
+                }
+                else
+                {
+                    throw new MarcException("Escape character found at end of field");
+                }
+                break;
+            }
             switch (data[cdt.offset + 1 + extra]) {
             case 0x28:  // '('
             case 0x2c:  // ','
