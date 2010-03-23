@@ -1,4 +1,4 @@
-// $Id: LeaderImpl.java,v 1.3 2006/08/04 12:32:37 bpeters Exp $
+// $Id: LeaderImpl.java,v 1.4 2010/03/23 14:45:05 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -28,7 +28,7 @@ import org.marc4j.marc.Leader;
  * Represents a record label in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
  */
 public class LeaderImpl implements Leader {
@@ -64,9 +64,6 @@ public class LeaderImpl implements Leader {
 
     /** Entry map (Position 19-23). */
     private char[] entryMap;
-
-    /** number format for both record length and base address of data */
-    DecimalFormat df = new DecimalFormat("00000");
 
     /**
      * Default constructor.
@@ -375,7 +372,7 @@ public class LeaderImpl implements Leader {
         return true;
     }
 
-    private static DecimalFormat format5 = new DecimalFormat("00000");
+    private static DecimalFormat format5 = new org.marc4j.util.CustomDecimalFormat(5);
 
     public void setId(Long id) {
         this.id = id;
