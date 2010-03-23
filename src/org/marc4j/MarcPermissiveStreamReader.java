@@ -105,7 +105,7 @@ import com.ibm.icu.text.Normalizer;
  * </p>
  * 
  * @author Robert Haschart
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * 
  */
 public class MarcPermissiveStreamReader implements MarcReader {
@@ -125,6 +125,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
     private boolean convertToUTF8 = false;
    
     private boolean permissive = false;
+    
+    private int marc_file_lookahead_buffer = 200000;
     
     private CharConverter converterAnsel = null;
 
@@ -273,7 +275,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
             byte[] recordBuf = new byte[recordLength - 24];
             if (permissive) 
             {
-                input.mark(recordLength * 2);
+                input.mark(marc_file_lookahead_buffer);
                 input.readFully(recordBuf);
                 if (recordBuf[recordBuf.length-1] != Constants.RT)
                 {
@@ -326,7 +328,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
             {
                 c = input.read();
                 loc++;
-            } while (loc < recordLength + 100 && c != Constants.RT && c != -1);
+            } while (loc < (marc_file_lookahead_buffer-24) && c != Constants.RT && c != -1);
  
             if (c == Constants.RT)
             {
@@ -350,7 +352,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
             else
             {
                 errors.addError("unknown", "n/a", "n/a", ErrorHandler.FATAL, 
-                                "No Record terminator found within 100 byts of stated location, giving up.");
+                                "No Record terminator found within "+marc_file_lookahead_buffer+" bytes of start of record, giving up.");
             }
         }
         return(recordBuf);
@@ -587,7 +589,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 e.printStackTrace();
             }
         }
-        else if (permissive && !encoding.equals("UTF8"))
+        else if (permissive && !encoding.equals("UTF8") && convertToUTF8)
         {
             try
             {
@@ -601,9 +603,9 @@ public class MarcPermissiveStreamReader implements MarcReader {
 	                    if (recordBuf[i] < 0x00 || byteCheck[i] != recordBuf[i])
 	                    {
 	                        errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
-                                            "Record claims not to be UTF-8, but it seems to be.");
-	                        encoding = "UTF8-Maybe";
-	                        break;
+                                        "Record claims not to be UTF-8, but it seems to be.");
+                            encoding = "UTF8-Maybe";
+                            break;
 	                    }
 	                }
                 }

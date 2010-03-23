@@ -1,4 +1,4 @@
-// $Id: MarcStreamWriter.java,v 1.5 2010/03/08 22:40:00 haschart Exp $
+// $Id: MarcStreamWriter.java,v 1.6 2010/03/23 14:41:45 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -33,6 +33,7 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.Leader;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
+import org.marc4j.util.CustomDecimalFormat;
 
 /**
  * Class for writing MARC record objects in ISO 2709 format.
@@ -71,7 +72,7 @@ import org.marc4j.marc.Subfield;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class MarcStreamWriter implements MarcWriter {
 
@@ -80,10 +81,13 @@ public class MarcStreamWriter implements MarcWriter {
     protected String encoding = "ISO8859_1";
 
     private CharConverter converter = null;
+    private boolean allowOversizeEntry = false;
+    private boolean hasOversizeOffset = false;
+    private boolean hasOversizeLength = false;
+    
+    private static DecimalFormat format4Use = new CustomDecimalFormat(4);
 
-    private static DecimalFormat format4 = new DecimalFormat("0000");
-
-    private static DecimalFormat format5 = new DecimalFormat("00000");
+    private static DecimalFormat format5Use = new CustomDecimalFormat(5);
 
     /**
      * Constructs an instance and creates a <code>Writer</code> object with
@@ -100,6 +104,24 @@ public class MarcStreamWriter implements MarcWriter {
     public MarcStreamWriter(OutputStream out, String encoding) {
         this.encoding = encoding;
         this.out = out;
+    }
+    /**
+     * Constructs an instance and creates a <code>Writer</code> object with
+     * the specified output stream.
+     */
+    public MarcStreamWriter(OutputStream out, boolean allowOversizeRecord) {
+        this.out = out;
+        this.allowOversizeEntry = allowOversizeRecord;
+    }
+
+    /**
+     * Constructs an instance and creates a <code>Writer</code> object with
+     * the specified output stream and character encoding.
+     */
+    public MarcStreamWriter(OutputStream out, String encoding, boolean allowOversizeRecord) {
+        this.encoding = encoding;
+        this.out = out;
+        this.allowOversizeEntry = allowOversizeRecord;
     }
 
     /**
@@ -129,11 +151,13 @@ public class MarcStreamWriter implements MarcWriter {
      */
     public void write(Record record) {
         int previous = 0;
-
+        
         try {
             ByteArrayOutputStream data = new ByteArrayOutputStream();
             ByteArrayOutputStream dir = new ByteArrayOutputStream();
-
+            hasOversizeOffset = false;
+            hasOversizeLength = false;
+            
             // control fields
             List fields = record.getControlFields();
             Iterator i = fields.iterator();
@@ -172,24 +196,37 @@ public class MarcStreamWriter implements MarcWriter {
             // base address of data and logical record length
             Leader ldr = record.getLeader();
 
-            ldr.setBaseAddressOfData(24 + dir.size());
-            ldr.setRecordLength(ldr.getBaseAddressOfData() + data.size() + 1);
+            int baseAddress = 24 + dir.size();
+            ldr.setBaseAddressOfData(baseAddress);
+            int recordLength = ldr.getBaseAddressOfData() + data.size() + 1;
+            ldr.setRecordLength(recordLength);
 
             // write record to output stream
             dir.close();
             data.close();
-            write(ldr);
+            
+            if (!allowOversizeEntry && (baseAddress > 99999 || recordLength > 99999 || hasOversizeOffset))
+            {
+                throw new MarcException("Record is too long to be a valid MARC binary record, it's length would be "+recordLength+" which is more thatn 99999 bytes");
+            }
+            if (!allowOversizeEntry && (hasOversizeLength))
+            {
+                throw new MarcException("Record has field that is too long to be a valid MARC binary record. The maximum length for a field counting all of the sub-fields is 9999 bytes.");
+            }
+            writeLeader(ldr);
             out.write(dir.toByteArray());
             out.write(data.toByteArray());
             out.write(Constants.RT);
 
         } catch (IOException e) {
             throw new MarcException("IO Error occured while writing record", e);
+        } catch (MarcException e) {
+            throw e;
         }
     }
 
-    protected void write(Leader ldr) throws IOException {
-        out.write(format5.format(ldr.getRecordLength()).getBytes(encoding));
+    protected void writeLeader(Leader ldr) throws IOException {
+        out.write(format5Use.format(ldr.getRecordLength()).getBytes(encoding));
         out.write(ldr.getRecordStatus());
         out.write(ldr.getTypeOfRecord());
         out.write(new String(ldr.getImplDefined1()).getBytes(encoding));
@@ -198,7 +235,7 @@ public class MarcStreamWriter implements MarcWriter {
         out.write(Integer.toString(ldr.getSubfieldCodeLength()).getBytes(
                 encoding));
         out
-                .write(format5.format(ldr.getBaseAddressOfData()).getBytes(
+                .write(format5Use.format(ldr.getBaseAddressOfData()).getBytes(
                         encoding));
         out.write(new String(ldr.getImplDefined2()).getBytes(encoding));
         out.write(new String(ldr.getEntryMap()).getBytes(encoding));
@@ -221,9 +258,20 @@ public class MarcStreamWriter implements MarcWriter {
         return data.getBytes(encoding);
     }
 
-    protected byte[] getEntry(String tag, int length, int start)
-            throws IOException {
-        return (tag + format4.format(length) + format5.format(start))
-                .getBytes(encoding);
+    protected byte[] getEntry(String tag, int length, int start) throws IOException {
+        String entryUse = tag + format4Use.format(length) + format5Use.format(start);
+        if (length > 99999) hasOversizeLength = true;
+        if (start > 99999) hasOversizeOffset = true;
+        return (entryUse.getBytes(encoding));
+    }
+
+    public boolean allowsOversizeEntry()
+    {
+        return allowOversizeEntry;
+    }
+
+    public void setAllowOversizeEntry(boolean allowOversizeEntry)
+    {
+        this.allowOversizeEntry = allowOversizeEntry;
     }
 }
