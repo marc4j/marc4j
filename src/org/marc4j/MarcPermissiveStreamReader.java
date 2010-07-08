@@ -105,7 +105,7 @@ import com.ibm.icu.text.Normalizer;
  * </p>
  * 
  * @author Robert Haschart
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * 
  */
 public class MarcPermissiveStreamReader implements MarcReader {
@@ -323,36 +323,46 @@ public class MarcPermissiveStreamReader implements MarcReader {
         else  // stated record length is too short read ahead
         {
             loc = recordLength - 24;
-            int c = 0;
-            do 
+            boolean done = false;
+            while (!done)
             {
-                c = input.read();
-                loc++;
-            } while (loc < (marc_file_lookahead_buffer-24) && c != Constants.RT && c != -1);
- 
-            if (c == Constants.RT)
-            {
-                errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
-                                "Record terminator appears after stated record length, reading extra bytes");
-                recordLength = loc + 24;
-                input.reset();
-                recordBuf = new byte[recordLength - 24];
-                input.readFully(recordBuf);
-            }
-            else if (c == -1)
-            {
-                errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
-                                "No Record terminator found, end of file reached, Terminator appended");
-                recordLength = loc + 24;
-                input.reset();
-                recordBuf = new byte[recordLength - 24 + 1];
-                input.readFully(recordBuf);
-                recordBuf[recordBuf.length-1] = Constants.RT;  
-            }
-            else
-            {
-                errors.addError("unknown", "n/a", "n/a", ErrorHandler.FATAL, 
-                                "No Record terminator found within "+marc_file_lookahead_buffer+" bytes of start of record, giving up.");
+                int c = 0;
+                do 
+                {
+                    c = input.read();
+                    loc++;
+                } while (loc < (marc_file_lookahead_buffer-24) && c != Constants.RT && c != -1);
+     
+                if (c == Constants.RT)
+                {
+                    errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
+                                    "Record terminator appears after stated record length, reading extra bytes");
+                    recordLength = loc + 24;
+                    input.reset();
+                    recordBuf = new byte[recordLength - 24];
+                    input.readFully(recordBuf);
+                    done = true;
+                }
+                else if (c == -1)
+                {
+                    errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
+                                    "No Record terminator found, end of file reached, Terminator appended");
+                    recordLength = loc + 24;
+                    input.reset();
+                    recordBuf = new byte[recordLength - 24 + 1];
+                    input.readFully(recordBuf);
+                    recordBuf[recordBuf.length-1] = Constants.RT; 
+                    done = true;
+                }
+                else
+                {
+                    errors.addError("unknown", "n/a", "n/a", ErrorHandler.FATAL, 
+                                    "No Record terminator found within "+marc_file_lookahead_buffer+" bytes of start of record, getting desperate.");
+                    input.reset();
+                    marc_file_lookahead_buffer *= 2;
+                    input.mark(marc_file_lookahead_buffer);
+                    loc = 0;
+                }
             }
         }
         return(recordBuf);
@@ -484,7 +494,14 @@ public class MarcPermissiveStreamReader implements MarcReader {
             break;
         default: 
             if (convertToUTF8)
-                encoding = defaultEncoding;
+                if (permissive)
+                {
+                    errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
+                                    "Record character encoding should be 'a' or ' ' in this record it is '"+ldr.getCharCodingScheme()+"'. Attempting to guess the correct encoding.");
+                    encoding = "BESTGUESS";
+                }
+                else
+                    encoding = defaultEncoding;
             else 
                 encoding = "ISO8859_1";
             break;
