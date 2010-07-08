@@ -1,4 +1,4 @@
-// $Id: AnselToUnicode.java,v 1.8 2010/03/08 22:31:48 haschart Exp $
+// $Id: AnselToUnicode.java,v 1.9 2010/07/08 14:54:18 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -40,7 +40,7 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Corey Keith
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class AnselToUnicode extends CharConverter {
 
@@ -401,7 +401,7 @@ public class AnselToUnicode extends CharConverter {
                     && hasNext(cdt.offset, len)) 
             {
 
-                while (ct.isCombining(data[cdt.offset], cdt.g0, cdt.g1)
+                while (cdt.offset < len && ct.isCombining(data[cdt.offset], cdt.g0, cdt.g1)
                         && hasNext(cdt.offset, len)) 
                 {
                     char c = getChar(data[cdt.offset], cdt.g0, cdt.g1);
@@ -409,7 +409,14 @@ public class AnselToUnicode extends CharConverter {
                     cdt.offset++;
                     checkMode(data, cdt);
                 }
-
+                if (cdt.offset >= len)
+                {
+                    if (errorList != null)
+                    {
+                        errorList.addError(ErrorHandler.MINOR_ERROR, "Diacritic found at the end of field, without the character that it is supposed to decorate");
+                        break;
+                    }
+                }
                 char c2 = getChar(data[cdt.offset], cdt.g0, cdt.g1);
                 cdt.offset++;
                 checkMode(data, cdt);
