@@ -1,4 +1,4 @@
-// $Id: MarcStreamReader.java,v 1.12 2009/09/16 18:20:45 haschart Exp $
+// $Id: MarcStreamReader.java,v 1.13 2010/08/20 20:34:04 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -70,7 +70,7 @@ import org.marc4j.marc.impl.Verifier;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * 
  */
 public class MarcStreamReader implements MarcReader {
@@ -411,7 +411,7 @@ public class MarcStreamReader implements MarcReader {
             if (converterAnsel == null) converterAnsel = new AnselToUnicode();
             dataElement = converterAnsel.convert(bytes);
         }
-        else if (encoding.equals("ISO-8859-1") || encoding.equals("ISO8859_1"))
+        else if (encoding.equals("ISO-8859-1") || encoding.equals("ISO8859_1") || encoding.equals("ISO_8859_1"))
         {
             try {
                 dataElement = new String(bytes, "ISO-8859-1");
