@@ -1,4 +1,4 @@
-// $Id: MarcXmlHandler.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
+// $Id: MarcXmlHandler.java,v 1.2 2010/10/08 14:51:20 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -40,7 +40,7 @@ import org.xml.sax.SAXException;
  * onto the top of the <code>RecordStack</code>.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MarcXmlHandler implements ContentHandler {
 
@@ -140,6 +140,8 @@ public class MarcXmlHandler implements ContentHandler {
       tag = atts.getValue(TAG_ATTR);
       String ind1 = atts.getValue(IND_1_ATTR);
       String ind2 = atts.getValue(IND_2_ATTR);
+      if (ind1.length() == 0) ind1 = " ";
+      if (ind2.length() == 0) ind2 = " ";
       dataField = factory.newDataField(tag, ind1.charAt(0), ind2.charAt(0));
       break;
     case SUBFIELD_ID:
