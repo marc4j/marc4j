@@ -105,7 +105,7 @@ import com.ibm.icu.text.Normalizer;
  * </p>
  * 
  * @author Robert Haschart
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * 
  */
 public class MarcPermissiveStreamReader implements MarcReader {
@@ -248,9 +248,23 @@ public class MarcPermissiveStreamReader implements MarcReader {
     {
         try {
             input.mark(10);
-            if (input.read() == -1)
+            int byteread = input.read(); 
+            if (byteread == -1)
                 return false;
+            //    byte[] recLengthBuf = new byte[5];
+            int numBadBytes = 0;
+            while (byteread < '0' || byteread > '9')
+            {
+                byteread = input.read();
+                numBadBytes++;
+                if (byteread == -1) return false;
+            }
             input.reset();
+            while (numBadBytes > 0)
+            {
+                byteread = input.read();
+                numBadBytes--;
+            }
         } catch (IOException e) {
             throw new MarcException(e.getMessage(), e);
         }
@@ -269,8 +283,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
         
         try {
             byte[] byteArray = new byte[24];
+            
             input.readFully(byteArray);
-
             int recordLength = parseRecordLength(byteArray);
             byte[] recordBuf = new byte[recordLength - 24];
             if (permissive) 
@@ -758,7 +772,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 int fieldLength = getFieldLength(inputrec);
                 if (fieldLength+1 != lengths[i] && permissive)
                 {
-                    if (numBadLengths < 3 && (totalLength + fieldLength < recordLength + 26))
+                    if (numBadLengths < 5 && (totalLength + fieldLength < recordLength + 26))
                     {
                         inputrec.mark(9999);
                         byteArray = new byte[lengths[i]];
@@ -1429,7 +1443,12 @@ public class MarcPermissiveStreamReader implements MarcReader {
         }
         else 
         {
-            throw new MarcException("Unknown or unsupported Marc character encoding:" + encoding);           
+            try {
+                dataElement = new String(bytes, encoding);
+            } 
+            catch (UnsupportedEncodingException e) {
+                throw new MarcException("Unknown or unsupported Marc character encoding:" + encoding);  
+            }                   
         }
         if (errors != null && dataElement.matches("[^&]*&[a-z]*;.*"))
         {
@@ -1479,7 +1498,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
             try
             {
                 dataElement = new String(bytes, "ISO-8859-1");
-                newDataElement = dataElement.replaceAll("(\\e)b-\\es([psb])", "$1$2");
+                newDataElement = dataElement.replaceAll("(\\e)b-\\es([psb$()])", "$1$2");
                 if (!newDataElement.equals(dataElement))
                 {
                     dataElement = newDataElement;
