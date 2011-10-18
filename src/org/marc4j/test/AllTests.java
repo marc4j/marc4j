@@ -17,6 +17,8 @@ public class AllTests {
         suite.addTest(WriterTest.suite());
         suite.addTest(RoundtripTest.suite());
         suite.addTest(PermissiveReaderTest.suite());
+        suite.addTest(JsonReaderTest.suite());
+        suite.addTest(JsonWriterTest.suite());
         return suite;
     }
 
