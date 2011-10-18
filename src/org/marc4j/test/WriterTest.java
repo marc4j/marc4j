@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
+import org.marc4j.MarcJsonWriter;
 import org.marc4j.MarcStreamReader;
 import org.marc4j.MarcStreamWriter;
 import org.marc4j.MarcXmlReader;
@@ -34,6 +35,20 @@ public class WriterTest extends TestCase {
         InputStream input = getClass().getResourceAsStream(
                 "resources/summerland.mrc");
         MarcXmlWriter writer = new MarcXmlWriter(System.out, true);
+        MarcStreamReader reader = new MarcStreamReader(input);
+        while (reader.hasNext()) {
+            Record record = reader.next();
+            writer.write(record);
+        }
+        input.close();
+        writer.close();
+    }
+    
+    public void testMarcXmlWriterNormalized() throws Exception {
+        InputStream input = getClass().getResourceAsStream(
+                "resources/summerland.mrc");
+        MarcXmlWriter writer = new MarcXmlWriter(System.out, true);
+        writer.setUnicodeNormalization(true);
         MarcStreamReader reader = new MarcStreamReader(input);
         while (reader.hasNext()) {
             Record record = reader.next();
