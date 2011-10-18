@@ -1,4 +1,4 @@
-// $Id: UnicodeToAnsel.java,v 1.6 2008/10/29 21:22:33 haschart Exp $
+// $Id: UnicodeToAnsel.java,v 1.7 2011/10/18 19:24:06 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -25,8 +25,8 @@ import java.lang.reflect.Constructor;
 import java.util.Hashtable;
 
 import org.marc4j.converter.CharConverter;
+import org.marc4j.util.Normalizer;
 
-import com.ibm.icu.text.Normalizer;
 
 /**
  * <p>
@@ -40,7 +40,7 @@ import com.ibm.icu.text.Normalizer;
  * @author Bas Peters
  * @author Corey Keith
  * @author Robert Haschart
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class UnicodeToAnsel extends CharConverter {
     protected ReverseCodeTable rct;
@@ -186,7 +186,10 @@ public class UnicodeToAnsel extends CharConverter {
                     sb.append((char) ASCII);
                     rct.setPreviousG0(ASCII);
                 }
-                sb.append("&#x"+Integer.toHexString(charValue).toUpperCase()+";");
+                if (charValue < 0x1000) 
+                    sb.append("&#x"+Integer.toHexString(charValue + 0x10000).toUpperCase().substring(1)+";");
+                else
+                    sb.append("&#x"+Integer.toHexString(charValue).toUpperCase()+";");
                 continue;
             }            
             else if (rct.inPreviousG0CharEntry(c))
