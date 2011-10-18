@@ -1,4 +1,4 @@
-// $Id: RecordImpl.java,v 1.5 2008/09/26 21:17:43 haschart Exp $
+// $Id: RecordImpl.java,v 1.6 2011/10/18 19:16:39 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -21,7 +21,6 @@
 package org.marc4j.marc.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,7 +34,7 @@ import org.marc4j.marc.VariableField;
  * Represents a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RecordImpl implements Record {
 
@@ -43,9 +42,9 @@ public class RecordImpl implements Record {
 
     private Leader leader;
 
-    private List controlFields;
+    protected List controlFields;
 
-    private List dataFields;
+    protected List dataFields;
 
     private String type;
 
@@ -97,13 +96,10 @@ public class RecordImpl implements Record {
                 controlFields.set(0, field);
             else
                 controlFields.add(0, field);
-            Collections.sort(controlFields);
         } else if (Verifier.isControlField(tag)) {
             controlFields.add(field);
-            Collections.sort(controlFields);
         } else {
             dataFields.add(field);
-            Collections.sort(dataFields);
         }
 
     }
