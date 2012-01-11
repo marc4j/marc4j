@@ -47,8 +47,7 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 import org.marc4j.marc.impl.Verifier;
-
-import com.ibm.icu.text.Normalizer;
+import org.marc4j.util.Normalizer;
 
 /**
  * An iterator over a collection of MARC records in ISO 2709 format, that is designed
@@ -105,7 +104,7 @@ import com.ibm.icu.text.Normalizer;
  * </p>
  * 
  * @author Robert Haschart
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * 
  */
 public class MarcPermissiveStreamReader implements MarcReader {
@@ -139,7 +138,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
     private String conversionCheck3 = null;
 
     private ErrorHandler errors;
-       
+    static String validSubfieldCodes = "abcdefghijklmnopqrstuvwxyz0123456789";
+   
     /**
      * Constructs an instance with the specified input stream with possible additional functionality
      * being enabled by setting permissive and/or convertToUTF8 to true.
@@ -654,7 +654,24 @@ public class MarcPermissiveStreamReader implements MarcReader {
         
         if ((directoryLength % 12) != 0)
         {
-            if (permissive && directoryLength % 12 == 11 && recordBuf[1] != (byte)'0') 
+            if (permissive && directoryLength == 99974 && recordLength > 200000) //  which equals 99999 - (24 + 1) its a BIG record (its directory is over 100000 bytes)
+            {
+                directoryLength = 0; 
+                int tmpLength = 0;
+                for (tmpLength = 0; tmpLength < recordLength; tmpLength += 12)
+                {
+                    if (recordBuf[tmpLength] == Constants.FT) 
+                    {
+                        directoryLength = tmpLength;
+                        break;
+                    }
+                }
+                if (directoryLength == 0)
+                {
+                    throw new MarcException("Directory is too big (> 99999 bytes) and it doesn't end with a field terminator character, I give up. Unable to continue.");
+                }
+            }
+            else if (permissive && directoryLength % 12 == 11 && recordBuf[1] != (byte)'0') 
             {
                 errors.addError("unknown", "n/a", "n/a", ErrorHandler.MAJOR_ERROR, 
                                 "Directory length is not a multiple of 12 bytes long.  Prepending a zero and trying to continue.");
@@ -924,11 +941,11 @@ public class MarcPermissiveStreamReader implements MarcReader {
             errors.addError(ErrorHandler.INFO, "To few letters in translations, choosing "+(defaultPart == 0 ? "MARC8" : "Unimarc"));
             partToUse = defaultPart;
         }
-        else if (l2 == l1 && l2 == l3)
-        {
-            errors.addError(ErrorHandler.INFO, "All three version equal length. Choosing ISO-8859-1 ");
-            partToUse = 2;
-        }
+//        else if (l2 == l1 && l2 == l3)
+//        {
+//            errors.addError(ErrorHandler.INFO, "All three version equal length. Choosing ISO-8859-1 ");
+//            partToUse = 2;
+//        }
         else if (l2 == l3 && defaultPart == 1)
         {
             errors.addError(ErrorHandler.INFO, "Unimarc and ISO-8859-1 translations equal length, choosing ISO-8859-1.");
@@ -1074,6 +1091,39 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     dataAsString = dataAsString.substring(1);
                     errors.addError(ErrorHandler.MAJOR_ERROR, 
                                     "Subfield tag is a subfield separator, using first character of field as subfield tag.");
+                }
+                else if (permissive && validSubfieldCodes.indexOf(code) == -1)
+                {
+                    if (code >= 'A' && code <= 'Z')
+                    { 
+                        code = Character.toLowerCase(code);    
+                        errors.addError(ErrorHandler.MINOR_ERROR, 
+                                        "Subfield tag is an invalid uppercase character, changing it to lower case.");
+                    }
+                    else if (code > 0x7f)
+                    { 
+                        code = data[0];    
+                        dataAsString = dataAsString.substring(1);
+                        errors.addError(ErrorHandler.MAJOR_ERROR, 
+                                        "Subfield tag is an invalid character greater than 0x7f, using first character of field as subfield tag.");
+                    }
+                    else if (code == '[' && tag.equals("245"))
+                    { 
+                        code = 'h';
+                        dataAsString = '[' + dataAsString; 
+                        errors.addError(ErrorHandler.MAJOR_ERROR, 
+                                        "Subfield tag is an open bracket, generating a code 'h' and pushing the bracket to the data.");
+                    }
+                    else if (code == ' ')
+                    {
+                     	errors.addError(ErrorHandler.MAJOR_ERROR, 
+                                        "Subfield tag is a space which is an invalid character");
+                    }
+                  	else 
+                    {
+                     	errors.addError(ErrorHandler.MAJOR_ERROR, 
+                                        "Subfield tag is an invalid character, [ "+((char)code)+" ]");
+                    }
                 }
                 subfield.setCode((char) code);
                 subfield.setData(dataAsString);
@@ -1385,7 +1435,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
             }
             else 
             {
-                conversionCheck1 = conversionCheck1 + "|>" + Normalizer.compose(dataElement1, false);
+                conversionCheck1 = conversionCheck1 + "|>" + Normalizer.normalize(dataElement1, Normalizer.NFC);
                 conversionCheck2 = conversionCheck2 + "|>" + dataElement2;
                 conversionCheck3 = conversionCheck3 + "|>" + dataElement3;
                 dataElement = dataElement1 + "%%@%%" + dataElement2 + "%%@%%" + dataElement3;                
@@ -1522,9 +1572,9 @@ public class MarcPermissiveStreamReader implements MarcReader {
         {
             dataElement = converterAnsel.convert(bytes);
         }
-        if (permissive && dataElement.matches("[^&]*&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f];.*"))
+        if (permissive && dataElement.matches("[^&]*&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f](%x)?.*"))
         {
-            Pattern pattern = Pattern.compile("&#x([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]);"); 
+            Pattern pattern = Pattern.compile("&#x([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])(%x)?;?"); 
             Matcher matcher = pattern.matcher(dataElement);
             StringBuffer newElement = new StringBuffer();
             int prevEnd = 0;
@@ -1532,6 +1582,10 @@ public class MarcPermissiveStreamReader implements MarcReader {
             {
                 newElement.append(dataElement.substring(prevEnd, matcher.start()));
                 newElement.append(getChar(matcher.group(1)));
+                if (matcher.group(1).contains("%x") || !matcher.group(1).endsWith(";"))
+                {
+                    errors.addError(ErrorHandler.MINOR_ERROR, "Subfield contains invalid Unicode Character Entity : "+matcher.group(0));
+                }
                 prevEnd = matcher.end();
             }
             newElement.append(dataElement.substring(prevEnd));

@@ -1,4 +1,4 @@
-//$Id: MarcXmlWriter.java,v 1.9 2008/10/17 19:11:49 haschart Exp $
+//$Id: MarcXmlWriter.java,v 1.10 2012/01/11 20:28:09 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -43,10 +43,10 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.Leader;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
+import org.marc4j.util.Normalizer;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.ibm.icu.text.Normalizer;
 
 /**
  * Class for writing MARC record objects in MARCXML format. This class outputs a
@@ -94,8 +94,8 @@ import com.ibm.icu.text.Normalizer;
  * <p>
  * In addition you can perform Unicode normalization. This is for example not
  * done by the MARC-8 to UCS/Unicode converter. With Unicode normalization text
- * is transformed into the canonical composed form. For example &quot;a´bc&quot;
- * is normalized to &quot;ábc&quot;. To perform normalization set Unicode
+ * is transformed into the canonical composed form. For example &quot;aï¿½bc&quot;
+ * is normalized to &quot;ï¿½bc&quot;. To perform normalization set Unicode
  * normalization to true:
  * </p>
  * 
@@ -191,7 +191,7 @@ import com.ibm.icu.text.Normalizer;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * 
  */
 public class MarcXmlWriter implements MarcWriter {

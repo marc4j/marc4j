@@ -1,4 +1,4 @@
-// $Id: ErrorHandler.java,v 1.9 2010/02/16 23:10:54 haschart Exp $
+// $Id: ErrorHandler.java,v 1.10 2012/01/11 20:28:09 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -30,7 +30,7 @@ import java.util.List;
  * Used in conjunction with the MarcPermissiveReader class. 
  *
  * @author Robert Haschart
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ErrorHandler {
 
@@ -82,11 +82,11 @@ public class ErrorHandler {
     private int maxSeverity;
     
     public class Error {
-        protected String curRecordID;
-        protected String curField;
-        protected String curSubfield;
-        protected int severity;
-        protected String message;
+        public String curRecordID;
+        public String curField;
+        public String curSubfield;
+        public int severity;
+        public String message;
         
         protected Error(String recordID, String field, String subfield, int severity, String message)
         {
