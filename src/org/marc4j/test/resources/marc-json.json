@@ -1,0 +1,195 @@
+{
+    leader : "01471cjm a2200349 a 4500",
+    controlfield :
+    [
+        { tag : "001", data : "5674874" },
+        { tag : "005", data : "20030305110405.0" },
+        { tag : "007", data : "sdubsmennmplu" },
+        { tag : "008", data : "930331s1963    nyuppn              eng d" }
+    ]
+    datafield :
+    [
+        {
+            tag : "035", ind : " ",
+            subfield :
+            [
+                { code : "9", data : "(DLC)   93707283" }
+            ]
+        },
+        {
+            tag : "906", ind : "  ",
+            subfield :
+            [
+                { code : "a", data : "7" },
+                { code : "b", data : "cbc" },
+                { code : "c", data : "copycat" },
+                { code : "d", data : "4" },
+                { code : "e", data : "ncip" },
+                { code : "f", data : "19" },
+                { code : "g", data : "y-soundrec" }
+            ]
+        },
+        {
+            tag : "010", ind : " ",
+            subfield :
+            [
+                { code : "a", data : "   93707283 " }
+            ]
+        },
+        {
+            tag : "028", ind : "02",
+            subfield :
+            [
+                { code : "a", data : "CS 8786" },
+                { code : "b", data : "Columbia" }
+            ]
+        },
+        {
+            tag : "035", ind : "  ",
+            subfield :
+            [
+                { code : "a", data : "(OCoLC)13083787" }
+            ]
+        },
+        {
+            tag : "040", ind : "  ",
+            subfield :
+            [
+                { code : "a", data : "OClU" },
+                { code : "c", data : "DLC" },
+                { code : "d", data : "DLC" }
+            ]
+        },
+        {
+            tag : "041", ind : "0 ",
+            subfield :
+            [
+                { code : "d", data : "eng" },
+                { code : "g", data : "eng" }
+            ]
+        },
+        {
+            tag : "042", ind : "  ",
+            subfield :
+            [
+                { code : "a", data : "lccopycat" }
+            ]
+        },
+        {
+            tag : "050", ind : "00",
+            subfield :
+            [
+                { code : "a", data : "Columbia CS 8786" }
+            ]
+        },
+        {
+            tag : "100", ind : "1 ",
+            subfield :
+            [
+                { code : "a", data : "Dylan, Bob," },
+                { code : "d", data : "1941-" }
+            ]
+        },
+        {
+            tag : "245", ind : "14",
+            subfield :
+            [
+                { code : "a", data : "The freewheelin' Bob Dylan" },
+                { code : "h", data : "[sound recording]." }
+            ]
+        },
+        {
+            tag : "260", ind : "  ",
+            subfield :
+            [
+                { code : "a", data : "[New York, N.Y.] :" },
+                { code : "b", data : "Columbia" },
+                { code : "c", data : "[1963]" }
+            ]
+        },
+        {
+            tag : "300", ind : "  ",
+            subfield :
+            [
+                { code : "a", data : "1 sound disc :" },
+                { code : "b", data : "analog, 33 1/3 rpm, stereo. ;" },
+                { code : "c", data : "12 in." }
+            ]
+        },
+        {
+            tag : "500", ind : "  ",
+            subfield :
+            [
+                { code : "a", data : "Songs." }
+            ]
+        },
+        {
+            tag : "511", ind : "0 ",
+            subfield :
+            [
+                { code : "a", data : "The composer accompanying himself on the guitar ; in part with instrumental ensemble." }
+            ]
+        },
+        {
+            tag : "500", ind : "  ",
+            subfield :
+            [
+                { code : "a", data : "Program notes by Nat Hentoff on container." }
+            ]
+        },
+        {
+            tag : "505", ind : "0 ",
+            subfield :
+            [
+                { code : "a", data : "Blowin' in the wind -- Girl from the north country -- Masters of war -- Down the highway -- Bob Dylan's blues -- A hard rain's a-gonna fall -- Don't think twice, it's all right -- Bob Dylan's dream -- Oxford town -- Talking World War III blues -- Corrina, Corrina -- Honey, just allow me one more chance -- I shall be free." }
+            ]
+        },
+        {
+            tag : "650", ind : " 0",
+            subfield :
+            [
+                { code : "a", data : "Popular music" },
+                { code : "y", data : "1961-1970." }
+            ]
+        },
+        {
+            tag : "650", ind : " 0",
+            subfield :
+            [
+                { code : "a", data : "Blues (Music)" },
+                { code : "y", data : "1961-1970." }
+            ]
+        },
+        {
+            tag : "856", ind : "41",
+            subfield :
+            [
+                { code : "3", data : "Preservation copy (limited access)" },
+                { code : "u", data : "http://hdl.loc.gov/loc.mbrsrs/lp0001.dyln" }
+            ]
+        },
+        {
+            tag : "952", ind : "  ",
+            subfield :
+            [
+                { code : "a", data : "New" }
+            ]
+        },
+        {
+            tag : "953", ind : " ",
+            subfield :
+            [
+                { code : "a", data : "TA28" }
+            ]
+        },
+        {
+            tag : "991", ind : " ",
+            subfield :
+            [
+                { code : "b", data : "c-RecSound" },
+                { code : "h", data : "Columbia CS 8786" },
+                { code : "w", data : "MUSIC" }
+            ]
+        }
+    ]
+}
