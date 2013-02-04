@@ -46,7 +46,7 @@
 	</target>
 	
 	<target name="compile" depends="prepare">
-        <javac srcdir="${src.dir}" destdir="${build.dir}" includes="**/*.java" excludes="**/*Generated.java" debug="true" debuglevel="source,lines,vars">
+        <javac encoding="UTF-8" srcdir="${src.dir}" destdir="${build.dir}" includes="**/*.java" excludes="**/*Generated.java" debug="true" debuglevel="source,lines,vars">
             <classpath refid="classpath" />
         </javac>
         <copy todir="${build.dir}">
@@ -88,7 +88,7 @@
 
 	<target name="javadoc" depends="init">
 		<mkdir dir="${apidoc.dir}" />
-		<javadoc destdir="${apidoc.dir}" author="true" version="true" overview="overview.html" use="true" windowtitle="MARC4J API" doctitle="MARC4J API" bottom="Copyright &#169; 2002-2006 Bas Peters. All Rights Reserved.">
+		<javadoc encoding="UTF-8" charset="UTF-8" docencoding="UTF-8" destdir="${apidoc.dir}" author="true" version="true" overview="overview.html" use="true" windowtitle="MARC4J API" doctitle="MARC4J API" bottom="Copyright &#169; 2002-2006 Bas Peters. All Rights Reserved.">
 			<packageset dir="src" defaultexcludes="yes">
 				<exclude name="org/marc4j/samples" />
 				<exclude name="org/marc4j/test" />
