@@ -20,11 +20,13 @@ public class ReaderTest extends TestCase {
         MarcStreamReader reader = new MarcStreamReader(input);
         while (reader.hasNext()) {
             Record record = reader.next();
-            System.err.println(record.toString());
+            String recordAsString = record.toString();
+            //System.err.println(recordAsString);
             i++;
         }
         input.close();
         assertEquals(2, i);
+        fail("Test incomplete - only record count is checked");
     }
 
     public void testMarcXmlReader() throws Exception {
@@ -34,11 +36,13 @@ public class ReaderTest extends TestCase {
         MarcXmlReader reader = new MarcXmlReader(input);
         while (reader.hasNext()) {
             Record record = reader.next();
-            System.err.println(record.toString());
+            String recordAsString = record.toString();
+            //System.err.println(recordAsString);
             i++;
         }
         input.close();
         assertEquals(2, i);
+        fail("Test incomplete - only record count is checked");
     }
 
 	public static Test suite() {
