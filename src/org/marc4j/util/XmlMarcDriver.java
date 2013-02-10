@@ -1,4 +1,3 @@
-//$Id: XmlMarcDriver.java,v 1.4 2006/12/28 08:09:10 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -83,7 +82,6 @@ import org.marc4j.marc.Record;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.4 $
  * 
  */
 public class XmlMarcDriver {

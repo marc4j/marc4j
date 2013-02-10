@@ -104,7 +104,6 @@ import org.marc4j.util.Normalizer;
  * </p>
  * 
  * @author Robert Haschart
- * @version $Revision: 1.11 $
  * 
  */
 public class MarcPermissiveStreamReader implements MarcReader {

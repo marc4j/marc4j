@@ -1,4 +1,3 @@
-// $Id: SubfieldImpl.java,v 1.4 2006/08/04 12:31:41 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -29,7 +28,6 @@ import org.marc4j.marc.Subfield;
  * Represents a subfield in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.4 $
  */
 public class SubfieldImpl implements Subfield {
 

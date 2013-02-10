@@ -1,4 +1,3 @@
-// $Id: HandleExceptionExample.java,v 1.1 2008/09/26 21:17:42 haschart Exp $
 /**
  * Copyright (C) 2002-2006 Bas Peters
  *
@@ -31,7 +30,6 @@ import org.marc4j.marc.Record;
  * Reads MARC input.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
  */
 public class HandleExceptionExample {
 

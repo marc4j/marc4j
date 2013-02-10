@@ -1,4 +1,3 @@
-// $Id: RecordImpl.java,v 1.6 2011/10/18 19:16:39 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -34,7 +33,6 @@ import org.marc4j.marc.VariableField;
  * Represents a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.6 $
  */
 public class RecordImpl implements Record {
 

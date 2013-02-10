@@ -1,4 +1,3 @@
-// $Id: PersonalNamesExample.java,v 1.1 2006/10/18 21:04:39 bpeters Exp $
 /**
  * Copyright (C) 2002-2006 Bas Peters
  *
@@ -29,7 +28,6 @@ import org.marc4j.marc.Record;
  * Reads personal names from a Tab-separated file.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
  */
 public class PersonalNamesExample {
 

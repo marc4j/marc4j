@@ -1,4 +1,3 @@
-// $Id: Marc8ToMarcXmlExample.java,v 1.1 2006/08/04 12:39:58 bpeters Exp $
 /**
  * Copyright (C) 2002-2006 Bas Peters
  *
@@ -35,7 +34,6 @@ import org.marc4j.marc.Record;
  * Writes MARC XML in UTF-8 to standard output.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
  */
 public class Marc8ToMarcXmlExample {
 

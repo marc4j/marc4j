@@ -1,4 +1,3 @@
-// $Id: ReadSingleRecordExample.java,v 1.1 2006/08/27 17:23:16 bpeters Exp $
 /**
  * Copyright (C) 2002-2006 Bas Peters
  *
@@ -30,7 +29,6 @@ import org.marc4j.marc.Record;
  * Reads a single record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
  */
 public class ReadSingleRecordExample {
 

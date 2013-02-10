@@ -1,4 +1,3 @@
-//$Id: Record.java,v 1.12 2006/08/04 12:25:57 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -29,7 +28,6 @@ import org.marc4j.marc.Leader;
  * Represents a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.12 $
  */
 public interface Record extends Serializable {
 

@@ -1,4 +1,3 @@
-// $Id: UnicodeToIso5426.java,v 1.3 2008/10/17 06:47:06 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -29,7 +28,6 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Yves Pratter
- * @version $Revision: 1.3 $
  */
 public class UnicodeToIso5426 extends CharConverter {
 

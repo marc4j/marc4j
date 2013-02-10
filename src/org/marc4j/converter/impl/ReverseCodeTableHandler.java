@@ -1,4 +1,3 @@
-// $Id: ReverseCodeTableHandler.java,v 1.3 2008/10/29 21:17:48 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -42,7 +41,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * character conversion.
  * 
  * @author Corey Keith
- * @version $Revision: 1.3 $
  * 
  * @see DefaultHandler
  */

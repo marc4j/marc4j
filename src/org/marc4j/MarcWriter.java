@@ -1,4 +1,3 @@
-//$Id: MarcWriter.java,v 1.2 2006/07/30 10:14:56 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -31,7 +30,6 @@ import org.marc4j.marc.Record;
  * about the {@link org.marc4j.marc.Record} object model.</p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
  *  
  */
 public interface MarcWriter {

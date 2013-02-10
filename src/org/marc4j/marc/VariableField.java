@@ -1,4 +1,3 @@
-//$Id: VariableField.java,v 1.10 2006/08/04 12:28:17 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -28,7 +27,6 @@ import org.marc4j.marc.impl.VariableFieldImpl;
  * Represents a variable field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.10 $
  */
 public interface VariableField extends Serializable, Comparable {
 

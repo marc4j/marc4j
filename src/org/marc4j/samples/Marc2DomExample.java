@@ -1,4 +1,3 @@
-// $Id: Marc2DomExample.java,v 1.1 2006/08/04 12:39:58 bpeters Exp $
 /**
  * Copyright (C) 2002-2006 Bas Peters
  *
@@ -35,7 +34,6 @@ import org.w3c.dom.Document;
  * Writes MARC XML to a DOM document.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
  */
 public class Marc2DomExample {
 

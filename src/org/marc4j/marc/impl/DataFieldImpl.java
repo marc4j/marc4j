@@ -1,4 +1,3 @@
-// $Id: DataFieldImpl.java,v 1.6 2006/08/04 12:31:41 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -32,7 +31,6 @@ import org.marc4j.marc.Subfield;
  * Represents a data field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.6 $
  */
 public class DataFieldImpl extends VariableFieldImpl implements DataField {
 

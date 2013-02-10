@@ -1,4 +1,3 @@
-// $Id: RemoveLocalFieldsExample.java,v 1.1 2006/09/23 10:10:08 bpeters Exp $
 /**
  * Copyright (C) 2002-2006 Bas Peters
  *
@@ -35,7 +34,6 @@ import org.marc4j.marc.Record;
  * Removes local field (tag 9XX).
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
  */
 public class RemoveLocalFieldsExample {
 

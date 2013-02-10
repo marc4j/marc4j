@@ -1,4 +1,3 @@
-//$Id: ControlField.java,v 1.8 2005/05/04 10:06:47 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -24,7 +23,6 @@ package org.marc4j.marc;
  * Represents a control field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.8 $
  */
 public interface ControlField extends VariableField {
 

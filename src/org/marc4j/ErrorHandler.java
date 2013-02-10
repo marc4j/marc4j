@@ -1,4 +1,3 @@
-// $Id: ErrorHandler.java,v 1.10 2012/01/11 20:28:09 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -30,7 +29,6 @@ import java.util.List;
  * Used in conjunction with the MarcPermissiveReader class. 
  *
  * @author Robert Haschart
- * @version $Revision: 1.10 $
  */
 public class ErrorHandler {
 
