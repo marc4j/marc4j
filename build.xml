@@ -58,7 +58,7 @@
      </target>
 
     <target name="compile-codegen" depends="codetablegen">
-        <javac srcdir="${build.generated-src.dir}" destdir="${build.classes.dir}" includes="**/*Generated.java" debug="false">
+        <javac encoding="UTF-8" srcdir="${build.generated-src.dir}" destdir="${build.classes.dir}" includes="**/*Generated.java" debug="false">
             <classpath refid="classpath" />
         </javac>
 
@@ -66,7 +66,7 @@
     <target name="compile-all" depends="compile-base,compile-codegen"/>
 
 	<target name="compile-base" depends="prepare">
-        <javac srcdir="${src.dir}" destdir="${build.classes.dir}" includes="**/*.java" excludes="**/*Generated.java" debug="true" debuglevel="source,lines,vars">
+        <javac encoding="UTF-8" srcdir="${src.dir}" destdir="${build.classes.dir}" includes="**/*.java" excludes="**/*Generated.java" debug="true" debuglevel="source,lines,vars">
             <classpath refid="classpath" />
         </javac>
         <copy todir="${build.classes.dir}">
@@ -80,7 +80,7 @@
 	</target>
 
     <target name="compile-tests" depends="compile-all">
-        <javac srcdir="${test.src.dir}" destdir="${build.test-classes.dir}" includes="**/*.java" excludes="**/*Generated.java" debug="true" debuglevel="source,lines,vars">
+        <javac encoding="UTF-8" srcdir="${test.src.dir}" destdir="${build.test-classes.dir}" includes="**/*.java" excludes="**/*Generated.java" debug="true" debuglevel="source,lines,vars">
             <classpath refid="test.classpath" />
         </javac>
         <copy todir="${build.test-classes.dir}">
@@ -113,9 +113,9 @@
 		</jar>
 	</target>
 
-	<target name="javadoc" depends="init">
+	<target name="javadoc" depends="prepare">
 		<mkdir dir="${apidoc.dir}" />
-		<javadoc destdir="${apidoc.dir}" author="true" version="true" overview="overview.html" use="true" windowtitle="MARC4J API" doctitle="MARC4J API" bottom="Copyright &#169; 2002-2006 Bas Peters. All Rights Reserved.">
+		<javadoc encoding="UTF-8" charset="UTF-8" docencoding="UTF-8" destdir="${apidoc.dir}" author="true" version="true" overview="overview.html" use="true" windowtitle="MARC4J API" doctitle="MARC4J API" bottom="Copyright &#169; 2002-2006 Bas Peters. All Rights Reserved.">
 			<packageset dir="src" defaultexcludes="yes">
 				<exclude name="org/marc4j/samples" />
 				<exclude name="org/marc4j/test" />
