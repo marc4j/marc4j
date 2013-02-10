@@ -3,3 +3,5 @@ build
 build.log
 ivy
 lib
+marc4j.iml
+.idea
