@@ -101,6 +101,17 @@
 
 	<target name="jar" depends="compile-all">
 		<jar jarfile="${build.dir}/${jar.name}">
+			<manifest>
+			    <section name="org/marc4j">
+			      <attribute name="Specification-Title" value="marc4j"/>
+			      <attribute name="Specification-Version" value="2.5"/> 
+			      <attribute name="Specification-Vendor" value="org.marc4j"/> 
+
+			      <attribute name="Implementation-Title" value="marc4j"/>
+			      <attribute name="Implementation-Version" value="${version}"/> 
+			      <attribute name="Implementation-Vendor" value="Team marc4j"/>
+			    </section>
+			</manifest>
 			<fileset dir="${build.classes.dir}">
 				<include name="**/*.class" />
                 <exclude name="**/CodeTableGenerator.class" />
