@@ -101,7 +101,7 @@
 
 	<target name="jar" depends="compile-all">
 		<jar jarfile="${build.dir}/${jar.name}">
-			<fileset dir="${build.dir}">
+			<fileset dir="${build.classes.dir}">
 				<include name="**/*.class" />
                 <exclude name="**/CodeTableGenerator.class" />
                 <exclude name="**/ReverseCodeTableGenerator.class" />
