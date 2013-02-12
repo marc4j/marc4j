@@ -1,4 +1,3 @@
-// $Id: MarcXmlParserThread.java,v 1.3 2008/09/26 21:17:42 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  * 
@@ -30,7 +29,6 @@ import org.xml.sax.InputSource;
  * MARCXML data.
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
  */
 public class MarcXmlParserThread extends Thread {
 

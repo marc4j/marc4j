@@ -25,7 +25,6 @@ import org.xml.sax.XMLReader;
  * 64k of code when it is compiled. 
  * 
  * @author Robert Haschart
- * @version $Revision: 1.1 $
  *  
  */
 public class ReverseCodeTableGenerator

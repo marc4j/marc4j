@@ -1,4 +1,3 @@
-// $Id: MarcXmlReader.java,v 1.4 2006/07/29 10:58:24 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -71,7 +70,6 @@ import org.xml.sax.InputSource;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.4 $
  *  
  */
 public class MarcXmlReader implements MarcReader {

@@ -1,4 +1,3 @@
-// $Id: LeaderImpl.java,v 1.4 2010/03/23 14:45:05 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -28,7 +27,6 @@ import org.marc4j.marc.Leader;
  * Represents a record label in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.4 $
  * 
  */
 public class LeaderImpl implements Leader {

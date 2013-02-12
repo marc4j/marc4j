@@ -1,4 +1,3 @@
-// $Id: TemplatesExample.java,v 1.2 2006/09/23 11:08:40 bpeters Exp $
 package org.marc4j.samples;
 
 import java.io.File;
@@ -23,7 +22,6 @@ import org.marc4j.marc.Record;
  * Transformation with compiled stylesheet.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
  */
 public class TemplatesExample {
 

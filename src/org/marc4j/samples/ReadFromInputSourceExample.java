@@ -1,4 +1,3 @@
-// $Id: ReadFromInputSourceExample.java,v 1.1 2006/08/27 17:22:24 bpeters Exp $
 /**
  * Copyright (C) 2002-2006 Bas Peters
  *
@@ -29,7 +28,6 @@ import org.xml.sax.InputSource;
  * Reads MARC XML from an input source.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
  */
 public class ReadFromInputSourceExample {
 

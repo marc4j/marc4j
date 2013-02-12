@@ -1,4 +1,3 @@
-// $Id: MarcDirStreamReader.java,v 1.2 2008/10/17 06:47:06 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -39,7 +38,6 @@ import org.marc4j.marc.Record;
  * </p>
  *  
  * @author Robert Haschart
- * @version $Revision: 1.2 $
  */
 
 public class MarcDirStreamReader implements MarcReader

@@ -1,4 +1,3 @@
-// $Id: IllegalAddException.java,v 1.7 2005/05/04 10:06:47 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters (mail@bpeters.com)
  *
@@ -24,7 +23,6 @@ package org.marc4j.marc;
  * Thrown when the addition of the supplied object is illegal.
  *
  * @author Bas Peters
- * @version $Revision: 1.7 $
  */
 public class IllegalAddException 
     extends IllegalArgumentException {

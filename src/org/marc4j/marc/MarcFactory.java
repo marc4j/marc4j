@@ -1,4 +1,3 @@
-//$Id: MarcFactory.java,v 1.2 2006/07/28 16:29:01 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -44,7 +43,6 @@ import java.util.Properties;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
  */
 public abstract class MarcFactory {
 

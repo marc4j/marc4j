@@ -1,4 +1,3 @@
-// $Id: Verifier.java,v 1.2 2008/09/26 21:17:42 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -29,7 +28,6 @@ import org.marc4j.marc.ControlField;
  * Handles MARC checks on tags, data elements and <code>Record</code> objects.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
  */
 public class Verifier {
 

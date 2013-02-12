@@ -1,4 +1,3 @@
-//$Id: MarcFactoryImpl.java,v 1.3 2006/10/18 21:00:04 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -31,7 +30,6 @@ import org.marc4j.marc.Subfield;
  * Factory for creating MARC record objects.
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
  */
 public class MarcFactoryImpl extends MarcFactory {
 

@@ -1,4 +1,3 @@
-// $Id: UnicodeToAnsel.java,v 1.7 2011/10/18 19:24:06 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -40,7 +39,6 @@ import org.marc4j.util.Normalizer;
  * @author Bas Peters
  * @author Corey Keith
  * @author Robert Haschart
- * @version $Revision: 1.7 $
  */
 public class UnicodeToAnsel extends CharConverter {
     protected ReverseCodeTable rct;

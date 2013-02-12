@@ -1,4 +1,3 @@
-// $Id: CodeTableHandler.java,v 1.2 2008/09/26 21:17:42 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -41,7 +40,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * builds a data structure to facilitate AnselToUnicode character conversion.
  * 
  * @author Corey Keith
- * @version $Revision: 1.2 $
  * 
  * @see DefaultHandler
  */

@@ -20,11 +20,13 @@ public class JsonReaderTest extends TestCase {
         MarcReader reader = new MarcJsonReader(input);
         while (reader.hasNext()) {
             Record record = reader.next();
-            System.err.println(record.toString());
+            String recordAsString = record.toString();
+            //System.err.println(recordAsString);
             i++;
         }
         input.close();
         assertEquals(1, i);
+        fail("Test incomplete - only record count is validated");
     }
     
     public void testMarcJsonReader() throws Exception {
@@ -34,11 +36,13 @@ public class JsonReaderTest extends TestCase {
         MarcReader reader = new MarcJsonReader(input);
         while (reader.hasNext()) {
             Record record = reader.next();
-            System.err.println(record.toString());
+            String recordAsString = record.toString();
+            //System.err.println(recordAsString);
             i++;
         }
         input.close();
         assertEquals(1, i);
+        fail("Test incomplete - only record count is validated");
     }
 
 	public static Test suite() {

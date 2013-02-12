@@ -1,4 +1,3 @@
-// $Id: RecordStack.java,v 1.2 2008/09/26 21:17:42 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -31,7 +30,6 @@ import org.marc4j.marc.Record;
  * <code>Record</code> objects created by <code>MarcXmlParser</code>.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
  */
 public class RecordStack {
 

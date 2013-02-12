@@ -1,4 +1,3 @@
-//$Id: MarcXmlWriter.java,v 1.10 2012/01/11 20:28:09 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -191,7 +190,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.10 $
  * 
  */
 public class MarcXmlWriter implements MarcWriter {

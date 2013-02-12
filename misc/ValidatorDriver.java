@@ -1,4 +1,3 @@
-// $Id: ValidatorDriver.java,v 1.1 2002/11/15 17:25:41 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -31,7 +30,6 @@ import com.thaiopensource.relaxng.util.*;
  * <p>This is a driver class to test ValidatorFilter.
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a>
- * @version $Revision: 1.1 $
  * @see ValidatorFilter
  */
 public class ValidatorDriver {

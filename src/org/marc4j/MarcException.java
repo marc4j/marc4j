@@ -1,4 +1,3 @@
-// $Id: MarcException.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -24,7 +23,6 @@ package org.marc4j;
  * Thrown in various situations by MARC4J; may contain a nested exception.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
  *  
  */
 public class MarcException extends RuntimeException {

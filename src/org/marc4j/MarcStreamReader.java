@@ -1,4 +1,3 @@
-// $Id: MarcStreamReader.java,v 1.13 2010/08/20 20:34:04 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -70,7 +69,6 @@ import org.marc4j.marc.impl.Verifier;
  * </p>
  * 
  * @author Bas Peters
- * @version $Revision: 1.13 $
  * 
  */
 public class MarcStreamReader implements MarcReader {

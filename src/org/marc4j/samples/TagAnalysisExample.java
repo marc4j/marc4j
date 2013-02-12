@@ -1,4 +1,3 @@
-// $Id: TagAnalysisExample.java,v 1.1 2006/09/23 11:09:33 bpeters Exp $
 package org.marc4j.samples;
 
 import java.io.InputStream;
@@ -17,7 +16,6 @@ import org.marc4j.marc.VariableField;
  * Outputs list of used tags.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
  */
 public class TagAnalysisExample {
 

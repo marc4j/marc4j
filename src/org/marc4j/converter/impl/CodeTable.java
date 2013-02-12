@@ -1,4 +1,3 @@
-// $Id: CodeTable.java,v 1.4 2008/10/16 14:51:44 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -44,7 +43,6 @@ import org.xml.sax.XMLReader;
  * </p>
  * 
  * @author Corey Keith
- * @version $Revision: 1.4 $
  *  
  */
 public class CodeTable implements CodeTableInterface {
