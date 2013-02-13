@@ -879,6 +879,5 @@ an ancient enemy.</abstract>
   <sect1>
     <title>Summary</title>
     <para>This tutorial covers a lot of features of MARC4J. If this tutorial didn't show you how to do what you need to do, try looking in the Javadoc that is included in the MARC4J distribution or send an e-mail to the <ulink url="http://marc4j.tigris.org/servlets/ProjectMailingListList">mailing-list</ulink> for MARC4J users. Most of the samples in this tutorial are available in the <classname>org.marc4j.samples</classname> package.</para>
-    <para>Lat updated: $Date: 2006/08/04 13:23:56 $</para>
   </sect1>
 </article>

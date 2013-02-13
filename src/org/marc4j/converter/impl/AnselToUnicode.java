@@ -1,4 +1,3 @@
-// $Id: AnselToUnicode.java,v 1.9 2010/07/08 14:54:18 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -40,7 +39,6 @@ import org.marc4j.converter.CharConverter;
  * 
  * @author Bas Peters
  * @author Corey Keith
- * @version $Revision: 1.9 $
  */
 public class AnselToUnicode extends CharConverter {
 

@@ -20,7 +20,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @author Robert Haschart
  * @author Corey Keith
- * @version $Revision: 1.3 $
  * 
  * @see DefaultHandler
  */

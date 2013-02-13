@@ -1,4 +1,3 @@
-// $Id: ControlFieldImpl.java,v 1.4 2006/08/04 12:31:41 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -29,7 +28,6 @@ import org.marc4j.marc.ControlField;
  * Represents a control field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.4 $
  */
 public class ControlFieldImpl extends VariableFieldImpl implements ControlField {
 

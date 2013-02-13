@@ -10,7 +10,6 @@ import org.marc4j.marc.impl.Verifier;
 /**
  * 
  * @author Robert Haschart
- * @version $Id: SortedRecordImpl.java,v 1.1 2011/10/18 19:11:53 haschart Exp $
  *
  */
 public class SortedRecordImpl extends RecordImpl

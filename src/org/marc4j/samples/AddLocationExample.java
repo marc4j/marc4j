@@ -1,4 +1,3 @@
-// $Id: AddLocationExample.java,v 1.1 2006/09/23 10:08:58 bpeters Exp $
 /**
  * Copyright (C) 2002-2006 Bas Peters
  *
@@ -32,7 +31,6 @@ import org.marc4j.marc.Record;
  * Reads MARC input.
  * 
  * @author Bas Peters
- * @version $Revision: 1.1 $
  */
 public class AddLocationExample {
 

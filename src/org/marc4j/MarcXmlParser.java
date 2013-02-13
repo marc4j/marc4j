@@ -1,4 +1,3 @@
-// $Id: MarcXmlParser.java,v 1.2 2006/05/20 09:26:22 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -38,7 +37,6 @@ import org.xml.sax.XMLReader;
  * underlying SAX2 parser should be namespace aware.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
  */
 public class MarcXmlParser {
 

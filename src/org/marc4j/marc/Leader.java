@@ -1,4 +1,3 @@
-//$Id: Leader.java,v 1.15 2006/08/04 12:27:36 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -26,7 +25,6 @@ import java.io.Serializable;
  * Represents a record label in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.15 $
  * 
  */
 public interface Leader extends Serializable {

@@ -1,0 +1,7 @@
+<ivy-module version="2.0">
+    <info organisation="org.marc4j" module="marc4j"/>
+    <dependencies>
+        <dependency org="junit" name="junit" rev="latest.release"/>
+        <dependency org="icu" name="icu4j" rev="latest.release"/>
+    </dependencies>
+</ivy-module>

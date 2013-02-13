@@ -1,4 +1,3 @@
-//$Id: CharConverter.java,v 1.3 2008/10/17 06:47:06 haschart Exp $
 /**
  * Copyright (C) 2005 Bas Peters
  *
@@ -25,7 +24,6 @@ package org.marc4j.converter;
  * Extend this class to create a character converter.
  * 
  * @author Bas Peters
- * @version $Revision: 1.3 $
  */
 public abstract class CharConverter {
 

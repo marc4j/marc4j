@@ -1,4 +1,3 @@
-// $Id: ValidatorFilter.java,v 1.1 2002/11/15 16:44:03 bpeters Exp $
 /**
  * Copyright (C) 2002 Bas Peters (mail@bpeters.com)
  *
@@ -30,7 +29,6 @@ import com.thaiopensource.relaxng.ValidatorHandler;
  * as an XML filter.</p>
  *
  * @author <a href="mailto:mail@bpeters.com">Bas Peters</a>
- * @version $Revision: 1.1 $
  * @see ValidatorHandler
  * @see XMLFilterImpl
  */

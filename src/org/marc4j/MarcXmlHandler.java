@@ -1,4 +1,3 @@
-// $Id: MarcXmlHandler.java,v 1.2 2010/10/08 14:51:20 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -40,7 +39,6 @@ import org.xml.sax.SAXException;
  * onto the top of the <code>RecordStack</code>.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
  */
 public class MarcXmlHandler implements ContentHandler {
 

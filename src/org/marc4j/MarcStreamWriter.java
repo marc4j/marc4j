@@ -1,4 +1,3 @@
-// $Id: MarcStreamWriter.java,v 1.7 2010/07/08 14:56:35 haschart Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -72,7 +71,6 @@ import org.marc4j.util.CustomDecimalFormat;
  * </pre>
  * 
  * @author Bas Peters
- * @version $Revision: 1.7 $
  */
 public class MarcStreamWriter implements MarcWriter {
 

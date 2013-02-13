@@ -1,4 +1,3 @@
-// $Id: StylesheetChainExample.java,v 1.2 2006/09/23 11:07:26 bpeters Exp $
 package org.marc4j.samples;
 
 import java.io.FileOutputStream;
@@ -24,7 +23,6 @@ import org.marc4j.marc.Record;
  * A chain of transformation stages.
  * 
  * @author Bas Peters
- * @version $Revision: 1.2 $
  */
 public class StylesheetChainExample {
 

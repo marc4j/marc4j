@@ -1,4 +1,3 @@
-//$Id: DataField.java,v 1.9 2005/08/03 18:55:46 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -26,7 +25,6 @@ import java.util.List;
  * Represents a data field in a MARC record.
  * 
  * @author Bas Peters
- * @version $Revision: 1.9 $
  */
 public interface DataField extends VariableField {
 

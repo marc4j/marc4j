@@ -1,4 +1,3 @@
- // $Id: CodeTableGenerator.java,v 1.2 2008/10/17 06:47:06 haschart Exp $
 /**
  * Copyright (C) 2002 Bas Peters
  *
@@ -41,7 +40,6 @@ import java.util.Vector;
  * split into several routines to workaround a limitation in java that a method can only contain 64k of code when it is compiled. 
  * 
  * @author Robert Haschart
- * @version $Revision: 1.2 $
  *  
  */
 public class CodeTableGenerator extends CodeTable {

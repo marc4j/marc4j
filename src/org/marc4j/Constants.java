@@ -1,4 +1,3 @@
-// $Id: Constants.java,v 1.1 2005/05/04 10:06:46 bpeters Exp $
 /**
  * Copyright (C) 2004 Bas Peters
  *
@@ -25,7 +24,6 @@ package org.marc4j;
  * Defines constant values.
  *
  * @author Bas Peters 
- * @version $Revision: 1.1 $
  */
 public class Constants {
 
