@@ -1,7 +1,6 @@
 package org.marc4j.converter.impl;
 
 import java.util.Hashtable;
-import java.util.Vector;
 
 import org.xml.sax.helpers.DefaultHandler;
 

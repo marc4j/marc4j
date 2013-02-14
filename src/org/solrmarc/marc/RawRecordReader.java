@@ -1,21 +1,11 @@
 package org.solrmarc.marc;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-
 import org.apache.log4j.Logger;
 import org.solrmarc.tools.RawRecord;
+
+import java.io.*;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /**
  * Read a binary marc file

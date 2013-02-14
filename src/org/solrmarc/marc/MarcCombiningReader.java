@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 import org.marc4j.ErrorHandler;
-import org.marc4j.MarcException;
 import org.marc4j.MarcReader;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;

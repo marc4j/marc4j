@@ -22,11 +22,8 @@ package org.marc4j.converter.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.xml.parsers.SAXParser;

@@ -16,8 +16,6 @@ package org.solrmarc.marc;
  * limitations under the License.
  */
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,8 +23,6 @@ import com.ibm.icu.text.Normalizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.marc4j.MarcReader;
-import org.marc4j.MarcStreamWriter;
-import org.marc4j.MarcWriter;
 import org.marc4j.converter.CharConverter;
 import org.marc4j.converter.impl.AnselToUnicode;
 import org.marc4j.marc.DataField;
@@ -34,8 +30,6 @@ import org.marc4j.marc.Leader;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
-
-import org.apache.log4j.Logger;
 
 // Note this class references a trimmed down, version of the icu4j library,
 // that has been "re-homed" from com.ibm.icu.text to com.solrmarc.icu.text

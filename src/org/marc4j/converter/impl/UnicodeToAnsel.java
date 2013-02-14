@@ -21,7 +21,6 @@ package org.marc4j.converter.impl;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.util.Hashtable;
 
 import org.marc4j.converter.CharConverter;
 import org.marc4j.util.Normalizer;
