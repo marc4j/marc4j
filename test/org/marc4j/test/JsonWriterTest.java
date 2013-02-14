@@ -10,9 +10,6 @@ import junit.textui.TestRunner;
 import org.marc4j.MarcJsonReader;
 import org.marc4j.MarcJsonWriter;
 import org.marc4j.MarcStreamReader;
-import org.marc4j.MarcStreamWriter;
-import org.marc4j.MarcXmlReader;
-import org.marc4j.MarcXmlWriter;
 import org.marc4j.marc.Record;
 
 public class JsonWriterTest extends TestCase {

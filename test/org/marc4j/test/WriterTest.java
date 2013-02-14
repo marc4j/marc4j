@@ -7,7 +7,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.marc4j.MarcJsonWriter;
 import org.marc4j.MarcStreamReader;
 import org.marc4j.MarcStreamWriter;
 import org.marc4j.MarcXmlReader;
