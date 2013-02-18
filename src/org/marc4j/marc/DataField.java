@@ -63,7 +63,7 @@ public interface DataField extends VariableField {
 	 * 
 	 * @return List - the list of <code>Subfield</code> objects
 	 */
-	public List getSubfields();
+	public List<Subfield> getSubfields();
 
 	/**
 	 * Returns the list of <code>Subfield</code> objects for the goven
@@ -109,6 +109,7 @@ public interface DataField extends VariableField {
 	/**
 	 * Removes a <code>Subfield</code>.
 	 */
-	public void removeSubfield(Subfield subfield);
+	@SuppressWarnings("UnusedDeclaration")
+    public void removeSubfield(Subfield subfield);
 
 }

@@ -14,35 +14,38 @@ import org.marc4j.marc.Record;
 public class ReaderTest extends TestCase {
 
     public void testMarcStreamReader() throws Exception {
-        int i = 0;
         InputStream input = getClass().getResourceAsStream(
                 "resources/chabon.mrc");
         MarcStreamReader reader = new MarcStreamReader(input);
-        while (reader.hasNext()) {
-            Record record = reader.next();
-            String recordAsString = record.toString();
-            //System.err.println(recordAsString);
-            i++;
-        }
+        assertTrue("Should have at least one record",reader.hasNext());
+
+        Record record1 = reader.next();
+        TestUtils.validateKavalieAndClayRecord(record1);
+
+        assertTrue("Should have at least two records",reader.hasNext());
+        Record record2 = reader.next();
+        TestUtils.validateSummerlandRecord(record2);
+
+        assertFalse(" have more than two records",reader.hasNext());
         input.close();
-        assertEquals(2, i);
-        fail("Test incomplete - only record count is checked");
     }
 
     public void testMarcXmlReader() throws Exception {
-        int i = 0;
         InputStream input = getClass().getResourceAsStream(
                 "resources/chabon.xml");
         MarcXmlReader reader = new MarcXmlReader(input);
-        while (reader.hasNext()) {
-            Record record = reader.next();
-            String recordAsString = record.toString();
-            //System.err.println(recordAsString);
-            i++;
-        }
+
+        assertTrue("Should have at least one record",reader.hasNext());
+
+        Record record1 = reader.next();
+        TestUtils.validateKavalieAndClayRecord(record1);
+
+        assertTrue("Should have at least two records",reader.hasNext());
+        Record record2 = reader.next();
+        TestUtils.validateSummerlandRecord(record2);
+
+        assertFalse(" have more than two records",reader.hasNext());
         input.close();
-        assertEquals(2, i);
-        fail("Test incomplete - only record count is checked");
     }
 
 	public static Test suite() {

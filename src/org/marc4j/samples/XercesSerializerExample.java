@@ -21,15 +21,10 @@ package org.marc4j.samples;
 
 import java.io.InputStream;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.sax.SAXResult;
-
 // import org.apache.xml.serialize.OutputFormat;
 // import org.apache.xml.serialize.XMLSerializer;
 import org.marc4j.MarcReader;
 import org.marc4j.MarcStreamReader;
-import org.marc4j.MarcXmlWriter;
-import org.marc4j.converter.impl.AnselToUnicode;
 import org.marc4j.marc.Record;
 
 /**
