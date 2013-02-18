@@ -19,13 +19,12 @@
  */
 package org.marc4j.marc.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.IllegalAddException;
 import org.marc4j.marc.Subfield;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a data field in a MARC record.
@@ -40,13 +39,13 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
 
     private char ind2;
 
-    private List subfields;
+    private List<Subfield> subfields;
 
     /**
      * Creates a new <code>DataField</code>.
      */
     public DataFieldImpl() {
-        subfields = new ArrayList();
+        subfields = new ArrayList<Subfield>();
     }
 
     /**
@@ -146,15 +145,13 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
      * 
      * @return List - the list of <code>Subfield</code> objects
      */
-    public List getSubfields() {
+    public List<Subfield> getSubfields() {
         return subfields;
     }
 
     public List getSubfields(char code) {
-        List retSubfields = new ArrayList();
-        Iterator i = subfields.iterator();
-        while (i.hasNext()) {
-            Subfield sf = (Subfield) i.next();
+        List<Subfield> retSubfields = new ArrayList<Subfield>();
+        for (Subfield sf : subfields) {
             if (sf.getCode() == code)
                 retSubfields.add(sf);
         }
@@ -162,9 +159,7 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
     }
 
     public Subfield getSubfield(char code) {
-        Iterator i = subfields.iterator();
-        while (i.hasNext()) {
-            Subfield sf = (Subfield) i.next();
+        for (Subfield sf : subfields) {
             if (sf.getCode() == code)
                 return sf;
         }
@@ -172,9 +167,7 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
     }
 
     public boolean find(String pattern) {
-        Iterator i = subfields.iterator();
-        while (i.hasNext()) {
-            Subfield sf = (Subfield) i.next();
+        for (Subfield sf : subfields) {
             if (sf.find(pattern))
                 return true;
         }
@@ -194,14 +187,12 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
      * @return String - a string representation of this data field
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append(' ');
         sb.append(getIndicator1());
         sb.append(getIndicator2());
-        Iterator i = getSubfields().iterator();
-        while (i.hasNext()) {
-            Subfield sf = (Subfield) i.next();
+        for (Subfield sf : getSubfields()) {
             sb.append(sf.toString());
         }
         return sb.toString();
