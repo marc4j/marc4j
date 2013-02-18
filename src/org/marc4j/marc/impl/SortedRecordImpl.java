@@ -1,11 +1,10 @@
 package org.marc4j.marc.impl;
 
-import java.util.Collections;
-
-import org.marc4j.marc.IllegalAddException;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
 import org.marc4j.marc.VariableField;
-import org.marc4j.marc.impl.RecordImpl;
-import org.marc4j.marc.impl.Verifier;
+
+import java.util.Collections;
 
 /**
  * 
@@ -26,21 +25,22 @@ public class SortedRecordImpl extends RecordImpl
     }
     
     public void addVariableField(VariableField field) {
-        if (!(field instanceof VariableField))
-            throw new IllegalAddException("Expected VariableField instance");
-
-        String tag = field.getTag();
-        if (Verifier.isControlNumberField(tag)) {
-            if (Verifier.hasControlNumberField(getControlFields()))
-                getControlFields().set(0, field);
-            else
-                getControlFields().add(0, field);
-            Collections.sort(controlFields);
-        } else if (Verifier.isControlField(tag)) {
-            getControlFields().add(field);
-            Collections.sort(controlFields);
-        } else {
-            getDataFields().add(field);
+        if (field instanceof ControlField) {
+            ControlField controlField = (ControlField) field;
+            String tag = controlField.getTag();
+            if (Verifier.isControlNumberField(tag)) {
+                if (Verifier.hasControlNumberField(getControlFields()))
+                    getControlFields().set(0, controlField);
+                else
+                    getControlFields().add(0, controlField);
+                Collections.sort(controlFields);
+            } else if (Verifier.isControlField(tag)) {
+                getControlFields().add(controlField);
+                Collections.sort(controlFields);
+            }
+        }
+       else {
+            getDataFields().add((DataField) field);
             Collections.sort(dataFields);
         }
 

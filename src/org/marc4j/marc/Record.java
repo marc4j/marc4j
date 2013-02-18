@@ -22,8 +22,6 @@ package org.marc4j.marc;
 import java.io.Serializable;
 import java.util.List;
 
-import org.marc4j.marc.Leader;
-
 /**
  * Represents a MARC record.
  * 
@@ -88,21 +86,21 @@ public interface Record extends Serializable {
      * 
      * @return List - the variable fields
      */
-    public List getVariableFields();
+    public List<VariableField> getVariableFields();
 
     /**
      * Returns a list of control fields
      * 
      * @return List - the control fields
      */
-    public List getControlFields();
+    public List<ControlField> getControlFields();
 
     /**
      * Returns a list of data fields
      * 
      * @return List - the data fields
      */
-    public List getDataFields();
+    public List<DataField> getDataFields();
 
     /**
      * Returns the control number field or <code>null</code> if no control
@@ -135,7 +133,7 @@ public interface Record extends Serializable {
      * 
      * @return List - the variable fields
      */
-    public List getVariableFields(String tag);
+    public List<VariableField> getVariableFields(String tag);
 
     /**
      * Returns a list of variable fields for the given tags.
@@ -151,7 +149,7 @@ public interface Record extends Serializable {
      * 
      * @return List - the variable fields
      */
-    public List getVariableFields(String[] tag);
+    public List<VariableField> getVariableFields(String[] tag);
 
     /**
      * Returns the <code>Leader</code>.
@@ -181,7 +179,7 @@ public interface Record extends Serializable {
      *            the regular expression
      * @return List - the result list
      */
-    public List find(String pattern);
+    public List<VariableField> find(String pattern);
 
     /**
      * Returns a List of VariableField objects with the given tag that have a
@@ -198,7 +196,7 @@ public interface Record extends Serializable {
      *            the regular expression
      * @return List - the result list
      */
-    public List find(String tag, String pattern);
+    public List<VariableField> find(String tag, String pattern);
 
     /**
      * Returns a List of VariableField objects with the given tags that have a
@@ -215,6 +213,6 @@ public interface Record extends Serializable {
      *            the regular expression
      * @return List - the result list
      */
-    public List find(String[] tag, String pattern);
+    public List<VariableField> find(String[] tag, String pattern);
 
 }
