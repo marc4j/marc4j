@@ -438,7 +438,21 @@ public class MarcXmlWriter implements MarcWriter {
         } catch (SAXException e) {
             throw new MarcException("SAX error occured while writing record", e);
         }
-    }
+    }     
+    
+    /**
+      * Write the record as XML to a UTF-8 string
+      *
+    **/
+    
+    public static String record_to_XML(Record record) throws java.io.UnsupportedEncodingException {
+       java.io.ByteArrayOutputStream os = new java.io.ByteArrayOutputStream();
+       MarcXmlWriter writer =  new MarcXmlWriter(os);
+       writer.setUnicodeNormalization(true);
+       writer.write(record);
+       writer.writeEndDocument();
+       return os.toString("UTF-8");        
+     }
 
     /**
      * Returns true if indentation is active, false otherwise.
