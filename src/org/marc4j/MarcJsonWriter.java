@@ -10,7 +10,6 @@ import org.marc4j.util.Normalizer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 public class MarcJsonWriter implements MarcWriter
 {
