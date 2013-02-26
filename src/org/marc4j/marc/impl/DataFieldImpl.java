@@ -149,9 +149,10 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
         return subfields;
     }
 
-    public List getSubfields(char code) {
+    public List<Subfield> getSubfields(char code) {
         List<Subfield> retSubfields = new ArrayList<Subfield>();
-        for (Subfield sf : subfields) {
+        for (Subfield sf : subfields)
+        {
             if (sf.getCode() == code)
                 retSubfields.add(sf);
         }
@@ -159,15 +160,17 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
     }
 
     public Subfield getSubfield(char code) {
-        for (Subfield sf : subfields) {
+        for (Subfield sf : subfields) 
+        {
             if (sf.getCode() == code)
-                return sf;
+                return sf; 
         }
         return null;
     }
 
     public boolean find(String pattern) {
-        for (Subfield sf : subfields) {
+        for (Subfield sf : subfields) 
+        {
             if (sf.find(pattern))
                 return true;
         }
@@ -192,7 +195,8 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
         sb.append(' ');
         sb.append(getIndicator1());
         sb.append(getIndicator2());
-        for (Subfield sf : getSubfields()) {
+        for (Subfield sf : subfields) 
+        {
             sb.append(sf.toString());
         }
         return sb.toString();

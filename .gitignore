@@ -5,3 +5,6 @@ ivy
 lib
 marc4j.iml
 .idea
+.project
+.classpath
+generated-src

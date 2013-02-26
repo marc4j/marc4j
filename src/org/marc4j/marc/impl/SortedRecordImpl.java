@@ -13,10 +13,7 @@ import java.util.Collections;
  */
 public class SortedRecordImpl extends RecordImpl
 {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5870251915056214892L;
+    private static final long serialVersionUID = 1L;
 
 
 	public SortedRecordImpl()
@@ -25,25 +22,30 @@ public class SortedRecordImpl extends RecordImpl
     }
     
     public void addVariableField(VariableField field) {
-        if (field instanceof ControlField) {
+        if (field instanceof ControlField) 
+        {
             ControlField controlField = (ControlField) field;
             String tag = controlField.getTag();
-            if (Verifier.isControlNumberField(tag)) {
+            if (Verifier.isControlNumberField(tag))
+            {
                 if (Verifier.hasControlNumberField(getControlFields()))
                     getControlFields().set(0, controlField);
                 else
                     getControlFields().add(0, controlField);
+
                 Collections.sort(controlFields);
-            } else if (Verifier.isControlField(tag)) {
+            }
+            else if (Verifier.isControlField(tag))
+            {
                 getControlFields().add(controlField);
                 Collections.sort(controlFields);
             }
         }
-       else {
+        else 
+        {
             getDataFields().add((DataField) field);
             Collections.sort(dataFields);
         }
-
     }
 
 

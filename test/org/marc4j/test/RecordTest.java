@@ -21,8 +21,7 @@ public class RecordTest extends TestCase {
     Record record = null;
 
     public void setUp() throws Exception {
-        InputStream input = getClass().getResourceAsStream(
-                "resources/summerland.mrc");
+        InputStream input = getClass().getResourceAsStream("resources/summerland.mrc");
         MarcReader reader = new MarcStreamReader(input);
         while (reader.hasNext()) {
             record = reader.next();
@@ -38,7 +37,7 @@ public class RecordTest extends TestCase {
         assertEquals("001", cf.getTag());
         assertEquals("12883376", cf.getData());
 
-        List fieldList = record.getVariableFields();
+        List<? extends VariableField> fieldList = record.getVariableFields();
         assertEquals(15, fieldList.size());
 
         fieldList = record.getControlFields();
@@ -67,7 +66,7 @@ public class RecordTest extends TestCase {
         field = record.getVariableField("008");
         assertEquals(true, field.find("eng"));
 
-        List result = record.find("Summerland");
+        List<? extends VariableField> result = record.find("Summerland");
         assertEquals(1, result.size());
         field = (VariableField) result.get(0);
         assertEquals("245", field.getTag());

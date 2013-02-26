@@ -23,8 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.List;
 
 import org.marc4j.converter.CharConverter;
 import org.marc4j.marc.ControlField;
@@ -157,36 +155,27 @@ public class MarcStreamWriter implements MarcWriter {
             hasOversizeLength = false;
             
             // control fields
-            List fields = record.getControlFields();
-            Iterator i = fields.iterator();
-            while (i.hasNext()) {
-                ControlField cf = (ControlField) i.next();
-
+            for (ControlField cf : record.getControlFields())
+            {
                 data.write(getDataElement(cf.getData()));
                 data.write(Constants.FT);
-                dir.write(getEntry(cf.getTag(), data.size() - previous,
-                        previous));
+                dir.write(getEntry(cf.getTag(), data.size() - previous, previous));
                 previous = data.size();
             }
 
             // data fields
-            fields = record.getDataFields();
-            i = fields.iterator();
-            while (i.hasNext()) {
-                DataField df = (DataField) i.next();
+            for (DataField df : record.getDataFields())
+            {
                 data.write(df.getIndicator1());
                 data.write(df.getIndicator2());
-                List subfields = df.getSubfields();
-                Iterator si = subfields.iterator();
-                while (si.hasNext()) {
-                    Subfield sf = (Subfield) si.next();
+                for (Subfield sf : df.getSubfields())
+                {
                     data.write(Constants.US);
                     data.write(sf.getCode());
                     data.write(getDataElement(sf.getData()));
                 }
                 data.write(Constants.FT);
-                dir.write(getEntry(df.getTag(), data.size() - previous,
-                        previous));
+                dir.write(getEntry(df.getTag(), data.size() - previous, previous));
                 previous = data.size();
             }
             dir.write(Constants.FT);
@@ -211,6 +200,7 @@ public class MarcStreamWriter implements MarcWriter {
             {
                 throw new MarcException("Record has field that is too long to be a valid MARC binary record. The maximum length for a field counting all of the sub-fields is 9999 bytes.");
             }
+            if (converter != null)  ldr.setCharCodingScheme(converter.outputsUnicode() ? 'a' : ' ');
             writeLeader(ldr);
             out.write(dir.toByteArray());
             out.write(data.toByteArray());
@@ -230,11 +220,8 @@ public class MarcStreamWriter implements MarcWriter {
         out.write(new String(ldr.getImplDefined1()).getBytes(encoding));
         out.write(ldr.getCharCodingScheme());
         out.write(Integer.toString(ldr.getIndicatorCount()).getBytes(encoding));
-        out.write(Integer.toString(ldr.getSubfieldCodeLength()).getBytes(
-                encoding));
-        out
-                .write(format5Use.format(ldr.getBaseAddressOfData()).getBytes(
-                        encoding));
+        out.write(Integer.toString(ldr.getSubfieldCodeLength()).getBytes(encoding));
+        out.write(format5Use.format(ldr.getBaseAddressOfData()).getBytes(encoding));
         out.write(new String(ldr.getImplDefined2()).getBytes(encoding));
         out.write(new String(ldr.getEntryMap()).getBytes(encoding));
     }

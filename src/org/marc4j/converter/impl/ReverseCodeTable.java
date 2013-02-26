@@ -40,17 +40,17 @@ public abstract class ReverseCodeTable
     /**
      * Abstract method that must be defined in a sub-class, used in the conversion of Unicode
      * to MARC-8. For a given Unicode character, return ALL of the possible MARC-8 representations
-     * of that character.  Thes are represented in a Hashtable where the key is the ISOcode of the 
+     * of that character.  These are represented in a Hashtable where the key is the ISOcode of the 
      * character set in MARC-8 that the Unicode character appears in, and the value is the MARC-8
      * character value in that character set that encodes the given Unicode character.
      *  
      * @param c - the UCS/Unicode character to look up
      * @return Hashtable - contains all of the possible MARC-8 representations of that Unicode character
      */
-    abstract public Hashtable getCharTable(Character c);
+    abstract public Hashtable<Integer, char[]> getCharTable(Character c);
 
     protected Character lastLookupKey = null;
-    protected Hashtable lastLookupValue = null;
+    protected Hashtable<Integer, char[]> lastLookupValue = null;
     protected byte g[];
     protected String charsetsUsed;
     
@@ -123,7 +123,7 @@ public abstract class ReverseCodeTable
      * @param c - the UCS/Unicode character to look up
      * @return Hashtable - contains all of the possible MARC-8 representations of that Unicode character
      */
-    public Hashtable codeTableHash(Character c) 
+    public Hashtable<Integer, char[]> codeTableHash(Character c) 
     {
         if (lastLookupKey != null && c.equals(lastLookupKey))
         {
@@ -156,7 +156,7 @@ public abstract class ReverseCodeTable
      */
     public boolean inPreviousG0CharEntry(Character c) 
     {
-        Hashtable chars = codeTableHash(c); 
+        Hashtable<Integer, char[]> chars = codeTableHash(c); 
         if ( chars != null && chars.get((int)getPreviousG0()) != null)
         {
             return true;
@@ -174,7 +174,7 @@ public abstract class ReverseCodeTable
      */
     public boolean inPreviousG1CharEntry(Character c) 
     {
-        Hashtable chars = codeTableHash(c); 
+        Hashtable<Integer, char[]> chars = codeTableHash(c); 
         if ( chars != null && chars.get((int)getPreviousG1()) != null)
         {
             return true;
@@ -219,7 +219,7 @@ public abstract class ReverseCodeTable
      */
     public char[] getCharEntry(Character c, int charset)
     {
-        Hashtable chars = codeTableHash(c); 
+        Hashtable<Integer, char[]> chars = codeTableHash(c); 
         if (chars == null) 
         {
             return (new char[0]);
@@ -238,28 +238,28 @@ public abstract class ReverseCodeTable
      * @return boolean - true if there is a MARC-8 representation of the given Unicode character in the 
      *                   current G0 character set
      */
-    public int getBestCharSet(Character c)
+    public char getBestCharSet(Character c)
     {
-        Hashtable chars = codeTableHash(c);
-        if (chars.keySet().size() == 1)  return(((Integer)chars.keySet().iterator().next()).intValue());
+        Hashtable<Integer, char[]> chars = codeTableHash(c);
+        if (chars.keySet().size() == 1)  return((char)(chars.keySet().iterator().next().intValue()));
         for (int i = 0; i < charsetsUsed.length(); i++)
         {
             char toUse = charsetsUsed.charAt(i);
-            if (chars.containsKey((int)toUse))
+            if (chars.containsKey(toUse))
             {
-                return((int)toUse);
+                return(toUse);
             }
         }
-        int returnVal;
-        if (chars.containsKey((int)('S')))
+        char returnVal;
+        if (chars.containsKey('S'))
         {
-            returnVal = (int)'S';
+            returnVal = 'S';
         }
         else 
         {
-            returnVal = (((Integer)chars.keySet().iterator().next()).intValue());
+            returnVal = ((char)(chars.keySet().iterator().next().intValue()));
         }
-        charsetsUsed = charsetsUsed + (char)returnVal;
+        charsetsUsed = charsetsUsed + returnVal;
         return(returnVal);        
     }
         

@@ -19,6 +19,10 @@
  */
 package org.marc4j.converter.impl;
 
+import org.marc4j.MarcException;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -29,10 +33,6 @@ import java.util.Vector;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.marc4j.MarcException;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-
 /**
  * <p>
  * <code>CodeTable</code> defines a data structure to facilitate
@@ -42,51 +42,67 @@ import org.xml.sax.XMLReader;
  * @author Corey Keith
  *  
  */
-public class CodeTable implements CodeTableInterface {
-    protected static HashMap charsets = null;
+public class CodeTable implements CodeTableInterface
+{
+    protected static HashMap<Integer, HashMap<Integer, Character>> charsets = null;
 
-    protected static HashMap combining = null;
+    protected static HashMap<Integer, Vector<Integer>> combining = null;
 
-    public boolean isCombining(int i, int g0, int g1) {
-        if (i <= 0x7E) {
-            Vector v = (Vector) combining.get(new Integer(g0));
+    public boolean isCombining(int i, int g0, int g1)
+    {
+        if (i <= 0x7E)
+        {
+            Vector<Integer> v = combining.get(new Integer(g0));
             return (v != null && v.contains(new Integer(i)));
-        } else {
-            Vector v = (Vector) combining.get(new Integer(g1));
+        }
+        else
+        {
+            Vector<Integer> v = combining.get(new Integer(g1));
             return (v != null && v.contains(new Integer(i)));
         }
     }
 
-    public char getChar(int c, int mode) {
+    public char getChar(int c, int mode)
+    {
         if (c == 0x20)
             return (char) c;
-        else {
-            HashMap charset = (HashMap) charsets.get(new Integer(mode));
+        else
+        {
+            HashMap<Integer, Character> charset = charsets.get(new Integer(mode));
 
-            if (charset == null) {
+            if (charset == null)
+            {
 //                System.err.println("Hashtable not found: "
 //                        + Integer.toHexString(mode));
                 return (char) c;
-            } else {
-                Character ch = (Character) charset.get(new Integer(c));
-                if (ch == null) {
+            }
+            else
+            {
+                Character ch = charset.get(new Integer(c));
+                if (ch == null)
+                {
                     int newc = (c < 0x80) ? c + 0x80 : c - 0x80;
-                    ch = (Character) charset.get(new Integer(newc));
-                    if (ch == null) {
+                    ch = charset.get(new Integer(newc));
+                    if (ch == null)
+                    {
 //                        System.err.println("Character not found: "
 //                                + Integer.toHexString(c) + " in Code Table: "
 //                                + Integer.toHexString(mode));
                         return (char) 0;
-                    } else
+                    }
+                    else
                         return ch.charValue();
-                } else
+                }
+                else
                     return ch.charValue();
             }
         }
     }
 
-    public CodeTable(InputStream byteStream) {
-        try {
+    public CodeTable(InputStream byteStream)
+    {
+        try
+        {
 
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -103,13 +119,17 @@ public class CodeTable implements CodeTableInterface {
 
             charsets = saxUms.getCharSets();
             combining = saxUms.getCombiningChars();
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             throw new MarcException(e.getMessage(), e);
         }
     }
 
-    public CodeTable(String filename) {
-        try {
+    public CodeTable(String filename)
+    {
+        try
+        {
 
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -127,13 +147,17 @@ public class CodeTable implements CodeTableInterface {
 
             charsets = saxUms.getCharSets();
             combining = saxUms.getCombiningChars();
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             throw new MarcException(e.getMessage(), e);
         }
     }
 
-    public CodeTable(URI uri) {
-        try {
+    public CodeTable(URI uri)
+    {
+        try
+        {
 
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -150,7 +174,9 @@ public class CodeTable implements CodeTableInterface {
 
             charsets = saxUms.getCharSets();
             combining = saxUms.getCombiningChars();
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             throw new MarcException(e.getMessage(), e);
         }
     }   

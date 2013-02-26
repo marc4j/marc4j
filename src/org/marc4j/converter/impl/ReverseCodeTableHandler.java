@@ -38,9 +38,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * @see DefaultHandler
  */
 public class ReverseCodeTableHandler extends DefaultHandler {
-  private Hashtable charset;
+  private Hashtable<Character, Hashtable<Integer, char[]>> charsets;
 
-  private Vector combiningchars;
+  private Vector<Character> combiningchars;
 
   private boolean useAlt = false;
   
@@ -54,19 +54,19 @@ public class ReverseCodeTableHandler extends DefaultHandler {
   private boolean combining;
 
   /** Tag name */
-  private String tag;
+  //private String tag;
 
   /** StringBuffer to store data */
   private StringBuffer data;
 
   /** Locator object */
-  private Locator locator;
+  protected Locator locator;
 
-  public Hashtable getCharSets() {
-    return charset;
+  public Hashtable<Character, Hashtable<Integer, char[]>> getCharSets() {
+    return charsets;
   }
 
-  public Vector getCombiningChars() {
+  public Vector<Character> getCombiningChars() {
     return combiningchars;
   }
 
@@ -89,8 +89,8 @@ public class ReverseCodeTableHandler extends DefaultHandler {
     else if (name.equals("marc"))
       data = new StringBuffer();
     else if (name.equals("codeTables")) {
-      charset = new Hashtable();
-      combiningchars = new Vector();
+      charsets = new Hashtable<Character, Hashtable<Integer, char[]>>();
+      combiningchars = new Vector<Character>();
     } else if (name.equals("ucs"))
       data = new StringBuffer();
     else if (name.equals("alt"))
@@ -136,12 +136,12 @@ public class ReverseCodeTableHandler extends DefaultHandler {
         combiningchars.add(ucs);
       }
 
-      if (charset.get(ucs) == null) {
-        Hashtable h = new Hashtable(1);
+      if (charsets.get(ucs) == null) {
+        Hashtable<Integer, char[]> h = new Hashtable<Integer, char[]>(1);
         h.put(isocode, marc);
-        charset.put(ucs, h);
+        charsets.put(ucs, h);
       } else {
-        Hashtable h = (Hashtable) charset.get(ucs);
+        Hashtable<Integer, char[]> h = (Hashtable<Integer, char[]>) charsets.get(ucs);
         h.put(isocode, marc);
       }
     } else if (name.equals("isCombining")) {

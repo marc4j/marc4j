@@ -212,7 +212,7 @@ public class MarcStreamReader implements MarcReader {
             
             for (int i = 0; i < size; i++) 
             {
-                int fieldLength = getFieldLength(inputrec);
+                getFieldLength(inputrec);
                 if (Verifier.isControlField(tags[i])) 
                 {
                     byteArray = new byte[lengths[i] - 1];

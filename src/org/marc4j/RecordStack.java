@@ -33,7 +33,7 @@ import org.marc4j.marc.Record;
  */
 public class RecordStack {
 
-  private List list;
+  private List<Record> list;
   private RuntimeException re = null;
   private boolean eof = false;
 
@@ -42,7 +42,7 @@ public class RecordStack {
    *  
    */
   public RecordStack() {
-    list = new ArrayList();
+    list = new ArrayList<Record>();
   }
 
   /**

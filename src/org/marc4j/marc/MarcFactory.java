@@ -73,8 +73,7 @@ public abstract class MarcFactory {
       className = getFactoryClassName(loader, count++);
       if (className != null) {
         try {
-          Class t = (loader != null) ? loader.loadClass(className) : Class
-              .forName(className);
+          Class<?> t = (loader != null) ? loader.loadClass(className) : Class.forName(className);
           return (MarcFactory) t.newInstance();
         } catch (ClassNotFoundException e) {
           className = null;
@@ -106,9 +105,8 @@ public abstract class MarcFactory {
     case 2:
       try {
         String serviceKey = "/META-INF/services/" + propertyName;
-        InputStream in = (loader != null) ? loader
-            .getResourceAsStream(serviceKey) : MarcFactory.class
-            .getResourceAsStream(serviceKey);
+        InputStream in = (loader != null) ? loader.getResourceAsStream(serviceKey) : 
+            MarcFactory.class.getResourceAsStream(serviceKey);
         if (in != null) {
           BufferedReader r = new BufferedReader(new InputStreamReader(in));
           String ret = r.readLine();
@@ -159,6 +157,14 @@ public abstract class MarcFactory {
    * @return DataField
    */
   public abstract DataField newDataField(String tag, char ind1, char ind2);
+
+  /**
+   * Creates a new data field with the given tag and indicators and subfields and returns
+   * the instance.
+   * 
+   * @return DataField
+   */
+  public abstract DataField newDataField(String tag, char ind1, char ind2, String ... subfieldCodesAndData);
 
   /**
    * Returns a new leader instance.

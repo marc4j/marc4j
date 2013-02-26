@@ -13,7 +13,8 @@ import org.marc4j.marc.Record;
 
 public class ReaderTest extends TestCase {
 
-    public void testMarcStreamReader() throws Exception {
+    public void testMarcStreamReader() throws Exception 
+    {
         InputStream input = getClass().getResourceAsStream(
                 "resources/chabon.mrc");
         MarcStreamReader reader = new MarcStreamReader(input);
@@ -30,9 +31,9 @@ public class ReaderTest extends TestCase {
         input.close();
     }
 
-    public void testMarcXmlReader() throws Exception {
-        InputStream input = getClass().getResourceAsStream(
-                "resources/chabon.xml");
+    public void testMarcXmlReader() throws Exception 
+    {
+        InputStream input = getClass().getResourceAsStream("resources/chabon.xml");
         MarcXmlReader reader = new MarcXmlReader(input);
 
         assertTrue("Should have at least one record",reader.hasNext());

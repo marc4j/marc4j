@@ -94,8 +94,8 @@ public class UnicodeToAnsel extends CharConverter {
     {
         try
         {
-            Class generated = Class.forName("org.marc4j.converter.impl.ReverseCodeTableGenerated");
-            Constructor cons = generated.getConstructor();
+            Class<?> generated = Class.forName("org.marc4j.converter.impl.ReverseCodeTableGenerated");
+            Constructor<?> cons = generated.getConstructor();
             Object rct = cons.newInstance();
             return((ReverseCodeTable)rct);
         }
@@ -153,7 +153,6 @@ public class UnicodeToAnsel extends CharConverter {
         for (int i = 0; i < data.length; i++) 
         {
             Character c = new Character(data[i]);
-            Integer table;
             StringBuffer marc = new StringBuffer();
             int charValue = (int)c.charValue();
             if (charValue == 0x20 && rct.getPreviousG0() != (int)'1')
@@ -169,12 +168,34 @@ public class UnicodeToAnsel extends CharConverter {
             }
             else if (!rct.charHasMatch(c))
             {
+                // Unicode character c has no match in the Marc8 tables.  Try unicode-decompose on it
+                // to see whether the decomposed form can be represented.  If when decomposed, all of
+                // the characters can be translated to marc8, then use that.  If not and the decomposed form
+                // if three (or more) characters long (which indicates multiple diacritic marks), then 
+                // re-compose the the main character with the first diacritic, and check whether that 
+                // and the remaining diacritics can be translated. If so go with that, otherwise, give up
+                // and merely use the &#xXXXX; Numeric Character Reference form to represent the original
+                // unicode character
                 String tmpnorm = c.toString();
                 String tmpNormed = Normalizer.normalize(tmpnorm, Normalizer.NFD);
-                if (!tmpnorm.equals(tmpNormed))
+                if (!tmpNormed.equals(tmpnorm))
+                {
+                    if (allCharsHaveMatch(rct, tmpNormed))
                 {
                     convertPortion(tmpNormed.toCharArray(), sb);
                     continue;
+                }
+                    else if (tmpNormed.length() > 2)
+                    {
+                        String firstTwo = tmpNormed.substring(0, 2);
+                        String partialNormed = Normalizer.normalize(firstTwo, Normalizer.NFC);
+                        if (!partialNormed.equals(firstTwo) && allCharsHaveMatch(rct, partialNormed) && 
+                                allCharsHaveMatch(rct, tmpNormed.substring(2)))
+                        {
+                            convertPortion((partialNormed + tmpNormed.substring(2)).toCharArray(), sb);
+                            continue;
+                        }
+                    }
                 }
                 if (rct.getPreviousG0() != ASCII)
                 {
@@ -239,12 +260,27 @@ public class UnicodeToAnsel extends CharConverter {
             if (rct.isCombining(c) && sb.length() > 0)
             {
                 sb.insert(sb.length() - 1, marc);
+                
+                // Special case handling to handle the COMBINING DOUBLE INVERTED BREVE 
+                // and the COMBINING DOUBLE TILDE where a single double wide accent character
+                // in unicode is represented by two half characters in Marc8
+                if (((int)c)== 0x360)  sb.append((char)(0xfb));
+                if (((int)c)== 0x361)  sb.append((char)(0xec));
             }
             else
             {
                 sb.append(marc);
             }
         }    
+    }
+
+    private static boolean allCharsHaveMatch(ReverseCodeTable rct, String str)
+    {
+        for (char c : str.toCharArray())
+        {
+            if (!rct.charHasMatch(c))  return(false);
+        }
+        return true;
     }
 
 }

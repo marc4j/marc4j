@@ -79,21 +79,25 @@ public class RecordImpl implements Record {
      *                             instance
      */
     public void addVariableField(VariableField field) {
-
         String tag = field.getTag();
-        if (field instanceof ControlField) {
-
+        if (field instanceof ControlField) 
+        {
             ControlField controlField = (ControlField) field;
-            if (Verifier.isControlNumberField(tag)) {
+            if (Verifier.isControlNumberField(tag)) 
+            {
                 if (Verifier.hasControlNumberField(controlFields))
                     controlFields.set(0, controlField);
                 else
                     controlFields.add(0, controlField);
-            } else {
+            }
+            else
+            {
                 controlFields.add(controlField);
             }
-        } else {
-            dataFields.add((DataField) field);
+        }
+        else 
+        {
+            dataFields.add((DataField)field);
         }
 
     }
@@ -128,12 +132,13 @@ public class RecordImpl implements Record {
     }
 
     public VariableField getVariableField(String tag) {
-        Iterator i;
+        Iterator<? extends VariableField> i;
         if (Verifier.isControlField(tag))
             i = controlFields.iterator();
         else
             i = dataFields.iterator();
-        while (i.hasNext()) {
+        while (i.hasNext()) 
+        {
             VariableField field = (VariableField) i.next();
             if (field.getTag().equals(tag))
                 return field;
@@ -143,12 +148,13 @@ public class RecordImpl implements Record {
 
     public List<VariableField> getVariableFields(String tag) {
         List<VariableField> fields = new ArrayList<VariableField>();
-        Iterator i;
+        Iterator<? extends VariableField> i;
         if (Verifier.isControlField(tag))
             i = controlFields.iterator();
         else
             i = dataFields.iterator();
-        while (i.hasNext()) {
+        while (i.hasNext()) 
+        {
             VariableField field = (VariableField) i.next();
             if (field.getTag().equals(tag))
                 fields.add(field);
@@ -179,7 +185,9 @@ public class RecordImpl implements Record {
 
     public List<VariableField> getVariableFields(String[] tags) {
         List<VariableField> list = new ArrayList<VariableField>();
-        for (String tag : tags) {
+        for (int i = 0; i < tags.length; i++) 
+        {
+            String tag = tags[i];
             List<VariableField> fields = getVariableFields(tag);
             if (fields.size() > 0)
                 list.addAll(fields);
@@ -194,7 +202,11 @@ public class RecordImpl implements Record {
      * Example:
      * <p/>
      * <pre>
+<<<<<<< HEAD
+     *     
+=======
      *
+>>>>>>> refs/remotes/choose_remote_name/reader-test-improvements
      *      LEADER 00714cam a2200205 a 4500
      *      001 12883376
      *      005 20030616111422.0
@@ -220,23 +232,26 @@ public class RecordImpl implements Record {
         sb.append("LEADER ");
         sb.append(getLeader().toString());
         sb.append('\n');
-        for (VariableField field : getVariableFields()) {
+        for (VariableField field : getVariableFields())
+        {
             sb.append(field.toString());
             sb.append('\n');
         }
         return sb.toString();
     }
 
-    public List find(String pattern) {
+    public List<VariableField> find(String pattern) {
         List<VariableField> result = new ArrayList<VariableField>();
-        Iterator i = controlFields.iterator();
-        while (i.hasNext()) {
+        Iterator<? extends VariableField> i = controlFields.iterator();
+        while (i.hasNext()) 
+        {
             VariableField field = (VariableField) i.next();
             if (field.find(pattern))
                 result.add(field);
         }
         i = dataFields.iterator();
-        while (i.hasNext()) {
+        while (i.hasNext()) 
+        {
             VariableField field = (VariableField) i.next();
             if (field.find(pattern))
                 result.add(field);
@@ -244,16 +259,17 @@ public class RecordImpl implements Record {
         return result;
     }
 
-    public List find(String tag, String pattern) {
+    public List<VariableField> find(String tag, String pattern) {
         List<VariableField> result = new ArrayList<VariableField>();
-        for (VariableField field : getVariableFields(tag)) {
+        for (VariableField field : getVariableFields(tag))
+        {
             if (field.find(pattern))
                 result.add(field);
         }
         return result;
     }
 
-    public List find(String[] tag, String pattern) {
+    public List<VariableField> find(String[] tag, String pattern) {
         List<VariableField> result = new ArrayList<VariableField>();
         for (VariableField field : getVariableFields(tag)) {
             if (field.find(pattern))

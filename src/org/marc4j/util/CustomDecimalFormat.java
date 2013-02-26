@@ -12,6 +12,7 @@ import java.text.DecimalFormat;
 import java.text.FieldPosition;
 
 public class CustomDecimalFormat extends DecimalFormat {
+  private static final long serialVersionUID = 1L;
   static String formatString =   "00000000000000000000";
   static String maxString =      "99999999999999999999";
   public final static int REP_ALL_ZEROS = 0;

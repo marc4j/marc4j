@@ -73,7 +73,7 @@ public interface DataField extends VariableField {
 	 *            the subfield code
 	 * @return List - the list of <code>Subfield</code> objects
 	 */
-	public List getSubfields(char code);
+	public List<Subfield> getSubfields(char code);
 
 	/**
 	 * Returns the first <code>Subfield</code> with the given code.

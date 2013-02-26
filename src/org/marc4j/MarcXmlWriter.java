@@ -34,7 +34,6 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
-import java.util.Iterator;
 
 
 /**
@@ -310,8 +309,7 @@ public class MarcXmlWriter implements MarcWriter {
     public void close() {
     	writeEndDocument();
     	try {
-            writer.write("\n");
-            writer.close();
+    		writer.close();
     	} catch (IOException e) {
     		throw new MarcException(e.getMessage(), e);
     	}
@@ -459,7 +457,8 @@ public class MarcXmlWriter implements MarcWriter {
         this.indent = indent;
     }
 
-    protected void toXml(Record record) throws SAXException {
+    protected void toXml(Record record) throws SAXException 
+    {
         char temp[];
         AttributesImpl atts = new AttributesImpl();
         if (indent)
@@ -476,63 +475,49 @@ public class MarcXmlWriter implements MarcWriter {
         handler.characters(temp, 0, temp.length);
         handler.endElement(Constants.MARCXML_NS_URI, LEADER, LEADER);
 
-        Iterator i = record.getControlFields().iterator();
-        while (i.hasNext()) {
-            ControlField field = (ControlField) i.next();
+        for (ControlField field : record.getControlFields())
+        {
             atts = new AttributesImpl();
             atts.addAttribute("", "tag", "tag", "CDATA", field.getTag());
 
             if (indent)
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
 
-            handler.startElement(Constants.MARCXML_NS_URI, CONTROL_FIELD,
-                    CONTROL_FIELD, atts);
+            handler.startElement(Constants.MARCXML_NS_URI, CONTROL_FIELD, CONTROL_FIELD, atts);
             temp = getDataElement(field.getData());
             handler.characters(temp, 0, temp.length);
-            handler.endElement(Constants.MARCXML_NS_URI, CONTROL_FIELD,
-                    CONTROL_FIELD);
+            handler.endElement(Constants.MARCXML_NS_URI, CONTROL_FIELD, CONTROL_FIELD);
         }
 
-        i = record.getDataFields().iterator();
-        while (i.hasNext()) {
-            DataField field = (DataField) i.next();
+        for (DataField field : record.getDataFields())
+        {
             atts = new AttributesImpl();
             atts.addAttribute("", "tag", "tag", "CDATA", field.getTag());
-            atts.addAttribute("", "ind1", "ind1", "CDATA", String.valueOf(field
-                    .getIndicator1()));
-            atts.addAttribute("", "ind2", "ind2", "CDATA", String.valueOf(field
-                    .getIndicator2()));
+            atts.addAttribute("", "ind1", "ind1", "CDATA", String.valueOf(field.getIndicator1()));
+            atts.addAttribute("", "ind2", "ind2", "CDATA", String.valueOf(field.getIndicator2()));
 
             if (indent)
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
 
-            handler.startElement(Constants.MARCXML_NS_URI, DATA_FIELD,
-                    DATA_FIELD, atts);
-            Iterator j = field.getSubfields().iterator();
-            while (j.hasNext()) {
-                Subfield subfield = (Subfield) j.next();
+            handler.startElement(Constants.MARCXML_NS_URI, DATA_FIELD, DATA_FIELD, atts);
+            for (Subfield subfield : field.getSubfields())
+            {
                 atts = new AttributesImpl();
-                atts.addAttribute("", "code", "code", "CDATA", String
-                        .valueOf(subfield.getCode()));
+                atts.addAttribute("", "code", "code", "CDATA", String.valueOf(subfield.getCode()));
 
                 if (indent)
                     handler.ignorableWhitespace("\n      ".toCharArray(), 0, 7);
 
-                handler.startElement(Constants.MARCXML_NS_URI, SUBFIELD,
-                        SUBFIELD, atts);
+                handler.startElement(Constants.MARCXML_NS_URI, SUBFIELD, SUBFIELD, atts);
                 temp = getDataElement(subfield.getData());
                 handler.characters(temp, 0, temp.length);
-                handler
-                        .endElement(Constants.MARCXML_NS_URI, SUBFIELD,
-                                SUBFIELD);
+                handler.endElement(Constants.MARCXML_NS_URI, SUBFIELD, SUBFIELD);
             }
 
             if (indent)
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
 
-            handler
-                    .endElement(Constants.MARCXML_NS_URI, DATA_FIELD,
-                            DATA_FIELD);
+            handler.endElement(Constants.MARCXML_NS_URI, DATA_FIELD, DATA_FIELD);
         }
 
         if (indent)
@@ -541,11 +526,13 @@ public class MarcXmlWriter implements MarcWriter {
         handler.endElement(Constants.MARCXML_NS_URI, RECORD, RECORD);
     }
 
-    protected char[] getDataElement(String data) {
+    protected char[] getDataElement(String data) 
+    {
         String dataElement = null;
         if (converter == null)
-            return data.toCharArray();
-        dataElement = converter.convert(data);
+            dataElement = data;
+        else 
+            dataElement = converter.convert(data);
         if (normalize)
             dataElement = Normalizer.normalize(dataElement, Normalizer.NFC);
         return dataElement.toCharArray();

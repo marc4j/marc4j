@@ -5,6 +5,7 @@ import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
+import org.marc4j.util.Normalizer;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,7 +21,7 @@ public class MarcJsonWriter implements MarcWriter
     /**
      * Character encoding. Default is UTF-8.
      */
-    private String encoding = "UTF8";
+//    private String encoding = "UTF8";
     private CharConverter converter = null;
     private OutputStream os = null;
     private int useJsonFormat = MARC_IN_JSON;
@@ -28,6 +29,7 @@ public class MarcJsonWriter implements MarcWriter
     private boolean escapeSlash = false;
     private boolean quoteLabels = true;
     private String ql = "\"";
+    private boolean normalize = false;
     
     public MarcJsonWriter(OutputStream os)
     {
@@ -65,14 +67,15 @@ public class MarcJsonWriter implements MarcWriter
         StringBuffer buf = new StringBuffer();
         buf.append("{");
         if (indent) buf.append("\n    ");
-        buf.append(ql + "leader" + ql + ":\"").append(record.getLeader().toString()).append("\",");
+        buf.append(ql + "leader" + ql + " : \"").append(record.getLeader().toString()).append("\",");
         if (indent) buf.append("\n    ");
-        buf.append(ql + "controlfield" + ql + ":");
+        buf.append(ql + "controlfield" + ql + " :");
         if (indent) buf.append("\n    ");
         buf.append("[");
         boolean firstField = true;
-        for (ControlField cf : record.getControlFields()) {
-            if (!firstField) buf.append(",");
+        for (ControlField cf : record.getControlFields())
+        {
+            if (!firstField) buf.append(","); 
             else firstField = false;
             if (indent) buf.append("\n        ");
             buf.append("{ " + ql + "tag" + ql + " : \"" + cf.getTag() + "\", " + ql + "data" + ql + " : ").append("\"" + unicodeEscape(cf.getData()) + "\" }");
@@ -84,20 +87,22 @@ public class MarcJsonWriter implements MarcWriter
         if (indent) buf.append("\n    ");
         buf.append("[");
         firstField = true;
-        for (DataField df : record.getDataFields()) {
-            if (!firstField) buf.append(",");
+        for (DataField df : record.getDataFields())
+        {
+            if (!firstField) buf.append(","); 
             else firstField = false;
             if (indent) buf.append("\n        ");
             buf.append("{");
             if (indent) buf.append("\n            ");
-            buf.append(ql + "tag" + ql + " : \"" + df.getTag() + "\", " + ql + "ind" + ql + " : \"" + df.getIndicator1() + df.getIndicator2() + "\",");
+            buf.append(ql + "tag" + ql + " : \"" + df.getTag() + "\", " + ql + "ind" + ql + " : \"" + df.getIndicator1() + df.getIndicator2()+ "\",");
             if (indent) buf.append("\n            ");
             buf.append(ql + "subfield" + ql + " :");
             if (indent) buf.append("\n            ");
             buf.append("[");
             boolean firstSubfield = true;
-            for (Subfield sf : df.getSubfields()) {
-                if (!firstSubfield) buf.append(",");
+            for (Subfield sf : df.getSubfields())
+            {
+                if (!firstSubfield) buf.append(","); 
                 else firstSubfield = false;
                 if (indent) buf.append("\n                ");
                 buf.append("{ " + ql + "code" + ql + " : \"" + sf.getCode() + "\", " + ql + "data" + ql + " : \"" + unicodeEscape(sf.getData()) + "\" }");
@@ -126,9 +131,9 @@ public class MarcJsonWriter implements MarcWriter
         if (indent) buf.append("\n    ");
         buf.append("[");
         boolean firstField = true;
-        List<ControlField> controlfields = record.getControlFields();
-        for (ControlField cf : controlfields) {
-            if (!firstField) buf.append(",");
+        for (ControlField cf : record.getControlFields())
+        {
+            if (!firstField) buf.append(","); 
             else firstField = false;
             if (indent) buf.append("\n        ");
             buf.append("{");
@@ -137,21 +142,24 @@ public class MarcJsonWriter implements MarcWriter
             if (indent) buf.append("\n        ");
             buf.append("}");
         }
-        for (DataField df : record.getDataFields()) {
-            if (!firstField) buf.append(",");
+        for (DataField df : record.getDataFields())
+        {
+            if (!firstField) buf.append(","); 
             else firstField = false;
             if (indent) buf.append("\n        ");
             buf.append("{");
             if (indent) buf.append("\n            ");
             buf.append(ql + df.getTag() + ql + ":");
-            if (indent) buf.append("\n                ");
+            if (indent) buf.append("\n            ");
             buf.append("{");
+            if (indent) buf.append("\n                ");
             buf.append(ql + "subfields" + ql + ":");
             if (indent) buf.append("\n                ");
             buf.append("[");
             boolean firstSubfield = true;
-            for (Subfield sf : df.getSubfields()) {
-                if (!firstSubfield) buf.append(",");
+            for (Subfield sf : df.getSubfields())
+            {
+                if (!firstSubfield)  buf.append(","); 
                 else firstSubfield = false;
                 if (indent) buf.append("\n                    ");
                 buf.append("{");
@@ -182,7 +190,9 @@ public class MarcJsonWriter implements MarcWriter
     private String unicodeEscape(String data)
     {
         if (converter != null)
-             data = converter.convert(data);
+            data = converter.convert(data);
+        if (normalize)
+            data = Normalizer.normalize(data, Normalizer.NFC);
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < data.length(); i++)
         {
@@ -311,6 +321,11 @@ public class MarcJsonWriter implements MarcWriter
     public boolean isIndent()
     {
         return indent;
+    }
+
+    public void setUnicodeNormalization(boolean b)
+    {
+        this.normalize = b;
     }
 
 

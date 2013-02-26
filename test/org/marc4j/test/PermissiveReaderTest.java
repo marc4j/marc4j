@@ -12,14 +12,12 @@ import org.marc4j.MarcReader;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.ControlField;
 
-
 public class PermissiveReaderTest extends TestCase {
 
   
     public void testBadLeaderBytes10_11() throws Exception {
         int i = 0;
-        InputStream input = getClass().getResourceAsStream(
-        "resources/bad_leaders_10_11.mrc");
+        InputStream input = getClass().getResourceAsStream("resources/bad_leaders_10_11.mrc");
         MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
         while (reader.hasNext()) {
             Record record = reader.next();
@@ -33,11 +31,8 @@ public class PermissiveReaderTest extends TestCase {
     }
     
     public void testTooLongMarcRecord() throws Exception {
-       InputStream input = getClass().getResourceAsStream(
-        "resources/bad_too_long_plus_2.mrc");
-       
-  
-       
+       InputStream input = getClass().getResourceAsStream("resources/bad_too_long_plus_2.mrc");
+
        // This marc file has three records, but the first one
        // is too long for a marc binary record. Can we still read
        // the next two?
