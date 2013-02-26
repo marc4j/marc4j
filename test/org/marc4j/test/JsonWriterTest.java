@@ -21,7 +21,7 @@ public class JsonWriterTest extends TestCase {
         MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_IN_JSON);
         Record record = getSummerlandRecord();
         writer.write(record);
-        validateBytesAgainstFile(out.toByteArray(), "resources/summerland-marc-in-json.json");
+        TestUtils.validateBytesAgainstFile(out.toByteArray(), "resources/summerland-marc-in-json.json");
         writer.close();
     }
 
@@ -31,7 +31,7 @@ public class JsonWriterTest extends TestCase {
         MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_IN_JSON);
         writer.setIndent(true);
         writer.write(record);
-        validateBytesAgainstFile(out.toByteArray(), "resources/summerland-marc-in-json-indented.json");
+        TestUtils.validateBytesAgainstFile(out.toByteArray(), "resources/summerland-marc-in-json-indented.json");
         writer.close();
     }
 
@@ -40,7 +40,7 @@ public class JsonWriterTest extends TestCase {
         Record record = getSummerlandRecord();
         MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_JSON);
         writer.write(record);
-        validateBytesAgainstFile(out.toByteArray(), "resources/summerland-marc-json.json");
+        TestUtils. validateBytesAgainstFile(out.toByteArray(), "resources/summerland-marc-json.json");
         writer.close();
 
     }
@@ -52,7 +52,7 @@ public class JsonWriterTest extends TestCase {
         MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_JSON);
         writer.setIndent(true);
         writer.write(record);
-        validateBytesAgainstFile(out.toByteArray(), "resources/summerland-indented-marc-json.json");
+        TestUtils.validateBytesAgainstFile(out.toByteArray(), "resources/summerland-indented-marc-json.json");
         writer.close();
     }
 
@@ -82,25 +82,25 @@ public class JsonWriterTest extends TestCase {
                 for (int i = 0; i < lineParts.length; i++)
                 {
                     if (lineParts[i].startsWith("the tilde in "))
-                        assertTrue("Incorrect normalized value for tilde accent", lineParts[i].equals("the tilde in ma\u00f1ana"));
+                        assertTrue("Incorrect value for tilde", lineParts[i].equals("the tilde in man\\u0303ana"));
                     else if (lineParts[i].startsWith("the grave accent in "))
-                        assertTrue("Incorrect normalized value for grave accent", lineParts[i].equals("the grave accent in tr\u00e8s"));
+                        assertTrue("Incorrect value for grave", lineParts[i].equals("the grave accent in tre\\u0300s"));
                     else if (lineParts[i].startsWith("the acute accent in "))
-                        assertTrue("Incorrect normalized value for acute accent", lineParts[i].equals("the acute accent in d\u00e9sir\u00E9e"));
+                        assertTrue("Incorrect value for acute", lineParts[i].equals("the acute accent in de\\u0301sire\\u0301e"));
                     else if (lineParts[i].startsWith("the circumflex in "))
-                        assertTrue("Incorrect normalized value for circumflex", lineParts[i].equals("the circumflex in c\u00f4te"));
+                        assertTrue("Incorrect value for macron", lineParts[i].equals("the circumflex in co\\u0302te"));
                     else if (lineParts[i].startsWith("the macron in "))
-                        assertTrue("Incorrect normalized value for macron", lineParts[i].equals("the macron in T\\u014dkyo"));
+                        assertTrue("Incorrect value for macron", lineParts[i].equals("the macron in To\\u0304kyo"));
                     else if (lineParts[i].startsWith("the breve in "))
-                        assertTrue("Incorrect normalized value for breve", lineParts[i].equals("the breve in russki\\u012d"));
+                        assertTrue("Incorrect value for breve", lineParts[i].equals("the breve in russkii\\u0306"));
                     else if (lineParts[i].startsWith("the dot above in "))
-                        assertTrue("Incorrect normalized value for dot above", lineParts[i].equals("the dot above in \\u017caba"));
+                        assertTrue("Incorrect value for dot above", lineParts[i].equals("the dot above in z\\u0307aba"));
                     else if (lineParts[i].startsWith("the dieresis (umlaut) in "))
-                        assertTrue("Incorrect normalized value for umlaut", lineParts[i].equals("the dieresis (umlaut) in L\u00f6wenbr\u00e4u"));
+                        assertTrue("Incorrect value for umlaut", lineParts[i].equals("the dieresis (umlaut) in Lo\\u0308wenbra\\u0308u"));
                 }
             }
         }
-        testoutput.close();
+          testoutput.close();
     }
 
 
@@ -153,7 +153,7 @@ public class JsonWriterTest extends TestCase {
     }
 
     public void testJsonWriteAndRead() throws Exception {
-        Record record = getJSONRecordFromFile("resources/legal-marc-in-json.json");
+        Record record = getJSONRecordFromFile("resources/legal-json-marc-in-json.json");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         MarcJsonWriter writer = new MarcJsonWriter(out);
@@ -206,20 +206,41 @@ public class JsonWriterTest extends TestCase {
         return record;
     }
     
-    private void validateBytesAgainstFile(byte[] actual, String fileName) throws IOException {
-        InputStream in = new BufferedInputStream(getClass().getResourceAsStream(fileName));
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        int n;
-        byte expected[] = new byte[8192];
-        while ((n = in.read(expected)) >= 0) {
-            os.write(expected, 0, n);
-        }
-        os.flush();
-        expected = os.toByteArray();
-        if (!Arrays.equals(expected, actual)) {
-            fail("expected: " + new String(expected) + ": actual" + new String(actual));
-        }
-    }
+//    private void validateBytesAgainstFile(byte[] actual, String fileName) throws IOException {
+//        InputStream in = new BufferedInputStream(getClass().getResourceAsStream(fileName));
+//        ByteArrayOutputStream os = new ByteArrayOutputStream();
+//        int n;
+//        byte expected[] = new byte[8192];
+//        while ((n = in.read(expected)) >= 0) {
+//            os.write(expected, 0, n);
+//        }
+//        os.flush();
+//        expected = os.toByteArray();
+//        if (!Arrays.equals(expected, actual)) 
+//        {
+//            String[] expectedLines = new String(expected).split("\n");
+//            String[] actualLines = new String(actual).split("\n");
+//            if (expectedLines.length != actualLines.length)
+//                fail("expected: " + new String(expected) + ": actual" + new String(actual));
+//            else 
+//            {
+//                StringBuilder sb = new StringBuilder();
+//                for (int i = 0; i < expectedLines.length; i++)
+//                {
+//                    if (expectedLines[i].equals(actualLines[i]))
+//                    {
+//                        sb.append(expectedLines[i]).append(File.separator);
+//                    }
+//                    else
+//                    {
+//                        sb.append(">expected: " + expectedLines[i]).append(File.separator);
+//                        sb.append(">actual  : " + actualLines[i]).append(File.separator);
+//                    }
+//                }
+//                fail("expected differs from actual as shown below:"+File.separator+sb.toString());
+//            }
+//        }
+//    }
 
 
 

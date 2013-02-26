@@ -19,26 +19,23 @@ public class WriterTest extends TestCase {
     public void testMarcStreamWriter() throws Exception {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        InputStream input = getClass().getResourceAsStream("resources/summerland.xml");
         MarcStreamWriter writer = new MarcStreamWriter(out);
-        for (int i = 0; i < StaticTestRecords.chabon.length; i++)
+        for (int i = 0; i < StaticTestRecords.summerland.length; i++)
         {
-            writer.write(StaticTestRecords.chabon[i]);
+            writer.write(StaticTestRecords.summerland[i]);
         }
-        input.close();
+        writer.close();
         TestUtils.validateBytesAgainstFile(out.toByteArray(), "resources/summerland.mrc");
     }
 
     public void testMarcXmlWriter() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        InputStream input = getClass().getResourceAsStream("resources/summerland.mrc");
         MarcXmlWriter writer = new MarcXmlWriter(out, true);
-        for (int i = 0; i < StaticTestRecords.chabon.length; i++)
+        for (int i = 0; i < StaticTestRecords.summerland.length; i++)
         {
-            writer.write(StaticTestRecords.chabon[i]);
+            writer.write(StaticTestRecords.summerland[i]);
         }
         writer.close();
-
         TestUtils.validateStringAgainstFile(new String(out.toByteArray()), "resources/summerland.xml");
     }
     

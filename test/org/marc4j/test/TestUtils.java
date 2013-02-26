@@ -4,6 +4,7 @@ import org.marc4j.marc.*;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -77,7 +78,7 @@ public class TestUtils {
         assertDataFieldEquals(it.next(),"050", '0','0',"a","Columbia CS 8786");
         assertDataFieldEquals(it.next(),"100", '1',' ',"a","Dylan, Bob,","d","1941-");
         assertDataFieldEquals(it.next(),"245", '1','4',"a","The freewheelin' Bob Dylan","h","[sound recording].");
-        assertDataFieldEquals(it.next(),"260", ' ',' ',"a","[New York, N.Y.] :","b","Columbia","c","[1963]");
+        assertDataFieldEquals(it.next(),"260", ' ',' ',"a","[New York, N.Y.] :","b","Columbia,","c","[1963]");
         assertDataFieldEquals(it.next(),"300", ' ',' ',"a","1 sound disc :","b","analog, 33 1/3 rpm, stereo. ;","c","12 in.");
         assertDataFieldEquals(it.next(),"500", ' ',' ',"a","Songs.");
         assertDataFieldEquals(it.next(),"511", '0',' ',"a","The composer accompanying himself on the guitar ; in part with instrumental ensemble.");
@@ -119,7 +120,8 @@ public class TestUtils {
             fail("Too many subfields for " + tag +" - first unexpected is " + it.next());
         }
     }
-     static void validateBytesAgainstFile(byte[] actual, String fileName) throws IOException {
+    
+    static void validateBytesAgainstFile(byte[] actual, String fileName) throws IOException {
         InputStream in = new BufferedInputStream(TestUtils.class.getResourceAsStream(fileName));
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         int n;
@@ -129,10 +131,40 @@ public class TestUtils {
         }
         os.flush();
         expected = os.toByteArray();
-        if (!Arrays.equals(expected, actual)) {
-            fail("expected: " + new String(expected) + ": actual" + new String(actual));
+        String comparison = compareFilesContentsLineByLine(new String(expected), new String(actual));
+        if (comparison != null)
+        {
+            fail("actual differs from expected as shown below:" + System.getProperty( "line.separator" ) + comparison);
         }
+
     }
+    
+//    if (!Arrays.equals(expected, actual)) 
+//        {
+//            String[] expectedLines = new String(expected).split("\n");
+//            String[] actualLines = new String(actual).split("\n");
+//            if (expectedLines.length != actualLines.length)
+//                fail("expected: " + new String(expected) + ": actual" + new String(actual));
+//            else 
+//            {
+//                StringBuilder sb = new StringBuilder();
+//                for (int i = 0; i < expectedLines.length; i++)
+//                {
+//                    if (expectedLines[i].equals(actualLines[i]))
+//                    {
+//                        sb.append(expectedLines[i]).append(File.separator);
+//                    }
+//                    else
+//                    {
+//                        sb.append(">expected: " + expectedLines[i]).append(File.separator);
+//                        sb.append(">actual  : " + actualLines[i]).append(File.separator);
+//                    }
+//                }
+//                fail("expected differs from actual as shown below:"+File.separator+sb.toString());
+//            }
+//        }
+//    }
+    
     static void validateStringAgainstFile(String actual, String fileName) throws IOException {
         InputStream in = new BufferedInputStream(TestUtils.class.getResourceAsStream(fileName));
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -143,7 +175,68 @@ public class TestUtils {
         }
         os.flush();
         String expected = new String(os.toByteArray());
-        assertEquals("validate against " + fileName,expected,actual);
+        String comparison = compareFilesContentsLineByLine(expected, actual);
+        if (comparison != null)
+        {
+            fail("actual differs from expected as shown below:" + System.getProperty( "line.separator" ) + comparison);
+        }
     }
+    
+    static String compareFilesContentsLineByLine(String expected, String actual)
+    {
+        String[] expectedLines = new String(expected).split("[\r]?\n");
+        String[] actualLines = new String(actual).split("[\r]?\n");
+        String separator = System.getProperty( "line.separator" );
+        boolean matches = true;
+        int expectedIndex = 0, actualIndex = 0;
+        StringBuilder sb = new StringBuilder();
+        while (expectedIndex < expectedLines.length && actualIndex < actualLines.length)
+        {
+            if (expectedLines[expectedIndex].equals(actualLines[actualIndex]))
+            {
+                sb.append("  " + expectedLines[expectedIndex]).append(separator);
+                expectedIndex++;
+                actualIndex++;
+            }
+            else if (actualIndex+1 < actualLines.length && expectedLines[expectedIndex].equals(actualLines[actualIndex+1]))
+            {
+                sb.append("+ " + actualLines[actualIndex]).append(separator);
+                actualIndex++;
+                matches = false;
+            }
+            else if (expectedIndex+1 < expectedLines.length && expectedLines[expectedIndex+1].equals(actualLines[actualIndex]))
+            {
+                sb.append("- " + expectedLines[expectedIndex]).append(separator);
+                expectedIndex++;
+                matches = false;
+            }
+            else
+            {
+                sb.append("+ " + actualLines[actualIndex]).append(separator);
+                actualIndex++;
+                sb.append("- " + expectedLines[expectedIndex]).append(separator);
+                expectedIndex++;
+                matches = false;
+            }
+        }
+        while (expectedIndex < expectedLines.length || actualIndex < actualLines.length)
+        {
+            if (actualIndex < actualLines.length)
+            {
+                sb.append("+ " + actualLines[actualIndex]).append(separator);
+                actualIndex++;
+                matches = false;
+            }
+            else if (expectedIndex < expectedLines.length)
+            {
+                sb.append("- " + expectedLines[expectedIndex]).append(separator);
+                expectedIndex++;
+                matches = false;
+            }
+        }
+
+        if (matches)  return(null);
+        return(sb.toString());
+    }          
 
 }

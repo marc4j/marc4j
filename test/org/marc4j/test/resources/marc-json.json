@@ -103,7 +103,7 @@
             subfield :
             [
                 { code : "a", data : "[New York, N.Y.] :" },
-                { code : "b", data : "Columbia, " },
+                { code : "b", data : "Columbia," },
                 { code : "c", data : "[1963]" }
             ]
         },

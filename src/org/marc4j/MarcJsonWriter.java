@@ -67,9 +67,9 @@ public class MarcJsonWriter implements MarcWriter
         StringBuffer buf = new StringBuffer();
         buf.append("{");
         if (indent) buf.append("\n    ");
-        buf.append(ql + "leader" + ql + " : \"").append(record.getLeader().toString()).append("\",");
+        buf.append(ql + "leader" + ql + ":\"").append(record.getLeader().toString()).append("\",");
         if (indent) buf.append("\n    ");
-        buf.append(ql + "controlfield" + ql + " :");
+        buf.append(ql + "controlfield" + ql + ":");
         if (indent) buf.append("\n    ");
         buf.append("[");
         boolean firstField = true;
@@ -150,9 +150,9 @@ public class MarcJsonWriter implements MarcWriter
             buf.append("{");
             if (indent) buf.append("\n            ");
             buf.append(ql + df.getTag() + ql + ":");
-            if (indent) buf.append("\n            ");
-            buf.append("{");
             if (indent) buf.append("\n                ");
+            buf.append("{");
+        //    if (indent) buf.append("\n                ");
             buf.append(ql + "subfields" + ql + ":");
             if (indent) buf.append("\n                ");
             buf.append("[");
