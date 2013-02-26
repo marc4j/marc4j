@@ -22,27 +22,31 @@ package org.marc4j.converter.impl;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.marc4j.ErrorHandler;
 import org.marc4j.MarcException;
 import org.marc4j.converter.CharConverter;
 
 /**
- * <p>
+ * <p/>
  * A utility to convert MARC-8 data to non-precomposed UCS/Unicode.
- * </p>
+ * <p/>
  * 
- * <p>
+ * <p/>
  * The MARC-8 to Unicode mapping used is the version with the March 2005
  * revisions.
- * </p>
+ * <p/>
  * 
  * @author Bas Peters
  * @author Corey Keith
  */
 public class AnselToUnicode extends CharConverter {
 
-    class Queue extends Vector {
+    class Queue extends Vector<Character> {
+
+        private static final long serialVersionUID = 1L;
 
         /**
          * Puts an item into the queue.
@@ -50,7 +54,7 @@ public class AnselToUnicode extends CharConverter {
          * @param item
          *            the item to be put into the queue.
          */
-        public Object put(Object item) {
+        public Object put(Character item) {
             addElement(item);
 
             return item;
@@ -61,7 +65,7 @@ public class AnselToUnicode extends CharConverter {
          */
         public Object get() {
             Object obj;
-            int len = size();
+//            int len = size();
 
             obj = peek();
             removeElementAt(0);
@@ -73,7 +77,7 @@ public class AnselToUnicode extends CharConverter {
          * Peeks at the front of the queue.
          */
         public Object peek() {
-            int len = size();
+//            int len = size();
 
             return elementAt(0);
         }
@@ -105,6 +109,31 @@ public class AnselToUnicode extends CharConverter {
     protected CodeTableInterface ct;
 
     protected boolean loadedMultibyte = false;
+    
+    // flag that indicates whether Numeric Character References of the form &#XXXX; should be translated to the
+    // unicode code point specified by the 4 hexidecimal digits. As described on this page 
+    //  http://www.loc.gov/marc/specifications/speccharconversion.html#lossless
+    protected boolean translateNCR = false;
+
+    public boolean shouldTranslateNCR()
+    {
+        return translateNCR;
+    }
+
+    public void setTranslateNCR(boolean translateNCR)
+    {
+        this.translateNCR = translateNCR;
+    }
+
+    /**
+     * Should return true if the CharConverter outputs Unicode encoded characters
+     * 
+     * @return boolean  whether the CharConverter returns Unicode encoded characters
+     */
+    public boolean outputsUnicode()
+    {
+        return (true);
+    }
 
     protected ErrorHandler errorList = null;
     /**
@@ -148,13 +177,14 @@ public class AnselToUnicode extends CharConverter {
         this.errorList = errorList;
     }
 
+    
 
     private CodeTableInterface loadGeneratedTable(boolean loadMultibyte) 
     {
         try
         {
-            Class generated = Class.forName("org.marc4j.converter.impl.CodeTableGenerated");
-            Constructor cons = generated.getConstructor();
+            Class<?> generated = Class.forName("org.marc4j.converter.impl.CodeTableGenerated");
+            Constructor<?> cons = generated.getConstructor();
             Object ct = cons.newInstance();
             loadedMultibyte = true;
             return((CodeTableInterface)ct);
@@ -216,7 +246,6 @@ public class AnselToUnicode extends CharConverter {
     private void checkMode(char[] data, CodeTracker cdt) {
         int extra = 0;
         int extra2 = 0;
-        int extra3 = 0;
         while (cdt.offset + extra + extra2 < data.length && isEscape(data[cdt.offset])) 
         {
             if (cdt.offset + extra + extra2 + 1 == data.length)
@@ -534,17 +563,41 @@ public class AnselToUnicode extends CharConverter {
                 checkMode(data, cdt);
             }
         }
-        return sb.toString();
-    }
+        String dataElement = sb.toString();
+        if (translateNCR && dataElement.matches("[^&]*&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f];.*"))
+        {
+            Pattern pattern = Pattern.compile("&#x([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]);"); 
+            Matcher matcher = pattern.matcher(dataElement);
+            StringBuffer newElement = new StringBuffer();
+            int prevEnd = 0;
+            while (matcher.find())
+            {
+                newElement.append(dataElement.substring(prevEnd, matcher.start()));
+                newElement.append(getCharFromCodePoint(matcher.group(1)));
+                prevEnd = matcher.end();
+            }
+            newElement.append(dataElement.substring(prevEnd));
+            dataElement = newElement.toString();
+        }
+        return(dataElement);
 
-    private int makeMultibyte(char[] data) {
-        int[] chars = new int[3];
-        chars[0] = data[0] << 16;
-        chars[1] = data[1] << 8;
-        chars[2] = data[2];
-        return chars[0] | chars[1] | chars[2];
     }
     
+    private String getCharFromCodePoint(String charCodePoint)
+    {
+        int charNum = Integer.parseInt(charCodePoint, 16);
+        String result = ""+((char)charNum);
+        return(result);
+    }
+
+//    private int makeMultibyte(char[] data) {
+//        int[] chars = new int[3];
+//        chars[0] = data[0] << 16;
+//        chars[1] = data[1] << 8;
+//        chars[2] = data[2];
+//        return chars[0] | chars[1] | chars[2];
+//    }
+
     public int makeMultibyte(char c1, char c2, char c3) 
     {
         int[] chars = new int[3];

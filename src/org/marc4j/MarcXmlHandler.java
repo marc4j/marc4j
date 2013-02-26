@@ -30,7 +30,6 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
@@ -44,7 +43,7 @@ public class MarcXmlHandler implements ContentHandler {
 
   private RecordStack queue;
 
-  private InputSource input;
+//  private InputSource input;
 
   private StringBuffer sb;
 
@@ -84,12 +83,12 @@ public class MarcXmlHandler implements ContentHandler {
   private static final String IND_2_ATTR = "ind2";
 
   /** Hashset for mapping of element strings to constants (Integer) */
-  private static final HashMap elementMap;
+  private static final HashMap<String, Integer> elementMap;
 
   private MarcFactory factory = null;
 
   static {
-    elementMap = new HashMap();
+    elementMap = new HashMap<String, Integer>();
     elementMap.put("collection", new Integer(COLLECTION_ID));
     elementMap.put("leader", new Integer(LEADER_ID));
     elementMap.put("record", new Integer(RECORD_ID));

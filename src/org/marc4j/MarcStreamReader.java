@@ -27,9 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 import org.marc4j.converter.CharConverter;
 import org.marc4j.converter.impl.AnselToUnicode;
@@ -39,7 +36,6 @@ import org.marc4j.marc.Leader;
 import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
-import org.marc4j.marc.VariableField;
 import org.marc4j.marc.impl.Verifier;
 
 /**
@@ -216,7 +212,7 @@ public class MarcStreamReader implements MarcReader {
             
             for (int i = 0; i < size; i++) 
             {
-                int fieldLength = getFieldLength(inputrec);
+                getFieldLength(inputrec);
                 if (Verifier.isControlField(tags[i])) 
                 {
                     byteArray = new byte[lengths[i] - 1];

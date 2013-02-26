@@ -19,15 +19,11 @@
  */
 package org.marc4j.marc.impl;
 
+import org.marc4j.marc.*;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.marc4j.marc.ControlField;
-import org.marc4j.marc.IllegalAddException;
-import org.marc4j.marc.Leader;
-import org.marc4j.marc.Record;
-import org.marc4j.marc.VariableField;
 
 /**
  * Represents a MARC record.
@@ -40,9 +36,9 @@ public class RecordImpl implements Record {
 
     private Leader leader;
 
-    protected List controlFields;
+    protected List<ControlField> controlFields;
 
-    protected List dataFields;
+    protected List <DataField>dataFields;
 
     private String type;
 
@@ -50,8 +46,8 @@ public class RecordImpl implements Record {
      * Creates a new <code>Record</code>.
      */
     public RecordImpl() {
-        controlFields = new ArrayList();
-        dataFields = new ArrayList();
+        controlFields = new ArrayList<ControlField>();
+        dataFields = new ArrayList<DataField>();
     }
 
     public void setType(String type) {
@@ -85,19 +81,25 @@ public class RecordImpl implements Record {
      *             instance
      */
     public void addVariableField(VariableField field) {
-        if (!(field instanceof VariableField))
-            throw new IllegalAddException("Expected VariableField instance");
-
         String tag = field.getTag();
-        if (Verifier.isControlNumberField(tag)) {
-            if (Verifier.hasControlNumberField(controlFields))
-                controlFields.set(0, field);
+        if (field instanceof ControlField) 
+        {
+            ControlField controlField = (ControlField) field;
+            if (Verifier.isControlNumberField(tag)) 
+            {
+                if (Verifier.hasControlNumberField(controlFields))
+                    controlFields.set(0, controlField);
+                else
+                    controlFields.add(0, controlField);
+            }
             else
-                controlFields.add(0, field);
-        } else if (Verifier.isControlField(tag)) {
-            controlFields.add(field);
-        } else {
-            dataFields.add(field);
+            {
+                controlFields.add(controlField);
+            }
+        }
+        else 
+        {
+            dataFields.add((DataField)field);
         }
 
     }
@@ -113,31 +115,32 @@ public class RecordImpl implements Record {
     /**
      * Returns the control number field or <code>null</code> if no control
      * number field is available.
-     * 
+     *
      * @return ControlField - the control number field
      */
     public ControlField getControlNumberField() {
         if (Verifier.hasControlNumberField(controlFields))
-            return (ControlField) controlFields.get(0);
+            return controlFields.get(0);
         else
             return null;
     }
 
-    public List getControlFields() {
+    public List<ControlField> getControlFields() {
         return controlFields;
     }
 
-    public List getDataFields() {
+    public List<DataField> getDataFields() {
         return dataFields;
     }
 
     public VariableField getVariableField(String tag) {
-        Iterator i;
+        Iterator<? extends VariableField> i;
         if (Verifier.isControlField(tag))
             i = controlFields.iterator();
         else
             i = dataFields.iterator();
-        while (i.hasNext()) {
+        while (i.hasNext()) 
+        {
             VariableField field = (VariableField) i.next();
             if (field.getTag().equals(tag))
                 return field;
@@ -145,14 +148,15 @@ public class RecordImpl implements Record {
         return null;
     }
 
-    public List getVariableFields(String tag) {
-        List fields = new ArrayList();
-        Iterator i;
+    public List<VariableField> getVariableFields(String tag) {
+        List<VariableField> fields = new ArrayList<VariableField>();
+        Iterator<? extends VariableField> i;
         if (Verifier.isControlField(tag))
             i = controlFields.iterator();
         else
             i = dataFields.iterator();
-        while (i.hasNext()) {
+        while (i.hasNext()) 
+        {
             VariableField field = (VariableField) i.next();
             if (field.getTag().equals(tag))
                 fields.add(field);
@@ -160,9 +164,9 @@ public class RecordImpl implements Record {
         return fields;
     }
 
-    public List getVariableFields() {
-        List fields = new ArrayList();
-        Iterator i;
+    public List<VariableField> getVariableFields() {
+        List<VariableField> fields = new ArrayList<VariableField>();
+        Iterator<? extends VariableField> i;
         i = controlFields.iterator();
         while (i.hasNext())
             fields.add(i.next());
@@ -178,11 +182,12 @@ public class RecordImpl implements Record {
         return(result);
     }
 
-    public List getVariableFields(String[] tags) {
-        List list = new ArrayList();
-        for (int i = 0; i < tags.length; i++) {
+    public List<VariableField> getVariableFields(String[] tags) {
+        List<VariableField> list = new ArrayList<VariableField>();
+        for (int i = 0; i < tags.length; i++) 
+        {
             String tag = tags[i];
-            List fields = getVariableFields(tag);
+            List<VariableField> fields = getVariableFields(tag);
             if (fields.size() > 0)
                 list.addAll(fields);
         }
@@ -191,56 +196,57 @@ public class RecordImpl implements Record {
 
     /**
      * Returns a string representation of this record.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * Example:
-     * 
+     * <p/>
      * <pre>
      *     
-     *      LEADER 00714cam a2200205 a 4500 
-     *      001 12883376 
+     *      LEADER 00714cam a2200205 a 4500
+     *      001 12883376
      *      005 20030616111422.0
-     *      008 020805s2002 nyu j 000 1 eng 
-     *      020   $a0786808772 
-     *      020   $a0786816155 (pbk.) 
-     *      040   $aDLC$cDLC$dDLC 
-     *      100 1 $aChabon, Michael. 
-     *      245 10$aSummerland /$cMichael Chabon. 
-     *      250   $a1st ed. 
-     *      260   $aNew York :$bMiramax Books/Hyperion Books for Children,$cc2002. 
-     *      300   $a500 p. ;$c22 cm. 
-     *      650  1$aFantasy. 
-     *      650  1$aBaseball$vFiction. 
+     *      008 020805s2002 nyu j 000 1 eng
+     *      020   $a0786808772
+     *      020   $a0786816155 (pbk.)
+     *      040   $aDLC$cDLC$dDLC
+     *      100 1 $aChabon, Michael.
+     *      245 10$aSummerland /$cMichael Chabon.
+     *      250   $a1st ed.
+     *      260   $aNew York :$bMiramax Books/Hyperion Books for Children,$cc2002.
+     *      300   $a500 p. ;$c22 cm.
+     *      650  1$aFantasy.
+     *      650  1$aBaseball$vFiction.
      *      650  1$aMagic$vFiction.
-     *      
+     *
      * </pre>
      * 
      * @return String - a string representation of this record
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("LEADER ");
         sb.append(getLeader().toString());
         sb.append('\n');
-        Iterator i = getVariableFields().iterator();
-        while (i.hasNext()) {
-            VariableField field = (VariableField) i.next();
+        for (VariableField field : getVariableFields())
+        {
             sb.append(field.toString());
             sb.append('\n');
         }
         return sb.toString();
     }
 
-    public List find(String pattern) {
-        List result = new ArrayList();
-        Iterator i = controlFields.iterator();
-        while (i.hasNext()) {
+    public List<VariableField> find(String pattern) {
+        List<VariableField> result = new ArrayList<VariableField>();
+        Iterator<? extends VariableField> i = controlFields.iterator();
+        while (i.hasNext()) 
+        {
             VariableField field = (VariableField) i.next();
             if (field.find(pattern))
                 result.add(field);
         }
         i = dataFields.iterator();
-        while (i.hasNext()) {
+        while (i.hasNext()) 
+        {
             VariableField field = (VariableField) i.next();
             if (field.find(pattern))
                 result.add(field);
@@ -248,11 +254,10 @@ public class RecordImpl implements Record {
         return result;
     }
 
-    public List find(String tag, String pattern) {
-        List result = new ArrayList();
-        Iterator i = getVariableFields(tag).iterator();
-        while (i.hasNext()) {
-            VariableField field = (VariableField) i.next();
+    public List<VariableField> find(String tag, String pattern) {
+        List<VariableField> result = new ArrayList<VariableField>();
+        for (VariableField field : getVariableFields(tag))
+        {
             if (field.find(pattern))
                 result.add(field);
         }

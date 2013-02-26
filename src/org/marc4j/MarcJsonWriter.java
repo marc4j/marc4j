@@ -1,16 +1,15 @@
 package org.marc4j;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
-import java.util.List;
-
 import org.marc4j.converter.CharConverter;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
+import org.marc4j.util.Normalizer;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 public class MarcJsonWriter implements MarcWriter
 {
@@ -21,7 +20,7 @@ public class MarcJsonWriter implements MarcWriter
     /**
      * Character encoding. Default is UTF-8.
      */
-    private String encoding = "UTF8";
+//    private String encoding = "UTF8";
     private CharConverter converter = null;
     private OutputStream os = null;
     private int useJsonFormat = MARC_IN_JSON;
@@ -29,6 +28,7 @@ public class MarcJsonWriter implements MarcWriter
     private boolean escapeSlash = false;
     private boolean quoteLabels = true;
     private String ql = "\"";
+    private boolean normalize = false;
     
     public MarcJsonWriter(OutputStream os)
     {
@@ -66,19 +66,16 @@ public class MarcJsonWriter implements MarcWriter
         StringBuffer buf = new StringBuffer();
         buf.append("{");
         if (indent) buf.append("\n    ");
-        buf.append(ql + "leader" + ql + ":\"").append(record.getLeader().toString()).append("\",");
+        buf.append(ql + "leader" + ql + " : \"").append(record.getLeader().toString()).append("\",");
         if (indent) buf.append("\n    ");
-        buf.append(ql + "controlfield" + ql + ":");
+        buf.append(ql + "controlfield" + ql + " :");
         if (indent) buf.append("\n    ");
         buf.append("[");
         boolean firstField = true;
-        List<?> controlfields = record.getControlFields();
-        Iterator<?> itercf = controlfields.iterator();
-        while (itercf.hasNext())
+        for (ControlField cf : record.getControlFields())
         {
-            ControlField cf = (ControlField)itercf.next();
             if (!firstField) buf.append(","); 
-            else             firstField = false;
+            else firstField = false;
             if (indent) buf.append("\n        ");
             buf.append("{ " + ql + "tag" + ql + " : \"" + cf.getTag() + "\", "+ ql + "data" + ql + " : ").append("\"" + unicodeEscape(cf.getData()) + "\" }");
         }
@@ -89,29 +86,23 @@ public class MarcJsonWriter implements MarcWriter
         if (indent) buf.append("\n    ");
         buf.append("[");
         firstField = true;
-        List<?> datafields = record.getDataFields();
-        Iterator<?> iterdf = datafields.iterator();
-        while (iterdf.hasNext())
+        for (DataField df : record.getDataFields())
         {
-            DataField df = (DataField)iterdf.next();
             if (!firstField) buf.append(","); 
-            else             firstField = false;
+            else firstField = false;
             if (indent) buf.append("\n        ");
             buf.append("{");
             if (indent) buf.append("\n            ");
-            buf.append(ql + "tag" + ql + " : \""+df.getTag()+"\", "+ ql + "ind" + ql + " : \"" + df.getIndicator1() + df.getIndicator2()+ "\",");
+            buf.append(ql + "tag" + ql + " : \"" + df.getTag() + "\", "+ ql + "ind" + ql + " : \"" + df.getIndicator1() + df.getIndicator2()+ "\",");
             if (indent) buf.append("\n            ");
             buf.append(ql + "subfield" + ql + " :");
             if (indent) buf.append("\n            ");
             buf.append("[");
             boolean firstSubfield = true;
-            List<?> subfields = df.getSubfields();
-            Iterator<?> itersf = subfields.iterator();
-            while (itersf.hasNext())
+            for (Subfield sf : df.getSubfields())
             {
-                Subfield sf = (Subfield)itersf.next();
                 if (!firstSubfield)  buf.append(","); 
-                else             firstSubfield = false;
+                else firstSubfield = false;
                 if (indent) buf.append("\n                ");
                 buf.append("{ " + ql + "code" + ql + " : \"" + sf.getCode() + "\", " + ql + "data" + ql + " : \"" + unicodeEscape(sf.getData()) + "\" }");
             }
@@ -139,13 +130,10 @@ public class MarcJsonWriter implements MarcWriter
         if (indent) buf.append("\n    ");
         buf.append("[");
         boolean firstField = true;
-        List<?> controlfields = record.getControlFields();
-        Iterator<?> itercf = controlfields.iterator();
-        while (itercf.hasNext())
+        for (ControlField cf : record.getControlFields())
         {
-            ControlField cf = (ControlField)itercf.next();
             if (!firstField) buf.append(","); 
-            else             firstField = false;
+            else firstField = false;
             if (indent) buf.append("\n        ");
             buf.append("{");
             if (indent) buf.append("\n            ");
@@ -153,34 +141,29 @@ public class MarcJsonWriter implements MarcWriter
             if (indent) buf.append("\n        ");
             buf.append("}");
         }
-        List<?> datafields = record.getDataFields();
-        Iterator<?> iterdf = datafields.iterator();
-        while (iterdf.hasNext())
+        for (DataField df : record.getDataFields())
         {
-            DataField df = (DataField)iterdf.next();
             if (!firstField) buf.append(","); 
-            else             firstField = false;
+            else firstField = false;
             if (indent) buf.append("\n        ");
             buf.append("{");
             if (indent) buf.append("\n            ");
-            buf.append(ql + df.getTag()+ ql + ":");
-            if (indent) buf.append("\n                ");
+            buf.append(ql + df.getTag() + ql + ":");
+            if (indent) buf.append("\n            ");
             buf.append("{");
-            buf.append(ql+ "subfields" + ql + ":");
+            if (indent) buf.append("\n                ");
+            buf.append(ql + "subfields" + ql + ":");
             if (indent) buf.append("\n                ");
             buf.append("[");
             boolean firstSubfield = true;
-            List<?> subfields = df.getSubfields();
-            Iterator<?> itersf = subfields.iterator();
-            while (itersf.hasNext())
+            for (Subfield sf : df.getSubfields())
             {
-                Subfield sf = (Subfield)itersf.next();
                 if (!firstSubfield)  buf.append(","); 
-                else             firstSubfield = false;
+                else firstSubfield = false;
                 if (indent) buf.append("\n                    ");
                 buf.append("{");
                 if (indent) buf.append("\n                        ");
-                buf.append(ql + sf.getCode() + ql+ ":\"" + unicodeEscape(sf.getData()) + "\"");
+                buf.append(ql + sf.getCode() + ql + ":\"" + unicodeEscape(sf.getData()) + "\"");
                 if (indent) buf.append("\n                    ");
                 buf.append("}");
             }
@@ -206,7 +189,9 @@ public class MarcJsonWriter implements MarcWriter
     private String unicodeEscape(String data)
     {
         if (converter != null)
-             data = converter.convert(data);
+            data = converter.convert(data);
+        if (normalize)
+            data = Normalizer.normalize(data, Normalizer.NFC);
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < data.length(); i++)
         {
@@ -335,6 +320,11 @@ public class MarcJsonWriter implements MarcWriter
     public boolean isIndent()
     {
         return indent;
+    }
+
+    public void setUnicodeNormalization(boolean b)
+    {
+        this.normalize = b;
     }
 
 

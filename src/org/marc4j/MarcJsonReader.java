@@ -1,15 +1,12 @@
 package org.marc4j;
 
+import org.marc4j.marc.*;
+import org.marc4j.util.JsonParser;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.marc4j.marc.ControlField;
-import org.marc4j.marc.DataField;
-import org.marc4j.marc.MarcFactory;
-import org.marc4j.marc.Record;
-import org.marc4j.marc.Subfield;
-import org.marc4j.util.JsonParser;
 
 public class MarcJsonReader implements MarcReader
 {
@@ -27,7 +24,7 @@ public class MarcJsonReader implements MarcReader
     
     public MarcJsonReader(InputStream is)
     {
-        parser = new JsonParser(JsonParser.OPT_MULTILINE_STRINGS | JsonParser.OPT_INTERN_KEYWORDS | JsonParser.OPT_UNQUOTED_KEYWORDS | JsonParser.OPT_SINGLE_QUOTE_STRINGS);
+        parser = new JsonParser(JsonParser.OPT_INTERN_KEYWORDS | JsonParser.OPT_UNQUOTED_KEYWORDS | JsonParser.OPT_SINGLE_QUOTE_STRINGS);
         parser.setInput("MarcInput", new InputStreamReader(is), false);
 //        if(System.getProperty("org.marc4j.marc.MarcFactory") == null)
 //        {
@@ -160,10 +157,9 @@ public class MarcJsonReader implements MarcReader
                     {
                         value = JsonParser.stripQuotes(value);
                     }
+
                     value = value.replaceAll("⁄", "/");
-                    value = value.replaceAll("\r?\n[ \t]*(\\]|\\[)", "$1");
-                    value = value.replaceAll("(\\[|\\])\r?\n[ \t]*", "$1");
-                    value = value.replaceAll("\r?\n[ \t]*", " ");
+
                     if (mname.equals("ind1"))  df.setIndicator1(value.length() >= 1 ? value.charAt(0): ' ');
                     else if (mname.equals("ind2"))  df.setIndicator2(value.length() >= 1 ? value.charAt(0): ' ');
                     else if (mname.equals("leader"))  

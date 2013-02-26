@@ -21,8 +21,7 @@ public class RecordTest extends TestCase {
     Record record = null;
 
     public void setUp() throws Exception {
-        InputStream input = getClass().getResourceAsStream(
-                "resources/summerland.mrc");
+        InputStream input = getClass().getResourceAsStream("resources/summerland.mrc");
         MarcReader reader = new MarcStreamReader(input);
         while (reader.hasNext()) {
             record = reader.next();

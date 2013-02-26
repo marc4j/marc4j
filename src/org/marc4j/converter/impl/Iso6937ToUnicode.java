@@ -80,6 +80,16 @@ public class Iso6937ToUnicode extends CharConverter {
     return false;
   }
 
+  /**
+   * Should return true if the CharConverter outputs Unicode encoded characters
+   * 
+   * @return boolean  whether the CharConverter returns Unicode encoded characters
+   */
+  public boolean outputsUnicode()
+  {
+      return (true);
+  }
+
   // Source : http://anubis.dkuug.dk/JTC1/SC2/WG3/docs/6937cd.pdf
   private char getChar(int i) {
     switch (i) {

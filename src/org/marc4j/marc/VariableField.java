@@ -21,8 +21,6 @@ package org.marc4j.marc;
 
 import java.io.Serializable;
 
-import org.marc4j.marc.impl.VariableFieldImpl;
-
 /**
  * Represents a variable field in a MARC record.
  * 

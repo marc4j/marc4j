@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -75,14 +74,12 @@ public class CodeTableGenerator extends CodeTable {
         {
             Integer nextKey = (Integer)combiningKeys[combiningSel];
             output.println("\t\t\tcase 0x"+Integer.toHexString(nextKey)+":");
-            Vector v = (Vector) combining.get(nextKey);
-            Iterator vIter = v.iterator();
-            if (vIter.hasNext())
+            Vector<Integer> v = combining.get(nextKey);
+            if (v.size() > 0)
             {
                 output.println("\t\t\t\tswitch(i) {");
-                while (vIter.hasNext())
+                for (Integer vVal : v)
                 {
-                    Integer vVal = (Integer)vIter.next();
                     output.println("\t\t\t\t\tcase 0x"+Integer.toHexString(vVal)+":");
                 }
                 output.println("\t\t\t\t\t\treturn(true);");
@@ -111,11 +108,11 @@ public class CodeTableGenerator extends CodeTable {
         output.println("\tprivate int getCharCode(int c, int mode) {");
         output.println("\t\tif (c == 0x20) return  c;");
         output.println("\t\tswitch (mode) {");
-        Object charsetsKeys[] = charsets.keySet().toArray();
+        Integer charsetsKeys[] = charsets.keySet().toArray(new Integer[0]);
         Arrays.sort(charsetsKeys);
         for (int charsetSel = 0; charsetSel < charsetsKeys.length; charsetSel++)
         {
-            Integer nextKey = (Integer)charsetsKeys[charsetSel];
+            Integer nextKey = charsetsKeys[charsetSel];
             output.println("\t\t\tcase 0x"+Integer.toHexString(nextKey)+":");
             if (nextKey.intValue() == 0x31)
             {
@@ -123,14 +120,14 @@ public class CodeTableGenerator extends CodeTable {
             }
             else
             {
-                HashMap map = (HashMap) charsets.get(nextKey);
-                Object keyArray[] = map.keySet().toArray();
+                HashMap<Integer, Character> map = charsets.get(nextKey);
+                Integer keyArray[] = map.keySet().toArray(new Integer[0]);
                 Arrays.sort(keyArray);
                 output.println("\t\t\t\tswitch(c) {");
                 for (int sel = 0; sel < keyArray.length; sel++)
                 {
-                    Integer mKey = (Integer)keyArray[sel];
-                    Character c = (Character)map.get(mKey);
+                    Integer mKey = keyArray[sel];
+                    Character c = map.get(mKey);
                     if (c != null)
                         output.println("\t\t\t\t\tcase 0x"+Integer.toHexString(mKey)+":  return(0x"+Integer.toHexString((int)c.charValue())+"); ");
                     else
@@ -147,8 +144,8 @@ public class CodeTableGenerator extends CodeTable {
         StringBuffer getMultiByteFunc = new StringBuffer();
         getMultiByteFunc.append("\tprivate int getMultiByteChar(int c) {\n");
                 
-        HashMap map = (HashMap) charsets.get(new Integer(0x31));
-        Object keyArray[] = map.keySet().toArray();
+        HashMap<Integer, Character> map = charsets.get(new Integer(0x31));
+        Integer keyArray[] = map.keySet().toArray(new Integer[0]);
         Arrays.sort(keyArray);
         
         // Note the switch statements generated for converting multibyte characters must be 
@@ -167,7 +164,7 @@ public class CodeTableGenerator extends CodeTable {
         output.println("}");
     }
 
-    private void dumpPartialMultiByteTable(PrintStream output, StringBuffer buffer, Object keyArray[], HashMap map, int startByte, int endByte)
+    private void dumpPartialMultiByteTable(PrintStream output, StringBuffer buffer, Integer keyArray[], HashMap<Integer, Character> map, int startByte, int endByte)
     {
         String startByteStr = "0x"+Integer.toHexString(startByte);
         String endByteStr = "0x"+Integer.toHexString(endByte);
@@ -177,8 +174,8 @@ public class CodeTableGenerator extends CodeTable {
         output.println("\t\tswitch(c) {");
         for (int sel = 0; sel < keyArray.length; sel++)
         {
-            Integer mKey = (Integer)keyArray[sel];
-            Character c = (Character)map.get(mKey);
+            Integer mKey = keyArray[sel];
+            Character c = map.get(mKey);
             if (mKey >= startByte && mKey <= endByte)
             {
                 if (c != null)

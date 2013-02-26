@@ -56,20 +56,30 @@ public abstract class CharConverter {
         return convert(cData);
     }
 
-   /**
-    * Alternate method for performing a character conversion.  Receives the incoming
-    * as a String, converts the String to a character array, and calls the above convert 
-    * method which must be implemented in the subclass.
-    * 
-    * @param dataElement the data to convert
-    * @return String the conversion result
-    */
-    final public String convert(String dataElement) 
-    {
-        char[] data = null;
-        data = dataElement.toCharArray();
-        return (convert(data));
-    }
-    
+    /**
+     * Alternate method for performing a character conversion.  Receives the incoming
+     * as a String, converts the String to a character array, and calls the above convert 
+     * method which must be implemented in the subclass.
+     * 
+     * @param dataElement the data to convert
+     * @return String the conversion result
+     */
+     final public String convert(String dataElement) 
+     {
+         char[] data = null;
+         data = dataElement.toCharArray();
+         return (convert(data));
+     }
+     
+     /**
+      * Should return true if the CharConverter outputs Unicode encoded characters
+      * 
+      * @return boolean  whether the CharConverter returns Unicode encoded characters
+      */
+     public boolean outputsUnicode()
+     {
+         return (false);
+     }
+      
 
 }

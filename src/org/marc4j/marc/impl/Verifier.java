@@ -19,10 +19,9 @@
  */
 package org.marc4j.marc.impl;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.marc4j.marc.ControlField;
+
+import java.util.Collection;
 
 /**
  * Handles MARC checks on tags, data elements and <code>Record</code> objects.
@@ -60,13 +59,12 @@ public class Verifier {
    * @param col
    *          the collection of <code>ControlField</code> objects.
    */
-  public static boolean hasControlNumberField(Collection col) {
-    Iterator i = col.iterator();
-    while (i.hasNext()) {
-      ControlField field = (ControlField) i.next();
-      String tag = field.getTag();
-      if (isControlNumberField(tag))
-        return true;
+  public static boolean hasControlNumberField(Collection<ControlField> col) {
+    for (ControlField field : col)
+    {
+        String tag = field.getTag();
+        if (isControlNumberField(tag))
+            return true;
     }
     return false;
   }

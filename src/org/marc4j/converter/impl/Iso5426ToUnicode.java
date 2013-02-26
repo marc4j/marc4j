@@ -81,6 +81,17 @@ public class Iso5426ToUnicode extends CharConverter {
     return false;
   }
 
+  /**
+   * Should return true if the CharConverter outputs Unicode encoded characters
+   * 
+   * @return boolean  whether the CharConverter returns Unicode encoded characters
+   */
+  public boolean outputsUnicode()
+  {
+      return (true);
+  }
+
+  
   // Source : http://www.itscj.ipsj.or.jp/ISO-IR/053.pdf
   private char getChar(int i) {
     switch (i) {

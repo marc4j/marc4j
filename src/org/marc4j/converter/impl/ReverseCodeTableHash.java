@@ -45,18 +45,18 @@ import org.xml.sax.helpers.DefaultHandler;
  * @see DefaultHandler
  */
 public class ReverseCodeTableHash extends ReverseCodeTable {
-  protected static Hashtable charset = null;
+  protected static Hashtable<Character, Hashtable<Integer, char[]>> charsets = null;
 
-  protected static Vector combining = null;
+  protected static Vector<Character> combining = null;
 
   public boolean isCombining(Character c) 
   {
     return combining.contains(c);
   }
 
-  public Hashtable getCharTable(Character c)
+  public Hashtable<Integer, char[]> getCharTable(Character c)
   {
-      return (Hashtable) charset.get(c);
+      return charsets.get(c);
   }
   
   
@@ -75,7 +75,7 @@ public class ReverseCodeTableHash extends ReverseCodeTable {
       rdr.setContentHandler(saxUms);
       rdr.parse(src);
 
-      charset = saxUms.getCharSets();
+      charsets = saxUms.getCharSets();
       combining = saxUms.getCombiningChars();
 
     } catch (Exception e) {
@@ -100,7 +100,7 @@ public class ReverseCodeTableHash extends ReverseCodeTable {
       rdr.setContentHandler(saxUms);
       rdr.parse(src);
 
-      charset = saxUms.getCharSets();
+      charsets = saxUms.getCharSets();
       combining = saxUms.getCombiningChars();
 
     } catch (Exception e) {
@@ -123,7 +123,7 @@ public class ReverseCodeTableHash extends ReverseCodeTable {
       rdr.setContentHandler(saxUms);
       rdr.parse(src);
 
-      charset = saxUms.getCharSets();
+      charsets = saxUms.getCharSets();
       combining = saxUms.getCombiningChars();
 
     } catch (Exception e) {

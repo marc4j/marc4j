@@ -24,11 +24,12 @@ package org.marc4j.marc;
  *
  * @author Bas Peters
  */
-public class IllegalAddException 
-    extends IllegalArgumentException {
+public class IllegalAddException  extends IllegalArgumentException {
+
+    private static final long serialVersionUID = 8756226018321264604L;
 
     /**
-     * Creates a new <code>Exception</code> indicating that the addttion
+     * Creates a new <code>Exception</code> indicating that the addition
      * of the supplied object is illegal.
      *
      * @param className the class name
@@ -42,7 +43,7 @@ public class IllegalAddException
   }
 
     /**
-     * Creates a new <code>Exception</code> indicating that the addttion
+     * Creates a new <code>Exception</code> indicating that the addition
      * of the supplied object is illegal.
      *
      * @param className the class name

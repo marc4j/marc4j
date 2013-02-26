@@ -10,7 +10,7 @@
     datafield :
     [
         {
-            tag : "035", ind : " ",
+            tag : "035", ind : "  ",
             subfield :
             [
                 { code : "9", data : "(DLC)   93707283" }
@@ -30,7 +30,7 @@
             ]
         },
         {
-            tag : "010", ind : " ",
+            tag : "010", ind : "  ",
             subfield :
             [
                 { code : "a", data : "   93707283 " }
@@ -103,7 +103,7 @@
             subfield :
             [
                 { code : "a", data : "[New York, N.Y.] :" },
-                { code : "b", data : "Columbia" },
+                { code : "b", data : "Columbia, " },
                 { code : "c", data : "[1963]" }
             ]
         },
@@ -176,14 +176,14 @@
             ]
         },
         {
-            tag : "953", ind : " ",
+            tag : "953", ind : "  ",
             subfield :
             [
                 { code : "a", data : "TA28" }
             ]
         },
         {
-            tag : "991", ind : " ",
+            tag : "991", ind : "  ",
             subfield :
             [
                 { code : "b", data : "c-RecSound" },

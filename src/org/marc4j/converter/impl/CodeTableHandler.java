@@ -43,143 +43,168 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @see DefaultHandler
  */
-public class CodeTableHandler extends DefaultHandler {
+public class CodeTableHandler extends DefaultHandler
+{
 
-  private HashMap sets;
+    private HashMap<Integer, HashMap<Integer, Character>> sets;
 
-  private HashMap charset;
+    private HashMap<Integer, Character> charset;
 
-  private HashMap combiningchars;
+    private HashMap<Integer, Vector<Integer>> combiningchars;
 
-  /** Data element identifier */
-  private Integer isocode;
+    /** Data element identifier */
+    private Integer isocode;
 
-  private Integer marc;
+    private Integer marc;
 
-  private Character ucs;
-  
-  private boolean useAlt = false;
+    private Character ucs;
 
-  private boolean iscombining;
+    private boolean useAlt = false;
 
-  private Vector combining;
+    private boolean iscombining;
 
-  /** Tag name */
-  private String tag;
+    private Vector<Integer> combining;
 
-  /** StringBuffer to store data */
-  private StringBuffer data;
+    /** Tag name */
+    // private String tag;
 
-  /** Locator object */
-  private Locator locator;
+    /** StringBuffer to store data */
+    private StringBuffer data;
 
-  public HashMap getCharSets() {
-    return sets;
-  }
+    /** Locator object */
+    protected Locator locator;
 
-  public HashMap getCombiningChars() {
-    return combiningchars;
-  }
-
-  /**
-   * <p>
-   * Registers the SAX2 <code>Locator</code> object.
-   * </p>
-   * 
-   * @param locator
-   *          the {@link Locator}object
-   */
-  public void setDocumentLocator(Locator locator) {
-    this.locator = locator;
-  }
-
-  public void startElement(String uri, String name, String qName,
-      Attributes atts) throws SAXParseException {
-    if (name.equals("characterSet")) {
-      charset = new HashMap();
-      isocode = Integer.valueOf(atts.getValue("ISOcode"), 16);
-      combining = new Vector();
-    } else if (name.equals("marc"))
-      data = new StringBuffer();
-    else if (name.equals("codeTables")) {
-      sets = new HashMap();
-      combiningchars = new HashMap();
-    } else if (name.equals("ucs"))
-      data = new StringBuffer();
-    else if (name.equals("alt"))
-      data = new StringBuffer();
-    else if (name.equals("isCombining"))
-      data = new StringBuffer();
-    else if (name.equals("code"))
-      iscombining = false;
-  }
-
-  public void characters(char[] ch, int start, int length) {
-    if (data != null) {
-      data.append(ch, start, length);
-    }
-  }
-
-  public void endElement(String uri, String name, String qName)
-      throws SAXParseException {
-    if (name.equals("characterSet")) {
-      sets.put(isocode, charset);
-      combiningchars.put(isocode, combining);
-      combining = null;
-      charset = null;
-    } else if (name.equals("marc")) {
-      marc = Integer.valueOf(data.toString(), 16);
-    } else if (name.equals("ucs")) {
-      if (data.length() > 0)
-        ucs = new Character((char) Integer.parseInt(data.toString(), 16));
-      else
-        ucs = null;
-    } else if (name.equals("alt")) {
-      if (useAlt && data.length() > 0) {
-        ucs = new Character((char) Integer.parseInt(data.toString(), 16));
-        useAlt = false;
-      }
-    } else if (name.equals("code")) {
-      if (iscombining) {
-        combining.add(marc);
-      }
-      charset.put(marc, ucs);
-    } else if (name.equals("isCombining")) {
-      if (data.toString().equals("true"))
-        iscombining = true;
+    public HashMap<Integer, HashMap<Integer, Character>> getCharSets()
+    {
+        return sets;
     }
 
-    data = null;
-  }
-
-  public static void main(String[] args) {
-    HashMap charsets = null;
-
-    try {
-
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setNamespaceAware(true);
-      factory.setValidating(false);
-      SAXParser saxParser = factory.newSAXParser();
-      XMLReader rdr = saxParser.getXMLReader();
-
-      File file = new File(
-          "C:\\Documents and Settings\\ckeith\\Desktop\\Projects\\Code Tables\\codetables.xml");
-      InputSource src = new InputSource(new FileInputStream(file));
-
-      CodeTableHandler saxUms = new CodeTableHandler();
-
-      rdr.setContentHandler(saxUms);
-      rdr.parse(src);
-
-      charsets = saxUms.getCharSets();
-
-      //System.out.println( charsets.toString() );
-      System.out.println(saxUms.getCombiningChars());
-
-    } catch (Exception exc) {
-      exc.printStackTrace(System.out);
-      //	    System.err.println( "Exception: " + exc );
+    public HashMap<Integer, Vector<Integer>> getCombiningChars()
+    {
+        return combiningchars;
     }
-  }
+
+    /**
+     * <p>
+     * Registers the SAX2 <code>Locator</code> object.
+     * </p>
+     * 
+     * @param locator
+     *            the {@link Locator}object
+     */
+    public void setDocumentLocator(Locator locator)
+    {
+        this.locator = locator;
+    }
+
+    public void startElement(String uri, String name, String qName, Attributes atts) throws SAXParseException
+    {
+        if (name.equals("characterSet"))
+        {
+            charset = new HashMap<Integer, Character>();
+            isocode = Integer.valueOf(atts.getValue("ISOcode"), 16);
+            combining = new Vector<Integer>();
+        }
+        else if (name.equals("marc"))
+            data = new StringBuffer();
+        else if (name.equals("codeTables"))
+        {
+            sets = new HashMap<Integer, HashMap<Integer, Character>>();
+            combiningchars = new HashMap<Integer, Vector<Integer>>();
+        }
+        else if (name.equals("ucs"))
+            data = new StringBuffer();
+        else if (name.equals("alt"))
+            data = new StringBuffer();
+        else if (name.equals("isCombining"))
+            data = new StringBuffer();
+        else if (name.equals("code")) iscombining = false;
+    }
+
+    public void characters(char[] ch, int start, int length)
+    {
+        if (data != null)
+        {
+            data.append(ch, start, length);
+        }
+    }
+
+    public void endElement(String uri, String name, String qName) throws SAXParseException
+    {
+        if (name.equals("characterSet"))
+        {
+            sets.put(isocode, charset);
+            combiningchars.put(isocode, combining);
+            combining = null;
+            charset = null;
+        }
+        else if (name.equals("marc"))
+        {
+            marc = Integer.valueOf(data.toString(), 16);
+        }
+        else if (name.equals("ucs"))
+        {
+            if (data.length() > 0)
+                ucs = new Character((char) Integer.parseInt(data.toString(), 16));
+            else
+                ucs = null;
+        }
+        else if (name.equals("alt"))
+        {
+            if (useAlt && data.length() > 0)
+            {
+                ucs = new Character((char) Integer.parseInt(data.toString(), 16));
+                useAlt = false;
+            }
+        }
+        else if (name.equals("code"))
+        {
+            if (iscombining)
+            {
+                combining.add(marc);
+            }
+            charset.put(marc, ucs);
+        }
+        else if (name.equals("isCombining"))
+        {
+            if (data.toString().equals("true")) iscombining = true;
+        }
+
+        data = null;
+    }
+
+    public static void main(String[] args)
+    {
+        @SuppressWarnings("unused")
+        HashMap<Integer, HashMap<Integer, Character>> charsets = null;
+
+        try
+        {
+
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setValidating(false);
+            SAXParser saxParser = factory.newSAXParser();
+            XMLReader rdr = saxParser.getXMLReader();
+
+            File file = new File("C:\\Documents and Settings\\ckeith\\Desktop\\Projects\\Code Tables\\codetables.xml");
+            InputSource src = new InputSource(new FileInputStream(file));
+
+            CodeTableHandler saxUms = new CodeTableHandler();
+
+            rdr.setContentHandler(saxUms);
+            rdr.parse(src);
+
+            charsets = saxUms.getCharSets();
+
+            // System.out.println( charsets.toString() );
+            System.out.println(saxUms.getCombiningChars());
+
+        }
+        catch (Exception exc)
+        {
+            exc.printStackTrace(System.out);
+            // System.err.println( "Exception: " + exc );
+        }
+    }
 }
