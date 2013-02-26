@@ -26,7 +26,7 @@ import java.io.Serializable;
  * 
  * @author Bas Peters
  */
-public interface VariableField extends Serializable, Comparable {
+public interface VariableField extends Serializable, Comparable<VariableField> {
 
     /**
      * Sets the identifier.

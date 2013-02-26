@@ -2,13 +2,10 @@ package org.marc4j.test;
 
 import static org.junit.Assert.*;
 
+import org.marc4j.marc.*;
+
 import java.io.*;
 import java.util.*;
-
-import org.junit.Test;
-import org.marc4j.MarcWriter;
-import org.marc4j.marc.*;
-import org.marc4j.marc.impl.DataFieldImpl;
 
 /**
  * Methods to assert when Record objects are equal or not, etc.
@@ -145,11 +142,10 @@ public class RecordTestingUtils
 	 */
 	public static void assertSubfieldHasExpectedValues(Record record, String fieldTag, char subfieldCode, Set<String> expectedVals)
 	{
-	    List<VariableField> vfList = record.getVariableFields(fieldTag);
 	    Set<String> resultSet = new LinkedHashSet<String>();
-	    for (Iterator iter = vfList.iterator(); iter.hasNext();)
+	    for (VariableField vf : record.getVariableFields(fieldTag))
 	    {
-	    	DataField df = (DataField) iter.next();
+	    	DataField df = (DataField) vf;
 	    	List<Subfield> sfList = df.getSubfields(subfieldCode);
 	    	for (Iterator<Subfield> iter2 = sfList.iterator(); iter2.hasNext();) 
 	    	{

@@ -7,15 +7,11 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.marc4j.MarcJsonWriter;
-import org.marc4j.MarcReader;
 import org.marc4j.MarcStreamReader;
 import org.marc4j.MarcStreamWriter;
 import org.marc4j.MarcXmlReader;
 import org.marc4j.MarcXmlWriter;
-import org.marc4j.converter.CharConverter;
 import org.marc4j.converter.impl.AnselToUnicode;
-import org.marc4j.converter.impl.UnicodeToAnsel;
 import org.marc4j.marc.Record;
 
 public class WriterTest extends TestCase {

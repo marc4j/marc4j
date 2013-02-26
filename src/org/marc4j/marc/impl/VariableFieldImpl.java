@@ -28,6 +28,7 @@ import org.marc4j.marc.VariableField;
  */
 public abstract class VariableFieldImpl implements VariableField {
 
+    private static final long serialVersionUID = 1L;
     private String tag;
 
     /**
@@ -51,7 +52,7 @@ public abstract class VariableFieldImpl implements VariableField {
         return tag;
     }
     
-    public int compareTo(Object obj) {
+    public int compareTo(VariableField obj) {
         if (!(obj instanceof VariableFieldImpl))
             throw new ClassCastException("A VariableField object expected");
 

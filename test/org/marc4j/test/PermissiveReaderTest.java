@@ -12,9 +12,6 @@ import org.marc4j.MarcReader;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.ControlField;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 
 
 public class PermissiveReaderTest extends TestCase {

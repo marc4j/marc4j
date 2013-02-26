@@ -10,9 +10,6 @@ import junit.textui.TestRunner;
 import org.marc4j.MarcJsonReader;
 import org.marc4j.MarcJsonWriter;
 import org.marc4j.MarcStreamReader;
-import org.marc4j.MarcStreamWriter;
-import org.marc4j.MarcXmlReader;
-import org.marc4j.MarcXmlWriter;
 import org.marc4j.converter.impl.AnselToUnicode;
 import org.marc4j.marc.Record;
 
@@ -45,8 +42,8 @@ public class JsonWriterTest extends TestCase {
         String str1, str2;
         while ((str1 = reader1.readLine()) != null && (str2 = reader2.readLine()) != null)
         {
-            if (!str1.equals(str2))
-                str1 = str1;
+//            if (!str1.equals(str2))
+//                str1 = str1;
             assertEquals("Mismatch in expected output", str1, str2);
         }
         reader1.close();
@@ -75,8 +72,8 @@ public class JsonWriterTest extends TestCase {
         String str1, str2;
         while ((str1 = reader1.readLine()) != null && (str2 = reader2.readLine()) != null)
         {
-            if (!str1.equals(str2))
-                str1 = str1;
+//            if (!str1.equals(str2))
+//                str1 = str1;
             assertEquals("Mismatch in expected output", str1, str2);
         }
         reader1.close();

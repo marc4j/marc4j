@@ -45,10 +45,10 @@ public class JsonReaderTest extends TestCase {
             String recordAsStrings2[] = record2.toString().split("\n");
             for (int i = 0; i < recordAsStrings1.length ; i++)
             {
-                if (!recordAsStrings1[i].equals(recordAsStrings2[i]))
-                {
-                    i = i;
-                }
+//                if (!recordAsStrings1[i].equals(recordAsStrings2[i]))
+//                {
+//                    i = i;
+//                }
                 assertEquals("line mismatch between two records", recordAsStrings1[i], recordAsStrings2[i]);
             }
             if (record1 != null && record2 != null) 

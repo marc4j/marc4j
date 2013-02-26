@@ -22,7 +22,7 @@
 		<mkdir dir="${build.test-classes.dir}"/>
 		<mkdir dir="${build.generated-src.dir}"/>
         <mkdir dir="${lib.dir}"/>
-    <!--    <ivy:retrieve /> -->
+        <ivy:retrieve />
     </target>
 
     <path id="classpath">
