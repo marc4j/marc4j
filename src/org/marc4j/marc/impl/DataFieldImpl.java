@@ -24,7 +24,6 @@ import org.marc4j.marc.IllegalAddException;
 import org.marc4j.marc.Subfield;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**

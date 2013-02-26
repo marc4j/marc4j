@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * Represents a MARC record.
- * 
+ *
  * @author Bas Peters
  */
 public class RecordImpl implements Record {
@@ -38,7 +38,7 @@ public class RecordImpl implements Record {
 
     protected List<ControlField> controlFields;
 
-    protected List <DataField>dataFields;
+    protected List<DataField> dataFields;
 
     private String type;
 
@@ -69,16 +69,14 @@ public class RecordImpl implements Record {
     /**
      * Adds a <code>VariableField</code> being a <code>ControlField</code>
      * or <code>DataField</code>.
-     * 
+     * <p/>
      * If the <code>VariableField</code> is a control number field (001) and
      * the record already has a control number field, the field is replaced with
      * the new instance.
-     * 
-     * @param field
-     *            the <code>VariableField</code>
-     * @throws IllegalAddException
-     *             when the parameter is not a <code>VariableField</code>
-     *             instance
+     *
+     * @param field the <code>VariableField</code>
+     * @throws IllegalAddException when the parameter is not a <code>VariableField</code>
+     *                             instance
      */
     public void addVariableField(VariableField field) {
         String tag = field.getTag();
@@ -178,8 +176,11 @@ public class RecordImpl implements Record {
 
     public String getControlNumber() {
         ControlField f = getControlNumberField();
-        String result = (f == null || f.getData() == null) ? null : new String(f.getData());
-        return(result);
+
+        if (f == null || f.getData() == null)
+            return null;
+        else
+            return f.getData();
     }
 
     public List<VariableField> getVariableFields(String[] tags) {
@@ -201,7 +202,11 @@ public class RecordImpl implements Record {
      * Example:
      * <p/>
      * <pre>
+<<<<<<< HEAD
      *     
+=======
+     *
+>>>>>>> refs/remotes/choose_remote_name/reader-test-improvements
      *      LEADER 00714cam a2200205 a 4500
      *      001 12883376
      *      005 20030616111422.0
@@ -219,7 +224,7 @@ public class RecordImpl implements Record {
      *      650  1$aMagic$vFiction.
      *
      * </pre>
-     * 
+     *
      * @return String - a string representation of this record
      */
     public String toString() {
@@ -264,11 +269,9 @@ public class RecordImpl implements Record {
         return result;
     }
 
-    public List find(String[] tag, String pattern) {
-        List result = new ArrayList();
-        Iterator i = getVariableFields(tag).iterator();
-        while (i.hasNext()) {
-            VariableField field = (VariableField) i.next();
+    public List<VariableField> find(String[] tag, String pattern) {
+        List<VariableField> result = new ArrayList<VariableField>();
+        for (VariableField field : getVariableFields(tag)) {
             if (field.find(pattern))
                 result.add(field);
         }

@@ -16,56 +16,34 @@ import org.marc4j.marc.Record;
 
 public class WriterTest extends TestCase {
 
-    private static File createTempFile() throws IOException {
-        File file = File.createTempFile("WriterTest","tmp");
-        file.deleteOnExit();
-        return file;
-    }
-
     public void testMarcStreamWriter() throws Exception {
 
-        File tmpFile = createTempFile();
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(tmpFile));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputStream input = getClass().getResourceAsStream("resources/summerland.xml");
         MarcStreamWriter writer = new MarcStreamWriter(out);
         for (int i = 0; i < StaticTestRecords.chabon.length; i++)
         {
             writer.write(StaticTestRecords.chabon[i]);
         }
-        writer.close();
-        MarcStreamReader marcreader = new MarcStreamReader(new FileInputStream(tmpFile));
-        for (int i = 0; i < StaticTestRecords.chabon.length && marcreader.hasNext() ; i++)
-        {
-            Record rec1 = marcreader.next();
-            RecordTestingUtils.assertEqualsIgnoreLeader(rec1, StaticTestRecords.chabon[i]);
-        }
-        assertTrue("File contains wrong numbers of records", !marcreader.hasNext());
+        input.close();
+        TestUtils.validateBytesAgainstFile(out.toByteArray(), "resources/summerland.mrc");
     }
 
-    public void testMarcXmlWriter() throws Exception 
-    {
-        File tmpFile = createTempFile();
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(tmpFile));
-
+    public void testMarcXmlWriter() throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputStream input = getClass().getResourceAsStream("resources/summerland.mrc");
         MarcXmlWriter writer = new MarcXmlWriter(out, true);
         for (int i = 0; i < StaticTestRecords.chabon.length; i++)
         {
             writer.write(StaticTestRecords.chabon[i]);
         }
         writer.close();
-        MarcXmlReader marcreader = new MarcXmlReader(new FileInputStream(tmpFile));
-        for (int i = 0; i < StaticTestRecords.chabon.length && marcreader.hasNext() ; i++)
-        {
-            Record rec1 = marcreader.next();
-            RecordTestingUtils.assertEqualsIgnoreLeader(rec1, StaticTestRecords.chabon[i]);
-        }
-        assertTrue("File contains wrong numbers of records", !marcreader.hasNext());
 
+        TestUtils.validateStringAgainstFile(new String(out.toByteArray()), "resources/summerland.xml");
     }
     
-    public void testMarcXmlWriterConvertedToUTF8() throws Exception 
-    {
-        File tmpFile = createTempFile();
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(tmpFile));
+    public void testMarcXmlWriterNormalized() throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         InputStream input = getClass().getResourceAsStream("resources/brkrtest.mrc");
         MarcXmlWriter writer = new MarcXmlWriter(out, true);
@@ -78,7 +56,7 @@ public class WriterTest extends TestCase {
         }
         input.close();
         writer.close();
-        BufferedReader testoutput = new BufferedReader(new InputStreamReader(new FileInputStream(tmpFile), "UTF-8"));
+        BufferedReader testoutput = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(out.toByteArray()), "UTF-8"));
         String line;
         while ((line = testoutput.readLine()) != null)
         {
@@ -111,8 +89,7 @@ public class WriterTest extends TestCase {
 
     public void testMarcXmlWriterConvertedToUTF8AndNormalized() throws Exception 
     {
-        File tmpFile = createTempFile();
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(tmpFile));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         InputStream input = getClass().getResourceAsStream("resources/brkrtest.mrc");
         MarcXmlWriter writer = new MarcXmlWriter(out, true);
@@ -126,7 +103,7 @@ public class WriterTest extends TestCase {
         }
         input.close();
         writer.close();
-        BufferedReader testoutput = new BufferedReader(new InputStreamReader(new FileInputStream(tmpFile), "UTF-8"));
+        BufferedReader testoutput = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(out.toByteArray()), "UTF-8"));
         String line;
         while ((line = testoutput.readLine()) != null)
         {

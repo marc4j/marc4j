@@ -109,6 +109,7 @@ public interface DataField extends VariableField {
 	/**
 	 * Removes a <code>Subfield</code>.
 	 */
-	public void removeSubfield(Subfield subfield);
+	@SuppressWarnings("UnusedDeclaration")
+    public void removeSubfield(Subfield subfield);
 
 }

@@ -36,8 +36,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import java.io.*;
 
-
-
 /**
  * Class for writing MARC record objects in MARCXML format. This class outputs a
  * SAX event stream to the given {@link java.io.OutputStream}&nbsp; or
@@ -311,7 +309,8 @@ public class MarcXmlWriter implements MarcWriter {
     public void close() {
     	writeEndDocument();
     	try {
-    		writer.close();
+            writer.write("\n");
+            writer.close();
     	} catch (IOException e) {
     		throw new MarcException(e.getMessage(), e);
     	}

@@ -10,6 +10,7 @@ import org.marc4j.util.Normalizer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 public class MarcJsonWriter implements MarcWriter
 {
@@ -77,7 +78,7 @@ public class MarcJsonWriter implements MarcWriter
             if (!firstField) buf.append(","); 
             else firstField = false;
             if (indent) buf.append("\n        ");
-            buf.append("{ " + ql + "tag" + ql + " : \"" + cf.getTag() + "\", "+ ql + "data" + ql + " : ").append("\"" + unicodeEscape(cf.getData()) + "\" }");
+            buf.append("{ " + ql + "tag" + ql + " : \"" + cf.getTag() + "\", " + ql + "data" + ql + " : ").append("\"" + unicodeEscape(cf.getData()) + "\" }");
         }
         if (indent) buf.append("\n    ");
         buf.append("]");
@@ -93,7 +94,7 @@ public class MarcJsonWriter implements MarcWriter
             if (indent) buf.append("\n        ");
             buf.append("{");
             if (indent) buf.append("\n            ");
-            buf.append(ql + "tag" + ql + " : \"" + df.getTag() + "\", "+ ql + "ind" + ql + " : \"" + df.getIndicator1() + df.getIndicator2()+ "\",");
+            buf.append(ql + "tag" + ql + " : \"" + df.getTag() + "\", " + ql + "ind" + ql + " : \"" + df.getIndicator1() + df.getIndicator2()+ "\",");
             if (indent) buf.append("\n            ");
             buf.append(ql + "subfield" + ql + " :");
             if (indent) buf.append("\n            ");
@@ -101,7 +102,7 @@ public class MarcJsonWriter implements MarcWriter
             boolean firstSubfield = true;
             for (Subfield sf : df.getSubfields())
             {
-                if (!firstSubfield)  buf.append(","); 
+                if (!firstSubfield) buf.append(","); 
                 else firstSubfield = false;
                 if (indent) buf.append("\n                ");
                 buf.append("{ " + ql + "code" + ql + " : \"" + sf.getCode() + "\", " + ql + "data" + ql + " : \"" + unicodeEscape(sf.getData()) + "\" }");

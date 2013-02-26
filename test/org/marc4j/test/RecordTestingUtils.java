@@ -158,9 +158,7 @@ public class RecordTestingUtils
 	    org.junit.Assert.assertEquals("Number of values doesn't match", expectedVals.size(), resultSet.size());
 	}
 	
-	
-
-	/**
+   /**
 	 * Assign id of record to be the ckey. Our ckeys are in 001 subfield a. 
 	 * Marc4j is unhappy with subfields in a control field so this is a kludge 
 	 * work around.

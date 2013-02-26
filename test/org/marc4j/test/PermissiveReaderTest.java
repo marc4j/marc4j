@@ -12,8 +12,6 @@ import org.marc4j.MarcReader;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.ControlField;
 
-
-
 public class PermissiveReaderTest extends TestCase {
 
   
