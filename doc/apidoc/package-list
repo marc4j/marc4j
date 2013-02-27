@@ -1,0 +1,9 @@
+org.marc4j
+org.marc4j.converter
+org.marc4j.converter.impl
+org.marc4j.marc
+org.marc4j.marc.impl
+org.marc4j.util
+org.solrmarc.marc
+org.solrmarc.marcoverride
+org.solrmarc.tools
