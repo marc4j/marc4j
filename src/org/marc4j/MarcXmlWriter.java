@@ -33,8 +33,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 import java.io.*;
+
 
 /**
  * Class for writing MARC record objects in MARCXML format. This class outputs a
@@ -250,17 +250,17 @@ public class MarcXmlWriter implements MarcWriter {
      * @throws MarcException
      */
     public MarcXmlWriter(OutputStream out, String encoding, boolean indent) {
-        this.encoding = encoding;
         if (out == null) {
             throw new NullPointerException("null OutputStream");
         }
-        if (this.encoding == null) {
+        if (encoding == null) {
             throw new NullPointerException("null encoding");
         }
         try {
             setIndent(indent);
             writer = new OutputStreamWriter(out, encoding);
             writer = new BufferedWriter(writer);
+            this.encoding = encoding;
             setHandler(new StreamResult(writer), null);
         } catch (UnsupportedEncodingException e) {
             throw new MarcException(e.getMessage(), e);
@@ -309,8 +309,7 @@ public class MarcXmlWriter implements MarcWriter {
     public void close() {
     	writeEndDocument();
     	try {
-            writer.write("\n");
-            writer.close();
+    		writer.close();
     	} catch (IOException e) {
     		throw new MarcException(e.getMessage(), e);
     	}

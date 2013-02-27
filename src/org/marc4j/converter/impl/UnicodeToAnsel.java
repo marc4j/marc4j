@@ -181,10 +181,10 @@ public class UnicodeToAnsel extends CharConverter {
                 if (!tmpNormed.equals(tmpnorm))
                 {
                     if (allCharsHaveMatch(rct, tmpNormed))
-                    {
-                        convertPortion(tmpNormed.toCharArray(), sb);
-                        continue;
-                    }
+                {
+                    convertPortion(tmpNormed.toCharArray(), sb);
+                    continue;
+                }
                     else if (tmpNormed.length() > 2)
                     {
                         String firstTwo = tmpNormed.substring(0, 2);

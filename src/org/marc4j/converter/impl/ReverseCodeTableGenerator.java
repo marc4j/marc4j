@@ -1,15 +1,14 @@
 package org.marc4j.converter.impl;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Vector;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
 /**
  * Invoked at build time to generate a java source file (named ReverseCodeTableGenerated.java) 

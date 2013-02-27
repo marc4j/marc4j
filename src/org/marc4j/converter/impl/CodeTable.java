@@ -40,7 +40,7 @@ import javax.xml.parsers.SAXParserFactory;
  * </p>
  * 
  * @author Corey Keith
- * 
+ *  
  */
 public class CodeTable implements CodeTableInterface
 {
@@ -72,8 +72,8 @@ public class CodeTable implements CodeTableInterface
 
             if (charset == null)
             {
-                // System.err.println("Hashtable not found: "
-                // + Integer.toHexString(mode));
+//                System.err.println("Hashtable not found: "
+//                        + Integer.toHexString(mode));
                 return (char) c;
             }
             else
@@ -85,9 +85,9 @@ public class CodeTable implements CodeTableInterface
                     ch = charset.get(new Integer(newc));
                     if (ch == null)
                     {
-                        // System.err.println("Character not found: "
-                        // + Integer.toHexString(c) + " in Code Table: "
-                        // + Integer.toHexString(mode));
+//                        System.err.println("Character not found: "
+//                                + Integer.toHexString(c) + " in Code Table: "
+//                                + Integer.toHexString(mode));
                         return (char) 0;
                     }
                     else
@@ -179,5 +179,5 @@ public class CodeTable implements CodeTableInterface
         {
             throw new MarcException(e.getMessage(), e);
         }
-    }
+    }   
 }
