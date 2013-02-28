@@ -1,1 +1,4 @@
 language: java
+notifications:
+  irc: "irc.freenode.org#code4lib
+
