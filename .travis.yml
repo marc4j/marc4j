@@ -1,4 +1,5 @@
 language: java
 notifications:
-  irc: "irc.freenode.org#code4lib
+  irc: "irc.freenode.org#code4lib"
+
 
