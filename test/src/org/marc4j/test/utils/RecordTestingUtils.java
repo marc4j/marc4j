@@ -1,4 +1,4 @@
-package org.marc4j.test;
+package org.marc4j.test.utils;
 
 import static org.junit.Assert.*;
 

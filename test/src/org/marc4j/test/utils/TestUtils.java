@@ -1,13 +1,11 @@
-package org.marc4j.test;
+package org.marc4j.test.utils;
 
 import org.marc4j.marc.*;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -121,8 +119,10 @@ public class TestUtils {
         }
     }
     
-    static void validateBytesAgainstFile(byte[] actual, String fileName) throws IOException {
-        InputStream in = new BufferedInputStream(TestUtils.class.getResourceAsStream(fileName));
+    public static void validateBytesAgainstFile(byte[] actual, String fileName) throws IOException {
+        InputStream stream = TestUtils.class.getResourceAsStream(fileName);
+        assertNotNull("Could't open " + fileName,stream);
+        InputStream in = new BufferedInputStream(stream);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         int n;
         byte expected[] = new byte[8192];
@@ -165,8 +165,10 @@ public class TestUtils {
 //        }
 //    }
     
-    static void validateStringAgainstFile(String actual, String fileName) throws IOException {
-        InputStream in = new BufferedInputStream(TestUtils.class.getResourceAsStream(fileName));
+    public static void validateStringAgainstFile(String actual, String fileName) throws IOException {
+        InputStream stream = TestUtils.class.getResourceAsStream(fileName);
+        assertNotNull(fileName,stream);
+        InputStream in = new BufferedInputStream(stream);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         int n;
         byte buf[] = new byte[8192];
@@ -182,10 +184,10 @@ public class TestUtils {
         }
     }
     
-    static String compareFilesContentsLineByLine(String expected, String actual)
+    public static String compareFilesContentsLineByLine(String expected, String actual)
     {
-        String[] expectedLines = new String(expected).split("[\r]?\n");
-        String[] actualLines = new String(actual).split("[\r]?\n");
+        String[] expectedLines = expected.split("[\r]?\n");
+        String[] actualLines = actual.split("[\r]?\n");
         String separator = System.getProperty( "line.separator" );
         boolean matches = true;
         int expectedIndex = 0, actualIndex = 0;

@@ -1,27 +1,24 @@
 package org.marc4j.test;
 
-import java.io.InputStream;
-import java.util.List;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-
 import org.marc4j.MarcReader;
 import org.marc4j.MarcStreamReader;
-import org.marc4j.marc.ControlField;
-import org.marc4j.marc.DataField;
-import org.marc4j.marc.MarcFactory;
-import org.marc4j.marc.Record;
-import org.marc4j.marc.VariableField;
+import org.marc4j.marc.*;
+import org.marc4j.test.utils.StaticTestRecords;
+
+import java.io.InputStream;
+import java.util.List;
 
 public class RecordTest extends TestCase {
 
     Record record = null;
 
     public void setUp() throws Exception {
-        InputStream input = getClass().getResourceAsStream("resources/summerland.mrc");
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_SUMMERLAND_MRC);
+        assertNotNull(input);
         MarcReader reader = new MarcStreamReader(input);
         while (reader.hasNext()) {
             record = reader.next();
