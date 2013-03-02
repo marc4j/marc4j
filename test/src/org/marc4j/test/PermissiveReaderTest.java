@@ -1,9 +1,6 @@
 package org.marc4j.test;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.Test;
 import org.marc4j.MarcPermissiveStreamReader;
 import org.marc4j.MarcReader;
 import org.marc4j.marc.ControlField;
@@ -12,9 +9,12 @@ import org.marc4j.test.utils.StaticTestRecords;
 
 import java.io.InputStream;
 
-public class PermissiveReaderTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+public class PermissiveReaderTest  {
 
+    @Test
     public void testBadLeaderBytes10_11() throws Exception {
         int i = 0;
         InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BAD_LEADERS_10_11_MRC);
@@ -30,7 +30,8 @@ public class PermissiveReaderTest extends TestCase {
         input.close();
         assertEquals(1, i);
     }
-    
+
+    @Test
     public void testTooLongMarcRecord() throws Exception {
        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BAD_TOO_LONG_PLUS_2_MRC);
        assertNotNull(input);
@@ -53,7 +54,8 @@ public class PermissiveReaderTest extends TestCase {
        assertEquals(good001.getData(), "360946"); 
        
     }
-    
+
+    @Test
     public void testTooLongLeaderByteRead() throws Exception {
        InputStream input = getClass().getResourceAsStream(
                StaticTestRecords.RESOURCES_BAD_TOO_LONG_PLUS_2_MRC);
@@ -75,11 +77,4 @@ public class PermissiveReaderTest extends TestCase {
        assertEquals("99999", strLeader.substring(0, 5));
     }
     
-	public static Test suite() {
-	    return new TestSuite(PermissiveReaderTest.class);
-	}
-	
-	public static void main(String args[]) {
-	    TestRunner.run(suite());
-	}
 }

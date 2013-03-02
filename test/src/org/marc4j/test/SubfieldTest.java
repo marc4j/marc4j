@@ -1,22 +1,19 @@
 package org.marc4j.test;
 
+import org.junit.Test;
 import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Subfield;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
-public class SubfieldTest extends TestCase {
+public class SubfieldTest  {
 
-	MarcFactory factory = null;
+	MarcFactory  factory = MarcFactory.newInstance();
 
-	public void setUp() {
-		factory = MarcFactory.newInstance();
-	}
 
+    @Test
 	public void testContructor() {
 	    Subfield sf = factory.newSubfield();
 	    assertNotNull("subfield is null", sf);
@@ -26,16 +23,5 @@ public class SubfieldTest extends TestCase {
 	    assertEquals('a', sf.getCode());
 	    assertEquals("Summerland", sf.getData());
 	}
-	
-	public void tearDown() {
-		factory = null;
-	}
-	
-	public static Test suite() {
-	    return new TestSuite(SubfieldTest.class);
-	}
-	
-	public static void main(String args[]) {
-	    TestRunner.run(suite());
-	}
+
 }

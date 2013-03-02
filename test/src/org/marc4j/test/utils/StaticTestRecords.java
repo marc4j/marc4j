@@ -81,4 +81,7 @@ public class StaticTestRecords
         summerland[0].addVariableField(factory.newDataField("650", ' ', '1', "a", "Magic", "v", "Fiction."));
 
     }
+    public static Record getSummerlandRecord() {
+        return summerland[0];
+    }
 }
