@@ -13,8 +13,6 @@
 
 
 
-	<!-- <property name="test.class.name" value="org.marc4j.AllTests" /> -->
-    <property name="test.class.name" value="org.marc4j.test.AllTests" />
 
 	<target name="prepare" depends="init,setup-ivy">
 		<mkdir dir="${build.dir}" />
@@ -34,6 +32,7 @@
     <path id="test.classpath">
         <pathelement location="${build.classes.dir}" />
         <pathelement location="${build.test-classes.dir}" />
+        <pathelement location="test/resources"/>
         <fileset dir="${lib.dir}">
             <include name="**/*.jar" />
         </fileset>
@@ -83,17 +82,17 @@
         <javac encoding="UTF-8" srcdir="${test.src.dir}" destdir="${build.test-classes.dir}" includes="**/*.java" excludes="**/*Generated.java" debug="true" debuglevel="source,lines,vars">
             <classpath refid="test.classpath" />
         </javac>
-        <copy todir="${build.test-classes.dir}">
-            <fileset dir="${test.src.dir}">
-                <include  name="org/marc4j/test/resources/**"/>
-            </fileset>
-        </copy>
     </target>
 
 
     <target name="test" depends="compile-all,compile-tests">
-		<junit fork="yes" haltonfailure="false">
-			<test name="${test.class.name}" />
+		<junit fork="yes" forkmode="perBatch" haltonfailure="false">
+            <batchtest>
+                <fileset dir="${test.src.dir}">
+                    <exclude name="org/marc4j/test/utils/**"/>
+                </fileset>
+
+            </batchtest>
 			<formatter type="brief" usefile="false" />
 			<classpath refid="test.classpath" />
 		</junit>

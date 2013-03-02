@@ -1,18 +1,18 @@
 package org.marc4j.test;
 
-import java.io.*;
-import java.util.Arrays;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-
 import org.marc4j.MarcJsonReader;
 import org.marc4j.MarcJsonWriter;
 import org.marc4j.MarcStreamReader;
 import org.marc4j.converter.impl.AnselToUnicode;
 import org.marc4j.marc.Record;
+import org.marc4j.test.utils.StaticTestRecords;
+import org.marc4j.test.utils.TestUtils;
+
+import java.io.*;
 
 public class JsonWriterTest extends TestCase {
 
@@ -21,7 +21,7 @@ public class JsonWriterTest extends TestCase {
         MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_IN_JSON);
         Record record = getSummerlandRecord();
         writer.write(record);
-        TestUtils.validateBytesAgainstFile(out.toByteArray(), "resources/summerland-marc-in-json.json");
+        TestUtils.validateBytesAgainstFile(out.toByteArray(), StaticTestRecords.RESOURCES_SUMMERLAND_MARC_IN_JSON_JSON);
         writer.close();
     }
 
@@ -31,7 +31,7 @@ public class JsonWriterTest extends TestCase {
         MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_IN_JSON);
         writer.setIndent(true);
         writer.write(record);
-        TestUtils.validateBytesAgainstFile(out.toByteArray(), "resources/summerland-marc-in-json-indented.json");
+        TestUtils.validateBytesAgainstFile(out.toByteArray(), StaticTestRecords.RESOURCES_SUMMERLAND_MARC_IN_JSON_INDENTED_JSON);
         writer.close();
     }
 
@@ -40,7 +40,7 @@ public class JsonWriterTest extends TestCase {
         Record record = getSummerlandRecord();
         MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_JSON);
         writer.write(record);
-        TestUtils. validateBytesAgainstFile(out.toByteArray(), "resources/summerland-marc-json.json");
+        TestUtils. validateBytesAgainstFile(out.toByteArray(), StaticTestRecords.RESOURCES_SUMMERLAND_MARC_JSON_JSON);
         writer.close();
 
     }
@@ -52,7 +52,7 @@ public class JsonWriterTest extends TestCase {
         MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_JSON);
         writer.setIndent(true);
         writer.write(record);
-        TestUtils.validateBytesAgainstFile(out.toByteArray(), "resources/summerland-indented-marc-json.json");
+        TestUtils.validateBytesAgainstFile(out.toByteArray(), StaticTestRecords.RESOURCES_SUMMERLAND_INDENTED_MARC_JSON_JSON);
         writer.close();
     }
 
@@ -60,7 +60,8 @@ public class JsonWriterTest extends TestCase {
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
     
-        InputStream input = getClass().getResourceAsStream("resources/brkrtest.mrc");
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BRKRTEST_MRC);
+        assertNotNull(StaticTestRecords.RESOURCES_BRKRTEST_MRC,input);
         MarcJsonWriter writer = new MarcJsonWriter(out);
         writer.setIndent(true);
         writer.setConverter(new AnselToUnicode());
@@ -108,7 +109,8 @@ public class JsonWriterTest extends TestCase {
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        InputStream input = getClass().getResourceAsStream("resources/brkrtest.mrc");
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BRKRTEST_MRC);
+        assertNotNull(StaticTestRecords.RESOURCES_BRKRTEST_MRC,input);
         MarcJsonWriter writer = new MarcJsonWriter(out);
         writer.setIndent(true);
         writer.setConverter(new AnselToUnicode());
@@ -153,7 +155,7 @@ public class JsonWriterTest extends TestCase {
     }
 
     public void testJsonWriteAndRead() throws Exception {
-        Record record = getJSONRecordFromFile("resources/legal-json-marc-in-json.json");
+        Record record = getJSONRecordFromFile(StaticTestRecords.RESOURCES_LEGAL_JSON_MARC_IN_JSON_JSON);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         MarcJsonWriter writer = new MarcJsonWriter(out);
@@ -170,7 +172,7 @@ public class JsonWriterTest extends TestCase {
     }
 
     public void testJsonWriteAndRead2() throws Exception {
-        String fileName = "resources/marc-json.json";
+        String fileName = StaticTestRecords.RESOURCES_MARC_JSON_JSON;
         Record record = getJSONRecordFromFile(fileName);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_JSON);
@@ -188,6 +190,7 @@ public class JsonWriterTest extends TestCase {
 
     private Record getJSONRecordFromFile(String fileName) {
         InputStream input = getClass().getResourceAsStream(fileName);
+        assertNotNull(fileName,input);
         MarcJsonReader reader = new MarcJsonReader(input);
         assertTrue(reader.hasNext());
         Record record = reader.next();
@@ -197,7 +200,8 @@ public class JsonWriterTest extends TestCase {
     }
 
     private Record getSummerlandRecord() throws IOException {
-        InputStream input = getClass().getResourceAsStream("resources/summerland.mrc");
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_SUMMERLAND_MRC);
+        assertNotNull(StaticTestRecords.RESOURCES_SUMMERLAND_MRC,input);
         MarcStreamReader reader = new MarcStreamReader(input);
         assertTrue("have at least one record", reader.hasNext());
         Record record = reader.next();

@@ -1,22 +1,25 @@
 package org.marc4j.test;
 
-import java.io.InputStream;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-
 import org.marc4j.MarcStreamReader;
 import org.marc4j.MarcXmlReader;
 import org.marc4j.marc.Record;
+import org.marc4j.test.utils.StaticTestRecords;
+import org.marc4j.test.utils.TestUtils;
+
+import java.io.InputStream;
 
 public class ReaderTest extends TestCase {
 
-    public void testMarcStreamReader() throws Exception 
+    public void testMarcStreamReader() throws Exception
     {
         InputStream input = getClass().getResourceAsStream(
-                "resources/chabon.mrc");
+                StaticTestRecords.RESOURCES_CHABON_MRC);
+        assertNotNull(input);
+
         MarcStreamReader reader = new MarcStreamReader(input);
         assertTrue("Should have at least one record",reader.hasNext());
 
@@ -33,7 +36,8 @@ public class ReaderTest extends TestCase {
 
     public void testMarcXmlReader() throws Exception 
     {
-        InputStream input = getClass().getResourceAsStream("resources/chabon.xml");
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_CHABON_XML);
+        assertNotNull(input);
         MarcXmlReader reader = new MarcXmlReader(input);
 
         assertTrue("Should have at least one record",reader.hasNext());
