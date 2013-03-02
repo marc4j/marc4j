@@ -1,9 +1,6 @@
 package org.marc4j.test;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.Test;
 import org.marc4j.MarcStreamReader;
 import org.marc4j.MarcStreamWriter;
 import org.marc4j.MarcXmlWriter;
@@ -14,8 +11,12 @@ import org.marc4j.test.utils.TestUtils;
 
 import java.io.*;
 
-public class WriterTest extends TestCase {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+public class WriterTest {
+
+    @Test
     public void testMarcStreamWriter() throws Exception {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -27,6 +28,7 @@ public class WriterTest extends TestCase {
         TestUtils.validateBytesAgainstFile(out.toByteArray(), StaticTestRecords.RESOURCES_SUMMERLAND_MRC);
     }
 
+    @Test
     public void testMarcXmlWriter() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         MarcXmlWriter writer = new MarcXmlWriter(out, true);
@@ -38,6 +40,7 @@ public class WriterTest extends TestCase {
         TestUtils.validateStringAgainstFile(new String(out.toByteArray()), StaticTestRecords.RESOURCES_SUMMERLAND_XML);
     }
 
+    @Test
     public void testMarcXmlWriterNormalized() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -57,29 +60,32 @@ public class WriterTest extends TestCase {
         while ((line = testoutput.readLine()) != null) {
             if (line.matches("[ ]*<subfield code=\"a\">This is a test of diacritics.*")) {
                 String lineParts[] = line.split(", ");
-                for (int i = 0; i < lineParts.length; i++) {
-                    if (lineParts[i].startsWith("the tilde in "))
-                        assertTrue("Incorrect value for tilde", lineParts[i].equals("the tilde in man\u0303ana"));
-                    else if (lineParts[i].startsWith("the grave accent in "))
-                        assertTrue("Incorrect value for grave", lineParts[i].equals("the grave accent in tre\u0300s"));
-                    else if (lineParts[i].startsWith("the acute accent in "))
-                        assertTrue("Incorrect value for acute", lineParts[i].equals("the acute accent in de\u0301sire\u0301e"));
-                    else if (lineParts[i].startsWith("the circumflex in "))
-                        assertTrue("Incorrect value for macron", lineParts[i].equals("the circumflex in co\u0302te"));
-                    else if (lineParts[i].startsWith("the macron in "))
-                        assertTrue("Incorrect value for macron", lineParts[i].equals("the macron in To\u0304kyo"));
-                    else if (lineParts[i].startsWith("the breve in "))
-                        assertTrue("Incorrect value for breve", lineParts[i].equals("the breve in russkii\u0306"));
-                    else if (lineParts[i].startsWith("the dot above in "))
-                        assertTrue("Incorrect value for dot above", lineParts[i].equals("the dot above in z\u0307aba"));
-                    else if (lineParts[i].startsWith("the dieresis (umlaut) in "))
-                        assertTrue("Incorrect value for umlaut", lineParts[i].equals("the dieresis (umlaut) in Lo\u0308wenbra\u0308u"));
+                for (String linePart : lineParts) {
+                    if (linePart.startsWith("the tilde in "))
+                        assertTrue("Incorrect value for tilde", linePart.equals("the tilde in man\u0303ana"));
+                    else if (linePart.startsWith("the grave accent in "))
+                        assertTrue("Incorrect value for grave", linePart.equals("the grave accent in tre\u0300s"));
+                    else if (linePart.startsWith("the acute accent in "))
+                        assertTrue("Incorrect value for acute", linePart.equals("the acute accent in de\u0301sire\u0301e"));
+                    else if (linePart.startsWith("the circumflex in "))
+                        assertTrue("Incorrect value for macron", linePart.equals("the circumflex in co\u0302te"));
+                    else if (linePart.startsWith("the macron in "))
+                        assertTrue("Incorrect value for macron", linePart.equals("the macron in To\u0304kyo"));
+                    else if (linePart.startsWith("the breve in "))
+                        assertTrue("Incorrect value for breve", linePart.equals("the breve in russkii\u0306"));
+                    else if (linePart.startsWith("the dot above in "))
+                        assertTrue("Incorrect value for dot above", linePart.equals("the dot above in z\u0307aba"));
+                    else if (linePart.startsWith("the dieresis (umlaut) in "))
+                        assertTrue("Incorrect value for umlaut", linePart.equals("the dieresis (umlaut) in Lo\u0308wenbra\u0308u"));
                 }
             }
         }
         testoutput.close();
     }
 
+
+
+    @Test
     public void testMarcXmlWriterConvertedToUTF8AndNormalized() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -121,14 +127,5 @@ public class WriterTest extends TestCase {
             }
         }
         testoutput.close();
-    }
-
-
-    public static Test suite() {
-        return new TestSuite(WriterTest.class);
-    }
-
-    public static void main(String args[]) {
-        TestRunner.run(suite());
     }
 }

@@ -1,9 +1,6 @@
 package org.marc4j.test;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.Test;
 import org.marc4j.MarcJsonReader;
 import org.marc4j.MarcJsonWriter;
 import org.marc4j.MarcStreamReader;
@@ -14,8 +11,11 @@ import org.marc4j.test.utils.TestUtils;
 
 import java.io.*;
 
-public class JsonWriterTest extends TestCase {
+import static org.junit.Assert.*;
 
+public class JsonWriterTest  {
+
+    @Test
     public void testMarcInJsonWriter() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_IN_JSON);
@@ -25,6 +25,7 @@ public class JsonWriterTest extends TestCase {
         writer.close();
     }
 
+    @Test
     public void testMarcInJsonWriterIndented() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Record record = getSummerlandRecord();
@@ -35,6 +36,7 @@ public class JsonWriterTest extends TestCase {
         writer.close();
     }
 
+    @Test
     public void testMarcJsonWriter() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Record record = getSummerlandRecord();
@@ -45,6 +47,7 @@ public class JsonWriterTest extends TestCase {
 
     }
 
+    @Test
     public void testMarcJsonWriterIndented() throws Exception {
         Record record = getSummerlandRecord();
 
@@ -56,6 +59,7 @@ public class JsonWriterTest extends TestCase {
         writer.close();
     }
 
+    @Test
     public void testMarcJsonWriterConvertedToUTF8() throws Exception 
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -104,7 +108,7 @@ public class JsonWriterTest extends TestCase {
           testoutput.close();
     }
 
-
+    @Test
     public void testMarcJsonWriterConvertedToUTF8AndNormalized() throws Exception 
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -154,6 +158,7 @@ public class JsonWriterTest extends TestCase {
         testoutput.close();
     }
 
+    @Test
     public void testJsonWriteAndRead() throws Exception {
         Record record = getJSONRecordFromFile(StaticTestRecords.RESOURCES_LEGAL_JSON_MARC_IN_JSON_JSON);
 
@@ -171,6 +176,7 @@ public class JsonWriterTest extends TestCase {
         in.close();
     }
 
+    @Test
     public void testJsonWriteAndRead2() throws Exception {
         String fileName = StaticTestRecords.RESOURCES_MARC_JSON_JSON;
         Record record = getJSONRecordFromFile(fileName);
@@ -209,50 +215,6 @@ public class JsonWriterTest extends TestCase {
         input.close();
         return record;
     }
-    
-//    private void validateBytesAgainstFile(byte[] actual, String fileName) throws IOException {
-//        InputStream in = new BufferedInputStream(getClass().getResourceAsStream(fileName));
-//        ByteArrayOutputStream os = new ByteArrayOutputStream();
-//        int n;
-//        byte expected[] = new byte[8192];
-//        while ((n = in.read(expected)) >= 0) {
-//            os.write(expected, 0, n);
-//        }
-//        os.flush();
-//        expected = os.toByteArray();
-//        if (!Arrays.equals(expected, actual)) 
-//        {
-//            String[] expectedLines = new String(expected).split("\n");
-//            String[] actualLines = new String(actual).split("\n");
-//            if (expectedLines.length != actualLines.length)
-//                fail("expected: " + new String(expected) + ": actual" + new String(actual));
-//            else 
-//            {
-//                StringBuilder sb = new StringBuilder();
-//                for (int i = 0; i < expectedLines.length; i++)
-//                {
-//                    if (expectedLines[i].equals(actualLines[i]))
-//                    {
-//                        sb.append(expectedLines[i]).append(File.separator);
-//                    }
-//                    else
-//                    {
-//                        sb.append(">expected: " + expectedLines[i]).append(File.separator);
-//                        sb.append(">actual  : " + actualLines[i]).append(File.separator);
-//                    }
-//                }
-//                fail("expected differs from actual as shown below:"+File.separator+sb.toString());
-//            }
-//        }
-//    }
 
 
-
-    public static Test suite() {
-        return new TestSuite(JsonWriterTest.class);
-    }
-
-    public static void main(String args[]) {
-        TestRunner.run(suite());
-    }
 }

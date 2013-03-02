@@ -1,9 +1,6 @@
 package org.marc4j.test;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.Test;
 import org.marc4j.*;
 import org.marc4j.converter.impl.AnselToUnicode;
 import org.marc4j.converter.impl.UnicodeToAnsel;
@@ -15,7 +12,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
-public class RoundtripTest extends TestCase {
+import static org.junit.Assert.assertNotNull;
+
+public class RoundtripTest  {
 
     /**
      * This test reads in a file of utf-8 encoded binary Marc records
@@ -25,6 +24,7 @@ public class RoundtripTest extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testWriteAndReadRoundtrip() throws Exception {
         InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_CHABON_MRC);
         assertNotNull(input);
@@ -73,6 +73,7 @@ public class RoundtripTest extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testWriteAndReadRoundtripConverted() throws Exception {
         InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BRKRTEST_MRC);
        assertNotNull(input);
@@ -122,6 +123,7 @@ public class RoundtripTest extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testConvertToXMLRoundtrip() throws Exception {
         InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BRKRTEST_MRC);
        assertNotNull(input);
@@ -191,6 +193,7 @@ public class RoundtripTest extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testConvertToXMLNormalizedRoundtrip() throws Exception {
         InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BRKRTEST_MRC);
         assertNotNull(input);
@@ -232,44 +235,7 @@ public class RoundtripTest extends TestCase {
                 RecordTestingUtils.assertEqualsIgnoreLeader(r1, r2);
         } while (r1 != null && r2 != null);
 
-//        
-//        ByteArrayOutputStream out3 = new ByteArrayOutputStream();
-//        ByteArrayInputStream in2 = new ByteArrayInputStream(out2.toByteArray());
-//        MarcStreamReader marcReader2 = new MarcStreamReader(in2);
-//        MarcXmlWriter xmlWriter2 = new MarcXmlWriter(out3);
-//        AnselToUnicode toUnicode = new AnselToUnicode();
-//        toUnicode.setTranslateNCR(true);
-//        xmlWriter2.setConverter(toUnicode);
-//        xmlWriter2.setUnicodeNormalization(true);
-//        while (marcReader2.hasNext()) 
-//        {
-//            Record record = marcReader2.next();
-//            xmlWriter2.write(record);
-//        }
-//        in2.close();
-//        xmlWriter2.close();
-//
-//        out3.close();
-//        
-//        InputStream inputCompare1 = new ByteArrayInputStream(out1.toByteArray());
-//        InputStream inputCompare2 = new ByteArrayInputStream(out3.toByteArray());
-//        MarcXmlReader readComp1 = new MarcXmlReader(inputCompare1);
-//        MarcXmlReader readComp2 = new MarcXmlReader(inputCompare2);
-//        Record r1, r2;
-//        do {
-//            r1 = (readComp1.hasNext()) ? readComp1.next() : null;
-//            r2 = (readComp2.hasNext()) ? readComp2.next() : null;
-//            if (r1 != null && r2 != null) 
-//                RecordTestingUtils.assertEqualsIgnoreLeader(r1, r2);
-//        } while (r1 != null && r2 != null);
     }
 
-    public static Test suite() {
-        return new TestSuite(RoundtripTest.class);
-    }
-
-    public static void main(String args[]) {
-        TestRunner.run(suite());
-    }
 
 }

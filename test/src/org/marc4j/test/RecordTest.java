@@ -1,31 +1,17 @@
 package org.marc4j.test;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-import org.marc4j.MarcReader;
-import org.marc4j.MarcStreamReader;
+import org.junit.Test;
 import org.marc4j.marc.*;
 import org.marc4j.test.utils.StaticTestRecords;
 
-import java.io.InputStream;
 import java.util.List;
 
 public class RecordTest extends TestCase {
 
-    Record record = null;
+    Record record = StaticTestRecords.getSummerlandRecord();
 
-    public void setUp() throws Exception {
-        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_SUMMERLAND_MRC);
-        assertNotNull(input);
-        MarcReader reader = new MarcStreamReader(input);
-        while (reader.hasNext()) {
-            record = reader.next();
-        }
-        input.close();
-    }
-
+    @Test
     public void testGetFields() {
         String cn = record.getControlNumber();
         assertEquals("12883376", cn);
@@ -54,6 +40,7 @@ public class RecordTest extends TestCase {
         assertEquals(3, fieldList.size());
     }
 
+    @Test
     public void testFind() throws Exception {
         VariableField field = record.getVariableField("245");
         assertEquals(true, field.find("Summerland"));
@@ -87,6 +74,7 @@ public class RecordTest extends TestCase {
 
     }
 
+    @Test
     public void testCreateRecord() throws Exception {
         MarcFactory factory = MarcFactory.newInstance();
         Record record = factory.newRecord("00000cam a2200000 a 4500");
@@ -100,15 +88,4 @@ public class RecordTest extends TestCase {
         record.addVariableField(df);
     }
 
-    public void tearDown() {
-        record = null;
-    }
-
-    public static Test suite() {
-        return new TestSuite(RecordTest.class);
-    }
-
-    public static void main(String args[]) {
-        TestRunner.run(suite());
-    }
 }
