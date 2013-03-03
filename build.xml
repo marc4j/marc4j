@@ -86,7 +86,7 @@
 
 
     <target name="test" depends="compile-all,compile-tests">
-		<junit fork="yes" forkmode="perBatch" haltonfailure="false">
+		<junit fork="yes" forkmode="perBatch" haltonfailure="true">
             <batchtest>
                 <fileset dir="${test.src.dir}">
                     <exclude name="org/marc4j/test/utils/**"/>

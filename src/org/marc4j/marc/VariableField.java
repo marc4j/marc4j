@@ -77,4 +77,5 @@ public interface VariableField extends Serializable, Comparable<VariableField> {
      */
     public abstract boolean find(String pattern);
 
+
 }

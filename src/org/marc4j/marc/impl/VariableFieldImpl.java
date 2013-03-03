@@ -19,6 +19,7 @@
  */
 package org.marc4j.marc.impl;
 
+import org.marc4j.MarcException;
 import org.marc4j.marc.VariableField;
 
 /**
@@ -40,7 +41,10 @@ public abstract class VariableFieldImpl implements VariableField {
     /**
      * Creates a new <code>VariableField</code> and sets the tag name.
      */
-    public VariableFieldImpl(String tag) {
+    public VariableFieldImpl(String tag) throws MarcException {
+        if(tag == null) {
+            throw new MarcException("Attempt to create field with null tag");
+        }
         this.setTag(tag);
     }
 

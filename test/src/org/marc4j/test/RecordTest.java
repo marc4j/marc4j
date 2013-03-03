@@ -1,13 +1,14 @@
 package org.marc4j.test;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 import org.marc4j.marc.*;
 import org.marc4j.test.utils.StaticTestRecords;
 
 import java.util.List;
 
-public class RecordTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class RecordTest  {
 
     Record record = StaticTestRecords.getSummerlandRecord();
 
