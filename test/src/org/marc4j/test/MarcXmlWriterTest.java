@@ -1,10 +1,12 @@
 package org.marc4j.test;
 
 import org.junit.Test;
+import org.marc4j.MarcException;
 import org.marc4j.MarcStreamReader;
-import org.marc4j.MarcStreamWriter;
 import org.marc4j.MarcXmlWriter;
 import org.marc4j.converter.impl.AnselToUnicode;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Record;
 import org.marc4j.test.utils.StaticTestRecords;
 import org.marc4j.test.utils.TestUtils;
@@ -14,26 +16,13 @@ import java.io.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class WriterTest {
-
-    @Test
-    public void testMarcStreamWriter() throws Exception {
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        MarcStreamWriter writer = new MarcStreamWriter(out);
-        for (Record record : StaticTestRecords.summerland) {
-            writer.write(record);
-        }
-        writer.close();
-        TestUtils.validateBytesAgainstFile(out.toByteArray(), StaticTestRecords.RESOURCES_SUMMERLAND_MRC);
-    }
+public class MarcXmlWriterTest {
 
     @Test
     public void testMarcXmlWriter() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         MarcXmlWriter writer = new MarcXmlWriter(out, true);
-        Record[] records = StaticTestRecords.summerland;
-        for (Record record : records) {
+        for (Record record : StaticTestRecords.summerland) {
             writer.write(record);
         }
         writer.close();
@@ -83,7 +72,20 @@ public class WriterTest {
         testoutput.close();
     }
 
+    @Test(expected = MarcException.class)
+    public void testWriteOfRecordWithIndicatorlessSubfield() throws Exception {
+        Record record = StaticTestRecords.getSummerlandRecord();
+        MarcFactory factory = StaticTestRecords.getFactory();
+        DataField badField = factory.newDataField();
+        badField.setTag("911");
+        badField.addSubfield(factory.newSubfield('a', "HAZMARC - INDICATORLESS FIELD DETECTED - MOPP LEVEL 4"));
+        record.addVariableField(badField);
 
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MarcXmlWriter writer = new MarcXmlWriter(out, true);
+        writer.write(record);
+        writer.close();
+    }
 
     @Test
     public void testMarcXmlWriterConvertedToUTF8AndNormalized() throws Exception {
@@ -126,6 +128,5 @@ public class WriterTest {
                 }
             }
         }
-        testoutput.close();
     }
 }

@@ -24,9 +24,11 @@ public class StaticTestRecords
 
     public static Record chabon[] = new Record[2];
     public static Record summerland[] = new Record[1];
+    private static MarcFactory factory;
+
     static 
     {
-        MarcFactory factory = MarcFactory.newInstance();
+        factory = MarcFactory.newInstance();
         chabon[0] = factory.newRecord("00759cam a2200229 a 4500");
         chabon[0].addVariableField(factory.newControlField("001", "11939876"));
         chabon[0].addVariableField(factory.newControlField("005", "20041229190604.0"));
@@ -81,7 +83,13 @@ public class StaticTestRecords
         summerland[0].addVariableField(factory.newDataField("650", ' ', '1', "a", "Magic", "v", "Fiction."));
 
     }
+
+
     public static Record getSummerlandRecord() {
         return summerland[0];
+    }
+
+    public static MarcFactory getFactory() {
+        return factory;
     }
 }

@@ -33,7 +33,6 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 import java.io.*;
 
 /**
@@ -42,7 +41,7 @@ import java.io.*;
  * {@link javax.xml.transform.Result}&nbsp;object. It can be used in a SAX
  * pipeline to postprocess the result. By default this class uses a nulll
  * transform. It is strongly recommended to use a dedicated XML serializer.
- * 
+ * <p/>
  * <p>
  * This class requires a JAXP compliant XML parser and XSLT processor. The
  * underlying SAX2 parser should be namespace aware. In addition this class
@@ -55,30 +54,30 @@ import java.io.*;
  * The following example reads a file with MARC records and writes MARCXML
  * records in UTF-8 encoding to the console:
  * </p>
- * 
+ * <p/>
  * <pre>
- *  
+ *
  *      InputStream input = new FileInputStream(&quot;input.mrc&quot;)
  *      MarcReader reader = new MarcStreamReader(input);
- *              
+ *
  *      MarcWriter writer = new MarcXmlWriter(System.out, true);
  *      while (reader.hasNext()) {
  *          Record record = reader.next();
  *          writer.write(record);
  *      }
  *      writer.close();
- *   
+ *
  * </pre>
- * 
+ * <p/>
  * <p>
  * To perform a character conversion like MARC-8 to UCS/Unicode register a
  * <code>CharConverter</code>:
  * </p>
- * 
+ * <p/>
  * <pre>
  * writer.setConverter(new AnselToUnicode());
  * </pre>
- * 
+ * <p/>
  * <p>
  * In addition you can perform Unicode normalization. This is for example not
  * done by the MARC-8 to UCS/Unicode converter. With Unicode normalization text
@@ -86,11 +85,11 @@ import java.io.*;
  * is normalized to &quot;�bc&quot;. To perform normalization set Unicode
  * normalization to true:
  * </p>
- * 
+ * <p/>
  * <pre>
  * writer.setUnicodeNormalization(true);
  * </pre>
- * 
+ * <p/>
  * <p>
  * Please note that it's not garanteed to work if you try to convert normalized
  * Unicode back to MARC-8 encoding using
@@ -103,23 +102,23 @@ import java.io.*;
  * {@link org.xml.sax.ContentHandler}&nbsp;derived from a dedicated XML
  * serializer.
  * </p>
- * 
+ * <p/>
  * <p>
  * The following example uses
  * <code>org.apache.xml.serialize.XMLSerializer</code> to write MARC records
  * to XML using MARC-8 to UCS/Unicode conversion and Unicode normalization:
  * </p>
- * 
+ * <p/>
  * <pre>
- *  
+ *
  *      InputStream input = new FileInputStream(&quot;input.mrc&quot;)
  *      MarcReader reader = new MarcStreamReader(input);
- *                
+ *
  *      OutputFormat format = new OutputFormat(&quot;xml&quot;,&quot;UTF-8&quot;, true);
  *      OutputStream out = new FileOutputStream(&quot;output.xml&quot;);
  *      XMLSerializer serializer = new XMLSerializer(out, format);
  *      Result result = new SAXResult(serializer.asContentHandler());
- *                
+ *
  *      MarcXmlWriter writer = new MarcXmlWriter(result);
  *      writer.setConverter(new AnselToUnicode());
  *      while (reader.hasNext()) {
@@ -127,9 +126,9 @@ import java.io.*;
  *          writer.write(record);
  *      }
  *      writer.close();
- *   
+ *
  * </pre>
- * 
+ * <p/>
  * <p>
  * You can post-process the result using a <code>Source</code> object pointing
  * to a stylesheet resource and a <code>Result</code> object to hold the
@@ -137,14 +136,14 @@ import java.io.*;
  * transforms the result tree to MODS using the stylesheet provided by The
  * Library of Congress:
  * </p>
- * 
+ * <p/>
  * <pre>
- *  
+ *
  *      String stylesheetUrl = &quot;http://www.loc.gov/standards/mods/v3/MARC21slim2MODS3.xsl&quot;;
  *      Source stylesheet = new StreamSource(stylesheetUrl);
- *         
+ *
  *      Result result = new StreamResult(System.out);
- *            
+ *
  *      InputStream input = new FileInputStream(&quot;input.mrc&quot;)
  *      MarcReader reader = new MarcStreamReader(input);
  *      MarcXmlWriter writer = new MarcXmlWriter(result, stylesheet);
@@ -154,15 +153,15 @@ import java.io.*;
  *          writer.write(record);
  *      }
  *      writer.close();
- *   
+ *
  * </pre>
- * 
+ * <p/>
  * <p>
  * It is also possible to write the result into a DOM Node:
  * </p>
- * 
+ * <p/>
  * <pre>
- *  
+ *
  *      InputStream input = new FileInputStream(&quot;input.mrc&quot;)
  *      MarcReader reader = new MarcStreamReader(input);
  *      DOMResult result = new DOMResult();
@@ -173,13 +172,12 @@ import java.io.*;
  *          writer.write(record);
  *      }
  *      writer.close();
- *         
+ *
  *      Document doc = (Document) result.getNode();
- *   
+ *
  * </pre>
- * 
+ *
  * @author Bas Peters
- * 
  */
 public class MarcXmlWriter implements MarcWriter {
 
@@ -200,8 +198,8 @@ public class MarcXmlWriter implements MarcWriter {
     private TransformerHandler handler = null;
 
     private Writer writer = null;
-    
-    
+
+
     /**
      * Character encoding. Default is UTF-8.
      */
@@ -213,9 +211,9 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Constructs an instance with the specified output stream.
-     * 
+     * <p/>
      * The default character encoding for UTF-8 is used.
-     *      
+     *
      * @throws MarcException
      */
     public MarcXmlWriter(OutputStream out) {
@@ -224,9 +222,9 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Constructs an instance with the specified output stream and indentation.
-     * 
+     * <p/>
      * The default character encoding for UTF-8 is used.
-     * 
+     *
      * @throws MarcException
      */
     public MarcXmlWriter(OutputStream out, boolean indent) {
@@ -236,7 +234,7 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Constructs an instance with the specified output stream and character
      * encoding.
-     * 
+     *
      * @throws MarcException
      */
     public MarcXmlWriter(OutputStream out, String encoding) {
@@ -246,7 +244,7 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Constructs an instance with the specified output stream, character
      * encoding and indentation.
-     * 
+     *
      * @throws MarcException
      */
     public MarcXmlWriter(OutputStream out, String encoding, boolean indent) {
@@ -270,7 +268,7 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Constructs an instance with the specified result.
-     * 
+     *
      * @param result
      * @throws SAXException
      */
@@ -283,7 +281,7 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Constructs an instance with the specified stylesheet location and result.
-     * 
+     *
      * @param result
      * @throws SAXException
      */
@@ -293,7 +291,7 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Constructs an instance with the specified stylesheet source and result.
-     * 
+     *
      * @param result
      * @throws SAXException
      */
@@ -307,18 +305,18 @@ public class MarcXmlWriter implements MarcWriter {
     }
 
     public void close() {
-    	writeEndDocument();
-    	try {
+        writeEndDocument();
+        try {
             writer.write("\n");
             writer.close();
-    	} catch (IOException e) {
-    		throw new MarcException(e.getMessage(), e);
-    	}
+        } catch (IOException e) {
+            throw new MarcException(e.getMessage(), e);
+        }
     }
 
     /**
      * Returns the character converter.
-     * 
+     *
      * @return CharConverter the character converter
      */
     public CharConverter getConverter() {
@@ -327,9 +325,8 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Sets the character converter.
-     * 
-     * @param converter
-     *            the character converter
+     *
+     * @param converter the character converter
      */
     public void setConverter(CharConverter converter) {
         this.converter = converter;
@@ -338,13 +335,12 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * If set to true this writer will perform Unicode normalization on data
      * elements using normalization form C (NFC). The default is false.
-     * 
+     * <p/>
      * The implementation used is ICU4J 2.6. This version is based on Unicode
      * 4.0.
-     * 
-     * @param normalize
-     *            true if this writer performs Unicode normalization, false
-     *            otherwise
+     *
+     * @param normalize true if this writer performs Unicode normalization, false
+     *                  otherwise
      */
     public void setUnicodeNormalization(boolean normalize) {
         this.normalize = normalize;
@@ -353,7 +349,7 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Returns true if this writer will perform Unicode normalization, false
      * otherwise.
-     * 
+     *
      * @return boolean - true if this writer performs Unicode normalization,
      *         false otherwise.
      */
@@ -385,7 +381,7 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Writes the root start tag to the result.
-     * 
+     *
      * @throws SAXException
      */
     protected void writeStartDocument() {
@@ -401,7 +397,7 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Writes the root end tag to the result.
-     * 
+     *
      * @throws SAXException
      */
     protected void writeEndDocument() {
@@ -422,9 +418,9 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Writes a Record object to the result.
-     * 
+     *
      * @param record -
-     *            the <code>Record</code> object
+     *               the <code>Record</code> object
      * @throws SAXException
      */
     public void write(Record record) {
@@ -437,7 +433,7 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Returns true if indentation is active, false otherwise.
-     * 
+     *
      * @return boolean
      */
     public boolean hasIndent() {
@@ -446,15 +442,17 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Activates or deactivates indentation. Default value is false.
-     * 
+     *
      * @param indent
      */
     public void setIndent(boolean indent) {
         this.indent = indent;
     }
 
-    protected void toXml(Record record) throws SAXException 
-    {
+    protected void toXml(Record record) throws SAXException {
+        if(!MarcFactory.newInstance().validateRecord(record)) {
+            throw new MarcException("Marc record didn't validate");
+        }
         char temp[];
         AttributesImpl atts = new AttributesImpl();
         if (indent)
@@ -471,8 +469,7 @@ public class MarcXmlWriter implements MarcWriter {
         handler.characters(temp, 0, temp.length);
         handler.endElement(Constants.MARCXML_NS_URI, LEADER, LEADER);
 
-        for (ControlField field : record.getControlFields())
-        {
+        for (ControlField field : record.getControlFields()) {
             atts = new AttributesImpl();
             atts.addAttribute("", "tag", "tag", "CDATA", field.getTag());
 
@@ -485,8 +482,7 @@ public class MarcXmlWriter implements MarcWriter {
             handler.endElement(Constants.MARCXML_NS_URI, CONTROL_FIELD, CONTROL_FIELD);
         }
 
-        for (DataField field : record.getDataFields())
-        {
+        for (DataField field : record.getDataFields()) {
             atts = new AttributesImpl();
             atts.addAttribute("", "tag", "tag", "CDATA", field.getTag());
             atts.addAttribute("", "ind1", "ind1", "CDATA", String.valueOf(field.getIndicator1()));
@@ -496,8 +492,7 @@ public class MarcXmlWriter implements MarcWriter {
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
 
             handler.startElement(Constants.MARCXML_NS_URI, DATA_FIELD, DATA_FIELD, atts);
-            for (Subfield subfield : field.getSubfields())
-            {
+            for (Subfield subfield : field.getSubfields()) {
                 atts = new AttributesImpl();
                 atts.addAttribute("", "code", "code", "CDATA", String.valueOf(subfield.getCode()));
 
@@ -522,12 +517,11 @@ public class MarcXmlWriter implements MarcWriter {
         handler.endElement(Constants.MARCXML_NS_URI, RECORD, RECORD);
     }
 
-    protected char[] getDataElement(String data) 
-    {
+    protected char[] getDataElement(String data) {
         String dataElement = null;
         if (converter == null)
             dataElement = data;
-        else 
+        else
             dataElement = converter.convert(data);
         if (normalize)
             dataElement = Normalizer.normalize(dataElement, Normalizer.NFC);

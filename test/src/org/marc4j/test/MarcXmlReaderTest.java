@@ -1,7 +1,7 @@
 package org.marc4j.test;
 
 import org.junit.Test;
-import org.marc4j.MarcStreamReader;
+import org.marc4j.MarcException;
 import org.marc4j.MarcXmlReader;
 import org.marc4j.marc.Record;
 import org.marc4j.test.utils.StaticTestRecords;
@@ -13,15 +13,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class ReaderTest {
-
+/**
+ * Created with IntelliJ IDEA.
+ * User: ses
+ * Date: 3/2/13
+ * Time: 7:13 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class MarcXmlReaderTest {
     @Test
-    public void testMarcStreamReader() throws Exception {
-        InputStream input = getClass().getResourceAsStream(
-                StaticTestRecords.RESOURCES_CHABON_MRC);
+    public void testMarcXmlReader() throws Exception {
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_CHABON_XML);
         assertNotNull(input);
+        MarcXmlReader reader = new MarcXmlReader(input);
 
-        MarcStreamReader reader = new MarcStreamReader(input);
         assertTrue("Should have at least one record", reader.hasNext());
 
         Record record1 = reader.next();
@@ -35,5 +40,15 @@ public class ReaderTest {
         input.close();
     }
 
+    @Test(expected = MarcException.class)
+    public void testReadIndicatorlessRecord() {
+        InputStream input = getClass().getResourceAsStream("/cruel-cruel-indicatorless-summerland.xml");
+        assertNotNull(input);
+        MarcXmlReader reader = new MarcXmlReader(input);
+        assertTrue(reader.hasNext());
+        Record record = reader.next();
+
+
+    }
 
 }

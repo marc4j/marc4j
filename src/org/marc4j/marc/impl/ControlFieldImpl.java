@@ -45,7 +45,7 @@ public class ControlFieldImpl extends VariableFieldImpl implements ControlField 
      * Creates a new <code>ControlField</code> and sets the tag name.
      */
     public ControlFieldImpl(String tag) {
-        this.setTag(tag);
+        super(tag);
     }
 
     /**
@@ -54,7 +54,7 @@ public class ControlFieldImpl extends VariableFieldImpl implements ControlField 
      * 
      */
     public ControlFieldImpl(String tag, String data) {
-        this.setTag(tag);
+        super(tag);
         this.setData(data);
     }
 

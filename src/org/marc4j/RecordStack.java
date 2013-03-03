@@ -20,10 +20,10 @@
  */
 package org.marc4j;
 
+import org.marc4j.marc.Record;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.marc4j.marc.Record;
 
 /**
  * Provides <code>push</code> and <code>pop</code> operations for
@@ -129,7 +129,7 @@ public class RecordStack {
    * @return boolean
    */
   private synchronized boolean isEmpty() {
-    return (list.size() == 0 ? true : false);
+    return (list.size() == 0);
   }
 
 }

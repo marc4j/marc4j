@@ -39,13 +39,12 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
 
     private char ind2;
 
-    private List<Subfield> subfields;
+    private List<Subfield> subfields = new ArrayList<Subfield>();
 
     /**
      * Creates a new <code>DataField</code>.
      */
     public DataFieldImpl() {
-        subfields = new ArrayList<Subfield>();
     }
 
     /**
@@ -60,8 +59,7 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
      *            the second indicator
      */
     public DataFieldImpl(String tag, char ind1, char ind2) {
-        this();
-        this.setTag(tag);
+        super(tag);
         this.setIndicator1(ind1);
         this.setIndicator2(ind2);
     }
