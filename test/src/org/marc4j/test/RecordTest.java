@@ -13,10 +13,6 @@ public class RecordTest  {
     Record record = StaticTestRecords.getSummerlandRecord();
 
     @Test
-    public void tempFailer() {
-        fail("fail to make sure travis is noticing test-fails");
-    }
-    @Test
     public void testGetFields() {
         String cn = record.getControlNumber();
         assertEquals("12883376", cn);
