@@ -31,87 +31,88 @@ import org.marc4j.marc.Subfield;
  */
 public class SubfieldImpl implements Subfield {
 
-    private Long id;
-    
-    private char code;
+	private static final long serialVersionUID = 1L;
 
-    private String data;
+	private Long id;
 
-    /**
-     * Creates a new <code>Subfield</code>.
-     */
-    public SubfieldImpl() {
-    }
+	private char code;
 
-    /**
-     * Creates a new <code>Subfield</code> and sets the data element
-     * identifier.
-     * 
-     * @param code
-     *            the data element identifier
-     */
-    public SubfieldImpl(char code) {
-        this.setCode(code);
-    }
+	private String data;
 
-    /**
-     * Creates a new <code>Subfield</code> and sets the data element
-     * identifier and the data element.
-     * 
-     * @param code
-     *            the data element identifier
-     * @param data
-     *            the data element
-     */
-    public SubfieldImpl(char code, String data) {
-        this.setCode(code);
-        this.setData(data);
-    }
+	/**
+	 * Creates a new <code>Subfield</code>.
+	 */
+	public SubfieldImpl() {
+	}
 
-    public void setCode(char code) {
-        this.code = code;
-    }
+	/**
+	 * Creates a new <code>Subfield</code> and sets the data element identifier.
+	 * 
+	 * @param code
+	 *            the data element identifier
+	 */
+	public SubfieldImpl(char code) {
+		this.setCode(code);
+	}
 
-    public char getCode() {
-        return code;
-    }
+	/**
+	 * Creates a new <code>Subfield</code> and sets the data element identifier
+	 * and the data element.
+	 * 
+	 * @param code
+	 *            the data element identifier
+	 * @param data
+	 *            the data element
+	 */
+	public SubfieldImpl(char code, String data) {
+		this.setCode(code);
+		this.setData(data);
+	}
 
-    public void setData(String data) {
-        this.data = data;
-    }
+	public void setCode(char code) {
+		this.code = code;
+	}
 
-    public String getData() {
-        return data;
-    }
+	public char getCode() {
+		return code;
+	}
 
-    public boolean find(String pattern) {
-        Pattern p = Pattern.compile(pattern);
-        Matcher m = p.matcher(getData());
-        return m.find();
-    }
+	public void setData(String data) {
+		this.data = data;
+	}
 
-    /**
-     * Returns a string representation of this subfield.
-     * 
-     * <p>
-     * Example:
-     * 
-     * <pre>
-     * $aSummerland /
-     * </pre>
-     * 
-     * @return String - a string representation of this subfield
-     */
-    public String toString() {
-        return "$" + getCode() + getData();
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public String getData() {
+		return data;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public boolean find(String pattern) {
+		Pattern p = Pattern.compile(pattern);
+		Matcher m = p.matcher(getData());
+		return m.find();
+	}
+
+	/**
+	 * Returns a string representation of this subfield.
+	 * 
+	 * <p>
+	 * Example:
+	 * 
+	 * <pre>
+	 * $aSummerland /
+	 * </pre>
+	 * 
+	 * @return String - a string representation of this subfield
+	 */
+	public String toString() {
+		return "$" + getCode() + getData();
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getId() {
+		return id;
+	}
 
 }

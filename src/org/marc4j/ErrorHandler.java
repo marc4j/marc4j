@@ -20,6 +20,7 @@
  */
 package org.marc4j;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class ErrorHandler {
 	 */ 
     public final static int INFO = 0;
     
-    private List errors;
+    private List<Error> errors;
     private String curRecordID;
     private String curField;
     private String curSubfield;
@@ -169,10 +170,10 @@ public class ErrorHandler {
      *  
      * @return List - A list of all of the errors encountered for the current record.
      */
-    public List getErrors()
+    public List<Error> getErrors()
     {
-        if (errors == null || errors.size() == 0) return null;        
-        return(errors);
+        if (errors == null || errors.size() == 0) return Collections.emptyList();        
+        return errors;
     }
     
     /**
@@ -200,7 +201,7 @@ public class ErrorHandler {
     {
         if (errors == null) 
         {
-            errors = new LinkedList();
+            errors = new LinkedList<Error>();
             hasMissingID = false;
         }
         if (id != null && id.equals("unknown"))  hasMissingID = true;
@@ -231,19 +232,18 @@ public class ErrorHandler {
      * @param newErrors - A list of Errors.
      * @param message - A descriptive message about the error that was encountered.
      */
-    public void addErrors(List newErrors)
+    public void addErrors(List<Error> newErrors)
     {
         if (newErrors == null || newErrors.size() == 0) return;
         if (errors == null) 
         {
-            errors = new LinkedList();
+            errors = new LinkedList<Error>();
             hasMissingID = false;
         }
-        for (Object err : newErrors)
+        for (Error err : newErrors)
         {
-            Error errobj = (Error)err;
-            errors.add(errobj);
-            if (errobj.severity > maxSeverity)   maxSeverity = errobj.severity;   
+            errors.add(err);
+            if (err.severity > maxSeverity)   maxSeverity = err.severity;   
         }
     }
 
@@ -251,7 +251,7 @@ public class ErrorHandler {
     {
         if (id != null)
         { 
-            Iterator iter = errors.iterator();       
+            Iterator<Error> iter = errors.iterator();       
             while (iter.hasNext())
             {
                 Error err = (Error)(iter.next());

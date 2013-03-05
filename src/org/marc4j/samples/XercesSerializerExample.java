@@ -37,24 +37,24 @@ import org.marc4j.marc.Record;
  */
 public class XercesSerializerExample {
 
-    public static void main(String args[]) throws Exception {
+	public static void main(String args[]) throws Exception {
 
-        InputStream input = ReadMarcExample.class
-                .getResourceAsStream("resources/summerland.mrc");
-        MarcReader reader = new MarcStreamReader(input);
+		InputStream input = ReadMarcExample.class
+				.getResourceAsStream("resources/summerland.mrc");
+		MarcReader reader = new MarcStreamReader(input);
 
-        // OutputFormat format = new OutputFormat("xml", "UTF-8", true);
+		// OutputFormat format = new OutputFormat("xml", "UTF-8", true);
 
-        // XMLSerializer serializer = new XMLSerializer(System.out, format);
-        // Result result = new SAXResult(serializer.asContentHandler());
+		// XMLSerializer serializer = new XMLSerializer(System.out, format);
+		// Result result = new SAXResult(serializer.asContentHandler());
 
-        // MarcXmlWriter writer = new MarcXmlWriter(result);
-        // writer.setConverter(new AnselToUnicode());
-        while (reader.hasNext()) {
-            Record record = reader.next();
-            // writer.write(record);
-        }
-        // writer.close();
+		// MarcXmlWriter writer = new MarcXmlWriter(result);
+		// writer.setConverter(new AnselToUnicode());
+		while (reader.hasNext()) {
+			Record record = reader.next();
+			// writer.write(record);
+		}
+		// writer.close();
 
-    }
+	}
 }

@@ -24,7 +24,7 @@ public class TagAnalysisExample {
         InputStream input = AddLocationExample.class
                 .getResourceAsStream("resources/chabon.mrc");
 
-        Hashtable table = new Hashtable();
+        Hashtable<String,Integer> table = new Hashtable<String,Integer>();
 
         int counter = 0;
 
@@ -34,8 +34,8 @@ public class TagAnalysisExample {
 
             Record record = reader.next();
 
-            List fields = record.getVariableFields();
-            Iterator i = fields.iterator();
+            List<VariableField> fields = record.getVariableFields();
+            Iterator<VariableField> i = fields.iterator();
             while (i.hasNext()) {
                 VariableField field = (VariableField) i.next();
                 String tag = field.getTag();
@@ -52,9 +52,9 @@ public class TagAnalysisExample {
         System.out.println("Analyzed " + counter + " records");
         System.out.println("Tag\tCount");
 
-        List list = new ArrayList(table.keySet());
+        List<String> list = new ArrayList<String>(table.keySet());
         Collections.sort(list);
-        Iterator i = list.iterator();
+        Iterator<String> i = list.iterator();
         while (i.hasNext()) {
             String tag = (String) i.next();
             Integer value = (Integer) table.get(tag);

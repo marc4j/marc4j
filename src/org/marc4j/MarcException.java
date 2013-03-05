@@ -23,39 +23,41 @@ package org.marc4j;
  * Thrown in various situations by MARC4J; may contain a nested exception.
  * 
  * @author Bas Peters
- *  
+ * 
  */
 public class MarcException extends RuntimeException {
 
-  /**
-   * Create a new <code>MarcException</code> with no detail mesage.
-   */
-  public MarcException() {
-    super();
-  }
+	private static final long serialVersionUID = 1L;
 
-  /**
-   * Create a new <code>MarcException</code> with the <code>String</code>
-   * specified as an error message.
-   * 
-   * @param message
-   *          information about the cause of the exception
-   */
-  public MarcException(String message) {
-    super(message);
-  }
+	/**
+	 * Create a new <code>MarcException</code> with no detail mesage.
+	 */
+	public MarcException() {
+		super();
+	}
 
-  /**
-   * Create a new <code>MarcException</code> with the given
-   * <code>Exception</code> base cause and detail message.
-   * 
-   * @param message
-   *          information about the cause of the exception
-   * @param ex
-   *          the nested exception that caused this exception
-   */
-  public MarcException(String message, Throwable ex) {
-    super(message, ex);
-  }
+	/**
+	 * Create a new <code>MarcException</code> with the <code>String</code>
+	 * specified as an error message.
+	 * 
+	 * @param message
+	 *            information about the cause of the exception
+	 */
+	public MarcException(String message) {
+		super(message);
+	}
+
+	/**
+	 * Create a new <code>MarcException</code> with the given
+	 * <code>Exception</code> base cause and detail message.
+	 * 
+	 * @param message
+	 *            information about the cause of the exception
+	 * @param ex
+	 *            the nested exception that caused this exception
+	 */
+	public MarcException(String message, Throwable ex) {
+		super(message, ex);
+	}
 
 }

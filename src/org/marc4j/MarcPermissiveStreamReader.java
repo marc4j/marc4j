@@ -301,7 +301,6 @@ public class MarcPermissiveStreamReader implements MarcReader {
             {
                 input.readFully(recordBuf);
             }
-            String tmp = new String(recordBuf);
             parseRecord(record, byteArray, recordBuf, recordLength);
 
             if (this.convertToUTF8)

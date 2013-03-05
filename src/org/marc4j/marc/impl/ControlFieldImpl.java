@@ -31,7 +31,9 @@ import org.marc4j.marc.ControlField;
  */
 public class ControlFieldImpl extends VariableFieldImpl implements ControlField {
 
-    private Long id;
+	private static final long serialVersionUID = 1L;
+
+	private Long id;
     
     private String data;
 

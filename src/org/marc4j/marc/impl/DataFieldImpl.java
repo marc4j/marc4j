@@ -33,7 +33,9 @@ import java.util.List;
  */
 public class DataFieldImpl extends VariableFieldImpl implements DataField {
 
-    private Long id;
+	private static final long serialVersionUID = 1L;
+
+	private Long id;
     
     private char ind1;
 

@@ -28,6 +28,7 @@ import org.marc4j.MarcStreamReader;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
+import org.marc4j.marc.VariableField;
 
 /**
  * Read data fields.
@@ -45,20 +46,20 @@ public class DataFieldExample {
         while (reader.hasNext()) {
             Record record = reader.next();
 
-            // get the first field occurence for a given tag
+            // get the first field occurrence for a given tag
             DataField dataField = (DataField) record.getVariableField("245");
             System.out.println(dataField.toString() + '\n');
 
-            // get all occurences for a particular tag
-            List dataFields = record.getVariableFields("650");
-            Iterator i = dataFields.iterator();
+            // get all occurrences for a particular tag
+            List<VariableField> dataFields = record.getVariableFields("650");
+            Iterator<VariableField> i = dataFields.iterator();
             while (i.hasNext()) {
                 dataField = (DataField) i.next();
                 System.out.println(dataField.toString());
             }
             System.out.print('\n');
 
-            // get all occurences for a given list of tags
+            // get all occurrences for a given list of tags
             String[] tags = { "010", "100", "245", "250", "260", "300" };
             dataFields = record.getVariableFields(tags);
             i = dataFields.iterator();
@@ -77,11 +78,11 @@ public class DataFieldExample {
             System.out.println("Tag: " + tag + " Indicator 1: " + ind1
                     + " Indicator 2: " + ind2);
 
-            List subfields = dataField.getSubfields();
-            i = subfields.iterator();
+            List<Subfield> subfields = dataField.getSubfields();
+            Iterator<Subfield> j = subfields.iterator();
 
-            while (i.hasNext()) {
-                Subfield subfield = (Subfield) i.next();
+            while (j.hasNext()) {
+                Subfield subfield = (Subfield) j.next();
                 char code = subfield.getCode();
                 String data = subfield.getData();
 

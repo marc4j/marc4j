@@ -26,6 +26,7 @@ import org.marc4j.MarcReader;
 import org.marc4j.MarcStreamReader;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
+import org.marc4j.marc.VariableField;
 
 /**
  * Demostrates the use of the find method.
@@ -44,7 +45,7 @@ public class CheckAgencyExample {
             Record record = reader.next();
 
             // check if the cataloging agency is DLC
-            List result = record.find("040", "DLC");
+            List<VariableField> result = record.find("040", "DLC");
             if (result.size() > 0)
                 System.out.println("Agency for this record is DLC");
 
