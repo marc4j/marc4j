@@ -30,43 +30,42 @@ import java.util.Collection;
  */
 public class Verifier {
 
-  private Verifier() {
-  }
+	private Verifier() {
+	}
 
-  /**
-   * Returns true if the given <code>String</code> value identifies a tag for
-   * a control field (001 through 009).
-   */
-  public static boolean isControlField(String tag) {
-    if (tag.length() == 3 && tag.charAt(0) == '0' && tag.charAt(1) == '0' && tag.charAt(2) >= '0' && tag.charAt(2) <= '9')// if (Integer.parseInt(tag) < 10)
-      return true;
-    return false;
-  }
+	/**
+	 * Returns true if the given <code>String</code> value identifies a tag for
+	 * a control field (001 through 009).
+	 */
+	public static boolean isControlField(String tag) {
+		return (tag.length() == 3 && tag.charAt(0) == '0'
+				&& tag.charAt(1) == '0' && tag.charAt(2) >= '0' && tag
+				.charAt(2) <= '9');// if
+									// (Integer.parseInt(tag)
+	}
 
-  /**
-   * Returns true if the given <code>String</code> value identifies a tag for
-   * a control number field (001).
-   */
-  public static boolean isControlNumberField(String tag){
-    if (tag.equals("001"))
-      return true;
-    return false;
-  }
-/**
-   * Returns true if the given <code>Collection</code> contains an instance of
-   * a <code>ControlField</code> with a control number field tag (001).
-   * 
-   * @param col
-   *          the collection of <code>ControlField</code> objects.
-   */
-  public static boolean hasControlNumberField(Collection<ControlField> col) {
-    for (ControlField field : col)
-    {
-        String tag = field.getTag();
-        if (isControlNumberField(tag))
-            return true;
-    }
-    return false;
-  }
+	/**
+	 * Returns true if the given <code>String</code> value identifies a tag for
+	 * a control number field (001).
+	 */
+	public static boolean isControlNumberField(String tag) {
+		return tag.equals("001");
+	}
+
+	/**
+	 * Returns true if the given <code>Collection</code> contains an instance of
+	 * a <code>ControlField</code> with a control number field tag (001).
+	 * 
+	 * @param col
+	 *            the collection of <code>ControlField</code> objects.
+	 */
+	public static boolean hasControlNumberField(Collection<ControlField> col) {
+		for (ControlField field : col) {
+			String tag = field.getTag();
+			if (isControlNumberField(tag))
+				return true;
+		}
+		return false;
+	}
 
 }
