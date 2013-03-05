@@ -19,11 +19,16 @@
  */
 package org.marc4j.marc.impl;
 
-import org.marc4j.marc.*;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.IllegalAddException;
+import org.marc4j.marc.Leader;
+import org.marc4j.marc.Record;
+import org.marc4j.marc.VariableField;
 
 /**
  * Represents a MARC record.
@@ -129,8 +134,8 @@ public class RecordImpl implements Record {
 		return dataFields;
 	}
 
-	public VariableField getVariableField(String tag) {
-		Iterator<? extends VariableField> i;
+	public VariableField getVariableField(final String tag) {
+		final Iterator<? extends VariableField> i;
 		if (Verifier.isControlField(tag))
 			i = controlFields.iterator();
 		else
@@ -143,8 +148,8 @@ public class RecordImpl implements Record {
 		return null;
 	}
 
-	public List<VariableField> getVariableFields(String tag) {
-		List<VariableField> fields = new ArrayList<VariableField>();
+	public List<VariableField> getVariableFields(final String tag) {
+		final List<VariableField> fields = new ArrayList<VariableField>();
 		Iterator<? extends VariableField> i;
 		if (Verifier.isControlField(tag))
 			i = controlFields.iterator();
@@ -159,14 +164,9 @@ public class RecordImpl implements Record {
 	}
 
 	public List<VariableField> getVariableFields() {
-		List<VariableField> fields = new ArrayList<VariableField>();
-		Iterator<? extends VariableField> i;
-		i = controlFields.iterator();
-		while (i.hasNext())
-			fields.add(i.next());
-		i = dataFields.iterator();
-		while (i.hasNext())
-			fields.add(i.next());
+		final List<VariableField> fields = new ArrayList<VariableField>();
+		fields.addAll(controlFields);
+		fields.addAll(dataFields);
 		return fields;
 	}
 
@@ -179,13 +179,10 @@ public class RecordImpl implements Record {
 			return f.getData();
 	}
 
-	public List<VariableField> getVariableFields(String[] tags) {
-		List<VariableField> list = new ArrayList<VariableField>();
-		for (int i = 0; i < tags.length; i++) {
-			String tag = tags[i];
-			List<VariableField> fields = getVariableFields(tag);
-			if (fields.size() > 0)
-				list.addAll(fields);
+	public List<VariableField> getVariableFields(final String[] tags) {
+		final List<VariableField> list = new ArrayList<VariableField>();
+		for (final String tag : tags) {
+			list.addAll(getVariableFields(tag));
 		}
 		return list;
 	}
@@ -235,35 +232,27 @@ public class RecordImpl implements Record {
 		return sb.toString();
 	}
 
-	public List<VariableField> find(String pattern) {
-		List<VariableField> result = new ArrayList<VariableField>();
-		Iterator<? extends VariableField> i = controlFields.iterator();
-		while (i.hasNext()) {
-			VariableField field = (VariableField) i.next();
-			if (field.find(pattern))
-				result.add(field);
-		}
-		i = dataFields.iterator();
-		while (i.hasNext()) {
-			VariableField field = (VariableField) i.next();
+	public List<VariableField> find(final String pattern) {
+		final List<VariableField> result = new ArrayList<VariableField>();
+		for (final VariableField field : getVariableFields()) {
 			if (field.find(pattern))
 				result.add(field);
 		}
 		return result;
 	}
 
-	public List<VariableField> find(String tag, String pattern) {
-		List<VariableField> result = new ArrayList<VariableField>();
-		for (VariableField field : getVariableFields(tag)) {
+	public List<VariableField> find(final String tag, final String pattern) {
+		final List<VariableField> result = new ArrayList<VariableField>();
+		for (final VariableField field : getVariableFields(tag)) {
 			if (field.find(pattern))
 				result.add(field);
 		}
 		return result;
 	}
 
-	public List<VariableField> find(String[] tag, String pattern) {
-		List<VariableField> result = new ArrayList<VariableField>();
-		for (VariableField field : getVariableFields(tag)) {
+	public List<VariableField> find(final String[] tag, final String pattern) {
+		final List<VariableField> result = new ArrayList<VariableField>();
+		for (final VariableField field : getVariableFields(tag)) {
 			if (field.find(pattern))
 				result.add(field);
 		}
