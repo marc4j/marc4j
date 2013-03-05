@@ -19,14 +19,12 @@
  */
 package org.marc4j.marc.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.IllegalAddException;
 import org.marc4j.marc.Subfield;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * Represents a data field in a MARC record.
@@ -178,8 +176,8 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
 		return false;
 	}
 
-	public Collection<Subfield> findAll(String pattern) {
-		final HashSet<Subfield> result = new HashSet<Subfield>();
+	public List<Subfield> findAll(String pattern) {
+		final List<Subfield> result = new ArrayList<Subfield>();
 		for (final Subfield sf : subfields) {
 			if (sf.find(pattern))
 				result.add(sf);
