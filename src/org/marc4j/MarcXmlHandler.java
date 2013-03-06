@@ -137,6 +137,12 @@ public class MarcXmlHandler implements ContentHandler {
       tag = atts.getValue(TAG_ATTR);
       String ind1 = atts.getValue(IND_1_ATTR);
       String ind2 = atts.getValue(IND_2_ATTR);
+      if(ind1 == null) {
+          throw new MarcException("missing ind1");
+      }
+      if(ind2 == null) {
+          throw new MarcException("missing ind2");
+      }
       if (ind1.length() == 0) ind1 = " ";
       if (ind2.length() == 0) ind2 = " ";
       dataField = factory.newDataField(tag, ind1.charAt(0), ind2.charAt(0));
