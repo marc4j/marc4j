@@ -150,6 +150,9 @@ public class MarcXmlHandler implements ContentHandler {
     case SUBFIELD_ID:
       sb = new StringBuffer();
       String code = atts.getValue(CODE_ATTR);
+      if(code == null || code.length() == 0) {
+          code=" "; // throw new MarcException("missing subfield 'code' attribute");
+      }
       subfield = factory.newSubfield(code.charAt(0));
     }
   }

@@ -33,13 +33,9 @@ import java.util.List;
 public class RecordImpl implements Record {
 
     private Long id;
-
     private Leader leader;
-
     protected List<ControlField> controlFields;
-
     protected List<DataField> dataFields;
-
     private String type;
 
     /**
@@ -202,11 +198,7 @@ public class RecordImpl implements Record {
      * Example:
      * <p/>
      * <pre>
-<<<<<<< HEAD
-     *     
-=======
      *
->>>>>>> refs/remotes/choose_remote_name/reader-test-improvements
      *      LEADER 00714cam a2200205 a 4500
      *      001 12883376
      *      005 20030616111422.0
