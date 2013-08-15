@@ -103,7 +103,7 @@
 			<manifest>
 			    <section name="org/marc4j">
 			      <attribute name="Specification-Title" value="marc4j"/>
-			      <attribute name="Specification-Version" value="2.5"/> 
+			      <attribute name="Specification-Version" value="${specversion}"/> 
 			      <attribute name="Specification-Vendor" value="org.marc4j"/> 
 
 			      <attribute name="Implementation-Title" value="marc4j"/>

@@ -35,10 +35,9 @@ _Crosswalking: Processing MARC in XML Environments with MARC4J_ is a concise boo
 
 h2. Download
 
-New! Latest release (MARC4J 2.5RC1):
+New! Latest release (MARC4J 2.6.0):
 
-* "marc4j-2.5RC1.jar":http://github.com/marc4j/marc4j/blob/master/releases/marc4j_2.5RC1.jar
-* "marc4j-2.5.1-beta.jar":http://github.com/marc4j/marc4j/blob/master/releases/marc4j-2.5.1.beta.jar
+* "marc4j-2.6.0.jar":https://github.com/marc4j/marc4j/blob/master/releases/marc4j-2.6.0.jar
 
 Check here for changes.
 

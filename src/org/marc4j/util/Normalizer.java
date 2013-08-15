@@ -3,6 +3,19 @@ package org.marc4j.util;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * 
+ * @author rh9ec
+ *
+ * This class is a shim interface to handle the normalization of unicode characters.
+ * This functionality is available in java 1.6+ and newer, via the java.text.Normalizer class.
+ * If for some reason that class is not available, this code will attempt to fall back to using either the 
+ * class   com.ibm.icu.text.Normalizer   from the icu4j library or to using the 
+ * class   com.solrmarc.icu.text.Normalizer   which is based on (an older version) of the preceding 
+ *                                            and which is included as a part of SolrMarc.
+ * Since Java 1.6 is now officially "end-of-lifed" it should be a reasonable assumption that users are 
+ * not using a version of java that is even older than that, and this shim interface class can be deprecated.
+ */
 
 public class Normalizer
 {

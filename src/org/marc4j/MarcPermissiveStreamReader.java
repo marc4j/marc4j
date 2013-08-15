@@ -137,7 +137,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
 
     private ErrorHandler errors;
     static String validSubfieldCodes = "abcdefghijklmnopqrstuvwxyz0123456789";
-   
+    static String upperCaseSubfieldsProperty = "org.marc4j.MarcPermissiveStreamReader.upperCaseSubfields";
     /**
      * Constructs an instance with the specified input stream with possible additional functionality
      * being enabled by setting permissive and/or convertToUTF8 to true.
@@ -1094,9 +1094,16 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 {
                     if (code >= 'A' && code <= 'Z')
                     { 
-                        code = Character.toLowerCase(code);    
-                        errors.addError(ErrorHandler.MINOR_ERROR, 
+                        if ( Boolean.parseBoolean(System.getProperty(upperCaseSubfieldsProperty, "false")) == false)
+                        {
+                            code = Character.toLowerCase(code);    
+                            errors.addError(ErrorHandler.MINOR_ERROR, 
                                         "Subfield tag is an invalid uppercase character, changing it to lower case.");
+                        }
+                        else // the System Property org.marc4j.MarcPermissiveStreamReader.upperCaseSubfields is defined to allow upperCaseSubfields
+                        {
+                            // therefore do nothing and be happy
+                        }
                     }
                     else if (code > 0x7f)
                     { 
