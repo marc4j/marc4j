@@ -21,6 +21,8 @@ public class StaticTestRecords {
     public static final String RESOURCES_CHABON_MRC = "/chabon.mrc";
     public static final String RESOURCES_CHABON_XML = "/chabon.xml";
 
+    public static final String RESOURCES_MARC8_UNICODE_NUMERIC_REF = "/marc8-unicode-numeric-ref.mrc";
+
     public static Record chabon[] = new Record[2];
     public static Record summerland[] = new Record[1];
     private static MarcFactory factory;

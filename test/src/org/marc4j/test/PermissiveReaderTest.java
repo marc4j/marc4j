@@ -48,6 +48,20 @@ public class PermissiveReaderTest {
     }
 
     @Test
+    public void testNumericCodeExpansionFromFile() throws Exception {
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_MARC8_UNICODE_NUMERIC_REF);
+
+
+        MarcPermissiveStreamReader reader = new MarcPermissiveStreamReader(input, true, true,"MARC-8");
+        Record r = reader.next();
+
+        DataField f = (DataField) r.getVariableField("260");
+        Subfield sf = f.getSubfield('a');
+
+        assertEquals("should be expanded", "Rio de Janeiro escaped replacement char: C .", sf.getData());
+    }
+
+    @Test
     public void testNumericCodeEscapingDisabled() throws Exception {
         ByteArrayInputStream in = getInputStreamForTestRecordWithNumericCoding();
         MarcPermissiveStreamReader reader = new MarcPermissiveStreamReader(in, true, true,"MARC-8");
