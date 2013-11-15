@@ -90,8 +90,8 @@
       <item name="Tag List" href="taglist.html"/>
     </menu>
     <menu name="Build Status">
-      <item img="https://travis-ci.org/marc4j/marc4j.png" name=" ↗"
-        href="https://travis-ci.org/marc4j/marc4j"/>
+      <item img="https://travis-ci.org/ksclarke/marc4j.png?branch=mavenized" name=" ↗"
+        href="https://travis-ci.org/ksclarke/marc4j"/>
     </menu>
     <menu name="Maven Docs" ref="reports"/>
     <menu name="Maven Theme">
