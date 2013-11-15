@@ -35,9 +35,9 @@
       <!-- Include the documentation and tools in the top navigation (in addition to links) -->
       <topNav>Documentation</topNav>
       <bottomNav maxSpan="12">
-        <column>Build Status|Project Links|Site Copyright</column>
+        <column>Build Status|Project Links</column>
         <column>Developer Reports</column>
-        <column>reports|Maven Theme</column>
+        <column>reports|Maven Theme|Site Copyright</column>
       </bottomNav>
       <pages>
         <index project="marc4j">
