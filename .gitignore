@@ -1,10 +1,8 @@
-dist
-build
-build.log
-ivy
-lib
-marc4j.iml
+# IDE config files... though these should probably be put in ~/.gitignore
 .idea
 .project
 .classpath
-generated-src
+.settings
+
+# Maven build artifacts, though also should be configured in ~/.gitignore
+target
