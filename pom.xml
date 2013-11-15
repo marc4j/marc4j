@@ -47,6 +47,7 @@
 			<roles>
 				<role>Developer</role>
 			</roles>
+			<timezone>America/New_York</timezone>
 		</developer>
 		<developer>
 			<email>mail@bpeters.com</email>
@@ -54,6 +55,7 @@
 			<roles>
 				<role>Developer</role>
 			</roles>
+			<timezone>Europe/Amsterdam</timezone>
 		</developer>
 	</developers>
 	<contributors>
@@ -67,11 +69,13 @@
 			<timezone>America/New_York</timezone>
 		</contributor>
 		<contributor>
+			<email>ohiocore@GMAIL.COM</email>
 			<name>Joe Atzberger</name>
 			<url>https://github.com/atz</url>
 			<roles>
 				<role>Contributor</role>
 			</roles>
+			<timezone>America/New_York</timezone>
 		</contributor>
 		<contributor>
 			<email>sesuncedu@gmail.com</email>
@@ -80,6 +84,7 @@
 			<roles>
 				<role>Contributor</role>
 			</roles>
+			<timezone>America/New_York</timezone>
 		</contributor>
 		<contributor>
 			<email>ksclarke@gmail.com</email>
