@@ -56,6 +56,12 @@ It's that simple.  If you have trouble, or would like to ask questions, feel fre
 * [Crosswalking: Processing MARC in XML Environments with MARC4J](http://www.amazon.com/Crosswalking-Processing-MARC-Environments-MARC4J/dp/1847530281)
 * [A Proposal to serialize MARC in JSON](http://dilettantes.code4lib.org/blog/2010/09/a-proposal-to-serialize-marc-in-json/)
 * [MARC-JSON Draft 2010-03-11](http://www.oclc.org/developer/content/marc-json-draft-2010-03-11)
+* [Format for Information Exchange](http://www.niso.org/kst/reports/standards?step=2&gid=&project_key=fb7a107043228a342cb704973825aca7bc6ae58d)
+* [MARC21](http://www.loc.gov/marc/)
+* [UNIMARC](http://www.ifla.org/publications/unimarc-formats-and-related-documentation)
+* [MARCXML](http://www.loc.gov/standards/marcxml/)
+* [SAX2](http://www.saxproject.org)
+* [JAXP](https://jaxp.java.net/)
 
 ### Questions?
 

@@ -30,11 +30,3 @@ This project is ready to be pushed into the [Sonatype OSS](https://oss.sonatype.
 
 So, poke around... experiment, and if you have any problems or questions, [feel free to contact me](mailto:ksclarke@gmail.com).
 
-### Related Resources for Further Study
-
-* [Format for Information Exchange](http://www.niso.org/standards/resources/Z39-2.pdf)
-* [MARC21](http://www.loc.gov/marc/)
-* [UNIMARC](http://www.ifla.org/VI/3/p1996-1/sec-uni.htm)
-* [MARCXML](http://www.loc.gov/standards/marcxml/)
-* [SAX2](http://www.saxproject.org)
-* [JAXP](http://java.sun.com/xml/jaxp/index.html)
