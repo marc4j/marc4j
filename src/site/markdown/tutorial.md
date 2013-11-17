@@ -23,16 +23,15 @@ This tutorial is for library programmers who want to learn to use MARC4J to proc
 MARC4J is designed to bridge the gap between MARC and XML. The software library has build-in support for reading and writing MARC and MARC XML data. MARC XML is a simple XML schema for MARC data published by the Library of Congress. MARC4J also provides a "pipeline" to enable MARC records to go through further transformations using XSLT, for example to convert MARC records to MODS (Metadata Object Description Schema). This feature is particular useful there is currently no agreed-upon standard for XML in
 library applications.
 
-Although MARC4J can be used as a command-line tool for conversions between MARC and XML, its main goal is to provide an Application Programming Interface (API) to develop any kind of Java program or servlet that involves reading or writing MARC data. The core piece is a MARC reader that hides the complexity of the MARC record by providing a simple interface to extract information from MARC records. Support for XML is implemented using the standard Java XML interfaces as specified in Sun's Java API for XML Processing ([JAXP](http://www.ifla.org/VI/3/p1996-1/sec-uni.htm)). By limiting itself to the JAXP API, is XML processor-independent and easy to integrate in applications that build on industry standards such as SAX (Simple API for XML) or DOM (Document Object Model).
+Although MARC4J can be used as a command-line tool for conversions between MARC and XML, its main goal is to provide an Application Programming Interface (API) to develop any kind of Java program or servlet that involves reading or writing MARC data. The core piece is a MARC reader that hides the complexity of the MARC record by providing a simple interface to extract information from MARC records. Support for XML is implemented using the standard Java XML interfaces as specified in Sun's Java API for XML Processing ([JAXP](https://jaxp.java.net/)). By limiting itself to the JAXP API, is XML processor-independent and easy to integrate in applications that build on industry standards such as SAX (Simple API for XML) or DOM (Document Object Model).
 
 ## What you should already know
 
-This tutorial assumes that you are interested in developing Java applications that involve MARC and XML. You have a basic understanding of a MARC format like [MARC 21](http://www.loc.gov/marc/) or [UNIMARC](http://www.ifla.org/VI/3/p1996-1/sec-uni.htm) and you are familiar
-with the basics of [XML](http://www.w3.org/XML/) and related standards like XML Namespaces and XSLT. Working with MARC4J does not require exceptional skills in Java programming. The API is designed to be easy to learn and easy to use. It works very straight-forwardly, and has a very shallow learning curve, so you should be able to get up and running with MARC4J very quickly. If you have no experience with the Java programming language at all, you should start with getting familiar with the basic concepts of the language. Sun's [Java Technology](http://java.sun.com/) site provides some good introductory tutorials on Java.
+This tutorial assumes that you are interested in developing Java applications that involve MARC and XML. You have a basic understanding of a MARC format like [MARC 21](http://www.loc.gov/marc/) or [UNIMARC](http://www.ifla.org/publications/unimarc-formats-and-related-documentation) and you are familiar with the basics of [XML](http://www.w3.org/XML/) and related standards like XML Namespaces and XSLT. Working with MARC4J does not require exceptional skills in Java programming. The API is designed to be easy to learn and easy to use. It works very straight-forwardly, and has a very shallow learning curve, so you should be able to get up and running with MARC4J very quickly. If you have no experience with the Java programming language at all, you should start with getting familiar with the basic concepts of the language. Oracle's [Java Technology](http://www.oracle.com/technetwork/java/index.html) site provides some good introductory tutorials on Java.
 
 ## Getting the Software
 
-You can download a MARC4J distribution at http://github.com/ksclarke/marc4j. On the project home page you can find a direct link to the distribution at the Download section. You can also find links to MARC4J distributions on the Documents & Files page. A link to this page can be found in the Project tools menu. The latest version at the time of this writing is MARC4J 2.2. The download includes Javadoc documentation, source code and two JAR files: `marc4j.jar` and `normalizer.jar`. Add both files to your CLASSPATH environment variable.
+For information about downloading the MARC4J software consult the [project's page on GitHub](http://github.com/ksclarke/marc4j).  There are several ways one might incorporate MARC4J into their project and the project page provides up-to-date details about the options.
 
 ### Note
 
@@ -612,7 +611,7 @@ Uses UTF-8 by default. You can override the value when instantiating a `MarcXmlW
 
 For the encoding in the XML declaration MARC4J relies on the underlying parser.
 
-Check the Java [supported encodings](http://java.sun.com/j2se/1.4.2/docs/guide/intl/encoding.doc.html) for the canonical name to use for a specific encoding.
+Check the Java [supported encodings](http://docs.oracle.com/javase/7/docs/technotes/guides/intl/encoding.doc.html) for the canonical name to use for a specific encoding.
 
 Now let's look at some examples. The following program reads ISO 2709 records using the default encoding and writes the records in ISO 2709 performing a MARC-8 to UCS/Unicode conversion:
 

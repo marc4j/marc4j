@@ -23,7 +23,7 @@ The MARC4J library includes:
 * Command-line utilities for MARC and MARCXML conversions.
 * Javadoc documentation.
 
-MARC4J provides readers and writers for MARC and MARCXML. A org.marc4j.MarcReader implementation parses input data and provides an iterator over a collection of org.marc4j.marc.Record objects. The record object model is also suitable for in-memory editing of MARC records, just as DOM is used for XML editing purposes. Using a org.marc4j.MarcWriter implementation it is possible to create MARC or MARCXML. Once MARC data has been converted to XML you can further process the result with XSLT, for example to convert MARC to MODS.
+MARC4J provides readers and writers for MARC and MARCXML. A `org.marc4j.MarcReader` implementation parses input data and provides an iterator over a collection of `org.marc4j.marc.Record` objects. The record object model is also suitable for in-memory editing of MARC records, just as DOM is used for XML editing purposes. Using a `org.marc4j.MarcWriter` implementation it is possible to create MARC or MARCXML. Once MARC data has been converted to XML you can further process the result with XSLT, for example to convert MARC to MODS.
 
 Although MARC4J is primarily designed for Java development you can use the command-line utilities `org.marc4j.util.MarcXmlDriver` and `org.marc4j.util.XmlMarcDriver` to convert between MARC and MARCXML. It is also possible to pre- or post-process the result using XSLT, for example to convert directly from MODS to MARC or from MARC to MODS.
 
