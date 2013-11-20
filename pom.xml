@@ -140,16 +140,6 @@
 							</includes>
 						</configuration>
 					</execution>
-					<execution>
-						<id>default-compile</id>
-						<phase>compile</phase>
-						<configuration>
-							<excludes>
-								<exclude>**/CodeTable.*</exclude>
-								<exclude>**/ReverseCodeTable*.java</exclude>
-							</excludes>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 			<plugin>
