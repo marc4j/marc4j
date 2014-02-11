@@ -431,9 +431,8 @@ public class AnselToUnicode extends CharConverter {
                 while (cdt.offset < len && ct.isCombining(data[cdt.offset], cdt.g0, cdt.g1)
                         && hasNext(cdt.offset, len)) 
                 {
-                    char c = getChar(data[cdt.offset], cdt.g0, cdt.g1);
+                    char c = getCharCDT(data, cdt);
                     if (c != 0) diacritics.put(new Character(c));
-                    cdt.offset++;
                     checkMode(data, cdt);
                 }
                 if (cdt.offset >= len)
@@ -444,8 +443,7 @@ public class AnselToUnicode extends CharConverter {
                         break;
                     }
                 }
-                char c2 = getChar(data[cdt.offset], cdt.g0, cdt.g1);
-                cdt.offset++;
+                char c2 = getCharCDT(data, cdt);
                 checkMode(data, cdt);
                 if (c2 != 0) sb.append(c2);
 
@@ -458,105 +456,38 @@ public class AnselToUnicode extends CharConverter {
             } 
             else if (cdt.multibyte)
             {
-                if (data[cdt.offset]== 0x20)
-                {
-                    // if a 0x20 byte occurs amidst a sequence of multibyte characters
-                    // skip over it and output a space.
-                    sb.append(getChar(data[cdt.offset], cdt.g0, cdt.g1));
-                    cdt.offset += 1;
-                }
-                else if (cdt.offset + 3 <= data.length && (errorList == null || data[cdt.offset+1]!= 0x20 && data[cdt.offset+2]!= 0x20)) 
-                {
-                    char c = getMBChar(makeMultibyte(data[cdt.offset], data[cdt.offset+1], data[cdt.offset+2]));
-                    if (errorList == null  || c != 0)
-                    { 
-                        sb.append(c);
-                        cdt.offset += 3;
-                    }
-                    else if (cdt.offset + 6 <= data.length && data[cdt.offset+4]!= 0x20 && data[cdt.offset+5]!= 0x20 &&
-                            getMBChar(makeMultibyte(data[cdt.offset+3], data[cdt.offset+4], data[cdt.offset+5])) != 0)
-                    {
-                        if (errorList != null)
-                        {
-                            errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, Discarding bad character and continuing reading Multibyte characters");
-                            sb.append("[?]");
-                            cdt.offset += 3;
-                        }
-                    }
-                    else if (cdt.offset + 4 <= data.length && data[cdt.offset] > 0x7f && 
-                            getMBChar(makeMultibyte(data[cdt.offset+1], data[cdt.offset+2], data[cdt.offset+3])) != 0)
-                    {
-                        if (errorList != null)
-                        {
-                            errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous character in MARC8 multibyte character, Copying bad character and continuing reading Multibyte characters");
-                            sb.append(getChar(data[cdt.offset], 0x42, 0x45));
-                            cdt.offset += 1;
-                        }
-                    }
-                    else
-                    {
-                        if (errorList != null)
-                        {
-                            errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, inserting change to default character set");
-                        }
-                        cdt.multibyte = false;
-                        cdt.g0 = 0x42;
-                        cdt.g1 = 0x45;
-                    }
-                } 
-                else if (errorList != null && cdt.offset + 4 <= data.length && ( data[cdt.offset+1] == 0x20 || data[cdt.offset+2]== 0x20)) 
-                {
-                    int multiByte = makeMultibyte( data[cdt.offset], ((data[cdt.offset+1] != 0x20)? data[cdt.offset+1] : data[cdt.offset+2]),  data[cdt.offset+3]);
-                    char c = getMBChar(multiByte);
-                    if (c != 0) 
-                    {
-                        if (errorList != null)
-                        {
-                            errorList.addError(ErrorHandler.ERROR_TYPO, "Extraneous space found within MARC8 multibyte character");
-                        }
-                        sb.append(c);
-                        sb.append(' ');
-                        cdt.offset += 4;
-                    }
-                    else
-                    {
-                        if (errorList != null)
-                        {
-                            errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, inserting change to default character set");
-                        }
-                        cdt.multibyte = false;
-                        cdt.g0 = 0x42;
-                        cdt.g1 = 0x45;
-                    }
-                } 
-                else if (cdt.offset + 3 > data.length || 
-                         cdt.offset + 3 == data.length && (data[cdt.offset+1]== 0x20 || data[cdt.offset+2]== 0x20)) 
-                {
-                    if (errorList != null)
-                    {
-                        errorList.addError(ErrorHandler.MINOR_ERROR, "Partial MARC8 multibyte character, inserting change to default character set");
-                        cdt.multibyte = false;
-                        cdt.g0 = 0x42;
-                        cdt.g1 = 0x45;
-                    }
-                    // if a field ends with an incomplete encoding of a multibyte character
-                    // simply discard that final partial character.
-                    else 
-                    {
-                        cdt.offset += 3;
-                    }
-                } 
+                String mbstr = convertMultibyte(cdt, data);
+                sb.append(mbstr);
             }
             else 
             {
-                char c = getChar(data[cdt.offset], cdt.g0, cdt.g1);
-                if (c != 0) sb.append(c);
-                else 
+                int offset = cdt.offset;
+                char cdtchar = data[offset];
+                char c = getCharCDT(data, cdt);
+                boolean greekErrorFixed = false;
+                if (errorList != null && cdt.g0 == 0x53 && data[offset] > 0x20 && data[offset] < 0x40)
                 {
-                    String val = "0000"+Integer.toHexString((int)(data[cdt.offset]));
+                    if (c == 0 && data[offset] > 0x20 && data[offset] < 0x40)
+                    {
+                        errorList.addError(ErrorHandler.MINOR_ERROR, "Unknown punctuation mark found in Greek character set, inserting change to default character set");
+                        cdt.g0 = 0x42;  // change to default character set
+                        c = getChar(data[offset], cdt.g0, cdt.g1);
+                        if (c != 0) { sb.append(c); greekErrorFixed = true; }
+                    }
+                    else if (offset+1 < data.length && data[offset] >= '0' && data[offset] <= '9' && data[offset+1] >= '0' && data[offset+1] <= '9')
+                    {
+                        errorList.addError(ErrorHandler.MINOR_ERROR, "Unlikely sequence of punctuation mark found in Greek character set, it likely a number, inserting change to default character set");
+                        cdt.g0 = 0x42;  // change to default character set
+                        char c1 = getChar(data[offset], cdt.g0, cdt.g1);
+                        if (c1 != 0) { sb.append(c1); greekErrorFixed = true; }                        
+                    }
+                }
+                if (!greekErrorFixed && c != 0) sb.append(c);
+                else if (!greekErrorFixed && c == 0)
+                {
+                    String val = "0000"+Integer.toHexString((int)(cdtchar));
                     sb.append("<U+"+ (val.substring(val.length()-4, val.length()))+ ">" );
                 }
-                cdt.offset += 1;
             }
             if (hasNext(cdt.offset, len))
             {
@@ -583,12 +514,221 @@ public class AnselToUnicode extends CharConverter {
 
     }
     
-    private String getCharFromCodePoint(String charCodePoint)
+    private String convertMultibyte(CodeTracker cdt, char[] data)
+    {
+        StringBuffer sb = new StringBuffer();
+        int offset = cdt.offset;
+        while (offset < data.length && data[offset]!= 0x1b)
+        {
+            int length = getRawMBLength(data, offset);
+            int spaces = getNumSpacesInMBLength(data, offset);
+            boolean errorsPresent = false;
+            if ((length - spaces) % 3 != 0) errorsPresent = true;
+            // if a 0x20 byte occurs amidst a sequence of multibyte characters
+            // skip over it and output a space.
+            if (data[offset] == 0x20) 
+            {
+                sb.append(' '); offset ++;
+            }
+            else if (errorsPresent == false && offset + 3 <= data.length && 
+                    (errorList == null || data[offset+1]!= 0x20 && data[offset+2]!= 0x20) &&
+                    getMBChar(makeMultibyte(data[offset], data[offset+1], data[offset+2])) != 0) 
+            {
+                char c = getMBChar(makeMultibyte(data[offset], data[offset+1], data[offset+2]));
+                if (errorList == null  || c != 0)
+                { 
+                    sb.append(c);
+                    offset += 3;
+                }
+            }
+            else if (offset + 6 < data.length && data[offset+4]!= 0x20 &&
+                    (getMBChar(makeMultibyte(data[offset+0], data[offset+1], data[offset+2])) == 0 ||
+                     getMBChar(makeMultibyte(data[offset+3], data[offset+4], data[offset+5])) == 0 ) &&
+                    getMBChar(makeMultibyte(data[offset+2], data[offset+3], data[offset+4])) != 0 )
+            {
+                String mbstr = getMBCharStr(makeMultibyte(data[offset], '[', data[offset+1])) + 
+                                getMBCharStr(makeMultibyte(data[offset], ']', data[offset+1])) +
+                                getMBCharStr(makeMultibyte(data[offset], data[offset+1], '[')) +
+                                getMBCharStr(makeMultibyte(data[offset], data[offset+1], ']'));
+                if (mbstr.length() == 1)
+                {
+                    if (errorList != null) errorList.addError(ErrorHandler.MINOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create the only valid option");
+                    sb.append(mbstr);
+                    offset += 2;
+                }
+                else if (mbstr.length() > 1)
+                {
+                    if (errorList != null) errorList.addError(ErrorHandler.MAJOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create a randomly chosen valid option");
+                    sb.append(mbstr.subSequence(0, 1));
+                    offset += 2;
+                }
+                else if (mbstr.length() == 0)
+                {
+                    if (errorList != null) errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, Discarding bad character and continuing reading Multibyte characters");
+                    sb.append("[?]");
+                    offset += 3;
+                }
+            }
+            else if (offset + 7 < data.length && data[offset+4]!= 0x20 &&
+                    (getMBChar(makeMultibyte(data[offset+0], data[offset+1], data[offset+2])) == 0 ||
+                     getMBChar(makeMultibyte(data[offset+3], data[offset+4], data[offset+5])) == 0 ) &&
+                     getMBChar(makeMultibyte(data[offset+4], data[offset+5], data[offset+6])) != 0 )
+            {
+                String mbstr = getMBCharStr(makeMultibyte(data[offset], '[', data[offset+1])) + 
+                                getMBCharStr(makeMultibyte(data[offset], ']', data[offset+1])) +
+                                getMBCharStr(makeMultibyte(data[offset], data[offset+1], '[')) +
+                                getMBCharStr(makeMultibyte(data[offset], data[offset+1], ']'));
+                if (mbstr.length() == 1)
+                {
+                    if (errorList != null) errorList.addError(ErrorHandler.MINOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create the only valid option");
+                    sb.append(mbstr);
+                    offset += 2;
+                }
+                else if (mbstr.length() > 1)
+                {
+                    if (errorList != null) errorList.addError(ErrorHandler.MAJOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create a randomly chosen valid option");
+                    sb.append(mbstr.subSequence(0, 1));
+                    offset += 2;
+                }
+                else if (mbstr.length() == 0)
+                {
+                    if (errorList != null) errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, Discarding bad character and continuing reading Multibyte characters");
+                    sb.append("[?]");
+                    offset += 3;
+                }
+            }
+            else if (offset + 4 <= data.length && data[offset] > 0x7f && 
+                    getMBChar(makeMultibyte(data[offset+1], data[offset+2], data[offset+3])) != 0)
+            {
+                if (errorList != null)
+                {
+                    errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous character in MARC8 multibyte character, Copying bad character and continuing reading Multibyte characters");
+                    sb.append(getChar(data[offset], 0x42, 0x45));
+                    offset += 1;
+                }
+            }
+            else if (errorList != null && offset + 4 <= data.length && ( data[offset+1] == 0x20 || data[offset+2]== 0x20)) 
+            {
+                int multiByte = makeMultibyte( data[offset], ((data[offset+1] != 0x20)? data[offset+1] : data[offset+2]),  data[offset+3]);
+                char c = getMBChar(multiByte);
+                if (c != 0) 
+                {
+                    if (errorList != null)
+                    {
+                        errorList.addError(ErrorHandler.ERROR_TYPO, "Extraneous space found within MARC8 multibyte character");
+                    }
+                    sb.append(c);
+                    sb.append(' ');
+                    offset += 4;
+                }
+                else
+                {
+                    if (errorList != null)
+                    {
+                        errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, inserting change to default character set");
+                    }
+                    cdt.multibyte = false;
+                    cdt.g0 = 0x42;
+                    cdt.g1 = 0x45;
+                    break;
+                }
+            } 
+            else if (offset + 3 > data.length || 
+                     offset + 3 == data.length && (data[offset+1]== 0x20 || data[offset+2]== 0x20)) 
+            {
+                if (errorList != null)
+                {
+                    errorList.addError(ErrorHandler.MINOR_ERROR, "Partial MARC8 multibyte character, inserting change to default character set");
+                }
+                cdt.multibyte = false;
+                cdt.g0 = 0x42; 
+                cdt.g1 = 0x45;
+                break;
+            } 
+            else if (offset + 3 <= data.length && getMBChar(makeMultibyte(data[offset+0], data[offset+1], data[offset+2])) != 0) 
+            {
+                char c = getMBChar(makeMultibyte(data[offset], data[offset+1], data[offset+2]));
+                if (errorList == null  || c != 0)
+                { 
+                    sb.append(c);
+                    offset += 3;
+                }
+            }
+            else
+            {
+                if (errorList != null)
+                {
+                    errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, inserting change to default character set");
+                }
+                cdt.multibyte = false;
+                cdt.g0 = 0x42; 
+                cdt.g1 = 0x45;
+                break;
+
+             }
+        }
+        cdt.offset = offset;
+        return(sb.toString());
+    }
+
+    private int getRawMBLength(char[] data, int offset)
+    {
+        int length = 0;
+        while (offset < data.length && data[offset] != 0x1b)
+        {
+            offset++;
+            length++;
+        }
+        return(length);
+    }
+    
+    private int getNumSpacesInMBLength(char[] data, int offset)
+    {
+        int cnt = 0;
+        while (offset < data.length && data[offset] != 0x1b)
+        {
+            if (data[offset] == ' ')
+                cnt++;
+            offset++;
+        }
+        return(cnt);
+    }
+
+    private char getCharCDT(char[] data, CodeTracker cdt)
+    {
+        char c = getChar(data[cdt.offset], cdt.g0, cdt.g1);
+        if (translateNCR && c == '&' && data.length > cdt.offset + 8)
+        {
+            String tmp = new String(data, cdt.offset, 8);
+            if (tmp.matches("&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f];"))
+            {
+                c = getCharFromCodePoint(tmp.substring(3,7));
+                cdt.offset += 8;
+            }
+            else 
+            {
+                cdt.offset++;
+            }
+        }
+        else
+        {
+            cdt.offset++;
+        }
+        return(c);
+    }
+
+    private char getCharFromCodePoint(String charCodePoint)
     {
         int charNum = Integer.parseInt(charCodePoint, 16);
-        String result = ""+((char)charNum);
-        return(result);
+        return((char)charNum);
     }
+    
+//    private String getCharStrFromCodePoint(String charCodePoint)
+//    {
+//        int charNum = Integer.parseInt(charCodePoint, 16);
+//        String result = ""+((char)charNum);
+//        return(result);
+//    }
 
 //    private int makeMultibyte(char[] data) {
 //        int[] chars = new int[3];
@@ -616,6 +756,12 @@ public class AnselToUnicode extends CharConverter {
 
     public char getMBChar(int ch) {
         return ct.getChar(ch, 0x31);
+    }
+    
+    public String getMBCharStr(int ch) {
+        char c = ct.getChar(ch, 0x31);
+        if (c == 0) return("");
+        else return ""+c;
     }
 
     private static boolean hasNext(int pos, int len) {
