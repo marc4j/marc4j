@@ -4,13 +4,20 @@ import org.junit.Test;
 import org.marc4j.MarcPermissiveStreamReader;
 import org.marc4j.MarcReader;
 import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.VariableField;
+import org.marc4j.test.utils.RecordTestingUtils;
 import org.marc4j.test.utils.StaticTestRecords;
 
 import java.io.InputStream;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class PermissiveReaderTest  {
 
@@ -77,4 +84,89 @@ public class PermissiveReaderTest  {
        assertEquals("99999", strLeader.substring(0, 5));
     }
     
+    // This test is targeted toward code that attempts to fix instances where a vertical bar character 
+    // has been interpreted as a sub-field separator, specifically in this case when the vertical bar 
+    // occurs in a string of cyrillic characters, and is supposed to be a CYRILLIC CAPITAL LETTER E 
+    @Test
+    public void testCyrillicEFix() throws Exception {
+       InputStream input = getClass().getResourceAsStream(
+               StaticTestRecords.RESOURCES_CYRILLIC_CAPITAL_E_MRC);
+        assertNotNull(input);
+       MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+       
+       while (reader.hasNext())
+       {
+           Record record = reader.next();
+           
+           //Get fields with Cyrillic characters
+           List<VariableField> fields = record.getVariableFields("880");
+    
+           for (VariableField field : fields)
+           {
+               DataField df = (DataField)field;
+               Subfield sf = df.getSubfield('6');
+               if (sf.getData().startsWith("26"))
+               {
+                   sf = df.getSubfield('b');
+                   if (!sf.getData().equalsIgnoreCase("Эксмо,"))
+                   {
+                       fail("broken cyrillic record should have been fixed");
+                   }
+               }
+           }
+       }
+    }
+    
+    // This test is targeted toward code that attempts to fix instances where within a string of characters
+    // in the greek character set, a character set change back to the default character set is missing.
+    // This would be indicated by characters being found for which there is no defined mapping in the greek character set
+    // (typically a punctuation mark) or by an unlikely sequence of punctuation marks being found, which typically would
+    // indicate a sequence of numerals.  The test reads a marc8 encoded version of a record with greek characters that has
+    // been damaged by an ILS system, through having character set changes back to the default character set deleted, 
+    // followed by that record represented in utf8, such that no character set changes are expected or needed, followed by a 
+    // third copy of the same record represented in marc8 but using numeric character references to encode the greek characters.
+    @Test
+    public void testGreekMissingCharSetChange() throws Exception {
+       InputStream input = getClass().getResourceAsStream(
+               StaticTestRecords.RESOURCES_GREEK_MISSING_CHARSET_MRC);
+        assertNotNull(input);
+       MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+       
+       Record record1 = reader.next();
+       Record record2 = reader.next();
+       Record record3 = reader.next();
+       
+       if (record1 != null && record2 != null)
+           RecordTestingUtils.assertEqualsIgnoreLeader(record1, record2);
+       if (record2 != null && record3 != null)
+           RecordTestingUtils.assertEqualsIgnoreLeader(record2, record3);
+    }
+    
+    // This test is targeted toward code that attempts to fix instances where Marc8 multibyte-encoded CJK characters
+    // are malformed, due to some software program deleting the characters '[' or ']' or '|'.  Each of these can
+    // occur as a part of a Marc8 multibyte-encoded CJK characters, but some poorly written software treats the vertical
+    // bar characters as subfield separators, and also summarily deletes the square brackets, which damages the Marc8 
+    // multibyte-encoded CJK characters and makes translating the data to Unicode extremely difficult.
+    @Test
+    public void testMangledChineseCharacters() throws Exception {
+       InputStream input = getClass().getResourceAsStream(
+               StaticTestRecords.RESOURCES_CHINESE_MANGLED_MULTIBYTE_MRC);
+       assertNotNull(input);
+       MarcReader reader = new MarcPermissiveStreamReader(input, true, true, "MARC8");
+       
+       Record record1 = reader.next();
+       Record record2 = reader.next();
+       Record record3 = reader.next();
+       Record record4 = reader.next();
+//       if (record1 != null && record2 != null)
+//           RecordTestingUtils.assertEqualsIgnoreLeader(record1, record2);
+       String diff12 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record1, record2);
+       String diff23 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record2, record3);
+       String diff34 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record3, record4);
+       assertNull("Tested records are unexpected different: "+diff23, diff23);
+       assertNull("Tested records are unexpected different: "+diff34, diff34);
+
+    }
+    
+
 }

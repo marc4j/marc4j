@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record>
+    <leader>02219cam a2200385Ia 4500</leader>
+    <controlfield tag="001">ocn814388508</controlfield>
+    <controlfield tag="003">OCoLC</controlfield>
+    <controlfield tag="005">20140115103422.0</controlfield>
+    <controlfield tag="008">121025s2011    gr ab    b    100 0 gre d</controlfield>
+    <datafield tag="040" ind1=" " ind2=" ">
+      <subfield code="a">JPG</subfield>
+      <subfield code="c">JPG</subfield>
+      <subfield code="d">JPG</subfield>
+    </datafield>
+    <datafield tag="066" ind1=" " ind2=" ">
+      <subfield code="c">(S</subfield>
+    </datafield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">9789608838765</subfield>
+    </datafield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfield code="a">9608838762</subfield>
+    </datafield>
+    <datafield tag="035" ind1=" " ind2=" ">
+      <subfield code="a">(OCoLC)814388508</subfield>
+    </datafield>
+    <datafield tag="041" ind1="0" ind2=" ">
+      <subfield code="a">gre</subfield>
+      <subfield code="a">eng</subfield>
+      <subfield code="a">ger</subfield>
+      <subfield code="b">eng</subfield>
+      <subfield code="b">gre</subfield>
+    </datafield>
+    <datafield tag="043" ind1=" " ind2=" ">
+      <subfield code="a">mm-----</subfield>
+    </datafield>
+    <datafield tag="050" ind1=" " ind2="4">
+      <subfield code="a">NA9070</subfield>
+      <subfield code="b">.A36 2011</subfield>
+    </datafield>
+    <datafield tag="049" ind1=" " ind2=" ">
+      <subfield code="a">VA@@</subfield>
+    </datafield>
+    <datafield tag="245" ind1="0" ind2="3">
+      <subfield code="6">880-01</subfield>
+      <subfield code="a">Hē agora stē Mesogeio :</subfield>
+      <subfield code="b">apo tous Homērikous heōs tous Rōmaikous chronous : Diethnes epistēmoniko synedrio, Kōs, 14-17 Apriliou 2011 = The agora in the Mediterranean : from Homeric to Roman times : International conference, Kos, 14-17 April 2011 /</subfield>
+      <subfield code="c">epistēmonikē epimeleia, Angelikē Giannikourē.</subfield>
+    </datafield>
+    <datafield tag="246" ind1="3" ind2="1">
+      <subfield code="a">Agora in the Mediterranean</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2=" ">
+      <subfield code="6">880-02</subfield>
+      <subfield code="a">Athēna :</subfield>
+      <subfield code="b">Hypourgeio Politismou kai Tourismou, Archaiologiko Instituto Aigaiakōn Spoudōn,</subfield>
+      <subfield code="c">2011.</subfield>
+    </datafield>
+    <datafield tag="300" ind1=" " ind2=" ">
+      <subfield code="a">438 p. :</subfield>
+      <subfield code="b">ill., maps ;</subfield>
+      <subfield code="c">28 cm.</subfield>
+    </datafield>
+    <datafield tag="504" ind1=" " ind2=" ">
+      <subfield code="a">Includes bibliographical references.</subfield>
+    </datafield>
+    <datafield tag="546" ind1=" " ind2=" ">
+      <subfield code="a">Contributions in Greek or English, with abstracts in the other language; 1 contribution in German, with abstract in Greek.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Plazas</subfield>
+      <subfield code="z">Mediterranean Region</subfield>
+      <subfield code="v">Congresses.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Cities and towns, Ancient</subfield>
+      <subfield code="z">Mediterranean Region</subfield>
+      <subfield code="v">Congresses.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Excavations (Archaeology)</subfield>
+      <subfield code="z">Mediterranean Region</subfield>
+      <subfield code="v">Congresses.</subfield>
+    </datafield>
+    <datafield tag="651" ind1=" " ind2="0">
+      <subfield code="a">Mediterranean Region</subfield>
+      <subfield code="x">Antiquities</subfield>
+      <subfield code="v">Congresses.</subfield>
+    </datafield>
+    <datafield tag="700" ind1="1" ind2=" ">
+      <subfield code="6">880-03</subfield>
+      <subfield code="a">Giannikourē, A.</subfield>
+    </datafield>
+    <datafield tag="710" ind1="1" ind2=" ">
+      <subfield code="6">880-04</subfield>
+      <subfield code="a">Greece.</subfield>
+      <subfield code="b">Archaiologiko Institouto Aigaiakōn Spoudōn.</subfield>
+    </datafield>
+    <datafield tag="880" ind1="0" ind2="2">
+      <subfield code="6">245-01/(S</subfield>
+      <subfield code="a">Η αγορά στη Μεσόγειο :</subfield>
+      <subfield code="b">από τους Ομηρικούς έως τους Ρωμαϊκούς χρόνους : Διεθνές επιστημονικό συνέδριο, Κως, 14-17 Απριλίου 2011 = The agora in the Mediterranean : from Homeric to Roman times : International conference, Kos, 14-17 April 2011 /</subfield>
+      <subfield code="c">επιστημονικη επιμέλεια Αγγελική Γιαννικουρη.</subfield>
+    </datafield>
+    <datafield tag="880" ind1=" " ind2=" ">
+      <subfield code="6">260-02/(S</subfield>
+      <subfield code="a">Αθηνα :</subfield>
+      <subfield code="b">Υπουργείο Πολιτισμου και Τουρισμου, Αρχαιολογικου Ινστιτουτου Αιγαιακών Σπουδών,</subfield>
+      <subfield code="c">2011.</subfield>
+    </datafield>
+    <datafield tag="880" ind1="1" ind2=" ">
+      <subfield code="6">700-03/(S</subfield>
+      <subfield code="a">Γιαννικουρη, Α.</subfield>
+    </datafield>
+    <datafield tag="880" ind1="1" ind2=" ">
+      <subfield code="6">710-04/(S</subfield>
+      <subfield code="a">Greece.</subfield>
+      <subfield code="b">Αρχαιολογικου Ινστιτουτου Αιγαιακών Σπουδών.</subfield>
+    </datafield>
+    <datafield tag="994" ind1=" " ind2=" ">
+      <subfield code="a">C0</subfield>
+      <subfield code="b">VA@</subfield>
+    </datafield>
+  </record>
+</collection>

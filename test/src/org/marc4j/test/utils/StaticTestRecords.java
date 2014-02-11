@@ -20,6 +20,10 @@ public class StaticTestRecords {
     public static final String RESOURCES_BRKRTEST_MRC = "/brkrtest.mrc";
     public static final String RESOURCES_CHABON_MRC = "/chabon.mrc";
     public static final String RESOURCES_CHABON_XML = "/chabon.xml";
+    public static final String RESOURCES_OCLC814388508_XML = "/OCLC_814388508.xml";    
+    public static final String RESOURCES_CYRILLIC_CAPITAL_E_MRC = "/cyrillic_capital_e.mrc";
+    public static final String RESOURCES_GREEK_MISSING_CHARSET_MRC = "/greekmissingcharsetchange.mrc";
+    public static final String RESOURCES_CHINESE_MANGLED_MULTIBYTE_MRC = "/chinese_mangled_multibyte.mrc";
 
     public static Record chabon[] = new Record[2];
     public static Record summerland[] = new Record[1];

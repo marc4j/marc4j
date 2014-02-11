@@ -54,6 +54,44 @@ public class RecordTestingUtils
 	    	fail(errmsg);
 	}
 
+	
+	   /**
+     * assert two Record objects are equal by comparing them as strings, skipping over the leader
+     */
+    public static String getFirstRecordDifferenceIgnoreLeader(Record expected, Record actual)
+    {
+        String actualId = actual.getControlNumber();
+        String errmsg = "Record " + actualId + " wasn't as expected";
+        
+        String expectedSubstring = expected.toString().substring(24);
+        String actualSubstring = actual.toString().substring(24);
+        if ( actualId.equals(expected.getControlNumber()) )
+        {
+            if (!expectedSubstring.equals(actualSubstring) )
+            {
+                String expectedLines[] = expectedSubstring.split("\n");
+                String actualLines[] = actualSubstring.split("\n");
+                int i = 0;
+                for (; i < Math.min(expectedLines.length, actualLines.length); i++)
+                {
+                    if (!expectedLines[i].equals(actualLines[i]))
+                    {
+                        return(expectedLines[i] + "\n" + actualLines[i]);
+                    }
+                }
+                if (i >= expectedLines.length && i < actualLines.length)
+                {
+                    return(actualLines[i]);
+                }
+                if (i < expectedLines.length && i >= actualLines.length)
+                {
+                    return(expectedLines[i]);
+                }
+            }
+        }       
+        return(null);
+    }
+
 	/**
 	 * assert two Record objects are not equal by comparing them as strings, skipping over the leader
 	 */
