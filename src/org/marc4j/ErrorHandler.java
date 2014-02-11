@@ -229,7 +229,6 @@ public class ErrorHandler {
      *  Copys a List of errors into the current error handler
      * 
      * @param newErrors - A list of Errors.
-     * @param message - A descriptive message about the error that was encountered.
      */
     public void addErrors(List newErrors)
     {
