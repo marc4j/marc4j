@@ -125,7 +125,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
     
     private int marc_file_lookahead_buffer = 200000;
     
-    private CharConverter converterAnsel = null;
+    private AnselToUnicode converterAnsel = null;
 
     private CharConverter converterUnimarc = null;
     
@@ -1150,6 +1150,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
         boolean inMultiByte = false;
         boolean justCleaned = false;
         int mbOffset = 0;
+        boolean inCyrillic = false;
+        int flen = 0;
         
         for (int i = 0 ; i < field.length-1; i++)
         {
@@ -1159,6 +1161,10 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 if ("(,)-'".indexOf((char)field[i+1]) != -1)
                 {
                     inMultiByte = false;
+                    if (i + 2 < field.length && (char)field[i+2] == 'N')
+                        inCyrillic = true;
+                    else 
+                        inCyrillic = false;
                 }
                 else if (i + 2 < field.length && field[i+1] == '$' && field[i+2] == '1')
                 {
@@ -1231,6 +1237,18 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     }
                     justCleaned = true;
                 }
+                else if (hasEsc && inCyrillic )
+                {
+                    String prev= new String(field, i-(flen-1), flen-1);
+                    
+                    if (!(field[i+1] >= 'a' && field[i+1] <= 'z')  || prev.equals("\u001b(N") )
+                    {
+                        errors.addError(ErrorHandler.MINOR_ERROR, 
+                                    "Subfield separator found in Cyrillic string, changing separator to a vertical bar, and continuing");
+                        field[i] = 0x7C;
+                        justCleaned = true;
+                    }
+                }
                 else if (hasEsc && !((field[i+1] >= 'a' && field[i+1] <= 'z') || (field[i+1] >= '0' && field[i+1] <= '9')))
                 {
                     errors.addError(ErrorHandler.MAJOR_ERROR, 
@@ -1263,6 +1281,14 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     field[i+1] = 0x7C;
                     justCleaned = true;
                 }
+            }
+            if (field[i] == Constants.US )
+            {
+                flen=0;
+            }
+            else
+            {
+                flen++;
             }
         }
     }
@@ -1546,7 +1572,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
     private String getMarc8Conversion(byte[] bytes)
     {
         String dataElement = null;
-        if (converterAnsel == null) converterAnsel = new AnselToUnicode(errors);            
+        if (converterAnsel == null) converterAnsel = new AnselToUnicode(errors);  
+        converterAnsel.setTranslateNCR(true);
         if (permissive && (byteArrayContains(bytes, badEsc) || byteArrayContains(bytes, overbar)))  
         {
             String newDataElement = null;
