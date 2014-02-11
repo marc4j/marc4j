@@ -51,7 +51,8 @@ public class UnicodeToAnsel extends CharConverter {
     static final char G1 = 0x29;
 
     static final int ASCII = 0x42;
-
+    boolean dontChangeCharset = false;
+    
     /**
      * Creates a new instance and loads the MARC4J supplied Ansel/Unicode
      * conversion tables based on the official LC tables. Loads in the generated class
@@ -59,6 +60,18 @@ public class UnicodeToAnsel extends CharConverter {
      * the MARC-8 encodings for given Unicode characters.
      */
     public UnicodeToAnsel() {
+        rct = loadGeneratedTable();
+        //this(UnicodeToAnsel.class
+        //        .getResourceAsStream("resources/codetables.xml"));
+    }
+    /**
+     * Creates a new instance and loads the MARC4J supplied Ansel/Unicode
+     * conversion tables based on the official LC tables. Loads in the generated class
+     * ReverseCodeTableGenerated which contains switch statements to lookup 
+     * the MARC-8 encodings for given Unicode characters.
+     */
+    public UnicodeToAnsel(boolean defaultCharsetOnlyPlusNCR) {
+        dontChangeCharset = true;
         rct = loadGeneratedTable();
         //this(UnicodeToAnsel.class
         //        .getResourceAsStream("resources/codetables.xml"));
@@ -150,6 +163,7 @@ public class UnicodeToAnsel extends CharConverter {
      */
     private void convertPortion(char data[], StringBuffer sb)
     {
+        int prev_len = 1;
         for (int i = 0; i < data.length; i++) 
         {
             Character c = new Character(data[i]);
@@ -205,10 +219,10 @@ public class UnicodeToAnsel extends CharConverter {
                     rct.setPreviousG0(ASCII);
                 }
                 if (charValue < 0x1000) 
-                    sb.append("&#x"+Integer.toHexString(charValue + 0x10000).toUpperCase().substring(1)+";");
+                    marc.append("&#x"+Integer.toHexString(charValue + 0x10000).toUpperCase().substring(1)+";");
                 else
-                    sb.append("&#x"+Integer.toHexString(charValue).toUpperCase()+";");
-                continue;
+                    marc.append("&#x"+Integer.toHexString(charValue).toUpperCase()+";");
+               //continue;
             }            
             else if (rct.inPreviousG0CharEntry(c))
             {
@@ -218,6 +232,14 @@ public class UnicodeToAnsel extends CharConverter {
             {
                 marc.append(rct.getCurrentG1CharEntry(c));
             } 
+            else if (dontChangeCharset)
+            {
+                if (charValue < 0x1000) 
+                    marc.append("&#x"+Integer.toHexString(charValue + 0x10000).toUpperCase().substring(1)+";");
+                else
+                    marc.append("&#x"+Integer.toHexString(charValue).toUpperCase()+";");
+           //     continue;
+            }
             else // need to change character set
             {
                 // if several MARC-8 character sets contain the given Unicode character, select the
@@ -259,7 +281,7 @@ public class UnicodeToAnsel extends CharConverter {
 
             if (rct.isCombining(c) && sb.length() > 0)
             {
-                sb.insert(sb.length() - 1, marc);
+                sb.insert(sb.length() - prev_len, marc);
                 
                 // Special case handling to handle the COMBINING DOUBLE INVERTED BREVE 
                 // and the COMBINING DOUBLE TILDE where a single double wide accent character
@@ -271,6 +293,7 @@ public class UnicodeToAnsel extends CharConverter {
             {
                 sb.append(marc);
             }
+            prev_len = marc.length();
         }    
     }
 
