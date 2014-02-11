@@ -231,10 +231,9 @@ public abstract class ReverseCodeTable
      * Lookups up the MARC8 translation of a given Unicode character and determines which of the MARC-8 
      * character sets that have a translation for that Unicode character is the best one to use. 
      * If one one charset has a translation, that one will be returned.  If more than one charset has a 
-     * translation
+     * translation then return the first one listed.
      * 
      * @param c - the UCS/Unicode character to look up
-     * @param charset - whether to use the current G0 charset of the current G1 charset to perform the lookup
      * @return boolean - true if there is a MARC-8 representation of the given Unicode character in the 
      *                   current G0 character set
      */
