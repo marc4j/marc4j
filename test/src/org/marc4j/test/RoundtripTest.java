@@ -236,6 +236,58 @@ public class RoundtripTest  {
         } while (r1 != null && r2 != null);
 
     }
+    
+    /**
+     * This test reads in a file of utf-8 encoded MarcXML records
+     * then writes those records out as marc8 encoded binary records using numeric characters 
+     * representations (NCR) instead of the standard marc-8 encodings.  It then reads those records 
+     * back in and writes them out as utf-8 encoded MarcXML records. The test then compares those MarcXML records 
+     * with the utf-8 encoded MarcXML records, expecting them to be identical.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testConvertToMarc8NCRRoundtrip() throws Exception {
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_OCLC814388508_XML);
+        assertNotNull(input);
+        ByteArrayOutputStream out1 = new ByteArrayOutputStream();
+        MarcXmlReader marcReader1 = new MarcXmlReader(input);
+        MarcStreamWriter marcWriter1 = new MarcStreamWriter(out1);
+        marcWriter1.setConverter(new UnicodeToAnsel(true));
+        while (marcReader1.hasNext()) {
+            Record record = marcReader1.next();
+            marcWriter1.write(record);
+        }
+        input.close();
+        marcWriter1.close();
+        out1.close();
+        ByteArrayOutputStream out2 = new ByteArrayOutputStream();
+        ByteArrayInputStream in = new ByteArrayInputStream(out1.toByteArray());
+        MarcStreamReader marcReader2 = new MarcStreamReader(in);
+        MarcXmlWriter marcWriter2 = new MarcXmlWriter(out2);
+        AnselToUnicode conv = new AnselToUnicode();
+        conv.setTranslateNCR(true);
+        marcWriter2.setConverter(conv);
+        while (marcReader2.hasNext()) {
+            Record record = marcReader2.next();
+            marcWriter2.write(record);
+        }
+        in.close();
+        marcWriter2.close();
+        out2.close();
+
+        InputStream inputCompare1 = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_OCLC814388508_XML);
+        InputStream inputCompare2 = new ByteArrayInputStream(out2.toByteArray());
+        MarcReader readComp1 = new MarcXmlReader(inputCompare1);
+        MarcReader readComp2 = new MarcXmlReader(inputCompare2);
+        Record r1, r2;
+        do {
+            r1 = (readComp1.hasNext()) ? readComp1.next() : null;
+            r2 = (readComp2.hasNext()) ? readComp2.next() : null;
+            if (r1 != null && r2 != null)
+                RecordTestingUtils.assertEqualsIgnoreLeader(r1, r2);
+        } while (r1 != null && r2 != null);
+    }
 
 
 }
