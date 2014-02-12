@@ -19,34 +19,18 @@
  */
 package org.marc4j;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import org.marc4j.converter.CharConverter;
+import org.marc4j.converter.impl.AnselToUnicode;
+import org.marc4j.converter.impl.Iso5426ToUnicode;
+import org.marc4j.marc.*;
+import org.marc4j.marc.impl.Verifier;
+import org.marc4j.util.Normalizer;
+
+import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.marc4j.Constants;
-import org.marc4j.MarcException;
-import org.marc4j.MarcReader;
-import org.marc4j.converter.CharConverter;
-import org.marc4j.converter.impl.AnselToUnicode;
-import org.marc4j.converter.impl.Iso5426ToUnicode;
-import org.marc4j.marc.ControlField;
-import org.marc4j.marc.DataField;
-import org.marc4j.marc.Leader;
-import org.marc4j.marc.MarcFactory;
-import org.marc4j.marc.Record;
-import org.marc4j.marc.Subfield;
-import org.marc4j.marc.VariableField;
-import org.marc4j.marc.impl.Verifier;
-import org.marc4j.util.Normalizer;
 
 /**
  * An iterator over a collection of MARC records in ISO 2709 format, that is designed
@@ -123,6 +107,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
    
     private boolean permissive = false;
     
+    private boolean translateLosslessUnicodeNumericCodeReferencesEnabled=true;
     private int marc_file_lookahead_buffer = 200000;
     
     private AnselToUnicode converterAnsel = null;
@@ -239,6 +224,23 @@ public class MarcPermissiveStreamReader implements MarcReader {
         this.errors = errors;
     }
     
+    /**
+     * @return  true if numeric character entities like &#xFFFD; should be converted to their corresponding code point
+     * if converting to unicode. Default is to convert.
+     */
+    public boolean isTranslateLosslessUnicodeNumericCodeReferencesEnabled() {
+        return translateLosslessUnicodeNumericCodeReferencesEnabled;
+    }
+
+    /**
+     * Enable convesion of numeric code references into their corresponding code points when converting to unicode
+     * @param translateLosslessUnicodeNumericCodeReferencesEnabled
+     */
+    public void setTranslateLosslessUnicodeNumericCodeReferencesEnabled(boolean translateLosslessUnicodeNumericCodeReferencesEnabled) {
+        this.translateLosslessUnicodeNumericCodeReferencesEnabled = translateLosslessUnicodeNumericCodeReferencesEnabled;
+    }
+
+
     /**
      * Returns true if the iteration has more records, false otherwise.
      */
@@ -626,17 +628,17 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 byte byteCheck[] = utfCheck.getBytes("UTF-8");
                 if (recordBuf.length == byteCheck.length)
                 {
-	                for (int i = 0; i < recordBuf.length; i++)
-	                {
-	                    // need to check for byte < 0 to see if the high bit is set, because Java doesn't have unsigned types.
-	                    if (recordBuf[i] < 0x00 || byteCheck[i] != recordBuf[i])
-	                    {
-	                        errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
+                    for (int i = 0; i < recordBuf.length; i++)
+                    {
+                        // need to check for byte < 0 to see if the high bit is set, because Java doesn't have unsigned types.
+                        if (recordBuf[i] < 0x00 || byteCheck[i] != recordBuf[i])
+                        {
+                            errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
                                         "Record claims not to be UTF-8, but it seems to be.");
                             encoding = "UTF8-Maybe";
                             break;
-	                    }
-	                }
+                        }
+                    }
                 }
              }
             catch (UnsupportedEncodingException e)
@@ -1121,12 +1123,12 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     }
                     else if (code == ' ')
                     {
-                     	errors.addError(ErrorHandler.MAJOR_ERROR, 
+                        errors.addError(ErrorHandler.MAJOR_ERROR, 
                                         "Subfield tag is a space which is an invalid character");
                     }
-                  	else 
+                    else 
                     {
-                     	errors.addError(ErrorHandler.MAJOR_ERROR, 
+                        errors.addError(ErrorHandler.MAJOR_ERROR, 
                                         "Subfield tag is an invalid character, [ "+((char)code)+" ]");
                     }
                 }
@@ -1573,7 +1575,10 @@ public class MarcPermissiveStreamReader implements MarcReader {
     {
         String dataElement = null;
         if (converterAnsel == null) converterAnsel = new AnselToUnicode(errors);  
-        converterAnsel.setTranslateNCR(true);
+        if(isTranslateLosslessUnicodeNumericCodeReferencesEnabled()) {
+            AnselToUnicode anselConverter = (AnselToUnicode) converterAnsel;
+            anselConverter.setTranslateNCR(isTranslateLosslessUnicodeNumericCodeReferencesEnabled());
+        }
         if (permissive && (byteArrayContains(bytes, badEsc) || byteArrayContains(bytes, overbar)))  
         {
             String newDataElement = null;
@@ -1604,24 +1609,29 @@ public class MarcPermissiveStreamReader implements MarcReader {
         {
             dataElement = converterAnsel.convert(bytes);
         }
-        if (permissive && dataElement.matches("[^&]*&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f](%x)?.*"))
+        if (isTranslateLosslessUnicodeNumericCodeReferencesEnabled())
         {
-            Pattern pattern = Pattern.compile("&#x([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])(%x)?;?"); 
-            Matcher matcher = pattern.matcher(dataElement);
-            StringBuffer newElement = new StringBuffer();
-            int prevEnd = 0;
-            while (matcher.find())
+            // This code handles malformed Numeric Character references that either contain 
+            // an extraneous %x or which are missing the final semicolon
+            if (permissive && dataElement.matches("[^&]*&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][^;].*"))
             {
-                newElement.append(dataElement.substring(prevEnd, matcher.start()));
-                newElement.append(getChar(matcher.group(1)));
-                if (matcher.group(1).contains("%x") || !matcher.group(1).endsWith(";"))
+                Pattern pattern = Pattern.compile("&#x([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])(%x)?;?"); 
+                Matcher matcher = pattern.matcher(dataElement);
+                StringBuffer newElement = new StringBuffer();
+                int prevEnd = 0;
+                while (matcher.find())
                 {
-                    errors.addError(ErrorHandler.MINOR_ERROR, "Subfield contains invalid Unicode Character Entity : "+matcher.group(0));
+                    newElement.append(dataElement.substring(prevEnd, matcher.start()));
+                    newElement.append(getChar(matcher.group(1)));
+                    if (matcher.group(1).contains("%x") || !matcher.group(1).endsWith(";"))
+                    {
+                        errors.addError(ErrorHandler.MINOR_ERROR, "Subfield contains malformed Unicode Numeric Character Reference : "+matcher.group(0));
+                    }
+                    prevEnd = matcher.end();
                 }
-                prevEnd = matcher.end();
+                newElement.append(dataElement.substring(prevEnd));
+                dataElement = newElement.toString();
             }
-            newElement.append(dataElement.substring(prevEnd));
-            dataElement = newElement.toString();
         }
         return(dataElement);
     }

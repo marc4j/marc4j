@@ -3,23 +3,22 @@ package org.marc4j.test;
 import org.junit.Test;
 import org.marc4j.MarcPermissiveStreamReader;
 import org.marc4j.MarcReader;
-import org.marc4j.marc.ControlField;
-import org.marc4j.marc.DataField;
-import org.marc4j.marc.Record;
-import org.marc4j.marc.Subfield;
-import org.marc4j.marc.VariableField;
+
 import org.marc4j.test.utils.RecordTestingUtils;
+
+import org.marc4j.MarcStreamWriter;
+import org.marc4j.marc.*;
+
 import org.marc4j.test.utils.StaticTestRecords;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-public class PermissiveReaderTest  {
+public class PermissiveReaderTest {
 
     @Test
     public void testBadLeaderBytes10_11() throws Exception {
@@ -38,50 +37,95 @@ public class PermissiveReaderTest  {
         assertEquals(1, i);
     }
 
+
+    @Test
+    public void testNumericCodeEscapingEnabled() throws Exception {
+        ByteArrayInputStream in = getInputStreamForTestRecordWithNumericCoding();
+        MarcPermissiveStreamReader reader = new MarcPermissiveStreamReader(in, false, true,"MARC-8");
+        assertEquals("default lossless code expansion", true, reader.isTranslateLosslessUnicodeNumericCodeReferencesEnabled());
+
+        assertTrue("have a record", reader.hasNext());
+        Record r = reader.next();
+        assertFalse("too many records", reader.hasNext());
+        DataField f = (DataField) r.getVariableField("999");
+        Subfield sf = f.getSubfield('a');
+        assertEquals("Should be expanded", "Character Test", sf.getData());
+    }
+
+    @Test
+    public void testNumericCodeEscapingDisabled() throws Exception {
+        ByteArrayInputStream in = getInputStreamForTestRecordWithNumericCoding();
+        MarcPermissiveStreamReader reader = new MarcPermissiveStreamReader(in, true, true,"MARC-8");
+        reader.setTranslateLosslessUnicodeNumericCodeReferencesEnabled(false);
+        assertEquals("default lossless code expansion", false, reader.isTranslateLosslessUnicodeNumericCodeReferencesEnabled());
+
+        assertTrue("have a record", reader.hasNext());
+        Record r = reader.next();
+        assertFalse("too many records", reader.hasNext());
+        DataField f = (DataField) r.getVariableField("999");
+        Subfield sf = f.getSubfield('a');
+        assertEquals("Should NOT be expanded", "&#x0043;haracter Test", sf.getData());
+    }
+
+    private ByteArrayInputStream getInputStreamForTestRecordWithNumericCoding() {
+        MarcFactory factory =  MarcFactory.newInstance();
+        Record r = StaticTestRecords.chabon[0];
+        r.getLeader().setCharCodingScheme(' ');
+        VariableField f = factory.newDataField("999", ' ', ' ', "a", "&#x0043;haracter Test");
+        r.addVariableField(f);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MarcStreamWriter writer = new MarcStreamWriter(out);
+        writer.write(r);
+        writer.close();
+        byte recordBytes[] = out.toByteArray();
+
+        return new ByteArrayInputStream(recordBytes);
+    }
+
     @Test
     public void testTooLongMarcRecord() throws Exception {
-       InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BAD_TOO_LONG_PLUS_2_MRC);
-       assertNotNull(input);
-       // This marc file has three records, but the first one
-       // is too long for a marc binary record. Can we still read
-       // the next two?
-       MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
-              
-       Record bad_record = reader.next();
-       
-       // Bad record is a total loss, don't even bother trying to read
-       // it, but do we get the good records next?
-       Record good_record1 = reader.next();
-       ControlField good001 = good_record1.getControlNumberField();
-       assertEquals(good001.getData(), "360945"); 
-       
-       
-       Record good_record2 = reader.next();
-       good001 = good_record2.getControlNumberField();
-       assertEquals(good001.getData(), "360946"); 
-       
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BAD_TOO_LONG_PLUS_2_MRC);
+        assertNotNull(input);
+        // This marc file has three records, but the first one
+        // is too long for a marc binary record. Can we still read
+        // the next two?
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+
+        Record bad_record = reader.next();
+
+        // Bad record is a total loss, don't even bother trying to read
+        // it, but do we get the good records next?
+        Record good_record1 = reader.next();
+        ControlField good001 = good_record1.getControlNumberField();
+        assertEquals(good001.getData(), "360945");
+
+
+        Record good_record2 = reader.next();
+        good001 = good_record2.getControlNumberField();
+        assertEquals(good001.getData(), "360946");
+
     }
 
     @Test
     public void testTooLongLeaderByteRead() throws Exception {
-       InputStream input = getClass().getResourceAsStream(
-               StaticTestRecords.RESOURCES_BAD_TOO_LONG_PLUS_2_MRC);
+        InputStream input = getClass().getResourceAsStream(
+                StaticTestRecords.RESOURCES_BAD_TOO_LONG_PLUS_2_MRC);
         assertNotNull(input);
-       MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
-       
-       //First record is the long one. 
-       Record weird_record = reader.next();
-       
-       //is it's marshal'd leader okay?
-       String strLeader = weird_record.getLeader().marshal();
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
 
-       // Make sure only five digits for length is used in the leader,
-       // even though it's not big enough to hold the leader, we need to
-       // make sure byte offsets in the rest of the leader are okay. 
-       assertEquals("nas", strLeader.substring(5,8) );
-       
-       // And length should be set to our 99999 overflow value
-       assertEquals("99999", strLeader.substring(0, 5));
+        //First record is the long one.
+        Record weird_record = reader.next();
+
+        //is it's marshal'd leader okay?
+        String strLeader = weird_record.getLeader().marshal();
+
+        // Make sure only five digits for length is used in the leader,
+        // even though it's not big enough to hold the leader, we need to
+        // make sure byte offsets in the rest of the leader are okay.
+        assertEquals("nas", strLeader.substring(5, 8));
+
+        // And length should be set to our 99999 overflow value
+        assertEquals("99999", strLeader.substring(0, 5));
     }
     
     // This test is targeted toward code that attempts to fix instances where a vertical bar character 
@@ -108,7 +152,9 @@ public class PermissiveReaderTest  {
                if (sf.getData().startsWith("26"))
                {
                    sf = df.getSubfield('b');
-                   if (!sf.getData().equalsIgnoreCase("Эксмо,"))
+                   // test string is Эксмо,
+                   String testString = "\u042D\u043A\u0441\u043C\u043E,";
+                   if (!sf.getData().equalsIgnoreCase(testString))
                    {
                        fail("broken cyrillic record should have been fixed");
                    }
@@ -163,10 +209,31 @@ public class PermissiveReaderTest  {
        String diff12 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record1, record2);
        String diff23 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record2, record3);
        String diff34 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record3, record4);
-       assertNull("Tested records are unexpected different: "+diff23, diff23);
-       assertNull("Tested records are unexpected different: "+diff34, diff34);
+       assertNull("Tested records are unexpectedly different: "+diff23, diff23);
+       assertNull("Tested records are unexpectedly different: "+diff34, diff34);
+
+    }
+
+    // This test is targeted toward code that attempts to fix instances where a Numeric Character Reference
+    // is malformed.  The NCR somtimes is missing the terminal semicolon, and in other cases encountered in the wild
+    // the NCR is like &#x0E01%x;  with an extraneous %x inserted in the NCR.  The tested code looks for this pattern
+    // (when translation of NCR's is enabled) and deletes it before translating the NCR to the specified Unicode code point.
+    // The test file consists of two copies of the same record. One contains the malformed NCRs, the other contains the 
+    // record correctly encoded in Unicode.  After translating the records should be identical.
+    @Test
+    public void testMalformedNCRFix() throws Exception {
+       InputStream input = getClass().getResourceAsStream(
+               StaticTestRecords.RESOURCES_BAD_NUMERIC_CHARACTER_REFERENCE_MRC);
+        assertNotNull(input);
+       MarcReader reader = new MarcPermissiveStreamReader(input, true, true, "MARC8");
+       
+       Record record1 = reader.next();
+       Record record2 = reader.next();
+       
+       String diff12 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record1, record2);
+       assertNull("Tested records are unexpectedly different: "+diff12, diff12);
 
     }
     
-
+    
 }
