@@ -2,6 +2,7 @@ package org.marc4j.test;
 
 import org.junit.Test;
 import org.marc4j.MarcException;
+import org.marc4j.MarcReader;
 import org.marc4j.MarcStreamReader;
 import org.marc4j.MarcXmlWriter;
 import org.marc4j.converter.impl.AnselToUnicode;
@@ -10,9 +11,18 @@ import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Record;
 import org.marc4j.test.utils.StaticTestRecords;
 import org.marc4j.test.utils.TestUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
-import java.io.*;
+import javax.xml.transform.dom.DOMResult;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -85,6 +95,34 @@ public class MarcXmlWriterTest {
         MarcXmlWriter writer = new MarcXmlWriter(out, true);
         writer.write(record);
         writer.close();
+    }
+
+    @Test
+    public void testOutputToDOMResult() throws Exception {
+
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_SUMMERLAND_MRC);
+        assertNotNull("can't find summerland.mrc resource", input);
+        MarcReader reader = new MarcStreamReader(input);
+
+        DOMResult result = new DOMResult();
+        MarcXmlWriter writer = new MarcXmlWriter(result);
+        writer.setConverter(new AnselToUnicode());
+        while (reader.hasNext()) {
+            Record record = (Record) reader.next();
+            writer.write(record);
+        }
+        writer.close();
+
+        Document doc = (Document) result.getNode();
+        Element documentElement = doc.getDocumentElement();
+        assertEquals("document type should be collection","collection", documentElement.getLocalName());
+        NodeList children = documentElement.getChildNodes();
+        assertEquals("only one child",1, children.getLength());
+        Element child = (Element) children.item(0);
+        assertEquals("child should be a record","record", child.getNodeName());
+        assertEquals("one leader expected",1, child.getElementsByTagName("leader").getLength());
+
+
     }
 
     @Test
