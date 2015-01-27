@@ -307,8 +307,10 @@ public class MarcXmlWriter implements MarcWriter {
     public void close() {
         writeEndDocument();
         try {
-            writer.write("\n");
-            writer.close();
+            if (writer != null) {
+                writer.write("\n");
+                writer.close();
+            }
         } catch (IOException e) {
             throw new MarcException(e.getMessage(), e);
         }
