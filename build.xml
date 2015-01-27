@@ -65,7 +65,7 @@
     <target name="compile-all" depends="compile-base,compile-codegen"/>
 
 	<target name="compile-base" depends="prepare">
-        <javac encoding="UTF-8" srcdir="${src.dir}" destdir="${build.classes.dir}" includes="**/*.java" excludes="**/*Generated.java" debug="true" debuglevel="source,lines,vars">
+        <javac encoding="UTF-8" srcdir="${src.dir}" destdir="${build.classes.dir}" includes="**/*.java" excludes="**/*Generated.java" target="1.6" debug="true" debuglevel="source,lines,vars">
             <classpath refid="classpath" />
         </javac>
         <copy todir="${build.classes.dir}">
@@ -79,7 +79,7 @@
 	</target>
 
     <target name="compile-tests" depends="compile-all">
-        <javac encoding="UTF-8" srcdir="${test.src.dir}" destdir="${build.test-classes.dir}" includes="**/*.java" excludes="**/*Generated.java" debug="true" debuglevel="source,lines,vars">
+        <javac encoding="UTF-8" srcdir="${test.src.dir}" destdir="${build.test-classes.dir}" includes="**/*.java" excludes="**/*Generated.java" target="1.6" debug="true" debuglevel="source,lines,vars">
             <classpath refid="test.classpath" />
         </javac>
     </target>
@@ -116,6 +116,7 @@
                 <exclude name="**/CodeTableGenerator.class" />
                 <exclude name="**/ReverseCodeTableGenerator.class" />
 				<exclude name="**/samples/**/*.*" />
+				<exclude name="**/solrmarc/**/*.class" />
 				<exclude name="**/test/**/*.*" />
 				<include name="**/*.properties" />
 				<exclude name="**/*.xml" />

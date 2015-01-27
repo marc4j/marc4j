@@ -697,13 +697,30 @@ public class AnselToUnicode extends CharConverter {
     private char getCharCDT(char[] data, CodeTracker cdt)
     {
         char c = getChar(data[cdt.offset], cdt.g0, cdt.g1);
-        if (translateNCR && c == '&' && data.length > cdt.offset + 8)
+        if (translateNCR && c == '&' && data.length >= cdt.offset + 8)
         {
             String tmp = new String(data, cdt.offset, 8);
             if (tmp.matches("&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f];"))
             {
                 c = getCharFromCodePoint(tmp.substring(3,7));
                 cdt.offset += 8;
+            }
+            else if (tmp.matches("&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]%") && data.length >= cdt.offset + 10)
+            {
+                String tmp1 = new String(data, cdt.offset, 10);
+                if (tmp1.matches("&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]%x;"))
+                {
+                    c = getCharFromCodePoint(tmp1.substring(3,7));
+                    cdt.offset += 10;
+                    if (errorList != null)
+                    {
+                        errorList.addError(ErrorHandler.MINOR_ERROR, "Subfield contains malformed Unicode Numeric Character Reference : "+tmp1);
+                    }
+                }
+                else 
+                {
+                    cdt.offset++;
+                }
             }
             else 
             {

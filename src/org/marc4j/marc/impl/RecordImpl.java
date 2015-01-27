@@ -79,7 +79,11 @@ public class RecordImpl implements Record {
         if (field instanceof ControlField) 
         {
             ControlField controlField = (ControlField) field;
-            if (Verifier.isControlNumberField(tag)) 
+            if (Verifier.isLeaderField(tag))
+            {
+                // invalid operation, do nothing
+            }
+            else if (Verifier.isControlNumberField(tag)) 
             {
                 if (Verifier.hasControlNumberField(controlFields))
                     controlFields.set(0, controlField);
@@ -127,46 +131,77 @@ public class RecordImpl implements Record {
         return dataFields;
     }
 
-    public VariableField getVariableField(String tag) {
-        Iterator<? extends VariableField> i;
-        if (Verifier.isControlField(tag))
-            i = controlFields.iterator();
-        else
-            i = dataFields.iterator();
-        while (i.hasNext()) 
+    public VariableField getVariableField(String tag) 
+    {
+        List<VariableField> fields = getVariableFieldsWithLeader();
+        for (VariableField field : fields)
         {
-            VariableField field = (VariableField) i.next();
-            if (field.getTag().equals(tag))
-                return field;
+            if (fieldMatches(field, tag))
+                return(field);
         }
-        return null;
+        return(null);
+    }
+ 
+    private boolean fieldMatches(VariableField field, String tag)
+    {
+        if (field.getTag().equals(tag)) return true;
+        if (tag.startsWith("LNK") && field.getTag().equals("880")) 
+        {
+            DataField df = (DataField)field;
+            Subfield link = df.getSubfield('6');
+            if (link != null && link.getData().equals(tag.substring(3)))
+            {
+                return(true);
+            }
+        }
+        return false;
     }
 
-    public List<VariableField> getVariableFields(String tag) {
-        List<VariableField> fields = new ArrayList<VariableField>();
-        Iterator<? extends VariableField> i;
-        if (Verifier.isControlField(tag))
-            i = controlFields.iterator();
-        else
-            i = dataFields.iterator();
-        while (i.hasNext()) 
+    public List<VariableField> getVariableFields(String tag) 
+    {
+        List<VariableField> result = new ArrayList<VariableField>();
+        List<VariableField> fields = getVariableFieldsWithLeader();
+        for (VariableField field : fields)
         {
-            VariableField field = (VariableField) i.next();
-            if (field.getTag().equals(tag))
-                fields.add(field);
+            if (fieldMatches(field, tag))
+                result.add(field);
         }
+        return(result);
+    }
+    
+    public List<VariableField> getVariableFields(String[] tags) 
+    {
+        List<VariableField> result = new ArrayList<VariableField>();
+        List<VariableField> fields = getVariableFieldsWithLeader();
+        for (VariableField field : fields)
+        {
+            for (String tag : tags)
+            {
+                if (fieldMatches(field, tag))
+                {
+                    result.add(field);
+                    break;
+                }
+            }  
+        }
+        return(result);
+    }
+
+    public List<VariableField> getVariableFields() 
+    {
+        List<VariableField> fields = new ArrayList<VariableField>();
+        fields.addAll(controlFields);
+        fields.addAll(dataFields);
         return fields;
     }
-
-    public List<VariableField> getVariableFields() {
+    
+    public List<VariableField> getVariableFieldsWithLeader() 
+    {
         List<VariableField> fields = new ArrayList<VariableField>();
-        Iterator<? extends VariableField> i;
-        i = controlFields.iterator();
-        while (i.hasNext())
-            fields.add(i.next());
-        i = dataFields.iterator();
-        while (i.hasNext())
-            fields.add(i.next());
+        ControlField leaderAsField = new ControlFieldImpl("000", this.getLeader().toString());
+        fields.add(leaderAsField);
+        fields.addAll(controlFields);
+        fields.addAll(dataFields);
         return fields;
     }
 
@@ -177,18 +212,6 @@ public class RecordImpl implements Record {
             return null;
         else
             return f.getData();
-    }
-
-    public List<VariableField> getVariableFields(String[] tags) {
-        List<VariableField> list = new ArrayList<VariableField>();
-        for (int i = 0; i < tags.length; i++) 
-        {
-            String tag = tags[i];
-            List<VariableField> fields = getVariableFields(tag);
-            if (fields.size() > 0)
-                list.addAll(fields);
-        }
-        return list;
     }
 
     /**

@@ -29,7 +29,8 @@ import java.util.Collection;
  * @author Bas Peters
  */
 public class Verifier {
-
+  public static final String LEADER_AS_FIELD = "000";
+  
   private Verifier() {
   }
 
@@ -39,6 +40,16 @@ public class Verifier {
    */
   public static boolean isControlField(String tag) {
     if (tag.length() == 3 && tag.charAt(0) == '0' && tag.charAt(1) == '0' && tag.charAt(2) >= '0' && tag.charAt(2) <= '9')// if (Integer.parseInt(tag) < 10)
+      return true;
+    return false;
+  }
+
+  /**
+   * Returns true if the given <code>String</code> value identifies a tag for
+   * the Leader as a control field
+   */
+  public static boolean isLeaderField(String tag){
+    if (tag.equals(LEADER_AS_FIELD))
       return true;
     return false;
   }
