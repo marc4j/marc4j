@@ -300,7 +300,7 @@ public class LeaderImpl implements Leader {
                 setIndicatorCount(Integer.parseInt(s));
             else
                 setIndicatorCount(2);
-            s = String.valueOf(ldr.charAt(10));
+            s = String.valueOf(ldr.charAt(11));
             if (isInteger(s))
                 setSubfieldCodeLength(Integer.parseInt(s));
             else

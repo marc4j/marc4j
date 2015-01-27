@@ -19,6 +19,12 @@ public class LeaderTest extends TestCase {
         assertEquals("00714cam a2200205 a 4500", leader.toString());
     }
 
+    public void testUnmarshalSubfieldCodeLength() {
+        Leader leader = factory.newLeader();
+        leader.unmarshal("00714cam a2100205 a 4500");
+        assertEquals(1, leader.getSubfieldCodeLength());
+    }
+
     public void testMarshal() {
         Leader leader = factory.newLeader("00714cam a2200205 a 4500");
         assertEquals("00714cam a2200205 a 4500", leader.marshal());
