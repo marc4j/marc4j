@@ -24,6 +24,21 @@ import java.util.List;
 /**
  * Represents a data field in a MARC record.
  * 
+ * <h3>Subfield Selectors</h3>
+ * <p>
+ * The {@code getSubfields*} methods take a subfield selector string. 
+ * This string can be a simple list of subfield letters,
+ * or a bracket-enslosed character class expression, as in regular expressions.
+ * <p>
+ * For example:
+ * <ul>
+ * <li>
+ * {@code abc} well match any of subfields {@literal a}, {@literal b} or {@literal c}.
+ * <li>
+ * {@code [a-cf-g]} will match any of {@literal a-c} or {@literal f-g}, but not {@literal d}.
+ * </ul>
+ * <p>
+ * 
  * @author Bas Peters
  */
 public interface DataField extends VariableField {
@@ -65,15 +80,37 @@ public interface DataField extends VariableField {
 	 */
 	public List<Subfield> getSubfields();
 
-	/**
-	 * Returns the list of <code>Subfield</code> objects for the goven
-	 * subfield code.
-	 * 
-	 * @param code
-	 *            the subfield code
-	 * @return List - the list of <code>Subfield</code> objects
-	 */
-	public List<Subfield> getSubfields(char code);
+        /**
+         * Returns the list of <code>Subfield</code> objects for the given
+         * subfield code.
+         * 
+         * @param code
+         *            the subfield code
+         * @return List - the list of <code>Subfield</code> objects
+         */
+        public List<Subfield> getSubfields(char code);
+
+        /**
+         * Returns the list of <code>Subfield</code> objects that match the
+         * subfield spec.
+         * 
+         * @param sfSpec
+         *            the subfield spec
+         * @return List - the list of <code>Subfield</code> objects
+         */
+        public List<Subfield> getSubfields(String sfSpec);
+        
+        /**
+         * Get the data from the specified subfields.
+         * This is essentially a map/reduce over the subfields.
+         * <p>
+         * Currently, the subfield spec must specify each subfield needed, there is no covenient shorthand for a range.
+         * 
+         * @param df  datafield
+         * @param sfSpec  subfield spec
+         * @return requested subfield data, null if no subfields are matched
+         */
+        public String getSubfieldsAsString(String sfSpec);
 
 	/**
 	 * Returns the first <code>Subfield</code> with the given code.
