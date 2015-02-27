@@ -25,11 +25,14 @@ import org.marc4j.marc.Subfield;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents a data field in a MARC record.
  * 
  * @author Bas Peters
+ * @author Tod Olson, University of Chicago
  */
 public class DataFieldImpl extends VariableFieldImpl implements DataField {
 
@@ -156,6 +159,48 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
         }
         return retSubfields;
     }
+
+    @Override
+    public List<Subfield> getSubfields(String sfSpec) {
+        List<Subfield> sfData = new ArrayList<Subfield>();
+        if (sfSpec == null || sfSpec.length() == 0) {
+            for (Subfield sf : this.getSubfields()) {
+                sfData.add(sf);
+            }
+        } else if (sfSpec.contains("[")) {
+            // brackets means [a-cm-z] sort of pattern
+            //TODO: Pattern may be expensive, possible place for optimization?
+            Pattern sfPattern = Pattern.compile(sfSpec);
+            for (Subfield sf : this.getSubfields()) {
+                Matcher m = sfPattern.matcher("" + sf.getCode());
+                if (m.matches()) {
+                    sfData.add(sf);
+                }
+            }
+        } else {
+            // otherwise spec is list of subfield codes
+            for (Subfield sf : this.getSubfields()) {
+                if (sfSpec.contains(String.valueOf(sf.getCode()))) {
+                    sfData.add(sf);
+                }
+            }
+        }
+        return sfData;
+    }
+
+    public String getSubfieldsAsString(String sfSpec) {
+        //TODO: after subfield spec is fully developed, optimize to avoid the extra loop and gc from calling getSubfields
+        List<Subfield> sfList = this.getSubfields(sfSpec);
+        if (sfList.isEmpty()) {
+            return null;
+        }
+        StringBuilder buf = new StringBuilder();
+        for (Subfield sf : sfList) {
+            buf.append(sf.getData());
+        }
+        return buf.toString();
+    }
+
 
     public Subfield getSubfield(char code) {
         for (Subfield sf : subfields) 
