@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Represents a data field in a MARC record.
@@ -170,12 +171,18 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
         } else if (sfSpec.contains("[")) {
             // brackets means [a-cm-z] sort of pattern
             //TODO: Pattern may be expensive, possible place for optimization?
-            Pattern sfPattern = Pattern.compile(sfSpec);
-            for (Subfield sf : this.getSubfields()) {
-                Matcher m = sfPattern.matcher("" + sf.getCode());
-                if (m.matches()) {
-                    sfData.add(sf);
+            Pattern sfPattern = null;
+            try {
+                sfPattern = Pattern.compile(sfSpec);
+                for (Subfield sf : this.getSubfields()) {
+                    Matcher m = sfPattern.matcher("" + sf.getCode());
+                    if (m.matches()) {
+                        sfData.add(sf);
+                    }
                 }
+            }
+            catch (PatternSyntaxException pse) {
+                // swallow exception, return empty set
             }
         } else {
             // otherwise spec is list of subfield codes

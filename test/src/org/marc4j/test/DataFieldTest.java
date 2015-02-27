@@ -42,11 +42,15 @@ public class DataFieldTest  {
 
     @Test
     public void testGetSubfields() {
-        DataField df = factory.newDataField("245", '1', '0');
-        Subfield sf1 = factory.newSubfield('a', "Summerland");
-        Subfield sf2 = factory.newSubfield('c', "Michael Chabon");
+        DataField df = factory.newDataField("245", '0', '4');
+        Subfield sf1 = factory.newSubfield('a', "The summer-land ");
+        Subfield sf2 = factory.newSubfield('h', "[electronic resource] : ");
+        Subfield sf3 = factory.newSubfield('b', "a southern story / ");
+        Subfield sf4 = factory.newSubfield('c', "by a child of the sun.");
+        df.addSubfield(sf1);
         df.addSubfield(sf2);
-        df.addSubfield(0, sf1);
+        df.addSubfield(sf3);
+        df.addSubfield(sf4);
         List<Subfield> sList = (List<Subfield>) df.getSubfields("a");
         assertEquals(1, sList.size());
         assertEquals('a', sList.get(0).getCode());
@@ -57,13 +61,48 @@ public class DataFieldTest  {
         assertEquals('c', sList2.get(1).getCode());
         
         List<Subfield> sList3 = (List<Subfield>) df.getSubfields("[a-c]");
-        assertEquals(2, sList3.size());
+        assertEquals(3, sList3.size());
         assertEquals('a', sList3.get(0).getCode());
-        assertEquals('c', sList3.get(1).getCode());
+        assertEquals('b', sList3.get(1).getCode());
+        assertEquals('c', sList3.get(2).getCode());
         
-        List<Subfield> sList4 = (List<Subfield>) df.getSubfields("[c-e]");
-        assertEquals(1, sList4.size());
-        assertEquals('c', sList4.get(0).getCode());
+        List<Subfield> sList4 = (List<Subfield>) df.getSubfields("[a-cg-j]");
+        assertEquals(4, sList4.size());
+        assertEquals('a', sList4.get(0).getCode());
+        assertEquals('h', sList4.get(1).getCode());
+        assertEquals('b', sList4.get(2).getCode());
+        assertEquals('c', sList4.get(3).getCode());
+        
+        List<Subfield> sList5 = (List<Subfield>) df.getSubfields("[g-ja-b]");
+        assertEquals(3, sList5.size());
+        assertEquals('a', sList5.get(0).getCode());
+        assertEquals('h', sList5.get(1).getCode());
+        assertEquals('b', sList5.get(2).getCode());
+        
+        List<Subfield> sList6 = (List<Subfield>) df.getSubfields("[a-eb]");
+        assertEquals(3, sList6.size());
+        assertEquals('a', sList6.get(0).getCode());
+        assertEquals('b', sList6.get(1).getCode());
+        assertEquals('c', sList6.get(2).getCode());
+        
+        List<Subfield> sList7 = (List<Subfield>) df.getSubfields("[^h]");
+        assertEquals(3, sList7.size());
+        assertEquals('a', sList7.get(0).getCode());
+        assertEquals('b', sList7.get(1).getCode());
+        assertEquals('c', sList7.get(2).getCode());
+        
+        List<Subfield> sList8 = (List<Subfield>) df.getSubfields("[a-z&&[^bc]]");
+        assertEquals(2, sList8.size());
+        assertEquals('a', sList8.get(0).getCode());
+        assertEquals('h', sList8.get(1).getCode());
+
+        // Invalid character class -- should return an empty List
+        List<Subfield> sList9 = (List<Subfield>) df.getSubfields("[c-a]");
+        assertEquals(0, sList9.size());
+        
+        // Invalid character class -- should return an empty List
+        List<Subfield> sList10 = (List<Subfield>) df.getSubfields("[abc");
+        assertEquals(0, sList10.size());
     }
 
     @Test
