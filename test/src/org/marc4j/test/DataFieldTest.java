@@ -1,8 +1,11 @@
 package org.marc4j.test;
 
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Subfield;
@@ -10,6 +13,9 @@ import org.marc4j.marc.Subfield;
 import static org.junit.Assert.assertEquals;
 
 public class DataFieldTest  {
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     MarcFactory factory = MarcFactory.newInstance();
 
@@ -95,14 +101,38 @@ public class DataFieldTest  {
         assertEquals(2, sList8.size());
         assertEquals('a', sList8.get(0).getCode());
         assertEquals('h', sList8.get(1).getCode());
+    }
 
-        // Invalid character class -- should return an empty List
-        List<Subfield> sList9 = (List<Subfield>) df.getSubfields("[c-a]");
-        assertEquals(0, sList9.size());
-        
-        // Invalid character class -- should return an empty List
-        List<Subfield> sList10 = (List<Subfield>) df.getSubfields("[abc");
-        assertEquals(0, sList10.size());
+    @Test
+    public void testGetSubfieldsWithBadSubfieldSpec1() {
+        DataField df = factory.newDataField("245", '0', '4');
+        Subfield sf1 = factory.newSubfield('a', "The summer-land ");
+        Subfield sf2 = factory.newSubfield('h', "[electronic resource] : ");
+        Subfield sf3 = factory.newSubfield('b', "a southern story / ");
+        Subfield sf4 = factory.newSubfield('c', "by a child of the sun.");
+        df.addSubfield(sf1);
+        df.addSubfield(sf2);
+        df.addSubfield(sf3);
+        df.addSubfield(sf4);
+
+        exception.expect(PatternSyntaxException.class);
+        df.getSubfields("[c-a]");
+    }
+
+    @Test
+    public void testGetSubfieldsWithBadSubfieldSpec2() {
+        DataField df = factory.newDataField("245", '0', '4');
+        Subfield sf1 = factory.newSubfield('a', "The summer-land ");
+        Subfield sf2 = factory.newSubfield('h', "[electronic resource] : ");
+        Subfield sf3 = factory.newSubfield('b', "a southern story / ");
+        Subfield sf4 = factory.newSubfield('c', "by a child of the sun.");
+        df.addSubfield(sf1);
+        df.addSubfield(sf2);
+        df.addSubfield(sf3);
+        df.addSubfield(sf4);
+
+        exception.expect(PatternSyntaxException.class);
+        df.getSubfields("[abc");
     }
 
     @Test
