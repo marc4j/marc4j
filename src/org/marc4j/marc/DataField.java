@@ -26,18 +26,37 @@ import java.util.List;
  * 
  * <h3>Subfield Selectors</h3>
  * <p>
- * The {@code getSubfields*} methods take a subfield selector string. 
- * This string can be a simple list of subfield letters,
- * or a bracket-enslosed character class expression, as in regular expressions.
+ * The {@code getSubfields*} methods take a subfield selector string, or subfield spec. 
  * <p>
- * For example:
+ * The subfield spec can either specify each subfield needed, thusly:
  * <ul>
  * <li>
- * {@code abc} well match any of subfields {@literal a}, {@literal b} or {@literal c}.
- * <li>
- * {@code [a-cf-g]} will match any of {@literal a-c} or {@literal f-g}, but not {@literal d}.
+ * {@code abcfghnp}
  * </ul>
  * <p>
+ * or the subfield spec can be enclosed in square brackets, and it 
+ *    will be treated as a regular expression character class
+ *    and all subfields matching the pattern will be returned, thusly:
+ * <ul>
+ * <li>
+ * {@code [a-cf-hnp]}
+ * </ul>
+ * <p>
+ * Since it uses {@code java.util.regex.Pattern} other valid forms will work:
+ * <ul>
+ * <li>
+ * {@code [^h]} returns all subfields except those with code 'h'
+ * <li>
+ * {@code [a-z&&[^bc]]} returns any (lowercase) alphabetic subfield, except for 'b' or 'c'.
+ * </ul>
+ * <p>
+ * Note for both forms described above the order of the subfields in the specification 
+ *    is irrelevant, all subfields that match will be returned in the order that they 
+ *    occur in the DataField.
+ * <p>
+ * Note also that if an invalid regular expression character class is given (such as [c-a] )
+ *    this routine will quietly fail, and return no subfields whatsoever rather than 
+ *    throwing an exception. 
  * 
  * @author Bas Peters
  */
@@ -91,46 +110,25 @@ public interface DataField extends VariableField {
 
         /**
          * Returns the list of <code>Subfield</code> objects that match the
-         * subfield spec.
+         * subfield spec. Subfields are returned in the order they occur in the DataField.
          * <p>
-         * The subfield spec can either specify each subfield needed, thusly:    abcfghnp
-         *    or the subfield spec can be enclosed in square brackets, and it 
-         *    will be treated as a regular expression character class
-         *    and all subfields matching the pattern will be returned, thusly:    [a-cf-hnp]
-         *    Since it uses the regex.Pattern other valid forms will work:
-         *      [^h]  return all subfields except those with code 'h'
-         *      [a-z&&[^bc]] return any (lowercase) alphabetic subfield, except for 'b' or 'c'
-         * Note for both forms described above the order of the subfields in the specification 
-         *    is irrelevant, all subfields that match will be returned in the order that they 
-         *    occur in the DataField.
-         * Note also that if an invalid regular expression character class is given (such as [c-a] )
-         *    this routine will quietly fail, and return no subfields whatsoever rather than 
-         *    throwing an exception. 
+         * Note that if an invalid subfield spec is given this this routine will quietly
+         * fail, and return no subfields whatsoever rather than throwing an exception.
          * 
-         * @param sfSpec - the subfield spec
-         * @return List - the list of <code>Subfield</code> objects
+         * @param sfSpec  the subfield spec
+         * @return List of {@code Subfield} objects
          */
         public List<Subfield> getSubfields(String sfSpec);
         
         /**
          * Get the data from the specified subfields.
-         * This is essentially a map/reduce over the subfields.
+         * This is essentially a map/reduce over the subfields,
+         * Subfields data are written to the string in the order the occur in the DataField.
          * <p>
-         * The subfield spec can either specify each subfield needed, thusly:    abcfghnp
-         *    or the subfield spec can be enclosed in square brackets, and it 
-         *    will be treated as a regular expression character class
-         *    and all subfields matching the pattern will be returned, thusly:    [a-cf-hnp]
-         *    Since it uses the regex.Pattern other valid forms will work:
-         *      [^h]  return all subfields except those with code 'h'
-         *      [a-z&&[^bc]] return any (lowercase) alphabetic subfield, except for 'b' or 'c'
-         * Note for both forms described above the order of the subfields in the specification 
-         *    is irrelevant, all subfields that match will be returned in the order that they 
-         *    occur in the DataField.
-         * Note also that if an invalid regular expression character class is given (such as [c-a] )
-         *    this routine will quietly fail, and return no subfields whatsoever rather than 
-         *    throwing an exception. 
+         * Note that if an invalid subfield spec is given this this routine will quietly
+         * fail, and return no subfields whatsoever rather than throwing an exception.
          * 
-         * @param sfSpec - subfield spec
+         * @param sfSpec  subfield spec
          * @return requested subfield data, concatenated together as a single string, or null if no subfields are matched
          */
         public String getSubfieldsAsString(String sfSpec);
