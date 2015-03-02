@@ -182,7 +182,8 @@ public class DataFieldImpl extends VariableFieldImpl implements DataField {
                 }
             }
             catch (PatternSyntaxException pse) {
-                // swallow exception, return empty set
+                throw new PatternSyntaxException(pse.getDescription()+ " in subfield specification " + sfSpec,
+                                                 pse.getPattern(), pse.getIndex());
             }
         } else {
             // otherwise spec is list of subfield codes

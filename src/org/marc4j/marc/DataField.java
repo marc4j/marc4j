@@ -54,9 +54,9 @@ import java.util.List;
  *    is irrelevant, all subfields that match will be returned in the order that they 
  *    occur in the DataField.
  * <p>
- * Note also that if an invalid regular expression character class is given (such as [c-a] )
- *    this routine will quietly fail, and return no subfields whatsoever rather than 
- *    throwing an exception. 
+ * Note also that if an invalid regular expression character class (such as {@literal [c-a]} )
+ * is given to a subfield selector, it will throw a {@code java.util.regex.PatternSyntaxException}
+ * at runtime.
  * 
  * @author Bas Peters
  */
@@ -117,6 +117,7 @@ public interface DataField extends VariableField {
          * 
          * @param sfSpec  the subfield spec
          * @return List of {@code Subfield} objects
+         * @throws java.util.regex.PatternSyntaxException if {@code sfSpec} is an invalid bracket expression.
          */
         public List<Subfield> getSubfields(String sfSpec);
         
@@ -129,7 +130,9 @@ public interface DataField extends VariableField {
          * fail, and return no subfields whatsoever rather than throwing an exception.
          * 
          * @param sfSpec  subfield spec
-         * @return requested subfield data, concatenated together as a single string, or null if no subfields are matched
+         * @return requested subfield data, concatenated together as a single string, 
+         *         or null if no subfields are matched
+         * @throws java.util.regex.PatternSyntaxException if {@code sfSpec} is an invalid bracket expression.
          */
         public String getSubfieldsAsString(String sfSpec);
 
