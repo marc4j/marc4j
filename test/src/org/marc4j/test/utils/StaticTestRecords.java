@@ -25,6 +25,7 @@ public class StaticTestRecords {
     public static final String RESOURCES_GREEK_MISSING_CHARSET_MRC = "/greekmissingcharsetchange.mrc";
     public static final String RESOURCES_CHINESE_MANGLED_MULTIBYTE_MRC = "/chinese_mangled_multibyte.mrc";
     public static final String RESOURCES_BAD_NUMERIC_CHARACTER_REFERENCE_MRC = "/loongboonmee.mrc";
+    public static final String RESOURCES_BAD_CHARACTERS_IN_VARIOUS_FIELDS_MRC = "/bad-characters-in-various-fields.mrc";
 
     public static Record chabon[] = new Record[2];
     public static Record summerland[] = new Record[1];

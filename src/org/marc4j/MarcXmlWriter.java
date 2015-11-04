@@ -467,13 +467,13 @@ public class MarcXmlWriter implements MarcWriter {
 
         handler.startElement(Constants.MARCXML_NS_URI, LEADER, LEADER, atts);
         Leader leader = record.getLeader();
-        temp = leader.toString().toCharArray();
+        temp = getDataElement(leader.toString());
         handler.characters(temp, 0, temp.length);
         handler.endElement(Constants.MARCXML_NS_URI, LEADER, LEADER);
 
         for (ControlField field : record.getControlFields()) {
             atts = new AttributesImpl();
-            atts.addAttribute("", "tag", "tag", "CDATA", field.getTag());
+            atts.addAttribute("", "tag", "tag", "CDATA", getDataElementString(field.getTag()));
 
             if (indent)
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
@@ -486,9 +486,9 @@ public class MarcXmlWriter implements MarcWriter {
 
         for (DataField field : record.getDataFields()) {
             atts = new AttributesImpl();
-            atts.addAttribute("", "tag", "tag", "CDATA", field.getTag());
-            atts.addAttribute("", "ind1", "ind1", "CDATA", String.valueOf(field.getIndicator1()));
-            atts.addAttribute("", "ind2", "ind2", "CDATA", String.valueOf(field.getIndicator2()));
+            atts.addAttribute("", "tag", "tag", "CDATA", getDataElementString(field.getTag()));
+            atts.addAttribute("", "ind1", "ind1", "CDATA", getDataElementString(String.valueOf(field.getIndicator1())));
+            atts.addAttribute("", "ind2", "ind2", "CDATA", getDataElementString(String.valueOf(field.getIndicator2())));
 
             if (indent)
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
@@ -496,7 +496,7 @@ public class MarcXmlWriter implements MarcWriter {
             handler.startElement(Constants.MARCXML_NS_URI, DATA_FIELD, DATA_FIELD, atts);
             for (Subfield subfield : field.getSubfields()) {
                 atts = new AttributesImpl();
-                atts.addAttribute("", "code", "code", "CDATA", String.valueOf(subfield.getCode()));
+                atts.addAttribute("", "code", "code", "CDATA", getDataElementString(String.valueOf(subfield.getCode())));
 
                 if (indent)
                     handler.ignorableWhitespace("\n      ".toCharArray(), 0, 7);
@@ -519,7 +519,7 @@ public class MarcXmlWriter implements MarcWriter {
         handler.endElement(Constants.MARCXML_NS_URI, RECORD, RECORD);
     }
 
-    protected char[] getDataElement(String data) {
+    protected String getDataElementString(String data) {
         String dataElement = null;
         if (converter == null)
             dataElement = data;
@@ -527,6 +527,10 @@ public class MarcXmlWriter implements MarcWriter {
             dataElement = converter.convert(data);
         if (normalize)
             dataElement = Normalizer.normalize(dataElement, Normalizer.NFC);
-        return dataElement.toCharArray();
+        return dataElement;
+    }
+    
+    protected char[] getDataElement(String data) {
+        return getDataElementString(data).toCharArray();
     }
 }

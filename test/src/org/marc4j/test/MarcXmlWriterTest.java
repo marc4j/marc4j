@@ -167,4 +167,37 @@ public class MarcXmlWriterTest {
             }
         }
     }
+    
+    @Test
+    public void testMarcXmlWriterBadCharacters() throws Exception{
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BAD_CHARACTERS_IN_VARIOUS_FIELDS_MRC);
+        assertNotNull(input);
+        MarcXmlWriter writer = new MarcXmlWriter(out, true);
+        writer.setConverter(new AnselToUnicode());
+        MarcStreamReader reader = new MarcStreamReader(input);
+        while (reader.hasNext()) {
+            Record record = reader.next();
+            writer.write(record);
+        }
+        input.close();
+        writer.close();
+        BufferedReader testoutput = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(out.toByteArray()), "UTF-8"));
+        String line;
+        while ((line = testoutput.readLine()) != null) {
+            // Invalid char in leader.
+            if (line.matches("[ ]*<leader>.*")) 
+                assertTrue(line.contains(">01899cam &lt;U+0014&gt;22004458a 4500<"));
+            else if (line.matches("[ ]*<datafield tag=\"010\".*")) {
+                // Invalid char in indicators
+                assertTrue(line.contains("ind1=\"&lt;U+0014&gt;\""));                
+                assertTrue(line.contains("ind2=\"&lt;U+0014&gt;\""));                
+            }
+            else if (line.matches("[ ]*2011035923.*"))
+                // Invalid char in subfield name and subfield text
+                assertTrue(line.contains("<subfield code=\"&lt;U+0014&gt;\">&lt;U+0014&gt; 2011035923</subfield>"));                
+        }
+        testoutput.close();
+    }
 }
