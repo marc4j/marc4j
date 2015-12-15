@@ -113,6 +113,114 @@ public class RoundtripTest  {
                 RecordTestingUtils.assertEqualsIgnoreLeader(r1, r2);
         } while (r1 != null && r2 != null);
     }
+    
+    /**
+     * This test reads in a file of UTF8 encoded binary Marc records
+     * then writes those records out as MARC8 encoded binary Marc records,
+     * then reads those records back in and writes them out as UTF8 encoded binary
+     * Marc records. The test then compares those records with the original
+     * records, expecting them to be identical.  Specifically this tests for handling when 
+     * sequence of Multibyte characters has one (or more) characters from G1 character set.
+     * e.g.  a center dot punctuation mark (0xA8) between two Chinese characters.
+     * Previously the UnicodeToAnsel conversion would produce output in this situation 
+     * that the AnselToUnicode converter would claim had errors.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testWriteAndReadRoundtripChineseConverted() throws Exception {
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_CHINESE_WITH_CENTRAL_DOT_MRC);
+        assertNotNull(input);
+        ByteArrayOutputStream out1 = new ByteArrayOutputStream();
+        MarcStreamReader marcReader1 = new MarcStreamReader(input);
+        MarcStreamWriter marcWriter1 = new MarcStreamWriter(out1);
+        marcWriter1.setConverter(new UnicodeToAnsel());
+        while (marcReader1.hasNext()) {
+            Record record = marcReader1.next();
+            marcWriter1.write(record);
+        }
+        input.close();
+        marcWriter1.close();
+        out1.close();
+        ByteArrayOutputStream out2 = new ByteArrayOutputStream();
+        ByteArrayInputStream in = new ByteArrayInputStream(out1.toByteArray());
+        MarcStreamReader marcReader2 = new MarcStreamReader(in);
+        MarcStreamWriter marcWriter2 = new MarcStreamWriter(out2, "UTF-8");
+        marcWriter2.setConverter(new AnselToUnicode());
+        while (marcReader2.hasNext()) {
+            Record record = marcReader2.next();
+            marcWriter2.write(record);
+        }
+        in.close();
+        marcWriter2.close();
+        out2.close();
+
+        InputStream inputCompare1 = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_CHINESE_WITH_CENTRAL_DOT_MRC);
+        InputStream inputCompare2 = new ByteArrayInputStream(out2.toByteArray());
+        MarcReader readComp1 = new MarcStreamReader(inputCompare1);
+        MarcReader readComp2 = new MarcStreamReader(inputCompare2);
+        Record r1, r2;
+        do {
+            r1 = (readComp1.hasNext()) ? readComp1.next() : null;
+            r2 = (readComp2.hasNext()) ? readComp2.next() : null;
+            if (r1 != null && r2 != null)
+                RecordTestingUtils.assertEqualsIgnoreLeader(r1, r2);
+        } while (r1 != null && r2 != null);
+    }
+    
+    /**
+     * This test reads in a file of UTF8 encoded binary Marc records
+     * then writes those records out as MARC8 encoded binary Marc records,
+     * then reads those records back in and writes them out as UTF8 encoded binary
+     * Marc records. The test then compares those records with the original
+     * records, expecting them to be identical.  Specifically this tests for handling when 
+     * sequence of Multibyte characters has one (or more) characters from G1 character set.
+     * e.g.  a center dot punctuation mark (0xA8) between two Chinese characters.
+     * Previously the UnicodeToAnsel conversion would produce output in this situation 
+     * that the AnselToUnicode converter would claim had errors.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testWriteAndReadRoundtripChineseConvertedPermissive() throws Exception {
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_CHINESE_WITH_CENTRAL_DOT_MRC);
+        assertNotNull(input);
+        ByteArrayOutputStream out1 = new ByteArrayOutputStream();
+        MarcStreamReader marcReader1 = new MarcStreamReader(input);
+        MarcStreamWriter marcWriter1 = new MarcStreamWriter(out1);
+        marcWriter1.setConverter(new UnicodeToAnsel());
+        while (marcReader1.hasNext()) {
+            Record record = marcReader1.next();
+            marcWriter1.write(record);
+        }
+        input.close();
+        marcWriter1.close();
+        out1.close();
+        ByteArrayOutputStream out2 = new ByteArrayOutputStream();
+        ByteArrayInputStream in = new ByteArrayInputStream(out1.toByteArray());
+        MarcReader marcReader2 = new MarcPermissiveStreamReader(in, true, true);
+        MarcStreamWriter marcWriter2 = new MarcStreamWriter(out2, "UTF-8");
+        //marcWriter2.setConverter(new AnselToUnicode());
+        while (marcReader2.hasNext()) {
+            Record record = marcReader2.next();
+            marcWriter2.write(record);
+        }
+        in.close();
+        marcWriter2.close();
+        out2.close();
+
+        InputStream inputCompare1 = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_CHINESE_WITH_CENTRAL_DOT_MRC);
+        InputStream inputCompare2 = new ByteArrayInputStream(out2.toByteArray());
+        MarcReader readComp1 = new MarcStreamReader(inputCompare1);
+        MarcReader readComp2 = new MarcStreamReader(inputCompare2);
+        Record r1, r2;
+        do {
+            r1 = (readComp1.hasNext()) ? readComp1.next() : null;
+            r2 = (readComp2.hasNext()) ? readComp2.next() : null;
+            if (r1 != null && r2 != null)
+                RecordTestingUtils.assertEqualsIgnoreLeader(r1, r2);
+        } while (r1 != null && r2 != null);
+    }
 
     /**
      * This test reads in a file of Marc8 encoded binary Marc records
