@@ -1,5 +1,7 @@
 package org.marc4j.test;
 
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import org.junit.Test;
 import org.marc4j.MarcException;
 import org.marc4j.MarcReader;
@@ -15,7 +17,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXResult;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -166,5 +170,50 @@ public class MarcXmlWriterTest {
                 }
             }
         }
+    }
+    
+    @Test
+    public void testMarcXmlWriterBadCharacters() throws Exception{
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BAD_CHARACTERS_IN_VARIOUS_FIELDS_MRC);
+        assertNotNull(input);
+
+        OutputFormat format = new OutputFormat("xml","UTF-8", true);
+        XMLSerializer serializer = new XMLSerializer(out, format);
+        Result result = new SAXResult(serializer.asContentHandler());
+
+        MarcXmlWriter writer = new MarcXmlWriter(result);
+        
+        writer.setConverter(new AnselToUnicode());
+        writer.setCheckNonXMLChars(true);
+        MarcStreamReader reader = new MarcStreamReader(input);
+        while (reader.hasNext()) {
+            Record record = reader.next();
+            writer.write(record);
+        }
+        input.close();
+        writer.close();
+        BufferedReader testoutput = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(out.toByteArray()), "UTF-8"));
+        String line;
+        while ((line = testoutput.readLine()) != null) {
+            // Invalid char in leader.
+            if (line.matches("[ ]*<leader>.*")) 
+                assertTrue(line.contains(">01899cam &lt;U+0014&gt;22004458a 4500<"));
+            else if (line.matches("[ ]*<datafield tag=\"010\".*")) {
+                // Invalid char in indicators
+                assertTrue(line.contains("ind1=\"&lt;U+0014>\""));                
+                assertTrue(line.contains("ind2=\"&lt;U+0014>\""));                
+            }
+            else if (line.contains("2011035923")) {
+                // Invalid char in subfield name and subfield text
+                assertTrue(line.contains("<subfield code=\"&lt;U+0014>\">&lt;U+0014&gt; 2011035923</subfield>"));
+            }
+            else if (line.contains("9781410442444")) {
+                // subfield delimiter in subfield text
+                assertTrue(line.contains("<subfield code=\"&lt;U+0031>\">9781410442444 (hbk.)</subfield>"));
+            }
+        }
+        testoutput.close();
     }
 }

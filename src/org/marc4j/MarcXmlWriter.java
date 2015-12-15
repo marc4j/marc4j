@@ -19,8 +19,14 @@
  */
 package org.marc4j;
 
+import com.sun.org.apache.xerces.internal.util.XMLChar;
 import org.marc4j.converter.CharConverter;
-import org.marc4j.marc.*;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.Leader;
+import org.marc4j.marc.MarcFactory;
+import org.marc4j.marc.Record;
+import org.marc4j.marc.Subfield;
 import org.marc4j.util.Normalizer;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -33,7 +39,12 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 
 /**
  * Class for writing MARC record objects in MARCXML format. This class outputs a
@@ -208,6 +219,8 @@ public class MarcXmlWriter implements MarcWriter {
     private CharConverter converter = null;
 
     private boolean normalize = false;
+    
+    private boolean checkNonXMLChars = false;
 
     /**
      * Constructs an instance with the specified output stream.
@@ -359,6 +372,29 @@ public class MarcXmlWriter implements MarcWriter {
         return normalize;
     }
 
+    /**
+     * Optional check for characters that are invalid for xml (e.g. control characters),
+     * will convert to a form like "&lt;U+xxxx&gt;" where 'xxxx' is the equivalent hex value
+     * of the invalid character.  Useful for poor source data, but slows down the XML emission.
+     * @param checkNonXMLChars true if want to check (and replace) non-XML chars, false (default) otherwise.
+     */
+    public void setCheckNonXMLChars(boolean checkNonXMLChars)
+    {
+        this.checkNonXMLChars = checkNonXMLChars;
+    }
+
+    /**
+     * Returns true if this writer will check for non-XML characters and replace them with a form like "&lt;U+xxxx&gt;", 
+     * false otherwise.
+     * 
+     * @return boolean - true if this writer checks for (and replaces) non-XML characters, false otherwise. 
+     */
+    public boolean getCheckNonXMLChars()
+    {
+        return checkNonXMLChars;
+    }
+    
+
     protected void setHandler(Result result, Source stylesheet)
             throws MarcException {
         try {
@@ -467,13 +503,13 @@ public class MarcXmlWriter implements MarcWriter {
 
         handler.startElement(Constants.MARCXML_NS_URI, LEADER, LEADER, atts);
         Leader leader = record.getLeader();
-        temp = leader.toString().toCharArray();
+        temp = getDataElement(leader.toString());
         handler.characters(temp, 0, temp.length);
         handler.endElement(Constants.MARCXML_NS_URI, LEADER, LEADER);
 
         for (ControlField field : record.getControlFields()) {
             atts = new AttributesImpl();
-            atts.addAttribute("", "tag", "tag", "CDATA", field.getTag());
+            atts.addAttribute("", "tag", "tag", "CDATA", getDataElementString(field.getTag()));
 
             if (indent)
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
@@ -486,9 +522,9 @@ public class MarcXmlWriter implements MarcWriter {
 
         for (DataField field : record.getDataFields()) {
             atts = new AttributesImpl();
-            atts.addAttribute("", "tag", "tag", "CDATA", field.getTag());
-            atts.addAttribute("", "ind1", "ind1", "CDATA", String.valueOf(field.getIndicator1()));
-            atts.addAttribute("", "ind2", "ind2", "CDATA", String.valueOf(field.getIndicator2()));
+            atts.addAttribute("", "tag", "tag", "CDATA", getDataElementString(field.getTag()));
+            atts.addAttribute("", "ind1", "ind1", "CDATA", getDataElementString(String.valueOf(field.getIndicator1())));
+            atts.addAttribute("", "ind2", "ind2", "CDATA", getDataElementString(String.valueOf(field.getIndicator2())));
 
             if (indent)
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
@@ -496,7 +532,7 @@ public class MarcXmlWriter implements MarcWriter {
             handler.startElement(Constants.MARCXML_NS_URI, DATA_FIELD, DATA_FIELD, atts);
             for (Subfield subfield : field.getSubfields()) {
                 atts = new AttributesImpl();
-                atts.addAttribute("", "code", "code", "CDATA", String.valueOf(subfield.getCode()));
+                atts.addAttribute("", "code", "code", "CDATA", getDataElementString(String.valueOf(subfield.getCode())));
 
                 if (indent)
                     handler.ignorableWhitespace("\n      ".toCharArray(), 0, 7);
@@ -519,7 +555,7 @@ public class MarcXmlWriter implements MarcWriter {
         handler.endElement(Constants.MARCXML_NS_URI, RECORD, RECORD);
     }
 
-    protected char[] getDataElement(String data) {
+    protected String getDataElementString(String data) {
         String dataElement = null;
         if (converter == null)
             dataElement = data;
@@ -527,6 +563,32 @@ public class MarcXmlWriter implements MarcWriter {
             dataElement = converter.convert(data);
         if (normalize)
             dataElement = Normalizer.normalize(dataElement, Normalizer.NFC);
-        return dataElement.toCharArray();
+        if (checkNonXMLChars)
+            dataElement = CheckNonXMLChars(dataElement);
+        return dataElement;
+    }
+    
+    protected char[] getDataElement(String data) {
+        return getDataElementString(data).toCharArray();
+    }
+    
+    protected String CheckNonXMLChars(String dataElement)
+    {
+        StringBuffer out = new StringBuffer(dataElement.length());
+        for (char ch : dataElement.toCharArray())
+        {
+            if (XMLChar.isInvalid(ch))
+            {
+                out.append("<U+");
+                String hex = ("0000" + Integer.toString(ch));
+                out.append(hex.substring(hex.length()-4));
+                out.append('>');
+            }
+            else
+            {
+                out.append(ch);
+            }
+        }
+        return out.toString();
     }
 }
