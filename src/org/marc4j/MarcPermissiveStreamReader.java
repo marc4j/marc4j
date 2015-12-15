@@ -624,6 +624,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
         {
             try
             {
+                String marc8EscSeqCheck = new String(recordBuf, "ISO-8859-1");
+                boolean hasMarc8EscSeq = (marc8EscSeqCheck.split("\\e[-(,)$bsp]", 2).length > 1);
                 utfCheck = new String(recordBuf, "UTF-8");
                 byte byteCheck[] = utfCheck.getBytes("UTF-8");
                 if (recordBuf.length == byteCheck.length)
@@ -633,9 +635,19 @@ public class MarcPermissiveStreamReader implements MarcReader {
                         // need to check for byte < 0 to see if the high bit is set, because Java doesn't have unsigned types.
                         if (recordBuf[i] < 0x00 || byteCheck[i] != recordBuf[i])
                         {
-                            errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
-                                        "Record claims not to be UTF-8, but it seems to be.");
-                            encoding = "UTF8-Maybe";
+                            //  If record has MARC8 character set selection strings, it must be MARC8 encoded
+                            if (hasMarc8EscSeq)
+                            {
+                                errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
+                                    "Record has MARC8 escape sequences, but also seem to have UTF8-encoded characters.");
+                                encoding = "MARC8-Maybe";
+                            }
+                            else 
+                            {
+                                errors.addError("unknown", "n/a", "n/a", ErrorHandler.MINOR_ERROR, 
+                                    "Record claims not to be UTF-8, but it seems to be.");
+                                encoding = "UTF8-Maybe";
+                            }
                             break;
                         }
                     }
@@ -1043,7 +1055,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
             else
                 errors.setCurrentField(tag); 
             errors.setCurrentSubfield("n/a");
-            cleanupBadFieldSeperators(field);
+            cleanupBadFieldSeperators(field, errors);
         }
         ByteArrayInputStream bais = new ByteArrayInputStream(field);
         char ind1 = (char) bais.read();
@@ -1145,7 +1157,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
     
     static AnselToUnicode conv = null;
  
-    private void cleanupBadFieldSeperators(byte[] field)
+    public static void cleanupBadFieldSeperators(byte[] field, ErrorHandler errors)
     {
         if (conv == null) conv = new AnselToUnicode(true);
         boolean hasEsc = false;
@@ -1180,8 +1192,9 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 }
 
             }
-            else if (inMultiByte && field[i] != 0x20)   mbOffset = ( mbOffset == 0) ? 2 : mbOffset - 1;
-            if (inMultiByte && mbOffset == 0 && i + 2 < field.length)
+            else if (inMultiByte && (field[i] != 0x20 && field[i] >= 0))   
+                mbOffset = ( mbOffset == 0) ? 2 : mbOffset - 1;
+            if (inMultiByte && mbOffset == 0 && i + 2 < field.length && field[i] > 0)
             {
                 char c;
                 byte f1 = field[i];
@@ -1549,7 +1562,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
         return dataElement;
     }
 
-    private boolean byteArrayContains(byte[] bytes, byte[] seq)
+    private static boolean byteArrayContains(byte[] bytes, byte[] seq)
     {
         for ( int i = 0; i < bytes.length - seq.length; i++)
         {
@@ -1570,15 +1583,10 @@ public class MarcPermissiveStreamReader implements MarcReader {
     
     static byte badEsc[] = { (byte)('b'), (byte)('-'), 0x1b, (byte)('s') };
     static byte overbar[] = { (byte)(char)(0xaf) };
-     
-    private String getMarc8Conversion(byte[] bytes)
+    
+    public static String getMarc8Conversion(byte[] bytes, AnselToUnicode conv, boolean permissive, ErrorHandler errors, boolean doNCR)
     {
         String dataElement = null;
-        if (converterAnsel == null) converterAnsel = new AnselToUnicode(errors);  
-        if(isTranslateLosslessUnicodeNumericCodeReferencesEnabled()) {
-            AnselToUnicode anselConverter = (AnselToUnicode) converterAnsel;
-            anselConverter.setTranslateNCR(isTranslateLosslessUnicodeNumericCodeReferencesEnabled());
-        }
         if (permissive && (byteArrayContains(bytes, badEsc) || byteArrayContains(bytes, overbar)))  
         {
             String newDataElement = null;
@@ -1597,7 +1605,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     dataElement = newDataElement;
                     errors.addError(ErrorHandler.ERROR_TYPO, "Subfield contains 0xaf overbar character, changing it to proper MARC8 representation ");
                 }
-                dataElement = converterAnsel.convert(dataElement);                    
+                dataElement = conv.convert(dataElement);                    
             }
             catch (UnsupportedEncodingException e)
             {
@@ -1607,9 +1615,9 @@ public class MarcPermissiveStreamReader implements MarcReader {
         }
         else 
         {
-            dataElement = converterAnsel.convert(bytes);
+            dataElement = conv.convert(bytes);
         }
-        if (isTranslateLosslessUnicodeNumericCodeReferencesEnabled())
+        if (doNCR)
         {
             // This code handles malformed Numeric Character references that either contain 
             // an extraneous %x or which are missing the final semicolon
@@ -1633,6 +1641,19 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 dataElement = newElement.toString();
             }
         }
+        return(dataElement);
+
+    }
+    
+    private String getMarc8Conversion(byte[] bytes)
+    {
+        String dataElement = null;
+        if (converterAnsel == null) converterAnsel = new AnselToUnicode(errors);  
+        if(isTranslateLosslessUnicodeNumericCodeReferencesEnabled()) {
+            AnselToUnicode anselConverter = (AnselToUnicode) converterAnsel;
+            anselConverter.setTranslateNCR(isTranslateLosslessUnicodeNumericCodeReferencesEnabled());
+        }
+        dataElement = getMarc8Conversion(bytes, converterAnsel, permissive, errors, translateLosslessUnicodeNumericCodeReferencesEnabled);
         return(dataElement);
     }
     
@@ -1675,7 +1696,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
 
     }
     
-    private String getChar(String charCodePoint)
+    private static String getChar(String charCodePoint)
     {
         int charNum = Integer.parseInt(charCodePoint, 16);
         String result = ""+((char)charNum);

@@ -530,6 +530,38 @@ public class AnselToUnicode extends CharConverter {
             {
                 sb.append(' '); offset ++;
             }
+            else if (data[offset] >= 0x80)
+            {
+                char c2 = getChar(data[offset], cdt.g0, cdt.g1);
+                sb.append(c2);
+                offset += 1;
+            }
+            else if (errorList == null)
+            {
+                if (offset + 3 <= data.length)
+                {
+                    char c = getMBChar(makeMultibyte(data[offset], data[offset+1], data[offset+2]));
+                    if (c != 0)
+                    { 
+                        sb.append(c);
+                        offset += 3;
+                    }
+                    else
+                    {
+                        sb.append(data[offset]);
+                        sb.append(data[offset+1]);
+                        sb.append(data[offset+2]);
+                        offset += 3;
+                    }
+                }
+                else
+                {
+                    while (offset < data.length)
+                    {
+                        sb.append(data[offset++]);
+                    }
+                }
+            }
             else if (errorsPresent == false && offset + 3 <= data.length && 
                     (errorList == null || data[offset+1]!= 0x20 && data[offset+2]!= 0x20) &&
                     getMBChar(makeMultibyte(data[offset], data[offset+1], data[offset+2])) != 0) 
@@ -541,10 +573,12 @@ public class AnselToUnicode extends CharConverter {
                     offset += 3;
                 }
             }
-            else if (offset + 6 < data.length && data[offset+4]!= 0x20 &&
+            else if (offset + 6 < data.length && noneEquals(data, offset, offset+3, ' ') &&
                     (getMBChar(makeMultibyte(data[offset+0], data[offset+1], data[offset+2])) == 0 ||
                      getMBChar(makeMultibyte(data[offset+3], data[offset+4], data[offset+5])) == 0 ) &&
-                    getMBChar(makeMultibyte(data[offset+2], data[offset+3], data[offset+4])) != 0 )
+                    getMBChar(makeMultibyte(data[offset+2], data[offset+3], data[offset+4])) != 0  && 
+                    noneEquals(data, offset, offset+5, 0x1b) && noneInRange(data, offset, offset+5, 0x80, 0xFF) && 
+                    !nextEscIsMB(data, offset, data.length))
             {
                 String mbstr = getMBCharStr(makeMultibyte(data[offset], '[', data[offset+1])) + 
                                 getMBCharStr(makeMultibyte(data[offset], ']', data[offset+1])) +
@@ -566,13 +600,15 @@ public class AnselToUnicode extends CharConverter {
                 {
                     if (errorList != null) errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, Discarding bad character and continuing reading Multibyte characters");
                     sb.append("[?]");
-                    offset += 3;
+                    offset += 2;
                 }
             }
-            else if (offset + 7 < data.length && data[offset+4]!= 0x20 &&
+            else if (offset + 7 < data.length && noneEquals(data, offset, offset+3, ' ') &&
                     (getMBChar(makeMultibyte(data[offset+0], data[offset+1], data[offset+2])) == 0 ||
                      getMBChar(makeMultibyte(data[offset+3], data[offset+4], data[offset+5])) == 0 ) &&
-                     getMBChar(makeMultibyte(data[offset+4], data[offset+5], data[offset+6])) != 0 )
+                     getMBChar(makeMultibyte(data[offset+4], data[offset+5], data[offset+6])) != 0  && 
+                     noneEquals(data, offset, offset+6, 0x1b) &&  noneInRange(data, offset, offset+6, 0x80, 0xFF) && 
+                     !nextEscIsMB(data, offset, data.length))
             {
                 String mbstr = getMBCharStr(makeMultibyte(data[offset], '[', data[offset+1])) + 
                                 getMBCharStr(makeMultibyte(data[offset], ']', data[offset+1])) +
@@ -594,7 +630,7 @@ public class AnselToUnicode extends CharConverter {
                 {
                     if (errorList != null) errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, Discarding bad character and continuing reading Multibyte characters");
                     sb.append("[?]");
-                    offset += 3;
+                    offset += 2;
                 }
             }
             else if (offset + 4 <= data.length && data[offset] > 0x7f && 
@@ -669,6 +705,41 @@ public class AnselToUnicode extends CharConverter {
         }
         cdt.offset = offset;
         return(sb.toString());
+    }
+
+    private boolean nextEscIsMB(char[] data, int start, int length)
+    {
+        for (int offset = start; offset < length-1; offset++)
+        {
+            if (data[offset] == (char)0x1b)
+            {
+                if (data[offset+1] == '$')  
+                    return(true);
+                else   
+                    break;
+            }
+        }
+        return false;
+    }
+
+    private boolean noneEquals(char[] data, int start, int end, int val)
+    {
+        for (int offset = start; offset <= end; offset++)
+        {
+            if (data[offset] == (char)val) 
+                return(false);
+        }
+        return(true);
+    }
+
+    private boolean noneInRange(char[] data, int start, int end, int val1, int val2)
+    {
+        for (int offset = start; offset <= end; offset++)
+        {
+            if (data[offset] >= (char)val1 && data[offset] <= (char)val2) 
+                return(false);
+        }
+        return(true);
     }
 
     private int getRawMBLength(char[] data, int offset)
