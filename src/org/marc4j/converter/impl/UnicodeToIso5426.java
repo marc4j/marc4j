@@ -20,6 +20,7 @@
 package org.marc4j.converter.impl;
 
 import org.marc4j.converter.CharConverter;
+import org.marc4j.util.Normalizer;
 
 /**
  * <p>
@@ -44,9 +45,14 @@ public class UnicodeToIso5426 extends CharConverter {
    * @return {@link String}- the UNIMARC (ISO 5426 charset) data
    */
   public String convert(char data[]) {
+    // Conversion does not support "combining diacritical" characters
+    // Must normalize first for correct results
+    final char[] normalizedData = Normalizer.normalize(
+        String.valueOf(data), Normalizer.NFC).toCharArray();
+
     StringBuffer sb = new StringBuffer();
-    for (int i = 0; i < data.length; i++) {
-      char c = data[i];
+    for (int i = 0; i < normalizedData.length; i++) {
+      char c = normalizedData[i];
       if (c < 128)
         sb.append(c);
       else {
@@ -184,6 +190,8 @@ public class UnicodeToIso5426 extends CharConverter {
       return 0xC369; // small i with circumflex accent
     case 0x00EF:
       return 0xC869; // small i with diaeresis
+    case 0x00F0:
+      return 0xF3; // 7/3 small letter eth
     case 0x00F1:
       return 0xC46E; // small n with tilde
     case 0x00F2:
@@ -246,6 +254,8 @@ public class UnicodeToIso5426 extends CharConverter {
       return 0xCF64; // small d with caron
     case 0x0110:
       return 0xE2; // 6/2 CAPITAL LETTER D WITH STROKE
+    case 0x0111:
+      return 0xF2; // 7/2 small letter d with stroke
     case 0x0112:
       return 0xC545; // CAPITAL E WITH MACRON
     case 0x0113:
@@ -498,14 +508,14 @@ public class UnicodeToIso5426 extends CharConverter {
       return 0xBD; // 3/13 mjagkij znak
     case 0x02BA:
       return 0xBE; // 3/14 tverdyj znak
+    case 0x02BB:
+      return 0xB0; // 3/0 ayn
+    case 0x02BC:
+      return 0xB1; // 3/1 alif/hamzah
     case 0x02CC:
       return 0xDA20; // small low vertical bar
     case 0x02DB:
       return 0xD320; // ogonek
-    case 0x0623:
-      return 0xB1; // 3/1 alif/hamzah [alef with hamza above]
-    case 0x0639:
-      return 0xB0; // 3/0 ayn [ain]
     case 0x1E00:
       return 0xD441; // CAPITAL A WITH RING BELOW
     case 0x1E01:
@@ -744,14 +754,16 @@ public class UnicodeToIso5426 extends CharConverter {
       return 0xD920; // double underline
     case 0x2018:
       return 0xA9; // 2/9 left high single quotation mark
-    //          case 0x2018: return 0xB2; // 3/2 left low single quotation mark
     case 0x2019:
       return 0xB9; // 3/9 right high single quotation mark
+    case 0x201A:
+      return 0xB2; // 3/2 left low single quotation
     case 0x201C:
-      return 0xA2; // 2/2 left low double quotation mark
-    //          case 0x201C: return 0xAA; // 2/10 left high double quotation mark
+      return 0xAA; // 2/2 left low double quotation mark
     case 0x201D:
       return 0xBA; // 3/10 right high double quotation mark
+    case 0x201E:
+      return 0xA2; // 2/2 left low double quotation mark
     case 0x2020:
       return 0xA6; // 2/6 single dagger
     case 0x2021:

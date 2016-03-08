@@ -91,14 +91,15 @@ public class Iso5426ToUnicode extends CharConverter {
       return (true);
   }
 
-  
-  // Source : http://www.itscj.ipsj.or.jp/ISO-IR/053.pdf
+
+  // Source: http://www.unicode.org/L2/L2000/00220-map-5426.pdf
+  // Finalized Mapping between Characters of ISO 5426 and ISO/IEC 10646-1 (UCS)
   private char getChar(int i) {
     switch (i) {
     case 0xA1:
       return 0x00A1; // 2/1 inverted exclamation mark
     case 0xA2:
-      return 0x201C; // 2/2 left low double quotation mark
+      return 0x201E; // 2/2 left low double quotation mark
     case 0xA3:
       return 0x00A3; // 2/3 pound sign
     case 0xA4:
@@ -127,11 +128,11 @@ public class Iso5426ToUnicode extends CharConverter {
       return 0x00AE; // 2/15 trade mark sign
 
     case 0xB0:
-      return 0x0639; // 3/0 ayn [ain]
+      return 0x02BB; // 3/0 ayn
     case 0xB1:
-      return 0x0623; // 3/1 alif/hamzah [alef with hamza above]
+      return 0x02BC; // 3/1 alif/hamzah
     case 0xB2:
-      return 0x2018; // 3/2 left low single quotation mark
+      return 0x201A; // 3/2 left low single quotation mark
     // 3/3 (this position shall not be used)
     // 3/4 (this position shall not be used)
     // 3/5 (this position shall not be used)
@@ -185,6 +186,10 @@ public class Iso5426ToUnicode extends CharConverter {
     // 7/0 (this position shall not be used)
     case 0xF1:
       return 0x00E6; // 7/1 small diphthong a with e
+    case 0xF2:
+      return 0x0111; // 7/2 small letter d with stroke
+    case 0xF3:
+      return 0x00F0; // 7/3 small letter eth
     // 7/4 (this position shall not be used)
     case 0xF5:
       return 0x0131; // 7/5 small letter i without dot
@@ -601,6 +606,44 @@ public class Iso5426ToUnicode extends CharConverter {
     // 4/9 umlaut
     case 0xC920:
       return 0x00A8; // [diaeresis]
+    case 0xC941:
+      return 0x00C4; // CAPITAL A WITH DIAERESIS
+    case 0xC945:
+      return 0x00CB; // CAPITAL E WITH DIAERESIS
+    case 0xC948:
+      return 0x1E26; // CAPITAL H WITH DIAERESIS
+    case 0xC949:
+      return 0x00CF; // CAPITAL I WITH DIAERESIS
+    case 0xC94F:
+      return 0x00D6; // CAPITAL O WITH DIAERESIS
+    case 0xC955:
+      return 0x00DC; // CAPITAL U WITH DIAERESIS
+    case 0xC957:
+      return 0x1E84; // CAPITAL W WITH DIAERESIS
+    case 0xC958:
+      return 0x1E8C; // CAPITAL X WITH DIAERESIS
+    case 0xC959:
+      return 0x0178; // CAPITAL Y WITH DIAERESIS
+    case 0xC961:
+      return 0x00E4; // small a with diaeresis
+    case 0xC965:
+      return 0x00EB; // small e with diaeresis
+    case 0xC968:
+      return 0x1E27; // small h with diaeresis
+    case 0xC969:
+      return 0x00EF; // small i with diaeresis
+    case 0xC96F:
+      return 0x00F6; // small o with diaeresis
+    case 0xC974:
+      return 0x1E97; // small t with diaeresis
+    case 0xC975:
+      return 0x00FC; // small u with diaeresis
+    case 0xC977:
+      return 0x1E85; // small w with diaeresis
+    case 0xC978:
+      return 0x1E8D; // small x with diaeresis
+    case 0xC979:
+      return 0x00FF; // small y with diaeresis
 
     // 4/10 circle above
     case 0xCA41:
