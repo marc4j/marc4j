@@ -19,10 +19,12 @@
  */
 package org.marc4j.marc.impl;
 
+import org.marc4j.MarcError;
 import org.marc4j.marc.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,6 +38,8 @@ public class RecordImpl implements Record {
     private Leader leader;
     protected List<ControlField> controlFields;
     protected List<DataField> dataFields;
+    protected List<MarcError> errors = null;
+    protected int maxSeverity;
     private String type;
 
     /**
@@ -292,6 +296,17 @@ public class RecordImpl implements Record {
         }
         return result;
     }
+    
+    public boolean hasMatch(String[] tag, String pattern)
+    {
+        List<VariableField> result = new ArrayList<VariableField>();
+        for (VariableField field : getVariableFields(tag))
+        {
+            if (field.find(pattern))
+                return(true);
+        }
+        return false;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -300,5 +315,59 @@ public class RecordImpl implements Record {
     public Long getId() {
         return id;
     }
+    /**
+     *  Logs an error message using the stated severity level.  Uses the values passed  
+     *  in id, field, and subfield to note the location of the error.
+     * 
+     * @param id - the record ID of the record currently being processed
+     * @param field - the tag of the field currently being processed
+     * @param subfield - the subfield tag of the subfield currently being processed
+     * @param severity - An indication of the relative severity of the error that was 
+     *                      encountered.
+     * @param message - A descriptive message about the error that was encountered.
+     */
+    @Override
+    public void addError(String field, String subfield, int severity, String message)
+    {
+        if (errors == null) 
+        {
+            errors = new LinkedList<MarcError>();
+        }
+        errors.add(new MarcError(field, subfield, severity, message));
+        if (severity > maxSeverity)   maxSeverity = severity; 
+    }
+    
+    /**
+     *  Copies a List of errors into the current error handler
+     * 
+     * @param newErrors - A list of Errors.
+     */
+    @Override
+    public void addErrors(List<MarcError> newErrors)
+    {
+        if (newErrors == null || newErrors.size() == 0) return;
+        if (errors == null) 
+        {
+            errors = new LinkedList<MarcError>();
+        }
+        for (MarcError err : newErrors)
+        {
+            errors.add(err);
+            if (err.severity > maxSeverity)   maxSeverity = err.severity;   
+        }
+    }
+
+    @Override
+    public boolean hasErrors()
+    {
+        return (errors != null && errors.size() > 0);
+    }
+
+    @Override
+    public List<MarcError> getErrors()
+    {
+        return errors;
+    }
+
 
 }

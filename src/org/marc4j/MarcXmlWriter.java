@@ -47,12 +47,13 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 /**
+ * <p>
  * Class for writing MARC record objects in MARCXML format. This class outputs a
  * SAX event stream to the given {@link java.io.OutputStream}&nbsp; or
  * {@link javax.xml.transform.Result}&nbsp;object. It can be used in a SAX
  * pipeline to postprocess the result. By default this class uses a nulll
  * transform. It is strongly recommended to use a dedicated XML serializer.
- * <p/>
+ * </p>
  * <p>
  * This class requires a JAXP compliant XML parser and XSLT processor. The
  * underlying SAX2 parser should be namespace aware. In addition this class
@@ -65,7 +66,7 @@ import java.io.Writer;
  * The following example reads a file with MARC records and writes MARCXML
  * records in UTF-8 encoding to the console:
  * </p>
- * <p/>
+ *
  * <pre>
  *
  *      InputStream input = new FileInputStream(&quot;input.mrc&quot;)
@@ -79,16 +80,16 @@ import java.io.Writer;
  *      writer.close();
  *
  * </pre>
- * <p/>
+ * 
  * <p>
  * To perform a character conversion like MARC-8 to UCS/Unicode register a
  * <code>CharConverter</code>:
  * </p>
- * <p/>
+ * 
  * <pre>
  * writer.setConverter(new AnselToUnicode());
  * </pre>
- * <p/>
+ * 
  * <p>
  * In addition you can perform Unicode normalization. This is for example not
  * done by the MARC-8 to UCS/Unicode converter. With Unicode normalization text
@@ -96,11 +97,11 @@ import java.io.Writer;
  * is normalized to &quot;�bc&quot;. To perform normalization set Unicode
  * normalization to true:
  * </p>
- * <p/>
+ * 
  * <pre>
  * writer.setUnicodeNormalization(true);
  * </pre>
- * <p/>
+ * 
  * <p>
  * Please note that it's not garanteed to work if you try to convert normalized
  * Unicode back to MARC-8 encoding using
@@ -113,13 +114,13 @@ import java.io.Writer;
  * {@link org.xml.sax.ContentHandler}&nbsp;derived from a dedicated XML
  * serializer.
  * </p>
- * <p/>
+ * 
  * <p>
  * The following example uses
  * <code>org.apache.xml.serialize.XMLSerializer</code> to write MARC records
  * to XML using MARC-8 to UCS/Unicode conversion and Unicode normalization:
  * </p>
- * <p/>
+ * 
  * <pre>
  *
  *      InputStream input = new FileInputStream(&quot;input.mrc&quot;)
@@ -139,7 +140,7 @@ import java.io.Writer;
  *      writer.close();
  *
  * </pre>
- * <p/>
+ * 
  * <p>
  * You can post-process the result using a <code>Source</code> object pointing
  * to a stylesheet resource and a <code>Result</code> object to hold the
@@ -147,7 +148,7 @@ import java.io.Writer;
  * transforms the result tree to MODS using the stylesheet provided by The
  * Library of Congress:
  * </p>
- * <p/>
+ * 
  * <pre>
  *
  *      String stylesheetUrl = &quot;http://www.loc.gov/standards/mods/v3/MARC21slim2MODS3.xsl&quot;;
@@ -166,11 +167,11 @@ import java.io.Writer;
  *      writer.close();
  *
  * </pre>
- * <p/>
+ * 
  * <p>
  * It is also possible to write the result into a DOM Node:
  * </p>
- * <p/>
+ * 
  * <pre>
  *
  *      InputStream input = new FileInputStream(&quot;input.mrc&quot;)
@@ -224,7 +225,7 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Constructs an instance with the specified output stream.
-     * <p/>
+     * 
      * The default character encoding for UTF-8 is used.
      *
      * @throws MarcException
@@ -235,7 +236,7 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Constructs an instance with the specified output stream and indentation.
-     * <p/>
+     * 
      * The default character encoding for UTF-8 is used.
      *
      * @throws MarcException

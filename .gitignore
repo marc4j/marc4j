@@ -8,3 +8,5 @@ marc4j.iml
 .project
 .classpath
 generated-src
+bin
+/.settings/

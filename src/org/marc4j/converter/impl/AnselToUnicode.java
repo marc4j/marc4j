@@ -25,19 +25,21 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.marc4j.ErrorHandler;
+//import org.marc4j.ErrorHandler;
+import org.marc4j.MarcError;
 import org.marc4j.MarcException;
+import org.marc4j.MarcPermissiveStreamReader;
 import org.marc4j.converter.CharConverter;
 
 /**
- * <p/>
+ * <p>
  * A utility to convert MARC-8 data to non-precomposed UCS/Unicode.
- * <p/>
+ * </p>
  * 
- * <p/>
+ * <p>
  * The MARC-8 to Unicode mapping used is the version with the March 2005
  * revisions.
- * <p/>
+ * </p>
  * 
  * @author Bas Peters
  * @author Corey Keith
@@ -135,7 +137,8 @@ public class AnselToUnicode extends CharConverter {
         return (true);
     }
 
-    protected ErrorHandler errorList = null;
+    protected MarcPermissiveStreamReader curReader = null;
+ //   protected ErrorHandler errorList = null;
     /**
      * Creates a new instance and loads the MARC4J supplied
      * conversion tables based on the official LC tables.
@@ -155,28 +158,40 @@ public class AnselToUnicode extends CharConverter {
     {
         ct = loadGeneratedTable(loadMultibyte);
     }
+
     /**
      * Creates a new instance and loads the MARC4J supplied
      * conversion tables based on the official LC tables.
      *  
      */
-    public AnselToUnicode(ErrorHandler errorList) 
+    public AnselToUnicode(MarcPermissiveStreamReader curReader) 
     {
         ct = loadGeneratedTable(false);
-        this.errorList = errorList;
+        this.curReader = curReader;
     }
-
-    /**
-     * Creates a new instance and loads the MARC4J supplied
-     * conversion tables based on the official LC tables.
-     *  
-     */
-    public AnselToUnicode(ErrorHandler errorList, boolean loadMultibyte) 
-    {
-        ct = loadGeneratedTable(loadMultibyte);
-        this.errorList = errorList;
-    }
-
+    
+//    /**
+//     * Creates a new instance and loads the MARC4J supplied
+//     * conversion tables based on the official LC tables.
+//     *  
+//     */
+//    public AnselToUnicode(ErrorHandler errorList) 
+//    {
+//        ct = loadGeneratedTable(false);
+//        this.errorList = errorList;
+//    }
+//
+//    /**
+//     * Creates a new instance and loads the MARC4J supplied
+//     * conversion tables based on the official LC tables.
+//     *  
+//     */
+//    public AnselToUnicode(ErrorHandler errorList, boolean loadMultibyte) 
+//    {
+//        ct = loadGeneratedTable(loadMultibyte);
+//        this.errorList = errorList;
+//    }
+//
     
 
     private CodeTableInterface loadGeneratedTable(boolean loadMultibyte) 
@@ -251,9 +266,9 @@ public class AnselToUnicode extends CharConverter {
             if (cdt.offset + extra + extra2 + 1 == data.length)
             {
                 cdt.offset += 1;
-                if (errorList != null)
+                if (curReader != null)
                 {
-                    errorList.addError(ErrorHandler.MINOR_ERROR, "Escape character found at end of field, discarding it.");
+                    curReader.addError(MarcError.MINOR_ERROR, "Escape character found at end of field, discarding it.");
                 }
                 else
                 {
@@ -295,9 +310,9 @@ public class AnselToUnicode extends CharConverter {
                 default: 
                     // unknown code character found: discard escape sequence and return
                     cdt.offset += 1;
-                    if (errorList != null)
+                    if (curReader != null)
                     {
-                        errorList.addError(ErrorHandler.MINOR_ERROR, "Unknown character set code found following escape character. Discarding escape character.");
+                        curReader.addError(MarcError.MINOR_ERROR, "Unknown character set code found following escape character. Discarding escape character.");
                     }
                     else
                     {
@@ -320,7 +335,7 @@ public class AnselToUnicode extends CharConverter {
                 break;
             case 0x20:  // ' ' 
                 // space found in escape code: look ahead and try to proceed
-                if (errorList == null)
+                if (curReader == null)
                 {
                     throw new MarcException("Extraneous space character found within MARC8 character set escape sequence");
                 }
@@ -329,9 +344,9 @@ public class AnselToUnicode extends CharConverter {
             default: 
                 // unknown code character found: discard escape sequence and return
                 cdt.offset += 1;
-                if (errorList != null)
+                if (curReader != null)
                 {
-                    errorList.addError(ErrorHandler.MINOR_ERROR, "Unknown character set code found following escape character. Discarding escape character.");
+                    curReader.addError(MarcError.MINOR_ERROR, "Unknown character set code found following escape character. Discarding escape character.");
                 }
                 else
                 {
@@ -340,9 +355,9 @@ public class AnselToUnicode extends CharConverter {
                 break;
             }
         }
-        if (errorList != null && ( extra != 0 || extra2 != 0))
+        if (curReader != null && ( extra != 0 || extra2 != 0))
         {
-            errorList.addError(ErrorHandler.ERROR_TYPO, "" + (extra+extra2) + " extraneous space characters found within MARC8 character set escape sequence");
+            curReader.addError(MarcError.ERROR_TYPO, "" + (extra+extra2) + " extraneous space characters found within MARC8 character set escape sequence");
         }
     }
 
@@ -354,9 +369,9 @@ public class AnselToUnicode extends CharConverter {
         }
         else if (data[cdt.offset + addnlOffset] == ' ') 
         {
-            if (errorList != null)
+            if (curReader != null)
             {
-                errorList.addError(ErrorHandler.ERROR_TYPO, "Extraneous space character found within MARC8 character set escape sequence. Skipping over space.");
+                curReader.addError(MarcError.ERROR_TYPO, "Extraneous space character found within MARC8 character set escape sequence. Skipping over space.");
             }           
             else
             {
@@ -366,9 +381,9 @@ public class AnselToUnicode extends CharConverter {
         }
         else if ("(,)-$!".indexOf(data[cdt.offset + addnlOffset]) != -1) 
         {
-            if (errorList != null)
+            if (curReader != null)
             {
-                errorList.addError(ErrorHandler.MINOR_ERROR, "Extraneaous intermediate character found following escape character. Discarding intermediate character.");
+                curReader.addError(MarcError.MINOR_ERROR, "Extraneaous intermediate character found following escape character. Discarding intermediate character.");
             }           
             else
             {
@@ -380,9 +395,9 @@ public class AnselToUnicode extends CharConverter {
         {
             cdt.offset += 1;
             cdt.multibyte = false;
-            if (errorList != null)
+            if (curReader != null)
             {
-                errorList.addError(ErrorHandler.MINOR_ERROR, "Unknown character set code found following escape character. Discarding escape character.");
+                curReader.addError(MarcError.MINOR_ERROR, "Unknown character set code found following escape character. Discarding escape character.");
             }           
             else
             {
@@ -437,9 +452,9 @@ public class AnselToUnicode extends CharConverter {
                 }
                 if (cdt.offset >= len)
                 {
-                    if (errorList != null)
+                    if (curReader != null)
                     {
-                        errorList.addError(ErrorHandler.MINOR_ERROR, "Diacritic found at the end of field, without the character that it is supposed to decorate");
+                        curReader.addError(MarcError.MINOR_ERROR, "Diacritic found at the end of field, without the character that it is supposed to decorate");
                         break;
                     }
                 }
@@ -465,18 +480,18 @@ public class AnselToUnicode extends CharConverter {
                 char cdtchar = data[offset];
                 char c = getCharCDT(data, cdt);
                 boolean greekErrorFixed = false;
-                if (errorList != null && cdt.g0 == 0x53 && data[offset] > 0x20 && data[offset] < 0x40)
+                if (curReader != null && cdt.g0 == 0x53 && data[offset] > 0x20 && data[offset] < 0x40)
                 {
                     if (c == 0 && data[offset] > 0x20 && data[offset] < 0x40)
                     {
-                        errorList.addError(ErrorHandler.MINOR_ERROR, "Unknown punctuation mark found in Greek character set, inserting change to default character set");
+                        curReader.addError(MarcError.MINOR_ERROR, "Unknown punctuation mark found in Greek character set, inserting change to default character set");
                         cdt.g0 = 0x42;  // change to default character set
                         c = getChar(data[offset], cdt.g0, cdt.g1);
                         if (c != 0) { sb.append(c); greekErrorFixed = true; }
                     }
                     else if (offset+1 < data.length && data[offset] >= '0' && data[offset] <= '9' && data[offset+1] >= '0' && data[offset+1] <= '9')
                     {
-                        errorList.addError(ErrorHandler.MINOR_ERROR, "Unlikely sequence of punctuation mark found in Greek character set, it likely a number, inserting change to default character set");
+                        curReader.addError(MarcError.MINOR_ERROR, "Unlikely sequence of punctuation mark found in Greek character set, it likely a number, inserting change to default character set");
                         cdt.g0 = 0x42;  // change to default character set
                         char c1 = getChar(data[offset], cdt.g0, cdt.g1);
                         if (c1 != 0) { sb.append(c1); greekErrorFixed = true; }                        
@@ -536,7 +551,7 @@ public class AnselToUnicode extends CharConverter {
                 sb.append(c2);
                 offset += 1;
             }
-            else if (errorList == null)
+            else if (curReader == null)
             {
                 if (offset + 3 <= data.length)
                 {
@@ -563,11 +578,11 @@ public class AnselToUnicode extends CharConverter {
                 }
             }
             else if (errorsPresent == false && offset + 3 <= data.length && 
-                    (errorList == null || data[offset+1]!= 0x20 && data[offset+2]!= 0x20) &&
+                    (curReader == null || data[offset+1]!= 0x20 && data[offset+2]!= 0x20) &&
                     getMBChar(makeMultibyte(data[offset], data[offset+1], data[offset+2])) != 0) 
             {
                 char c = getMBChar(makeMultibyte(data[offset], data[offset+1], data[offset+2]));
-                if (errorList == null  || c != 0)
+                if (curReader == null  || c != 0)
                 { 
                     sb.append(c);
                     offset += 3;
@@ -586,19 +601,19 @@ public class AnselToUnicode extends CharConverter {
                                 getMBCharStr(makeMultibyte(data[offset], data[offset+1], ']'));
                 if (mbstr.length() == 1)
                 {
-                    if (errorList != null) errorList.addError(ErrorHandler.MINOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create the only valid option");
+                    if (curReader != null) curReader.addError(MarcError.MINOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create the only valid option");
                     sb.append(mbstr);
                     offset += 2;
                 }
                 else if (mbstr.length() > 1)
                 {
-                    if (errorList != null) errorList.addError(ErrorHandler.MAJOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create a randomly chosen valid option");
+                    if (curReader != null) curReader.addError(MarcError.MAJOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create a randomly chosen valid option");
                     sb.append(mbstr.subSequence(0, 1));
                     offset += 2;
                 }
                 else if (mbstr.length() == 0)
                 {
-                    if (errorList != null) errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, Discarding bad character and continuing reading Multibyte characters");
+                    if (curReader != null) curReader.addError(MarcError.MINOR_ERROR, "Erroneous MARC8 multibyte character, Discarding bad character and continuing reading Multibyte characters");
                     sb.append("[?]");
                     offset += 2;
                 }
@@ -616,19 +631,19 @@ public class AnselToUnicode extends CharConverter {
                                 getMBCharStr(makeMultibyte(data[offset], data[offset+1], ']'));
                 if (mbstr.length() == 1)
                 {
-                    if (errorList != null) errorList.addError(ErrorHandler.MINOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create the only valid option");
+                    if (curReader != null) curReader.addError(MarcError.MINOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create the only valid option");
                     sb.append(mbstr);
                     offset += 2;
                 }
                 else if (mbstr.length() > 1)
                 {
-                    if (errorList != null) errorList.addError(ErrorHandler.MAJOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create a randomly chosen valid option");
+                    if (curReader != null) curReader.addError(MarcError.MAJOR_ERROR, "Missing square brace character in MARC8 multibyte character, inserting one to create a randomly chosen valid option");
                     sb.append(mbstr.subSequence(0, 1));
                     offset += 2;
                 }
                 else if (mbstr.length() == 0)
                 {
-                    if (errorList != null) errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, Discarding bad character and continuing reading Multibyte characters");
+                    if (curReader != null) curReader.addError(MarcError.MINOR_ERROR, "Erroneous MARC8 multibyte character, Discarding bad character and continuing reading Multibyte characters");
                     sb.append("[?]");
                     offset += 2;
                 }
@@ -636,22 +651,22 @@ public class AnselToUnicode extends CharConverter {
             else if (offset + 4 <= data.length && data[offset] > 0x7f && 
                     getMBChar(makeMultibyte(data[offset+1], data[offset+2], data[offset+3])) != 0)
             {
-                if (errorList != null)
+                if (curReader != null)
                 {
-                    errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous character in MARC8 multibyte character, Copying bad character and continuing reading Multibyte characters");
+                    curReader.addError(MarcError.MINOR_ERROR, "Erroneous character in MARC8 multibyte character, Copying bad character and continuing reading Multibyte characters");
                     sb.append(getChar(data[offset], 0x42, 0x45));
                     offset += 1;
                 }
             }
-            else if (errorList != null && offset + 4 <= data.length && ( data[offset+1] == 0x20 || data[offset+2]== 0x20)) 
+            else if (curReader != null && offset + 4 <= data.length && ( data[offset+1] == 0x20 || data[offset+2]== 0x20)) 
             {
                 int multiByte = makeMultibyte( data[offset], ((data[offset+1] != 0x20)? data[offset+1] : data[offset+2]),  data[offset+3]);
                 char c = getMBChar(multiByte);
                 if (c != 0) 
                 {
-                    if (errorList != null)
+                    if (curReader != null)
                     {
-                        errorList.addError(ErrorHandler.ERROR_TYPO, "Extraneous space found within MARC8 multibyte character");
+                        curReader.addError(MarcError.ERROR_TYPO, "Extraneous space found within MARC8 multibyte character");
                     }
                     sb.append(c);
                     sb.append(' ');
@@ -659,9 +674,9 @@ public class AnselToUnicode extends CharConverter {
                 }
                 else
                 {
-                    if (errorList != null)
+                    if (curReader != null)
                     {
-                        errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, inserting change to default character set");
+                        curReader.addError(MarcError.MINOR_ERROR, "Erroneous MARC8 multibyte character, inserting change to default character set");
                     }
                     cdt.multibyte = false;
                     cdt.g0 = 0x42;
@@ -672,9 +687,9 @@ public class AnselToUnicode extends CharConverter {
             else if (offset + 3 > data.length || 
                      offset + 3 == data.length && (data[offset+1]== 0x20 || data[offset+2]== 0x20)) 
             {
-                if (errorList != null)
+                if (curReader != null)
                 {
-                    errorList.addError(ErrorHandler.MINOR_ERROR, "Partial MARC8 multibyte character, inserting change to default character set");
+                    curReader.addError(MarcError.MINOR_ERROR, "Partial MARC8 multibyte character, inserting change to default character set");
                 }
                 cdt.multibyte = false;
                 cdt.g0 = 0x42; 
@@ -684,7 +699,7 @@ public class AnselToUnicode extends CharConverter {
             else if (offset + 3 <= data.length && getMBChar(makeMultibyte(data[offset+0], data[offset+1], data[offset+2])) != 0) 
             {
                 char c = getMBChar(makeMultibyte(data[offset], data[offset+1], data[offset+2]));
-                if (errorList == null  || c != 0)
+                if (curReader == null  || c != 0)
                 { 
                     sb.append(c);
                     offset += 3;
@@ -692,9 +707,9 @@ public class AnselToUnicode extends CharConverter {
             }
             else
             {
-                if (errorList != null)
+                if (curReader != null)
                 {
-                    errorList.addError(ErrorHandler.MINOR_ERROR, "Erroneous MARC8 multibyte character, inserting change to default character set");
+                    curReader.addError(MarcError.MINOR_ERROR, "Erroneous MARC8 multibyte character, inserting change to default character set");
                 }
                 cdt.multibyte = false;
                 cdt.g0 = 0x42; 
@@ -783,9 +798,9 @@ public class AnselToUnicode extends CharConverter {
                 {
                     c = getCharFromCodePoint(tmp1.substring(3,7));
                     cdt.offset += 10;
-                    if (errorList != null)
+                    if (curReader != null)
                     {
-                        errorList.addError(ErrorHandler.MINOR_ERROR, "Subfield contains malformed Unicode Numeric Character Reference : "+tmp1);
+                        curReader.addError(MarcError.MINOR_ERROR, "Subfield contains malformed Unicode Numeric Character Reference : "+tmp1);
                     }
                 }
                 else 

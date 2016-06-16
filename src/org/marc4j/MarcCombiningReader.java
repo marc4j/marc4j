@@ -1,6 +1,6 @@
 package org.marc4j;
 
-import org.marc4j.ErrorHandler;
+//import org.marc4j.ErrorHandler;
 import org.marc4j.MarcException;
 import org.marc4j.MarcReader;
 import org.marc4j.marc.ControlField;
@@ -35,8 +35,6 @@ public class MarcCombiningReader implements MarcReader
     String idsToMerge = null;
     String leftControlField = null;
     String rightControlField = null;
-    ErrorHandler nextErrors;
-    ErrorHandler currentErrors;
 
     
     /**
@@ -54,8 +52,8 @@ public class MarcCombiningReader implements MarcReader
         this.idsToMerge = idsToMerge;
         this.leftControlField = leftControlField;
         this.rightControlField = rightControlField;
-        this.nextErrors = null;
-        this.currentErrors = null;
+//        this.nextErrors = null;
+//        this.currentErrors = null;
     }
     
     /**
@@ -76,6 +74,7 @@ public class MarcCombiningReader implements MarcReader
      * @param leftControlField - string representing a control field in the current record to use for matching purposes (null to default to 001).
      * @param rightControlField - string representing a control field in the next record to use for matching purposes (null to default to 001).
      */
+    @Deprecated
     public MarcCombiningReader(MarcReader reader, ErrorHandler currentErrors, ErrorHandler nextErrors, String idsToMerge,
         String leftControlField, String rightControlField)
     {
@@ -83,8 +82,8 @@ public class MarcCombiningReader implements MarcReader
         this.idsToMerge = idsToMerge;
         this.leftControlField = leftControlField;
         this.rightControlField = rightControlField;
-        this.nextErrors = nextErrors;
-        this.currentErrors = currentErrors;
+//        this.nextErrors = nextErrors;
+//        this.currentErrors = currentErrors;
     }
    
     public boolean hasNext()
@@ -110,7 +109,6 @@ public class MarcCombiningReader implements MarcReader
             if (nextRecord != null) 
             { 
                 currentRecord = nextRecord;
-                copyErrors(currentErrors, nextErrors);
                 nextRecord = null; 
             }
             if (!reader.hasNext()) 
@@ -136,7 +134,6 @@ public class MarcCombiningReader implements MarcReader
             while (recordsMatch(currentRecord, nextRecord))
             {
                 currentRecord = combineRecords(currentRecord, nextRecord, idsToMerge);
-                mergeErrors(currentErrors, nextErrors);
                 if (reader.hasNext())
                 {
                     try {
@@ -238,24 +235,6 @@ public class MarcCombiningReader implements MarcReader
         return false;
     }
 
-    
-    private void copyErrors(ErrorHandler currentErr, ErrorHandler nextErr)
-    {
-        if (currentErr != null && nextErr != null)
-        {
-            currentErr.reset();
-            mergeErrors(currentErr, nextErr);
-        }
-    }
-
-    private void mergeErrors(ErrorHandler currentErr, ErrorHandler nextErr)
-    {
-        if (currentErr != null && nextErr != null)
-        {
-            currentErr.addErrors(nextErr.getErrors());
-        }
-    }
-
     static public Record combineRecords(Record currentRecord, Record nextRecord, String idsToMerge)
     {
         List<VariableField> fields = nextRecord.getVariableFields();
@@ -265,6 +244,10 @@ public class MarcCombiningReader implements MarcReader
             {
                 currentRecord.addVariableField(field);
             }
+        }
+        if (nextRecord.hasErrors())
+        {
+            currentRecord.addErrors(nextRecord.getErrors());
         }
         return(currentRecord);
     }
@@ -297,6 +280,11 @@ public class MarcCombiningReader implements MarcReader
         {
             currentRecord.addVariableField(field);
         }
+        if (nextRecord.hasErrors())
+        {
+            currentRecord.addErrors(nextRecord.getErrors());
+        }
+
         return(currentRecord);
     }
 

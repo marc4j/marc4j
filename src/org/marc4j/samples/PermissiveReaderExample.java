@@ -10,7 +10,8 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
 
-import org.marc4j.ErrorHandler;
+//import org.marc4j.ErrorHandler;
+import org.marc4j.MarcError;
 import org.marc4j.MarcException;
 import org.marc4j.MarcPermissiveStreamReader;
 import org.marc4j.MarcReader;
@@ -91,13 +92,13 @@ public class PermissiveReaderExample
         InputStream inPerm;
         OutputStream patchedRecStream = null;
         MarcWriter patchedRecs = null;
-        ErrorHandler errorHandler = new ErrorHandler();
+   //     ErrorHandler errorHandler = new ErrorHandler();
         try
         {
             inNorm = new FileInputStream(file);
             readerNormal = new MarcPermissiveStreamReader(inNorm, false, to_utf_8);
             inPerm = new FileInputStream(file);
-            readerPermissive = new MarcPermissiveStreamReader(inPerm, errorHandler, to_utf_8, "BESTGUESS");
+            readerPermissive = new MarcPermissiveStreamReader(inPerm, true, to_utf_8, "BESTGUESS");
         }
         catch (FileNotFoundException e)
         {
@@ -131,7 +132,7 @@ public class PermissiveReaderExample
                 if (verbose)
                 {
                     out.println("Fatal Exception: "+ me.getMessage());
-                    dumpErrors(out, errorHandler);
+                    dumpErrors(out, recPerm.getErrors());
                     showDiffs(out, null, strPerm);
                     out.println("-------------------------------------------------------------------------------------");
                 }
@@ -142,7 +143,7 @@ public class PermissiveReaderExample
             {
                 if (verbose)
                 {
-                    dumpErrors(out, errorHandler);
+                    dumpErrors(out, recPerm.getErrors());
                     showDiffs(out, strNorm, strPerm);
                     out.println("-------------------------------------------------------------------------------------");
                     
@@ -152,12 +153,12 @@ public class PermissiveReaderExample
                     patchedRecs.write(recPerm);
                 }
             }
-            else if (errorHandler.hasErrors())
+            else if (recPerm.hasErrors())
             {
                 if (verbose)
                 {
                     out.println("Results identical, but errors reported");
-                    dumpErrors(out, errorHandler);
+                    dumpErrors(out, recPerm.getErrors());
                     showDiffs(out, strNorm, strPerm);
                     out.println("-------------------------------------------------------------------------------------");
                 }
@@ -208,12 +209,11 @@ public class PermissiveReaderExample
     }
     
     @SuppressWarnings("unchecked")
-	public static void dumpErrors(PrintStream out, ErrorHandler errorHandler)
+	public static void dumpErrors(PrintStream out, List<MarcError> errors)
     {
-        List<Object> errors = errorHandler.getErrors();
         if (errors != null) 
         {
-            Iterator<Object> iter = errors.iterator();
+            Iterator<MarcError> iter = errors.iterator();
             while (iter.hasNext())
             {
                 Object error = iter.next();

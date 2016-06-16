@@ -238,8 +238,7 @@ public class MarcJsonWriter implements MarcWriter
     /**
      * Sets the character converter.
      * 
-     * @param converter
-     *            the character converter
+     * @param converter - the character converter
      */
     public void setConverter(CharConverter converter) 
     {
@@ -259,7 +258,7 @@ public class MarcJsonWriter implements MarcWriter
     /**
      * Activates or deactivates indentation. Default value is false.
      * 
-     * @param indent
+     * @param indent - true to enable pretty-print indentation 
      */
     public void setIndent(boolean indent) 
     {

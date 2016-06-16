@@ -3,7 +3,7 @@
 
     <target name="init">
         <tstamp />
-        <record name="build.log" loglevel="verbose" append="no" />
+       <!-- <record name="build.log" loglevel="verbose" append="no" /> -->
     </target>
 
     <property file="build.properties" />

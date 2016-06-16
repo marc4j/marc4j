@@ -34,7 +34,9 @@ import org.marc4j.marc.Record;
 public interface MarcReader {
 
   /**
-   * Returns true if the iteration has more records, false otherwise.
+   * Check whether the reader has more records.
+   *
+   * @return boolean - true if the iteration has more records, false otherwise
    */
   public boolean hasNext();
 

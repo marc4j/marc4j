@@ -22,6 +22,8 @@ package org.marc4j.marc;
 import java.io.Serializable;
 import java.util.List;
 
+import org.marc4j.MarcError;
+
 /**
  * Represents a MARC record.
  * 
@@ -214,5 +216,38 @@ public interface Record extends Serializable {
      * @return List - the result list
      */
     public List<VariableField> find(String[] tag, String pattern);
+
+    
+    /**
+     *  Logs an error message using the stated severity level.  Uses the values passed  
+     *  in id, field, and subfield to note the location of the error.
+     * 
+     * @param field - the tag of the field currently being processed
+     * @param subfield - the subfield tag of the subfield currently being processed
+     * @param severity - An indication of the relative severity of the error that was 
+     *                      encountered.
+     * @param message - A descriptive message about the error that was encountered.
+     */
+    public void addError(String field, String subfield, int severity, String message);
+    
+
+    /**
+     *  Copies a List of errors into the current error handler
+     * 
+     * @param newErrors - A list of Errors.
+     */
+    public void addErrors(List<MarcError> newErrors);
+  
+    /**
+     *  Returns true if any errors were found for this record
+     * 
+     */
+    public boolean hasErrors();
+    
+    /**
+     *  Returns the errors found for this record
+     * 
+     */
+    public List<MarcError> getErrors();
 
 }
