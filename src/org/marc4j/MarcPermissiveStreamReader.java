@@ -142,7 +142,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
         errors = null;
         if (permissive) 
         {
-            errors = new ErrorHandler();
+            //errors = new ErrorHandler();
             defaultEncoding = "BESTGUESS";
         }
     }
@@ -195,7 +195,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
         this.convertToUTF8 = convertToUTF8;
         this.defaultEncoding = defaultEncoding;
         errors = null;
-        if (permissive) errors = new ErrorHandler();
+        //if (permissive) errors = new ErrorHandler();
     }
     
     /**
@@ -283,7 +283,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
     public Record next() 
     {
         record = factory.newRecord();
- //       if (errors != null) errors.reset();
+        if (errors != null) errors.reset();
         
         try {
             byte[] byteArray = new byte[24];
@@ -316,6 +316,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 l.setCharCodingScheme('a');
                 record.setLeader(l);
             }
+            if (errors != null && record.hasErrors())
+                errors.addErrors(record.getControlNumber(), record.getErrors());
             return(record);
         }
         catch (EOFException e) {
@@ -714,7 +716,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 }                
                 else 
                 {
-                    if (errors != null)                
+                    if (permissive)                
                     {    
                         record.addError("n/a", "n/a", MarcError.FATAL, 
                                 "Directory length is not a multiple of 12 bytes long. Unable to continue.");

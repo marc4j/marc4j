@@ -197,7 +197,7 @@ public class ErrorHandler {
      *                      encountered.
      * @param message - A descriptive message about the error that was encountered.
      */
-    private void addError(String id, String field, String subfield, int severity, String message)
+    public void addError(String id, String field, String subfield, int severity, String message)
     {
         if (errors == null) 
         {
@@ -221,7 +221,7 @@ public class ErrorHandler {
      *                      encountered.
      * @param message - A descriptive message about the error that was encountered.
      */
-    private void addError(int severity, String message)
+    public void addError(int severity, String message)
     {
         addError(curRecordID, curField, curSubfield, severity, message);
     }
@@ -242,6 +242,27 @@ public class ErrorHandler {
         for (Object err : newErrors)
         {
             Error errobj = (Error)err;
+            errors.add(errobj);
+            if (errobj.severity > maxSeverity)   maxSeverity = errobj.severity;   
+        }
+    }
+
+    /**
+     *  Copys a List of errors into the current error handler
+     * 
+     * @param newErrors - A list of Errors.
+     */
+    public void addErrors(String recID, List<MarcError> recordErrors)
+    {
+        if (recordErrors == null || recordErrors.size() == 0) return;
+        if (errors == null) 
+        {
+            errors = new LinkedList();
+            hasMissingID = false;
+        }
+        for (MarcError err : recordErrors)
+        {
+            Error errobj = new Error(recID, err.curField, err.curSubfield, err.severity, err.message);
             errors.add(errobj);
             if (errobj.severity > maxSeverity)   maxSeverity = errobj.severity;   
         }
