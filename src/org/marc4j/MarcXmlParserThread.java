@@ -32,11 +32,11 @@ import org.xml.sax.InputSource;
  */
 public class MarcXmlParserThread extends Thread {
 
-    private RecordStack queue;
+    private final RecordStack queue;
 
-    private InputSource input;
+    private volatile InputSource input;
 
-    private TransformerHandler th = null;
+    private volatile TransformerHandler th;
 
     /**
      * Creates a new instance and registers the <code>RecordQueue</code>.
