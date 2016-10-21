@@ -27,7 +27,11 @@ import org.marc4j.marc.impl.Verifier;
 import org.marc4j.util.Normalizer;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -601,7 +605,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                             foundESC = true;
                             break;
                         }
-                        if (byteCheck[i] != recordBuf[i])
+                        if (!foundESC && byteCheck[i] != recordBuf[i])
                         {
                             encoding = "MARC8-Maybe";
                         }
@@ -667,153 +671,170 @@ public class MarcPermissiveStreamReader implements MarcReader {
         }
         record.setLeader(ldr);
         
-        boolean discardOneAtStartOfDirectory = false;
-        boolean discardOneSomewhereInDirectory = false;
-        
-        if ((directoryLength % 12) != 0)
-        {
-            if (permissive && directoryLength == 99974 && recordLength > 200000) //  which equals 99999 - (24 + 1) its a BIG record (its directory is over 100000 bytes)
-            {
-                directoryLength = 0; 
-                int tmpLength = 0;
-                for (tmpLength = 0; tmpLength < recordLength; tmpLength += 12)
-                {
-                    if (recordBuf[tmpLength] == Constants.FT) 
-                    {
-                        directoryLength = tmpLength;
-                        break;
-                    }
-                }
-                if (directoryLength == 0)
-                {
-                    throw new MarcException("Directory is too big (> 99999 bytes) and it doesn't end with a field terminator character, I give up. Unable to continue.");
-                }
-            }
-            else if (permissive && directoryLength % 12 == 11 && recordBuf[1] != (byte)'0') 
-            {
-                record.addError("n/a", "n/a", MarcError.MAJOR_ERROR, 
-                                "Directory length is not a multiple of 12 bytes long.  Prepending a zero and trying to continue.");
-                byte oldBody[] = recordBuf;
-                recordBuf = new byte[oldBody.length+1];
-                System.arraycopy(oldBody, 0, recordBuf, 1, oldBody.length);
-                recordBuf[0] = (byte)'0';
-                directoryLength = directoryLength+1;
-            }
-            else
-            {
-                if (permissive && directoryLength % 12 == 1 && recordBuf[1] == (byte)'0' && recordBuf[2] == (byte)'0') 
-                {
-                    discardOneAtStartOfDirectory = true;
-                    record.addError("n/a", "n/a", MarcError.MAJOR_ERROR, 
-                                    "Directory length is not a multiple of 12 bytes long. Discarding byte from start of directory and trying to continue.");
-                }
-                else if (permissive && directoryLength % 12 == 1 && recordLength > 10000 && recordBuf[0] == (byte)'0' && 
-                         recordBuf[1] == (byte)'0' && recordBuf[2] > (byte)'0' && recordBuf[2] <= (byte)'9')
-                {
-                    discardOneSomewhereInDirectory = true;
-                    record.addError("n/a", "n/a", MarcError.MAJOR_ERROR, 
-                                    "Directory length is not a multiple of 12 bytes long.  Will look for oversized field and try to work around it.");
-                }                
-                else 
-                {
-                    if (permissive)                
-                    {    
-                        record.addError("n/a", "n/a", MarcError.FATAL, 
-                                "Directory length is not a multiple of 12 bytes long. Unable to continue.");
-                    }
-                    throw new MarcException("Directory length is not a multiple of 12 bytes long. Unable to continue.");
-                }
-            }
-        }
-        DataInputStream inputrec = new DataInputStream(new ByteArrayInputStream(recordBuf));
         int size = directoryLength / 12;
 
-        String[] tags = new String[size];
-        int[] lengths = new int[size];
-
-        byte[] tag = new byte[3];
-        byte[] length = new byte[4];
-        byte[] start = new byte[5];
-
-        String tmpStr;
-        try {
-            if (discardOneAtStartOfDirectory)  inputrec.read();
+        ArrayList<String> tags = new ArrayList<String>(size);
+        ArrayList<Integer> lengths = new ArrayList<Integer>(size);
+        ArrayList<Integer> offsets = new ArrayList<Integer>(size);
+        final HashMap<Integer, Integer> offsetsMap = new HashMap<Integer, Integer>();
+        boolean unsortedOffsets = false;
+        int offsetToFT = 0;
+        
+        if (directoryLength % 12 == 0 && recordBuf[directoryLength] == Constants.FT) 
+        {
+            boolean doneWithDirectory = false;
             int totalOffset = 0;
-            for (int i = 0; i < size; i++) 
+            int offset = 0;
+            for (int i = 0; !doneWithDirectory; i++)
             {
-                inputrec.readFully(tag);                
-                tmpStr = new String(tag);
-                tags[i] = tmpStr;
-    
-                boolean proceedNormally = true;
-                if (discardOneSomewhereInDirectory)
+                int increment = 12;
+                int prevOffset = offset;
+                final String dirEntry = new String(recordBuf, offsetToFT, 14);
+                final String tag = dirEntry.substring(0, 3);
+                final int length = Integer.parseInt(dirEntry.substring(3, 7));
+                offset = Integer.parseInt(dirEntry.substring(7, 12));
+                tags.add(tag);
+                lengths.add(length);
+                if (offset >= 99999) 
                 {
-                    byte lenCheck[] = new byte[10];
-                    inputrec.mark(20);
-                    inputrec.readFully(lenCheck);                
-                    if (byteCompare(lenCheck, 4, 5, totalOffset)) // proceed normally
+                    offset = prevOffset + length;
+                }
+                offsets.add(offset);
+                offsetToFT += increment;
+                if (recordBuf[offsetToFT] == Constants.FT)
+                {
+                    doneWithDirectory = true;
+                }
+                offsetsMap.put((Integer)offset, (Integer)i);
+                if (offset != totalOffset && totalOffset < 99999)
+                    unsortedOffsets = true;
+                totalOffset += length;
+            }
+            size = tags.size();
+        }
+        else // if (directoryLength % 12 != 0 || recordBuf[directoryLength] != Constants.FT) 
+        {
+            int totalOffset = 0;
+            boolean flaggedError1 = false, flaggedError2 = false, fixedError3 = false;
+            boolean doneWithDirectory = false;
+            for (int i = 0; !doneWithDirectory; i++)
+            {
+                int increment = 12;
+                final String dirEntry = new String(recordBuf, offsetToFT, 14);
+                int ftIndex = dirEntry.indexOf(Constants.FT);
+                if (ftIndex > 0 && ftIndex < 12)
+                {
+                    record.addError("n/a", "n/a", MarcError.MAJOR_ERROR, 
+                            "Field terminator in the middle of a directory entry. Discarding entry and trying to continue.");
+                    offsetToFT += dirEntry.indexOf(Constants.FT);
+                    break;
+                }
+                
+                String tag = dirEntry.substring(0, 3);
+                int length = Integer.parseInt(dirEntry.substring(3, 7));
+                int offset = Integer.parseInt(dirEntry.substring(7, 12));
+                // this looks for the case where the first directory entry is one byte too short.
+                if ((directoryLength - offsetToFT) % 12 == 11 && tag.charAt(1) != '0')
+                {
+                    String tagA = "0" + dirEntry.substring(0, 2);
+                    int lengthA = Integer.parseInt(dirEntry.substring(2, 6));
+                    int offsetA = Integer.parseInt(dirEntry.substring(6, 11));
+                    if (recordBuf[directoryLength] == Constants.FT && recordBuf[directoryLength+lengthA] == Constants.FT)
                     {
-                        proceedNormally = true;
+                        record.addError("n/a", "n/a", MarcError.MAJOR_ERROR, 
+                                "Directory length is not a multiple of 12 bytes long.  Prepending a zero and trying to continue.");
+                        fixedError3 = true;
+                        tag = tagA;
+                        length = lengthA;
+                        offset = offsetA;
+                        increment = 11;
                     }
-                    else if (byteCompare(lenCheck, 5, 5, totalOffset)) // field length is 5 bytes!  Bad Marc record, proceed normally
-                    {
-                        discardOneSomewhereInDirectory = false;
-                        record.addError("n/a", "n/a", MarcError.FATAL, 
+                }
+                // this looks for 6 digit offsets
+                if (totalOffset != offset && (totalOffset > 99999 && offset != 99999))
+                {
+                    int offset1, offset2, length2;
+                    try {
+                        offset1 = Integer.parseInt(dirEntry.substring(7, 13));
+                        offset2 = Integer.parseInt(dirEntry.substring(8, 13));
+                        length2 = Integer.parseInt(dirEntry.substring(3, 8));
+                        if (offset1 == totalOffset)
+                        {
+                            offset = offset1;
+                            if (!flaggedError1)
+                            {
+                                record.addError("n/a", "n/a", MarcError.MAJOR_ERROR, 
+                                        "Offset as stored in directory entry has more than 5 digits. Trying to continue.");
+                                flaggedError1 = true;
+                            }
+                            increment = 13;
+                        }
+                        else if (offset2 == totalOffset && totalOffset > 0)
+                        {
+                            offset = offset2;
+                            length = length2;
+                            if (!flaggedError2)
+                            {
+                                record.addError("n/a", "n/a", MarcError.MAJOR_ERROR, 
                                         "Field is longer than 9999 bytes.  Writing this record out will result in a bad record.");
-                        proceedNormally = false;
+                                flaggedError2 = true;
+                            }
+                            increment = 13;
+                        }
+                        
                     }
-                    else
+                    catch (NumberFormatException nfe)
                     {
-                        record.addError("n/a", "n/a", MarcError.FATAL, 
-                                        "Unable to reconcile problems in directory. Unable to continue.");                    
-                        throw new MarcException("Directory length is not a multiple of 12 bytes long. Unable to continue.");
+                        
                     }
-                    inputrec.reset();
                 }
-                if (proceedNormally)
+                tags.add(tag);
+                lengths.add(length);
+                offsets.add(totalOffset);
+                offsetToFT += increment;
+                if (recordBuf[offsetToFT] == Constants.FT)
                 {
-                    inputrec.readFully(length);
-                    tmpStr = new String(length);
-                    lengths[i] = Integer.parseInt(tmpStr);
-    
-                    inputrec.readFully(start);
+                    doneWithDirectory = true;
                 }
-                else // length is 5 bytes long 
+                offsetsMap.put((Integer)offset, (Integer)i);
+                if ((offset >= 99999 || totalOffset >= 99999) &&  ( offset != totalOffset ))
                 {
-                    inputrec.readFully(start);
-                    tmpStr = new String(start);
-                    lengths[i] = Integer.parseInt(tmpStr);
-    
-                    inputrec.readFully(start);                    
+                    record.addError("n/a", "n/a", MarcError.FATAL, 
+                            "Offsets to fields are out of order AND the directory is messed up. Unable to continue.");
+                    throw new MarcException("Offsets to fields are out of order AND the directory is messed up");
                 }
-                totalOffset += lengths[i];
+                totalOffset += length;
             }
-            
-            // If we still haven't found the extra byte, throw out the last byte and try to continue;
-            if (discardOneSomewhereInDirectory)  inputrec.read();
-    
-            if (inputrec.read() != Constants.FT)
-            {
-                record.addError("n/a", "n/a", MarcError.FATAL, 
-                                "Expected field terminator at end of directory. Unable to continue.");
-                throw new MarcException("expected field terminator at end of directory");
-            }
+            size = tags.size();
+        }
+        if (directoryLength != offsetToFT)
+        {
+            record.addError("n/a", "n/a", MarcError.MINOR_ERROR, 
+                    "Specified directory length not equal to actual directory length.");
+        }
+
+        if (unsortedOffsets) Collections.sort(offsets);
+        
+        try {
+            DataInputStream inputrec = new DataInputStream(new ByteArrayInputStream(recordBuf));
+            inputrec.skip(offsetToFT+1);
             
             int numBadLengths = 0;
-            
+          
             int totalLength = 0;
-            for (int i = 0; i < size; i++) 
-            {
+            int i = 0;
+            for (int s = 0; s < size; s++) {
+                i = (unsortedOffsets) ? offsetsMap.get((Integer)offsets.get(s)).intValue() : s;
                 int fieldLength = getFieldLength(inputrec);
-                if (fieldLength+1 != lengths[i] && permissive)
+                if (fieldLength+1 != lengths.get(i) && permissive)
                 {
                     if (numBadLengths < 5 && (totalLength + fieldLength < recordLength + 26))
                     {
                         inputrec.mark(9999);
-                        byteArray = new byte[lengths[i]];
+                        byteArray = new byte[lengths.get(i)];
                         inputrec.readFully(byteArray);
                         inputrec.reset();
-                        if (fieldLength+1 < lengths[i] && byteArray[lengths[i]-1] == Constants.FT)
+                        if (fieldLength+1 < lengths.get(i) && byteArray[lengths.get(i)-1] == Constants.FT)
                         {
                             record.addError("n/a", "n/a", MarcError.MINOR_ERROR, 
                                             "Field Terminator character found in the middle of a field.");
@@ -821,7 +842,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                         else 
                         {
                             numBadLengths++;
-                            lengths[i] = fieldLength+1;
+                            lengths.set(i, fieldLength+1);
                             record.addError("n/a", "n/a", MarcError.MINOR_ERROR, 
                                             "Field length found in record different from length stated in the directory.");
                             if (fieldLength+1 > 9999)
@@ -833,10 +854,10 @@ public class MarcPermissiveStreamReader implements MarcReader {
 
                     }
                 }
-                totalLength += lengths[i];
-                if (isControlField(tags[i])) 
+                totalLength += lengths.get(i);
+                if (isControlField(tags.get(i))) 
                 {
-                    byteArray = new byte[lengths[i] - 1];
+                    byteArray = new byte[lengths.get(i) - 1];
                     inputrec.readFully(byteArray);
     
                     if (inputrec.read() != Constants.FT)
@@ -847,20 +868,20 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     }
     
                     ControlField field = factory.newControlField();
-                    field.setTag(tags[i]);
+                    field.setTag(tags.get(i));
                     field.setData(getDataAsString(byteArray));
                     record.addVariableField(field);
     
                 } 
                 else 
                 {
-                    byteArray = new byte[lengths[i]];
+                    byteArray = new byte[lengths.get(i)];
                     inputrec.readFully(byteArray);
                     try {
-                        record.addVariableField(parseDataField(record, tags[i], byteArray));
+                        record.addVariableField(parseDataField(record, tags.get(i), byteArray));
                     } catch (IOException e) {
                         throw new MarcException(
-                                "error parsing data field for tag: " + tags[i]
+                                "error parsing data field for tag: " + tags.get(i)
                                         + " with data: "
                                         + new String(byteArray), e);
                     }

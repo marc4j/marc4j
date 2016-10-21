@@ -27,6 +27,10 @@ public class StaticTestRecords {
     public static final String RESOURCES_BAD_NUMERIC_CHARACTER_REFERENCE_MRC = "/loongboonmee.mrc";
     public static final String RESOURCES_CHINESE_WITH_CENTRAL_DOT_MRC = "/oclc_63111280_export_as_UTF8_from_connexion.mrc";
     public static final String RESOURCES_BAD_CHARACTERS_IN_VARIOUS_FIELDS_MRC = "/bad-characters-in-various-fields.mrc";
+    public static final String RESOURCES_PRIDE_AND_PREJUDICE_ERRORS_MRC = "/pride-and-prejudice-with-many-errors.mrc";
+    public static final String RESOURCES_PRIDE_AND_PREJUDICE_FIXED_MRC = "/pride-and-prejudice-fixed.mrc";
+    public static final String RESOURCES_6_BYTE_OFFSET_IN_DIRECTORY = "/datos-20161010-slice.mrc";
+    public static final String RESOURCES_UNORDERED_DIRECTORY = "/unordered-directory-entries.mrc";
 
     public static Record chabon[] = new Record[2];
     public static Record summerland[] = new Record[1];

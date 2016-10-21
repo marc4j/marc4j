@@ -1,6 +1,7 @@
 package org.marc4j.test;
 
 import org.junit.Test;
+import org.marc4j.MarcException;
 import org.marc4j.MarcPermissiveStreamReader;
 import org.marc4j.MarcReader;
 
@@ -81,7 +82,7 @@ public class PermissiveReaderTest {
 
         return new ByteArrayInputStream(recordBytes);
     }
-
+    
     @Test
     public void testTooLongMarcRecord() throws Exception {
         InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BAD_TOO_LONG_PLUS_2_MRC);
@@ -105,6 +106,46 @@ public class PermissiveReaderTest {
         assertEquals(good001.getData(), "360946");
 
     }
+    
+    @Test
+    public void testTooLongMarcRecord2() throws Exception {
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_6_BYTE_OFFSET_IN_DIRECTORY);
+        assertNotNull(input);
+        // This marc file has one record, that is too long for a marc binary record.
+        // the directory contains offsets with 13 bytes and 6 byte offsets instead of 12 and 5 
+
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+
+        Record too_big_record = reader.next();
+
+        List<VariableField> fields = too_big_record.getVariableFields("952");
+        assertEquals(fields.size(), 965);
+
+    }
+    
+    // This test is reads a large file of binary MARC records for Pride and Prejudice 
+    // Many of these records are malformed in a number of ways:  Missing bytes in the directory, Escaped html characters,
+    // Incorrect character encoding specification, Missing MARC8 escape sequences, Subfields of zero length
+    // This test reads the error filled file and attempts to convert the records into well-formed ones.  
+    // If compares the result against an already fixed version.  This is primarily a regression test, the results
+    // file is not necessarily 100% correct, but if the test results change it could indicate an unintended change.
+    @Test
+    public void testPrideAndPrejudice() throws Exception {
+        InputStream input1 = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_PRIDE_AND_PREJUDICE_ERRORS_MRC);
+        InputStream input2 = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_PRIDE_AND_PREJUDICE_FIXED_MRC);
+        assertNotNull(input1);
+        assertNotNull(input2);
+
+        MarcReader reader1 = new MarcPermissiveStreamReader(input1, true, true);
+        MarcReader reader2 = new MarcPermissiveStreamReader(input2, false, false);
+
+        while (reader1.hasNext() && reader2.hasNext())
+        {
+            Record record1 = reader1.next();
+            Record record2 = reader2.next();
+            RecordTestingUtils.assertEqualsIgnoreLeader(record2, record1);
+        }
+    }
 
     @Test
     public void testTooLongLeaderByteRead() throws Exception {
@@ -127,7 +168,29 @@ public class PermissiveReaderTest {
         // And length should be set to our 99999 overflow value
         assertEquals("99999", strLeader.substring(0, 5));
     }
-    
+
+    @Test
+    public void testParseRecordOnUnorderDirectoryEntries()
+    {
+        InputStream input = getClass().getResourceAsStream(
+                StaticTestRecords.RESOURCES_UNORDERED_DIRECTORY);
+        assertNotNull(input);
+        try
+        {
+            MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+            while (reader.hasNext())
+            {
+                Record record = reader.next();
+                List<VariableField> fields = record.getVariableFields("880");
+
+            }
+        }
+        catch (MarcException e)
+        {
+            fail("Failed to parse record having unordered directory entries");
+        }
+    }
+
     // This test is targeted toward code that attempts to fix instances where a vertical bar character 
     // has been interpreted as a sub-field separator, specifically in this case when the vertical bar 
     // occurs in a string of cyrillic characters, and is supposed to be a CYRILLIC CAPITAL LETTER E 
@@ -152,7 +215,7 @@ public class PermissiveReaderTest {
                if (sf.getData().startsWith("26"))
                {
                    sf = df.getSubfield('b');
-                   // test string is Эксмо,
+                   // test string is Ð­ÐºÑ�Ð¼Ð¾,
                    String testString = "\u042D\u043A\u0441\u043C\u043E,";
                    if (!sf.getData().equalsIgnoreCase(testString))
                    {

@@ -46,9 +46,10 @@ public class RecordTestingUtils
 	public static void assertEqualsIgnoreLeader(Record expected, Record actual)
 	{
 		String actualId = actual.getControlNumber();
+		String expectedId = expected.getControlNumber();
 		String errmsg = "Record " + actualId + " wasn't as expected";
 	    
-	    if ( actualId.equals(expected.getControlNumber()) )
+	    if (( actualId == null && expectedId == null ) || actualId != null && actualId.equals(expectedId) )
 	    	assertTrue(errmsg, expected.toString().substring(24).equals(actual.toString().substring(24)) );
 	    else
 	    	fail(errmsg);
