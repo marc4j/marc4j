@@ -19,7 +19,6 @@
  */
 package org.marc4j;
 
-import com.sun.org.apache.xerces.internal.util.XMLChar;
 import org.marc4j.converter.CharConverter;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
@@ -45,6 +44,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -578,7 +578,7 @@ public class MarcXmlWriter implements MarcWriter {
         StringBuffer out = new StringBuffer(dataElement.length());
         for (char ch : dataElement.toCharArray())
         {
-            if (XMLChar.isInvalid(ch))
+            if (isInvalidXmlChar(ch))
             {
                 out.append("<U+");
                 String hex = ("0000" + Integer.toString(ch));
@@ -592,4 +592,23 @@ public class MarcXmlWriter implements MarcWriter {
         }
         return out.toString();
     }
+    
+    static Pattern valid = Pattern.compile("[\\u0001-\\uD7FF\\uE000-\uFFFD\\x{10000}-\\x{10FFFF}]");
+    static Pattern ctrlChar = Pattern.compile("[\\u0001-\\u0008\\u000B-\\u000C\\u000E-\\u001F\\u007F-\\u0084\\u0086-\\u009F]");
+    static Pattern discouraged = Pattern.compile("[\\uFDD0-\\uFDEF\\x{1FFFE}-\\x{1FFFF}\\x{2FFFE}-\\x{2FFFF}\\x{3FFFE}-\\x{3FFFF}\\x{4FFFE}-\\x{4FFFF}\\x{5FFFE}-\\x{5FFFF}\\x{6FFFE}-\\x{6FFFF}\\x{7FFFE}-\\x{7FFFF}\\x{8FFFE}-\\x{8FFFF}\\x{9FFFE}-\\x{9FFFF}\\x{AFFFE}-\\x{AFFFF}\\x{BFFFE}-\\x{BFFFF}\\x{CFFFE}-\\x{CFFFF}\\x{DFFFE}-\\x{DFFFF}\\x{EFFFE}-\\x{EFFFF}\\x{FFFFE}-\\x{FFFFF}\\x{10FFFE}-\\x{10FFFF}]");
+    
+    /**
+     * A replacement for the method XmlChar.isInvalid(char ch) found in the 
+     * class com.sun.org.apache.xerces.internal.util.XMLChar;  which, since its an 
+     * internal class, apparently shouldn't be used.
+     */
+    private static boolean isInvalidXmlChar(char ch)
+    {
+        final String s = Character.toString(ch);
+        // xml 1.1 spec http://en.wikipedia.org/wiki/Valid_characters_in_XML
+        if (!valid.matcher(s).matches())      return true;         // not in valid ranges
+        if (ctrlChar.matcher(s).matches())    return true;         // a control character
+        if (discouraged.matcher(s).matches()) return true;        // "Characters allowed but discouraged"
+        return false;
+      }
 }
