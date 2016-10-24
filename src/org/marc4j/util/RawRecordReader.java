@@ -1,6 +1,14 @@
 package org.marc4j.util;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
@@ -21,18 +29,18 @@ public class RawRecordReader
     RawRecord nextRec = null;
     RawRecord afterNextRec = null;
     boolean mergeRecords = true;
-    
+
     public RawRecordReader(InputStream is)
     {
         input = new DataInputStream(new BufferedInputStream(is));
     }
-    
+
     public RawRecordReader(InputStream is, boolean mergeRecords)
     {
         this.mergeRecords = mergeRecords;
         input = new DataInputStream(new BufferedInputStream(is));
     }
-    
+
     public boolean hasNext()
     {
         if (nextRec == null)
@@ -57,7 +65,7 @@ public class RawRecordReader
         }
         return(false);
     }
-    
+
     public RawRecord next() 
     {
         RawRecord tmpRec = nextRec;
@@ -65,8 +73,7 @@ public class RawRecordReader
         afterNextRec = null;
         return(tmpRec);
     }
-    
-	   
+
 	/**
 	 * 
 	 * @param args
@@ -74,7 +81,7 @@ public class RawRecordReader
     public static void main(String[] args)
     {
         RawRecordReader reader;
-        
+
         if (args.length < 2)
         {
             System.err.println("Error: No records specified for extraction");
@@ -105,6 +112,11 @@ public class RawRecordReader
                     numToOutput = Integer.parseInt(args[offset+1]);
                     offset += 2;
                 }  
+            }
+            if (offset < args.length && ( args[offset].equals("-nomerge")))
+            {
+                reader.mergeRecords = false;
+                offset++;
             }
             if (numToSkip != 0 || numToOutput != -1)
             {
