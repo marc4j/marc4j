@@ -781,11 +781,9 @@ public class MarcPermissiveStreamReader implements MarcReader {
                             }
                             increment = 13;
                         }
-                        
                     }
                     catch (NumberFormatException nfe)
                     {
-                        
                     }
                 }
                 tags.add(tag);
@@ -797,7 +795,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     doneWithDirectory = true;
                 }
                 offsetsMap.put((Integer)offset, (Integer)i);
-                if ((offset >= 99999 || totalOffset >= 99999) &&  ( offset != totalOffset ))
+                if ((totalOffset < 99999) &&  ( offset != totalOffset ))
                 {
                     record.addError("n/a", "n/a", MarcError.FATAL, 
                             "Offsets to fields are out of order AND the directory is messed up. Unable to continue.");

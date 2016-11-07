@@ -123,6 +123,27 @@ public class PermissiveReaderTest {
 
     }
     
+    @Test
+    public void testTooLongMarcRecord3() throws Exception {
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BAD_TOO_LARGE_HATHI_RECORD);
+        assertNotNull(input);
+        // This marc file has five records, the fourth one is way too long for a marc binary record.
+        // the directory contains steadily increasing offsets until the maximum size of 99999 is reached,
+        // thereafter the offset is always 99999.
+
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+
+        while (reader.hasNext())
+        {
+            Record record = reader.next();
+            if (record.getControlNumber().equals("003051567"))
+            {
+                List<VariableField> fields = record.getVariableFields("974");
+                assertEquals(fields.size(), 12582);
+            }
+        }
+    }
+    
     // This test is reads a large file of binary MARC records for Pride and Prejudice 
     // Many of these records are malformed in a number of ways:  Missing bytes in the directory, Escaped html characters,
     // Incorrect character encoding specification, Missing MARC8 escape sequences, Subfields of zero length
