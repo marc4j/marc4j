@@ -140,6 +140,10 @@ public class RawRecord //implements MarcReader
             e.printStackTrace();
         }
         int offset = Integer.parseInt(recordStr.substring(12,17));
+        if (offset == 99999 || recordStr.charAt(offset-1) != Constants.FT) 
+        {
+            offset = recordStr.indexOf(Constants.FT)+1;
+        }
         int dirOffset = 24;
         String fieldNum = recordStr.substring(dirOffset, dirOffset+3);
         while (dirOffset < offset)
