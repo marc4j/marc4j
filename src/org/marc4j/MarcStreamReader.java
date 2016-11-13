@@ -414,7 +414,14 @@ public class MarcStreamReader implements MarcReader {
                 throw new MarcException("unsupported encoding", e);
             }
         }
+        else if (override) {
+            try {
+                dataElement = new String(bytes, encoding);
+            }
+            catch (UnsupportedEncodingException e) {
+                throw new MarcException("unsupported encoding", e);
+            }
+        }
         return dataElement;
     }
-    
 }
