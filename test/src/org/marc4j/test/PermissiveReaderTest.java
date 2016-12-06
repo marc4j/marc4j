@@ -1,15 +1,18 @@
 package org.marc4j.test;
 
 import org.junit.Test;
+import org.marc4j.MarcError;
 import org.marc4j.MarcException;
 import org.marc4j.MarcPermissiveStreamReader;
 import org.marc4j.MarcReader;
-
-import org.marc4j.test.utils.RecordTestingUtils;
-
 import org.marc4j.MarcStreamWriter;
-import org.marc4j.marc.*;
-
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.MarcFactory;
+import org.marc4j.marc.Record;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.VariableField;
+import org.marc4j.test.utils.RecordTestingUtils;
 import org.marc4j.test.utils.StaticTestRecords;
 
 import java.io.ByteArrayInputStream;
@@ -17,7 +20,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class PermissiveReaderTest {
 
@@ -82,7 +90,7 @@ public class PermissiveReaderTest {
 
         return new ByteArrayInputStream(recordBytes);
     }
-    
+
     @Test
     public void testTooLongMarcRecord() throws Exception {
         InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BAD_TOO_LONG_PLUS_2_MRC);
@@ -106,7 +114,7 @@ public class PermissiveReaderTest {
         assertEquals(good001.getData(), "360946");
 
     }
-    
+
     @Test
     public void testTooLongMarcRecord2() throws Exception {
         InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_6_BYTE_OFFSET_IN_DIRECTORY);
@@ -122,7 +130,7 @@ public class PermissiveReaderTest {
         assertEquals(fields.size(), 965);
 
     }
-    
+
     @Test
     public void testTooLongMarcRecord3() throws Exception {
         InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_BAD_TOO_LARGE_HATHI_RECORD);
@@ -143,7 +151,7 @@ public class PermissiveReaderTest {
             }
         }
     }
-    
+
     // This test is reads a large file of binary MARC records for Pride and Prejudice 
     // Many of these records are malformed in a number of ways:  Missing bytes in the directory, Escaped html characters,
     // Incorrect character encoding specification, Missing MARC8 escape sequences, Subfields of zero length
@@ -217,36 +225,36 @@ public class PermissiveReaderTest {
     // occurs in a string of cyrillic characters, and is supposed to be a CYRILLIC CAPITAL LETTER E 
     @Test
     public void testCyrillicEFix() throws Exception {
-       InputStream input = getClass().getResourceAsStream(
-               StaticTestRecords.RESOURCES_CYRILLIC_CAPITAL_E_MRC);
+        InputStream input = getClass().getResourceAsStream(
+                StaticTestRecords.RESOURCES_CYRILLIC_CAPITAL_E_MRC);
         assertNotNull(input);
-       MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
-       
-       while (reader.hasNext())
-       {
-           Record record = reader.next();
-           
-           //Get fields with Cyrillic characters
-           List<VariableField> fields = record.getVariableFields("880");
-    
-           for (VariableField field : fields)
-           {
-               DataField df = (DataField)field;
-               Subfield sf = df.getSubfield('6');
-               if (sf.getData().startsWith("26"))
-               {
-                   sf = df.getSubfield('b');
-                   // test string is Ð­ÐºÑ�Ð¼Ð¾,
-                   String testString = "\u042D\u043A\u0441\u043C\u043E,";
-                   if (!sf.getData().equalsIgnoreCase(testString))
-                   {
-                       fail("broken cyrillic record should have been fixed");
-                   }
-               }
-           }
-       }
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+
+        while (reader.hasNext())
+        {
+            Record record = reader.next();
+
+            //Get fields with Cyrillic characters
+            List<VariableField> fields = record.getVariableFields("880");
+
+            for (VariableField field : fields)
+            {
+                DataField df = (DataField)field;
+                Subfield sf = df.getSubfield('6');
+                if (sf.getData().startsWith("26"))
+                {
+                    sf = df.getSubfield('b');
+                    // test string is Ð­ÐºÑ�Ð¼Ð¾,
+                    String testString = "\u042D\u043A\u0441\u043C\u043E,";
+                    if (!sf.getData().equalsIgnoreCase(testString))
+                    {
+                        fail("broken cyrillic record should have been fixed");
+                    }
+                }
+            }
+        }
     }
-    
+
     // This test is targeted toward code that attempts to fix instances where within a string of characters
     // in the greek character set, a character set change back to the default character set is missing.
     // This would be indicated by characters being found for which there is no defined mapping in the greek character set
@@ -257,21 +265,21 @@ public class PermissiveReaderTest {
     // third copy of the same record represented in marc8 but using numeric character references to encode the greek characters.
     @Test
     public void testGreekMissingCharSetChange() throws Exception {
-       InputStream input = getClass().getResourceAsStream(
-               StaticTestRecords.RESOURCES_GREEK_MISSING_CHARSET_MRC);
+        InputStream input = getClass().getResourceAsStream(
+                StaticTestRecords.RESOURCES_GREEK_MISSING_CHARSET_MRC);
         assertNotNull(input);
-       MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
-       
-       Record record1 = reader.next();
-       Record record2 = reader.next();
-       Record record3 = reader.next();
-       
-       if (record1 != null && record2 != null)
-           RecordTestingUtils.assertEqualsIgnoreLeader(record1, record2);
-       if (record2 != null && record3 != null)
-           RecordTestingUtils.assertEqualsIgnoreLeader(record2, record3);
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+
+        Record record1 = reader.next();
+        Record record2 = reader.next();
+        Record record3 = reader.next();
+
+        if (record1 != null && record2 != null)
+            RecordTestingUtils.assertEqualsIgnoreLeader(record1, record2);
+        if (record2 != null && record3 != null)
+            RecordTestingUtils.assertEqualsIgnoreLeader(record2, record3);
     }
-    
+
     // This test is targeted toward code that attempts to fix instances where Marc8 multibyte-encoded CJK characters
     // are malformed, due to some software program deleting the characters '[' or ']' or '|'.  Each of these can
     // occur as a part of a Marc8 multibyte-encoded CJK characters, but some poorly written software treats the vertical
@@ -279,22 +287,22 @@ public class PermissiveReaderTest {
     // multibyte-encoded CJK characters and makes translating the data to Unicode extremely difficult.
     @Test
     public void testMangledChineseCharacters() throws Exception {
-       InputStream input = getClass().getResourceAsStream(
-               StaticTestRecords.RESOURCES_CHINESE_MANGLED_MULTIBYTE_MRC);
-       assertNotNull(input);
-       MarcReader reader = new MarcPermissiveStreamReader(input, true, true, "MARC8");
-       
-       Record record1 = reader.next();
-       Record record2 = reader.next();
-       Record record3 = reader.next();
-       Record record4 = reader.next();
+        InputStream input = getClass().getResourceAsStream(
+                StaticTestRecords.RESOURCES_CHINESE_MANGLED_MULTIBYTE_MRC);
+        assertNotNull(input);
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true, "MARC8");
+
+        Record record1 = reader.next();
+        Record record2 = reader.next();
+        Record record3 = reader.next();
+        Record record4 = reader.next();
 //       if (record1 != null && record2 != null)
 //           RecordTestingUtils.assertEqualsIgnoreLeader(record1, record2);
-       String diff12 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record1, record2);
-       String diff23 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record2, record3);
-       String diff34 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record3, record4);
-       assertNull("Tested records are unexpectedly different: "+diff23, diff23);
-       assertNull("Tested records are unexpectedly different: "+diff34, diff34);
+        String diff12 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record1, record2);
+        String diff23 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record2, record3);
+        String diff34 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record3, record4);
+        assertNull("Tested records are unexpectedly different: "+diff23, diff23);
+        assertNull("Tested records are unexpectedly different: "+diff34, diff34);
 
     }
 
@@ -306,18 +314,78 @@ public class PermissiveReaderTest {
     // record correctly encoded in Unicode.  After translating the records should be identical.
     @Test
     public void testMalformedNCRFix() throws Exception {
-       InputStream input = getClass().getResourceAsStream(
-               StaticTestRecords.RESOURCES_BAD_NUMERIC_CHARACTER_REFERENCE_MRC);
+        InputStream input = getClass().getResourceAsStream(
+                StaticTestRecords.RESOURCES_BAD_NUMERIC_CHARACTER_REFERENCE_MRC);
         assertNotNull(input);
-       MarcReader reader = new MarcPermissiveStreamReader(input, true, true, "MARC8");
-       
-       Record record1 = reader.next();
-       Record record2 = reader.next();
-       
-       String diff12 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record1, record2);
-       assertNull("Tested records are unexpectedly different: "+diff12, diff12);
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true, "MARC8");
+
+        Record record1 = reader.next();
+        Record record2 = reader.next();
+
+        String diff12 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record1, record2);
+        assertNull("Tested records are unexpectedly different: "+diff12, diff12);
 
     }
-    
-    
+
+
+    @Test
+    public void testIncompleteEscSeq() throws Exception {
+        int i = 0;
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_INCOMPLETE_ESC_SEQ_MRC);
+        // One subfield in eacg if twi 880 tags has a 'esc' followed by a '$' followed by nothing else. (i.e. invalid) (700-07, 700-10)
+        // Another has the $ followed by a ")" and nothing else (i.e. invalid) (700-11)
+        // Another has the $ followed by a "-" and nothing else (i.e. invalid) (700-12)
+        // Another has the $ followed by a "," and nothing else (i.e. invalid) (700-13)
+        assertNotNull(input);
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+        boolean found07 = false;
+        boolean found10 = false;
+        boolean found11 = false;
+        boolean found12 = false;
+        boolean found13 = false;
+        while (reader.hasNext()) {
+            Record record = reader.next();
+            List<ControlField> fields = record.getControlFields();
+            assertNotNull(fields);
+            ControlField field = fields.get(0);
+            assertNotNull(field);
+            assertEquals("ocn436459302", field.getData());
+            for (MarcError error : record.getErrors())
+            {
+                if (error.message.startsWith("Incomplete character set code found following escape character."))
+                {
+                    if (error.curField.contains("880(700-07)"))
+                    {
+                        found07 = true;
+                    }
+                    else if (error.curField.contains("880(700-10"))
+                    {
+                        found10 = true;
+                    }
+                    else if (error.curField.contains("880(700-11"))
+                    {
+                        found11 = true;
+                    }
+                    else if (error.curField.contains("880(700-12"))
+                    {
+                        found12 = true;
+                    }
+                    else if (error.curField.contains("880(700-13"))
+                    {
+                        found13 = true;
+                    }
+                }
+            }
+            i++;
+        }
+        input.close();
+        assertEquals(1, i);
+        assertTrue(found07);
+        assertTrue(found10);
+        assertTrue(found11);
+        assertTrue(found12);
+        assertTrue(found13);
+    }
+
+
 }
