@@ -4,8 +4,8 @@
  * This file is part of MARC4J
  *
  * MARC4J is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public 
- * License as published by the Free Software Foundation; either 
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * MARC4J is distributed in the hope that it will be useful,
@@ -13,11 +13,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public 
+ * You should have received a copy of the GNU Lesser General Public
  * License along with MARC4J; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
 package org.marc4j;
 
 import javax.xml.parsers.SAXParserFactory;
@@ -45,20 +46,18 @@ public class MarcXmlParser {
     /**
      * Default constructor.
      * 
-     * @param handler
-     *            the <code>MarcXmlHandler</code> object
+     * @param handler the <code>MarcXmlHandler</code> object
      */
-    public MarcXmlParser(MarcXmlHandler handler) {
+    public MarcXmlParser(final MarcXmlHandler handler) {
         this.handler = handler;
     }
 
     /**
      * Calls the parser.
      * 
-     * @param input
-     *            the input source
+     * @param input the input source
      */
-    public void parse(InputSource input) {
+    public void parse(final InputSource input) {
         parse(handler, input);
     }
 
@@ -66,30 +65,27 @@ public class MarcXmlParser {
      * Calls the parser and tries to transform the source into MARCXML using the
      * given stylesheet source before creating <code>Record</code> objects.
      * 
-     * @param input
-     *            the input source
-     * @param th
-     *            the transformation content handler
+     * @param input the input source
+     * @param th the transformation content handler
      */
-    public void parse(InputSource input, TransformerHandler th) {
-        SAXResult result = new SAXResult();
+    public void parse(final InputSource input, final TransformerHandler th) {
+        final SAXResult result = new SAXResult();
         result.setHandler(handler);
         th.setResult(result);
         parse(th, input);
 
     }
 
-    private void parse(ContentHandler handler, InputSource input) {
-        SAXParserFactory spf = SAXParserFactory.newInstance();
+    private void parse(final ContentHandler handler, final InputSource input) {
+        final SAXParserFactory spf = SAXParserFactory.newInstance();
         XMLReader reader = null;
         try {
             reader = spf.newSAXParser().getXMLReader();
             reader.setFeature("http://xml.org/sax/features/namespaces", true);
-            reader.setFeature("http://xml.org/sax/features/namespace-prefixes",
-                    true);
+            reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
             reader.setContentHandler(handler);
             reader.parse(input);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new MarcException("Unable to parse input", e);
         }
     }
