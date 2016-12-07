@@ -391,10 +391,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     recordBuf[recordBuf.length - 1] = Constants.RT;
                     done = true;
                 } else {
-                    record.addError(
-                            "n/a",
-                            "n/a",
-                            MarcError.FATAL,
+                    record.addError("n/a", "n/a", MarcError.FATAL,
                             "No Record terminator found within " + marc_file_lookahead_buffer + " bytes of start of record, getting desperate.");
                     input.reset();
                     marc_file_lookahead_buffer *= 2;
@@ -504,16 +501,10 @@ public class MarcPermissiveStreamReader implements MarcReader {
         final char tmp[] = ldr.getEntryMap();
         if (permissive && !("" + tmp[0] + tmp[1] + tmp[2] + tmp[3]).equals("4500")) {
             if (tmp[0] >= '0' && tmp[0] <= '9' && tmp[1] >= '0' && tmp[1] <= '9' && tmp[2] >= '0' && tmp[2] <= '9' && tmp[3] >= '0' && tmp[3] <= '9') {
-                record.addError(
-                        "n/a",
-                        "n/a",
-                        MarcError.ERROR_TYPO,
+                record.addError("n/a", "n/a", MarcError.ERROR_TYPO,
                         "Unusual character found at end of leader [ " + tmp[0] + tmp[1] + tmp[2] + tmp[3] + " ]");
             } else {
-                record.addError(
-                        "n/a",
-                        "n/a",
-                        MarcError.ERROR_TYPO,
+                record.addError("n/a", "n/a", MarcError.ERROR_TYPO,
                         "Erroneous character found at end of leader [ " + tmp[0] + tmp[1] + tmp[2] + tmp[3] + " ]; changing them to the standard \"4500\"");
                 ldr.setEntryMap("4500".toCharArray());
             }
@@ -534,12 +525,9 @@ public class MarcPermissiveStreamReader implements MarcReader {
             default:
                 if (convertToUTF8) {
                     if (permissive) {
-                        record.addError(
-                                "n/a",
-                                "n/a",
-                                MarcError.MINOR_ERROR,
-                                "Record character encoding should be 'a' or ' ' in this record it is '" + ldr
-                                        .getCharCodingScheme() + "'. Attempting to guess the correct encoding.");
+                        record.addError("n/a", "n/a", MarcError.MINOR_ERROR,
+                                "Record character encoding should be 'a' or ' ' in this record it is '" + 
+                                 ldr.getCharCodingScheme() + "'. Attempting to guess the correct encoding.");
                         encoding = "BESTGUESS";
                     } else {
                         encoding = defaultEncoding;
@@ -616,20 +604,14 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     }
 
                     if (!foundESC) {
-                        record.addError(
-                                "n/a",
-                                "n/a",
-                                MarcError.MINOR_ERROR,
+                        record.addError("n/a", "n/a", MarcError.MINOR_ERROR,
                                 "Record claims to be UTF-8, but its not. It may be MARC8, or maybe UNIMARC, or maybe raw ISO-8859-1 ");
                     }
                 }
 
                 if (utfCheck.contains("a$1!")) {
                     encoding = "MARC8-Broken";
-                    record.addError(
-                            "n/a",
-                            "n/a",
-                            MarcError.MAJOR_ERROR,
+                    record.addError("n/a", "n/a", MarcError.MAJOR_ERROR,
                             "Record claims to be UTF-8, but its not. It seems to be MARC8-encoded but with missing escape codes.");
                 }
             } catch (final UnsupportedEncodingException e) {
@@ -867,8 +849,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
             // not.
             // Here we make an attempt to determine the actual encoding of the
             // data in the record.
-            if (permissive && conversionCheck1.length() > 1 && conversionCheck2.length() > 1 && conversionCheck3
-                    .length() > 1) {
+            if (permissive && conversionCheck1.length() > 1 && 
+                    conversionCheck2.length() > 1 && conversionCheck3.length() > 1) {
                 guessAndSelectCorrectNonUTF8Encoding();
             }
             if (inputrec.read() != Constants.RT) {
@@ -944,8 +926,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
             partToUse = 2;
         } else if (!specialCharIsBetweenLetters(conversionCheck1)) {
             addError(MarcError.INFO,
-                    "To few letters in translations, choosing " + (defaultPart == 0 ? "MARC8"
-                            : "Unimarc"));
+                    "To few letters in translations, choosing " + (defaultPart == 0 ? "MARC8" : "Unimarc"));
             partToUse = defaultPart;
         } else if (l2 == l3 && defaultPart == 1) {
             addError(MarcError.INFO,
@@ -953,8 +934,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
             partToUse = 2;
         } else {
             addError(MarcError.INFO,
-                    "No Determination made, defaulting to " + (defaultPart == 0 ? "MARC8"
-                            : "Unimarc"));
+                    "No Determination made, defaulting to " + (defaultPart == 0 ? "MARC8" : "Unimarc"));
             partToUse = defaultPart;
         }
         final List<VariableField> fields = record.getVariableFields();
