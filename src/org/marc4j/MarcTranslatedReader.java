@@ -43,8 +43,8 @@ public class MarcTranslatedReader implements MarcReader {
     /**
      * Creates a MARC translated reader that can normalize Unicode.
      * 
-     * @param r
-     * @param unicodeNormalizeBool
+     * @param r - the MarcReader that this object should decorate
+     * @param unicodeNormalizeBool - true to apply the Unicode NFC normalization to data
      */
     public MarcTranslatedReader(final MarcReader r, final boolean unicodeNormalizeBool) {
         reader = r;
@@ -59,8 +59,9 @@ public class MarcTranslatedReader implements MarcReader {
      * Creates a MARC translated reader using the normalizer represented by the
      * supplied string.
      * 
-     * @param r
-     * @param unicodeNormalizeStr
+     * @param r - the MarcReader that this object should decorate
+     * @param unicodeNormalizeStr - a string specifying which form of Unicode Normalization to use
+     *        valid values are "KC"  "KD"  "C"  "D" any other value does no normalization
      */
     public MarcTranslatedReader(final MarcReader r, final String unicodeNormalizeStr) {
         reader = r;

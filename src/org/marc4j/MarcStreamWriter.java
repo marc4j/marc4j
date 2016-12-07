@@ -88,6 +88,8 @@ public class MarcStreamWriter implements MarcWriter {
 
     /**
      * Constructs an instance and creates a <code>Writer</code> object with the specified output stream.
+     *
+     * @param out - the OutputStream to write to
      */
     public MarcStreamWriter(final OutputStream out) {
         this.out = out;
@@ -96,6 +98,9 @@ public class MarcStreamWriter implements MarcWriter {
     /**
      * Constructs an instance and creates a <code>Writer</code> object with the specified output stream and character
      * encoding.
+     *
+     * @param out - the OutputStream to write to
+     * @param encoding - the encoding to use when writing out the record
      */
     public MarcStreamWriter(final OutputStream out, final String encoding) {
         this.encoding = encoding;
@@ -104,6 +109,9 @@ public class MarcStreamWriter implements MarcWriter {
 
     /**
      * Constructs an instance and creates a <code>Writer</code> object with the specified output stream.
+     *
+     * @param out - the OutputStream to write to
+     * @param allowOversizeRecord - true to allow oversized records to be written out.
      */
     public MarcStreamWriter(final OutputStream out, final boolean allowOversizeRecord) {
         this.out = out;
@@ -113,6 +121,10 @@ public class MarcStreamWriter implements MarcWriter {
     /**
      * Constructs an instance and creates a <code>Writer</code> object with the specified output stream and character
      * encoding.
+     *
+     * @param out - the OutputStream to write to
+     * @param encoding - the encoding to use when writing out the record
+     * @param allowOversizeRecord - true to allow oversized records to be written out.
      */
     public MarcStreamWriter(final OutputStream out, final String encoding, final boolean allowOversizeRecord) {
         this.encoding = encoding;
@@ -123,7 +135,7 @@ public class MarcStreamWriter implements MarcWriter {
     /**
      * Returns the character converter.
      *
-     * @return CharConverter the character converter
+     * @return the character converter
      */
     @Override
     public CharConverter getConverter() {
@@ -133,7 +145,7 @@ public class MarcStreamWriter implements MarcWriter {
     /**
      * Sets the character converter.
      *
-     * @param converter the character converter
+     * @param converter - the character converter
      */
     @Override
     public void setConverter(final CharConverter converter) {
@@ -268,7 +280,7 @@ public class MarcStreamWriter implements MarcWriter {
     /**
      * Sets whether an oversized entry is allowed.
      *
-     * @param allowOversizeEntry
+     * @param allowOversizeEntry - true if an oversized entry ought to be allowed
      */
     public void setAllowOversizeEntry(final boolean allowOversizeEntry) {
         this.allowOversizeEntry = allowOversizeEntry;

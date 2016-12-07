@@ -21,9 +21,9 @@ public class MarcSplitStreamWriter extends MarcStreamWriter {
      * Creates a MarcSplitStreamWriter with a record threshold and fields to split from the supplied
      * {@link OutputStream}.
      *
-     * @param out
-     * @param threshold
-     * @param fieldsToSplit
+     * @param out - the OutputStream to use for output
+     * @param threshold - the record size in bytes above which record ought to be split
+     * @param fieldsToSplit - a list of field tags that can be split over multiple records
      */
     public MarcSplitStreamWriter(final OutputStream out, final int threshold, final String fieldsToSplit) {
         super(out, false);
@@ -35,10 +35,10 @@ public class MarcSplitStreamWriter extends MarcStreamWriter {
      * Creates a MarcSplitStreamWriter with an encoding, a record threshold, and fields to split from the supplied
      * {@link OutputStream}.
      *
-     * @param out
-     * @param encoding
-     * @param threshold
-     * @param fieldsToSplit
+     * @param out - the OutputStream to use for output
+     * @param encoding - the encoding to use for outputting the record
+     * @param threshold - the record size in bytes above which record ought to be split
+     * @param fieldsToSplit - a list of field tags that can be split over multiple records
      */
     public MarcSplitStreamWriter(final OutputStream out, final String encoding, final int threshold,
             final String fieldsToSplit) {

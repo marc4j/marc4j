@@ -6,8 +6,8 @@ public class MarcError {
     /**
      * FATAL is the most severe error, it is usually set in conjunction with throwing an
      * exception, generally no record is returned when a FATAL error occurs.  Although in 
-     * some instances (a record with a field &gt; 9999 bytes long) a record will be returned 
-     * that can be used, but it cannot be written back out without causing an error.
+     * some instances (a record with a field greater than 9999 bytes long) a record will be
+     * returned that can be used, but it cannot be written back out without causing an error.
      */
     public final static int FATAL = 4;
 
@@ -31,7 +31,7 @@ public class MarcError {
      * ERROR_TYPO indicates that an even less severe problem was found with the record,
      * such as the record leader ends with characters other than "4500" or a field tag 
      * contains non-numeric characters the record contains a html-style entity reference 
-     * such as &amp; or &quote; which was replaced with the unescaped version. 
+     * such as &amp;amp; or &amp;quot; which was replaced with the unescaped version. 
      */
     public final static int ERROR_TYPO = 1;
 

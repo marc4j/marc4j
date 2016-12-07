@@ -30,9 +30,9 @@ import java.util.Properties;
 
 /**
  * Factory for creating MARC record objects.
- * <p/>
+ * <p>
  * You can use <code>MarcFactory</code> to create records from scratch:
- * <p/>
+ * </p>
  *
  * <pre>
  *
@@ -237,7 +237,7 @@ public abstract class MarcFactory {
      * Returns <code>true</code> if the {@link Record} is valid; else,
      * <code>false</code>.
      *
-     * @param record
+     * @param record - the record to validate
      * @return Returns <code>true</code> if the {@link Record} is valid
      */
     public boolean validateRecord(final Record record) {
@@ -264,7 +264,7 @@ public abstract class MarcFactory {
      * Returns <code>true</code> if supplied {@link VariableField} is valid;
      * else, <code>false</code>.
      *
-     * @param field
+     * @param field - the field to validate
      * @return Returns <code>true</code> if supplied {@link VariableField} is valid
      */
     public boolean validateVariableField(final VariableField field) {
@@ -275,7 +275,7 @@ public abstract class MarcFactory {
      * Returns <code>true</code> if supplied {@link ControlField} is valid;
      * else, <code>false</code>.
      *
-     * @param field
+     * @param field - the controlfield to validate
      * @return Returns <code>true</code> if supplied {@link ControlField} is valid
      */
     public boolean validateControlField(final ControlField field) {
@@ -286,7 +286,7 @@ public abstract class MarcFactory {
      * Returns <code>true</code> if supplied {@link DataField} is valid; else,
      * <code>false</code>.
      *
-     * @param field
+     * @param field - the datafield to validate
      * @return Returns <code>true</code> if supplied {@link DataField} is valid
      */
     public boolean validateDataField(final DataField field) {
@@ -311,8 +311,8 @@ public abstract class MarcFactory {
      * Returns <code>true</code> if the supplied {@link Subfield} is value;
      * else, <code>false</code>.
      *
-     * @param subfield
-     * @return Returns <code>true</code> if the supplied {@link Subfield} is value
+     * @param subfield - the subfield to validate
+     * @return Returns <code>true</code> if the supplied {@link Subfield} is vaid
      */
     public boolean validateSubField(final Subfield subfield) {
         return subfield.getCode() != 0 && subfield.getData() != null;

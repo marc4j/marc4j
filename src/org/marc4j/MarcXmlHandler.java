@@ -179,9 +179,9 @@ public class MarcXmlHandler implements ContentHandler {
     /**
      * An event fired as characters are consumed.
      *
-     * @param ch
-     * @param start
-     * @param length
+     * @param ch - an array of characters to output
+     * @param start - the offset into that array to start writing from
+     * @param length - the number of characters to write
      */
     @Override
     public void characters(final char[] ch, final int start, final int length) throws SAXException {

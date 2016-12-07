@@ -29,7 +29,6 @@ package org.marc4j.marc;
  * the MARC standard is as follows:
  *
  * <pre>DATA_ELEMENT FIELD_TERMINATOR</pre>
- * </p>
  *
  * @author Bas Peters
  */

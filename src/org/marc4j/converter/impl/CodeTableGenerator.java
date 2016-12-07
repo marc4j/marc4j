@@ -53,7 +53,6 @@ public class CodeTableGenerator extends CodeTable {
      * The main function called when generating a codetable.
      *
      * @param args
-     * @throws FileNotFoundException
      */
     public static void main(final String args[]) {
         final InputStream in = CodeTable.class.getResourceAsStream("resources/codetables.xml");

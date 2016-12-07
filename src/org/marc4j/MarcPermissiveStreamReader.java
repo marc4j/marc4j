@@ -155,6 +155,10 @@ public class MarcPermissiveStreamReader implements MarcReader {
      * 
      * If permissive and convertToUTF8 are both set to false, it functions almost identically to the
      * MarcStreamReader class.
+     *
+     * @param input - the InputStream to read the records from
+     * @param permissive - true to specify that the permissive/error correcting features should be used
+     * @param convertToUTF8 - true to specify that records should be converted to UTF8 as they are being read
      */
     public MarcPermissiveStreamReader(final InputStream input, final boolean permissive,
             final boolean convertToUTF8) {
@@ -181,7 +185,12 @@ public class MarcPermissiveStreamReader implements MarcReader {
      * to determine whether any errors were detected in the decoding process.
      * 
      * See the  file org.marc4j.samples.PermissiveReaderExample.java to see how this can be done.
+     *
+     * @param input - the InputStream to read the records from
+     * @param errors - an older way of tracking errors found in records
+     * @param convertToUTF8 - true to specify that records should be converted to UTF8 as they are being read
      */
+    @Deprecated
     public MarcPermissiveStreamReader(final InputStream input, final ErrorHandler errors,
             final boolean convertToUTF8) {
         if (errors != null) {
@@ -208,6 +217,11 @@ public class MarcPermissiveStreamReader implements MarcReader {
      * records being read from the input stream.   This is especially useful if you are working with records 
      * downloaded from an external source and the encoding is either unknown or the encoding is different from
      * what the records claim to be.
+     *
+     * @param input - the InputStream to read the records from
+     * @param permissive - true to specify that the permissive/error correcting features should be used
+     * @param convertToUTF8 - true to specify that records should be converted to UTF8 as they are being read
+     * @param defaultEncoding - the expected encoding to be found in the records being read
      */
     public MarcPermissiveStreamReader(final InputStream input, final boolean permissive,
             final boolean convertToUTF8, final String defaultEncoding) {
@@ -240,7 +254,13 @@ public class MarcPermissiveStreamReader implements MarcReader {
      * to determine whether any errors were detected in the decoding process.
      * 
      * See the  file org.marc4j.samples.PermissiveReaderExample.java to see how this can be done.
+     *
+     * @param input - the InputStream to read the records from
+     * @param errors - an older way of tracking errors found in records
+     * @param convertToUTF8 - true to specify that records should be converted to UTF8 as they are being read
+     * @param defaultEncoding - the expected encoding to be found in the records being read
      */
+    @Deprecated
     public MarcPermissiveStreamReader(final InputStream input, final ErrorHandler errors,
             final boolean convertToUTF8, final String defaultEncoding) {
         this.permissive = true;
@@ -252,7 +272,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
     }
 
     /**
-     * @return true if numeric character entities like &#xFFFD; should be converted to their corresponding code point
+     * @return true if numeric character entities like &amp;#xFFFD; should be converted to their corresponding code point
      *         if converting to unicode. Default is to convert.
      */
     public boolean isTranslateLosslessUnicodeNumericCodeReferencesEnabled() {
@@ -260,9 +280,9 @@ public class MarcPermissiveStreamReader implements MarcReader {
     }
 
     /**
-     * Enable convesion of numeric code references into their corresponding code points when converting to unicode
+     * Enable conversion of numeric code references into their corresponding code points when converting to unicode
      *
-     * @param translateLosslessUnicodeNumericCodeReferencesEnabled
+     * @param translateLosslessUnicodeNumericCodeReferencesEnabled - true to enable conversion of NCR to Unicode characters
      */
     public void setTranslateLosslessUnicodeNumericCodeReferencesEnabled(
             final boolean translateLosslessUnicodeNumericCodeReferencesEnabled) {
@@ -1522,13 +1542,14 @@ public class MarcPermissiveStreamReader implements MarcReader {
     static byte overbar[] = { (byte) (char) 0xaf };
 
     /**
-     * Gets MARC-8 conversion for supplied bytes.
+     * Assumes the data in bytes is in the MARC8 encoding, and translates it to UTF-8 based on that assumption
      *
-     * @param bytes Bytes to be converted to MARC-8
-     * @param conv An Ansel to Unicode converter
-     * @param permissive Whether this is done in a permissive manner
-     * @param doNCR Do numeric character reference
-     * @return A MARC-8 string
+     * @param bytes - Bytes to be converted to MARC-8
+     * @param conv - An Ansel to Unicode converter
+     * @param permissive - Whether this is done in a permissive manner
+     * @param record - seems to not be used
+     * @param doNCR - Do numeric character reference
+     * @return A UTF-8 encoded string produced from the supplied MARC8 encoded data
      */
     public String getMarc8Conversion(byte[] bytes, AnselToUnicode conv, boolean permissive,
             Record record, boolean doNCR) {
@@ -1642,7 +1663,6 @@ public class MarcPermissiveStreamReader implements MarcReader {
         }
 
         return dataElement;
-
     }
 
     private static String getChar(final String charCodePoint) {

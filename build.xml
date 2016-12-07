@@ -125,8 +125,7 @@
                 <exclude name="org/marc4j/test" />
             </packageset>
             <classpath refid="classpath" />
-            <link offline="true" href="http://java.sun.com/products/jdk/1.4/docs/api/" packagelistLoc="." />
-            <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
+            <link offline="true" href="http://java.sun.com/products/jdk/1.6/docs/api/" packagelistLoc="." />
         </javadoc>
     </target>
 

@@ -105,7 +105,7 @@ public class RecordImpl implements Record {
 
     /**
      * Adds a <code>VariableField</code> being a <code>ControlField</code> or <code>DataField</code>.
-     * <p/>
+     *
      * If the <code>VariableField</code> is a control number field (001) and the record already has a control number
      * field, the field is replaced with the new instance.
      *
@@ -285,10 +285,8 @@ public class RecordImpl implements Record {
 
     /**
      * Returns a string representation of this record.
-     * <p/>
-     * <p/>
+     *
      * Example:
-     * <p/>
      * <pre>
      *
      *      LEADER 00714cam a2200205 a 4500

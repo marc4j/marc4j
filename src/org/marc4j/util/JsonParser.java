@@ -379,7 +379,6 @@ public class JsonParser extends Object {
 
     /**
      * Parse next event from input source.
-     * @throws Escape.IOERROR If an Input/Output exception occurs.
      */
     public int next() {
         try {

@@ -89,7 +89,7 @@ public class XmlMarcDriver {
      * <ul>
      * <li>-xsl &lt;stylesheet URL&gt; - pre-process using XSLT-stylesheet</li>
      * <li>-out &lt;output file&gt; - write to output file</li>
-     * <li>-convert &lt;encoding&gt; - convert UTF-8 to &lt;encoding&gt;<br/>
+     * <li>-convert &lt;encoding&gt; - convert UTF-8 to &lt;encoding&gt;
      * (Supported encodings: MARC8, ISO5426, ISO6937)</li>
      * <li>-encoding &lt;encoding&gt; - Output using specified Java character encoding</li>
      * <li>-usage - show usage</li>

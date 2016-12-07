@@ -151,7 +151,7 @@ public interface DataField extends VariableField {
     /**
      * Inserts a <code>Subfield</code> at the specified position.
      * 
-     * @param index The position at which to add the <code>Subfield<code>
+     * @param index The position at which to add the <code>Subfield</code>
      * @param subfield  The <code>Subfield</code> to add to the <code>DataField</code>
      * @throws IllegalAddException when the parameter is not a <code>Subfield</code> instance
      */

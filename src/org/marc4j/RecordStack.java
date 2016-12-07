@@ -114,6 +114,8 @@ public class RecordStack {
      * Passes the exception to the thread where the MarcXMLReader is running, so
      * that the next() call that is blocked waiting for this thread, will
      * receive the exception.
+     *
+     * @param e - a RuntimeException thrown here that needs to be passed to the calling thread
      */
     public synchronized void passException(final RuntimeException e) {
         re = e;

@@ -36,6 +36,8 @@ public interface MarcReader {
 
     /**
      * Returns true if the iteration has more records, false otherwise.
+     * 
+     * @return Returns true if the iteration has more records
      */
     public boolean hasNext();
 

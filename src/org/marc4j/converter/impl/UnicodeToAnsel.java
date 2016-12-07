@@ -122,7 +122,7 @@ public class UnicodeToAnsel extends CharConverter {
     /**
      * Converts UCS/Unicode data to MARC-8.
      * <p>
-     * If there is no match for a Unicode character, it will be encoded as &#xXXXX; so that if the data is translated
+     * If there is no match for a Unicode character, it will be encoded as &amp;#xXXXX; so that if the data is translated
      * back into Unicode, the original data can be recreated.
      * </p>
      *

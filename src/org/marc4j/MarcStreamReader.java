@@ -84,6 +84,8 @@ public class MarcStreamReader implements MarcReader {
 
     /**
      * Constructs an instance with the specified input stream.
+     *
+     * @param input - the InputStream to read the record from
      */
     public MarcStreamReader(final InputStream input) {
         this(input, null);
@@ -91,6 +93,9 @@ public class MarcStreamReader implements MarcReader {
 
     /**
      * Constructs an instance with the specified input stream.
+     *
+     * @param input - the InputStream to read the record from
+     * @param encoding - the expected encoding of the supplied byte stream
      */
     public MarcStreamReader(final InputStream input, final String encoding) {
         this.input = new DataInputStream(input.markSupported() ? input : new BufferedInputStream(input));

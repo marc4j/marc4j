@@ -88,7 +88,6 @@ public class ControlFieldImpl extends VariableFieldImpl implements ControlField 
      * <pre>
      *     001 12883376
      * </pre>
-     * </p>
      * 
      * @return A string representation of this control field
      */
@@ -98,8 +97,7 @@ public class ControlFieldImpl extends VariableFieldImpl implements ControlField 
     }
 
     /**
-     * Finds a match to a regular expression pattern in the {@link ControlField}
-     * 's data.
+     * Finds a match to a regular expression pattern in the {@link ControlField}'s data.
      * 
      * @param pattern The regular expression pattern to compare against the
      *        <code>ControlField</code>'s data

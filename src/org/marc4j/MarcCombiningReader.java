@@ -250,9 +250,9 @@ public class MarcCombiningReader implements MarcReader {
      * Combines fields (identified by the <code>idsToMerge</code>) from the
      * second {@link Record} into the first.
      * 
-     * @param currentRecord
-     * @param nextRecord
-     * @param idsToMerge
+     * @param currentRecord - the first record
+     * @param nextRecord - the second record
+     * @param idsToMerge - a regex pattern of field tags that should be copied from the second record to the first one
      * @return the first record merged with the second record
      */
     static public Record combineRecords(final Record currentRecord, final Record nextRecord,
@@ -275,10 +275,10 @@ public class MarcCombiningReader implements MarcReader {
      * Combines fields (identified by the <code>idsToMerge</code> from the
      * second {@link Record} into the first (before the supplied field).
      * 
-     * @param currentRecord
-     * @param nextRecord
-     * @param idsToMerge
-     * @param fieldInsertBefore
+     * @param currentRecord - the first record
+     * @param nextRecord - the second record
+     * @param idsToMerge - a regex pattern of field tags that should be copied from the second record to the first one
+     * @param fieldInsertBefore - the field tags in the first record before which the copied field should be placed 
      * @return the first record merged with the second record
      */
     static public Record combineRecords(final Record currentRecord, final Record nextRecord,

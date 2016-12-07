@@ -15,9 +15,11 @@ import org.xml.sax.XMLReader;
 /**
  * Invoked at build time to generate a java source file (named ReverseCodeTableGenerated.java) which when compiled will
  * extend the ReverseCodeTable abstract class (primarily through switch statements) and which can be used by the
- * UnicodeToAnsel converter which will produce the same results as the object ReverseCodeTableHash.<br/>
+ * UnicodeToAnsel converter which will produce the same results as the object ReverseCodeTableHash.
+ *
  * The following routines are only used in the code generation process, and are not available to be called from within
- * an application that uses MARC4J.<br/>
+ * an application that uses MARC4J.
+ *
  * The routines generated for converting unicode characters to MARC8 multibyte characters are split into several
  * routines to workaround a limitation in java that a method can only contain 64k of code when it is compiled.
  *
@@ -33,7 +35,6 @@ public class ReverseCodeTableGenerator {
      * The main class for the reverse code table generator.
      *
      * @param args
-     * @throws FileNotFoundException
      */
     public static void main(final String[] args) {
         Hashtable<Character, Hashtable<Integer, char[]>> charsets = null;

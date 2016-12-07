@@ -53,7 +53,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * {@link java.io.OutputStream}&nbsp; or {@link javax.xml.transform.Result}&nbsp;object. It can be used in a SAX
  * pipeline to post-process the result. By default this class uses a null transform. It is strongly recommended to use
  * a dedicated XML serializer.
- * <p/>
  * <p>
  * This class requires a JAXP compliant XML parser and XSLT processor. The underlying SAX2 parser should be namespace
  * aware.
@@ -61,7 +60,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * <p>
  * The following example reads a file with MARC records and writes MARCXML records in UTF-8 encoding to the console:
  * </p>
- * <p/>
  * <pre>
  *
  *      InputStream input = new FileInputStream(&quot;input.mrc&quot;)
@@ -75,26 +73,21 @@ import org.xml.sax.helpers.AttributesImpl;
  *      writer.close();
  *
  * </pre>
- * <p/>
  * <p>
  * To perform a character conversion like MARC-8 to UCS/Unicode register a
  * <code>CharConverter</code>:
  * </p>
- * <p/>
  * <pre>
  * writer.setConverter(new AnselToUnicode());
  * </pre>
- * <p/>
  * <p>
  * In addition you can perform Unicode normalization. This is for example not done by the MARC-8 to UCS/Unicode
  * converter. With Unicode normalization text is transformed into the canonical composed form. For example
  * &quot;a�bc&quot; is normalized to &quot;�bc&quot;. To perform normalization set Unicode normalization to true:
  * </p>
- * <p/>
  * <pre>
  * writer.setUnicodeNormalization(true);
  * </pre>
- * <p/>
  * <p>
  * Please note that it's not guaranteed to work if you try to convert normalized Unicode back to MARC-8 encoding using
  * {@link org.marc4j.converter.impl.UnicodeToAnsel}.
@@ -104,13 +97,11 @@ import org.xml.sax.helpers.AttributesImpl;
  * a {@link javax.xml.transform.sax.SAXResult}&nbsp;containing a {@link org.xml.sax.ContentHandler}&nbsp;derived from
  * a dedicated XML serializer.
  * </p>
- * <p/>
  * <p>
  * The following example uses
  * <code>org.apache.xml.serialize.XMLSerializer</code> to write MARC records
  * to XML using MARC-8 to UCS/Unicode conversion and Unicode normalization:
  * </p>
- * <p/>
  * <pre>
  *
  *      InputStream input = new FileInputStream(&quot;input.mrc&quot;)
@@ -130,13 +121,11 @@ import org.xml.sax.helpers.AttributesImpl;
  *      writer.close();
  *
  * </pre>
- * <p/>
  * <p>
  * You can post-process the result using a <code>Source</code> object pointing to a stylesheet resource and a
  * <code>Result</code> object to hold the transformation result tree. The example below converts MARC to MARCXML and
  * transforms the result tree to MODS using the stylesheet provided by The Library of Congress:
  * </p>
- * <p/>
  * <pre>
  *
  *      String stylesheetUrl = &quot;http://www.loc.gov/standards/mods/v3/MARC21slim2MODS3.xsl&quot;;
@@ -155,11 +144,9 @@ import org.xml.sax.helpers.AttributesImpl;
  *      writer.close();
  *
  * </pre>
- * <p/>
  * <p>
  * It is also possible to write the result into a DOM Node:
  * </p>
- * <p/>
  * <pre>
  *
  *      InputStream input = new FileInputStream(&quot;input.mrc&quot;)
@@ -212,10 +199,9 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Constructs an instance with the specified output stream.
-     * <p/>
      * The default character encoding for UTF-8 is used.
      *
-     * @throws MarcException
+     * @param out - the OutputStream to write the record to.
      */
     public MarcXmlWriter(final OutputStream out) {
         this(out, false);
@@ -223,10 +209,10 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Constructs an instance with the specified output stream and indentation.
-     * <p/>
      * The default character encoding for UTF-8 is used.
      *
-     * @throws MarcException
+     * @param out - the OutputStream to write the record to.
+     * @param indent - true to turn on pretty print indenting
      */
     public MarcXmlWriter(final OutputStream out, final boolean indent) {
         this(out, "UTF8", indent);
@@ -235,7 +221,9 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Constructs an instance with the specified output stream and character encoding.
      *
-     * @throws MarcException
+     * @param out - the OutputStream to write the record to.
+     * @param encoding - the encoding to use for the OutputStream
+     * @throws MarcException - if the specified encoding is invalid
      */
     public MarcXmlWriter(final OutputStream out, final String encoding) {
         this(out, encoding, false);
@@ -244,7 +232,10 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Constructs an instance with the specified output stream, character encoding and indentation.
      *
-     * @throws MarcException
+     * @param out - the OutputStream to write the record to.
+     * @param encoding - the encoding to use for the OutputStream
+     * @param indent - true to turn on pretty print indenting
+     * @throws MarcException - if the specified encoding is invalid
      */
     public MarcXmlWriter(final OutputStream out, final String encoding, final boolean indent) {
         this.encoding = encoding;
@@ -274,8 +265,7 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Constructs an instance with the specified result.
      *
-     * @param result
-     * @throws SAXException
+     * @param result - write to a Result object rather than a OutputStream
      */
     public MarcXmlWriter(final Result result) {
         if (result == null) {
@@ -289,8 +279,8 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Constructs an instance with the specified stylesheet location and result.
      *
-     * @param result
-     * @throws SAXException
+     * @param result - write to a Result object rather than a OutputStream
+     * @param stylesheetUrl - the URL of a XSLT stylesheet to use to transform the output
      */
     public MarcXmlWriter(final Result result, final String stylesheetUrl) {
         this(result, new StreamSource(stylesheetUrl));
@@ -299,8 +289,8 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Constructs an instance with the specified stylesheet source and result.
      *
-     * @param result
-     * @throws SAXException
+     * @param result - write to a Result object rather than a OutputStream
+     * @param stylesheet - the Source of a XSLT stylesheet to use to transform the output
      */
     public MarcXmlWriter(final Result result, final Source stylesheet) {
         if (stylesheet == null) {
@@ -355,7 +345,6 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * If set to true this writer will perform Unicode normalization on data elements using normalization form C
      * (NFC). The default is false.
-     * <p/>
      * The implementation used is ICU4J 2.6. This version is based on Unicode 4.0.
      *
      * @param normalize true if this writer performs Unicode normalization, false otherwise
@@ -377,6 +366,7 @@ public class MarcXmlWriter implements MarcWriter {
      * Optional check for characters that are invalid for xml (e.g. control characters),
      * will convert to a form like "&lt;U+xxxx&gt;" where 'xxxx' is the equivalent hex value
      * of the invalid character.  Useful for poor source data, but slows down the XML emission.
+     *
      * @param checkNonXMLChars true if want to check (and replace) non-XML chars, false (default) otherwise.
      */
     public void setCheckNonXMLChars(final boolean checkNonXMLChars) {
@@ -420,7 +410,7 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Writes the root start tag to the result.
      *
-     * @throws SAXException
+     * @throws MarcException - for a poorly formed document
      */
     protected void writeStartDocument() {
         try {
@@ -435,7 +425,7 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Writes the root end tag to the result.
      *
-     * @throws SAXException
+     * @throws SAXException - for a poorly formed document
      */
     protected void writeEndDocument() {
         try {
@@ -455,7 +445,7 @@ public class MarcXmlWriter implements MarcWriter {
      * Writes a Record object to the result.
      *
      * @param record - the <code>Record</code> object
-     * @throws SAXException
+     * @throws MarcException - for a poorly formed document
      */
     @Override
     public void write(final Record record) {
@@ -478,7 +468,7 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Activates or deactivates indentation. Default value is false.
      *
-     * @param indent
+     * @param indent - true to turn on pretty-print indenting
      */
     public void setIndent(final boolean indent) {
         this.indent = indent;

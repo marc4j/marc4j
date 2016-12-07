@@ -91,7 +91,7 @@ public class MarcXmlDriver {
      * <ul>
      * <li>-xsl &lt;stylesheet URL&gt; - post-process using XSLT-stylesheet</li>
      * <li>-out &lt;output file&gt; - write to output file</li>
-     * <li>-convert &lt;encoding&gt; - convert &lt;encoding&gt; to UTF-8<br/>
+     * <li>-convert &lt;encoding&gt; - convert &lt;encoding&gt; to UTF-8
      * (Supported encodings: MARC8, ISO5426, ISO6937)</li>
      * <li>-encode &lt;encoding&gt; - read data using encoding &lt;encoding&gt;</li>
      * <li>-normalize - perform Unicode normalization</li>

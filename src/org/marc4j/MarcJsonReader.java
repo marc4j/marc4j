@@ -37,7 +37,7 @@ public class MarcJsonReader implements MarcReader {
     /**
      * Creates a MarcJsonReader from a supplied {@link InputStream}
      * 
-     * @param is
+     * @param is - an InputStream to read
      */
     public MarcJsonReader(final InputStream is) {
         parser = new JsonParser(JsonParser.OPT_INTERN_KEYWORDS |
@@ -55,7 +55,7 @@ public class MarcJsonReader implements MarcReader {
     /**
      * Creates a MarcJsonReader from the supplied {@link Reader}.
      * 
-     * @param in
+     * @param in - A Reader to use for input
      */
     public MarcJsonReader(final Reader in) {
         parser = new JsonParser(0);

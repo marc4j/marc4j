@@ -40,7 +40,7 @@ public class MarcJsonWriter implements MarcWriter {
     /**
      * Creates a {@link MarcJsonWriter} with the supplied {@link OutputStream}.
      *
-     * @param os
+     * @param os - the OutputStream to write to
      */
     public MarcJsonWriter(final OutputStream os) {
         this.os = os;
@@ -49,8 +49,8 @@ public class MarcJsonWriter implements MarcWriter {
     /**
      * Creates a {@link MarcJsonWriter} with the supplied {@link OutputStream} using the supplied {@link CharConverter}.
      *
-     * @param os
-     * @param conv
+     * @param os - the OutputStream to write to
+     * @param conv - the Character converter to use to transform the data as it is being written out.
      */
     public MarcJsonWriter(final OutputStream os, final CharConverter conv) {
         this.os = os;
@@ -60,8 +60,8 @@ public class MarcJsonWriter implements MarcWriter {
     /**
      * Creates a {@link MarcJsonWriter} with the supplied {@link OutputStream} to write using the supplied JSON format.
      *
-     * @param os
-     * @param jsonFormat
+     * @param os - the OutputStream to write to
+     * @param jsonFormat - whether to use the MARC_IN_JSON format (default) or the MARC_JSON format (1)
      */
     public MarcJsonWriter(final OutputStream os, final int jsonFormat) {
         this.os = os;
@@ -76,9 +76,9 @@ public class MarcJsonWriter implements MarcWriter {
      * Creates a {@link MarcJsonWriter} with the supplied {@link OutputStream} using the specified {@link CharConverter}
      * to write using the specified JSON format.
      *
-     * @param os
-     * @param conv
-     * @param jsonFormat
+     * @param os - the OutputStream to write to
+     * @param conv - the Character converter to use to transform the data as it is being written out.
+     * @param jsonFormat - whether to use the MARC_IN_JSON format (default) or the MARC_JSON format (1)
      */
     public MarcJsonWriter(final OutputStream os, final CharConverter conv, final int jsonFormat) {
         setConverter(conv);
@@ -446,7 +446,7 @@ public class MarcJsonWriter implements MarcWriter {
     /**
      * Returns the character converter.
      *
-     * @return CharConverter the character converter
+     * @return the character converter being used
      */
     @Override
     public CharConverter getConverter() {
@@ -466,7 +466,7 @@ public class MarcJsonWriter implements MarcWriter {
     /**
      * Returns true if indentation is active, false otherwise.
      *
-     * @return boolean
+     * @return Returns true if indentation is active
      */
     public boolean hasIndent() {
         return indent;
@@ -475,7 +475,7 @@ public class MarcJsonWriter implements MarcWriter {
     /**
      * Activates or deactivates indentation. Default value is false.
      *
-     * @param indent
+     * @param indent - true to produce pretty-printed indented output
      */
     public void setIndent(final boolean indent) {
         this.indent = indent;
@@ -536,7 +536,7 @@ public class MarcJsonWriter implements MarcWriter {
     /**
      * Turns on quote labels.
      *
-     * @param quoteLabels
+     * @param quoteLabels - true to enable quotes being placed around certain items.
      */
     public void setQuoteLabels(final boolean quoteLabels) {
         this.quoteLabels = quoteLabels;
@@ -555,7 +555,7 @@ public class MarcJsonWriter implements MarcWriter {
     /**
      * Turns on Unicode normalization.
      *
-     * @param b
+     * @param b - true to turn on Unicode normalization (NFC)
      */
     public void setUnicodeNormalization(final boolean b) {
         this.normalize = b;
