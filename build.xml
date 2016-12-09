@@ -125,16 +125,17 @@
         </jar>
     </target>
 
-    <target name="javadoc" depends="prepare">
+    <target name="javadoc" depends="prepare" unless="javadoc.already.run" >
         <mkdir dir="${apidoc.dir}" />
         <javadoc encoding="UTF-8" charset="UTF-8" docencoding="UTF-8" destdir="${apidoc.dir}" author="true" version="true" overview="overview.html" use="true" windowtitle="MARC4J API" doctitle="MARC4J API" bottom="Copyright &#169; 2002-2006 Bas Peters. All Rights Reserved.">
-            <packageset dir="src" defaultexcludes="yes">
+            <packageset dir="${src.dir}" defaultexcludes="yes">
                 <exclude name="org/marc4j/samples" />
                 <exclude name="org/marc4j/test" />
             </packageset>
             <classpath refid="classpath" />
             <link offline="true" href="http://java.sun.com/products/jdk/1.6/docs/api/" packagelistLoc="." />
         </javadoc>
+    	<property name="javadoc.already.run" value="true" />
     </target>
 
     <target name="clean" depends="init">
@@ -212,7 +213,7 @@
                 <include name="**" />
             </fileset>
         </jar>
-        <jar jarfile="${dist.dir}/${jar.sources.name}" overwrite="true">
+        <jar jarfile="${dist.dir}/${jar.sources.name}" >
             <manifest>
                 <section name="org/marc4j">
                   <attribute name="Specification-Title" value="marc4j"/>
@@ -234,9 +235,9 @@
         </jar>
     </target>
 
-    <property name="ivy.install.version" value="2.3.0"/>
-    <property name="ivy.jar.dir" value="${basedir}/ivy"/>
-    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
+    <property name="ivy.install.version" value="2.3.0" />
+    <property name="ivy.jar.dir" value="${basedir}/ivy" />
+    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
 
     <target name="check-download" >
         <available file="${ivy.jar.file}" property="skip.download"/>
