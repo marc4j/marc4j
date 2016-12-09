@@ -61,6 +61,7 @@ public class PermissiveReaderExample
      *     650  1$aFantasy.
      *     650  1$aBaseball$vFiction.
      *     650  1$aMagic$vFiction.
+     * @param args - args
      */
     public static void main(String[] args)
     {

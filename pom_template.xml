@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>marc4j</artifactId>
+  <packaging>jar</packaging>
+  <version>@VERSION@</version>
+  <name>MARC4J</name>
+  <description>An easy to use Application Programming Interface (API) for working with MARC and MARCXML in Java.</description>
+  <url>https://github.com/marc4j/marc4j</url>
+
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License, Version 2.1</name>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+      <comments>Licensed under the GNU LGPL 2.1 or later (at your option)</comments>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:marc4j/marc4j.git</connection>
+    <developerConnection>scm:git:git@github.com:marc4j/marc4j.git</developerConnection>
+    <url>git@github.com:marc4j/marc4j.git</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/marc4j/marc4j/issues</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <email>rh9ec@virginia.edu</email>
+      <name>Robert Haschart</name>
+      <url>https://github.com/haschart</url>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+    <developer>
+      <email>mail@bpeters.com</email>
+      <name>Bas Peters</name>
+      <roles>
+        <role>Project Creator</role>
+      </roles>
+      <timezone>Europe/Amsterdam</timezone>
+    </developer>
+    <developer>
+      <email>sesuncedu@gmail.com</email>
+      <name>Simon Spero</name>
+      <url>http://www.ibiblio.org/fred2.0</url>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+    <developer>
+      <email>ksclarke@gmail.com</email>
+      <name>Kevin S. Clarke</name>
+      <url>http://kevinclarke.info</url>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+    <developer>
+      <email>rochkind@jhu.edu</email>
+      <name>Jonathan Rochkind</name>
+      <url>http://bibwild.wordpress.com/</url>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+    <developer>
+      <email>bill@dueber.com</email>
+      <name>Bill Dueber</name>
+      <url>http://robotlibrarian.billdueber.com/</url>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+    <developer>
+      <email>ohiocore@GMAIL.COM</email>
+      <name>Joe Atzberger</name>
+      <url>https://github.com/atz</url>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>hamcrest-core</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <!-- Enables pushing project documentation up to an S3 bucket -->
+  <distributionManagement>
+    <site>
+      <id>s3.site</id>
+      <url>s3://projects.freelibrary.info/freelib-marc4j</url>
+    </site>
+  </distributionManagement>
+
+  <groupId>org.marc4j</groupId>
+</project>

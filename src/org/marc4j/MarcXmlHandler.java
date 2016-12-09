@@ -4,8 +4,8 @@
  * This file is part of MARC4J
  *
  * MARC4J is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public 
- * License as published by the Free Software Foundation; either 
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * MARC4J is distributed in the hope that it will be useful,
@@ -13,14 +13,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public 
+ * You should have received a copy of the GNU Lesser General Public
  * License along with MARC4J; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
 package org.marc4j;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
@@ -32,196 +34,275 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
- * Creates <code>Record</code> objects from SAX events and pushes each item
- * onto the top of the <code>RecordStack</code>.
- * 
+ * Creates <code>Record</code> objects from SAX events and pushes each item onto the top of the
+ * <code>RecordStack</code>.
+ *
  * @author Bas Peters
  */
 public class MarcXmlHandler implements ContentHandler {
 
-  private RecordStack queue;
+    private final RecordStack queue;
 
-//  private InputSource input;
+    private StringBuffer sb;
 
-  private StringBuffer sb;
+    private Subfield subfield;
 
-  private Subfield subfield;
+    private ControlField controlField;
 
-  private ControlField controlField;
+    private DataField dataField;
 
-  private DataField dataField;
+    private Record record;
 
-  private Record record;
+    private String tag;
 
-  private String tag;
+    /** Constants representing each valid tag type */
+    private static final int COLLECTION_ID = 1;
 
-  /** Constants representing each valid tag type */
-  private static final int COLLECTION_ID = 1;
+    private static final int LEADER_ID = 2;
 
-  private static final int LEADER_ID = 2;
+    private static final int RECORD_ID = 3;
 
-  private static final int RECORD_ID = 3;
+    private static final int CONTROLFIELD_ID = 4;
 
-  private static final int CONTROLFIELD_ID = 4;
+    private static final int DATAFIELD_ID = 5;
 
-  private static final int DATAFIELD_ID = 5;
+    private static final int SUBFIELD_ID = 6;
 
-  private static final int SUBFIELD_ID = 6;
+    /** The tag attribute name string */
+    private static final String TAG_ATTR = "tag";
 
-  /** The tag attribute name string */
-  private static final String TAG_ATTR = "tag";
+    /** The code attribute name string */
+    private static final String CODE_ATTR = "code";
 
-  /** The code attribute name string */
-  private static final String CODE_ATTR = "code";
+    /** The first indicator attribute name string */
+    private static final String IND_1_ATTR = "ind1";
 
-  /** The first indicator attribute name string */
-  private static final String IND_1_ATTR = "ind1";
+    /** The second indicator attribute name string */
+    private static final String IND_2_ATTR = "ind2";
 
-  /** The second indicator attribute name string */
-  private static final String IND_2_ATTR = "ind2";
+    /** Set for mapping of element strings to constants (Integer) */
+    private static final Map<String, Integer> ELEMENTS;
 
-  /** Hashset for mapping of element strings to constants (Integer) */
-  private static final HashMap<String, Integer> elementMap;
+    private MarcFactory factory = null;
 
-  private MarcFactory factory = null;
-
-  static {
-    elementMap = new HashMap<String, Integer>();
-    elementMap.put("collection", new Integer(COLLECTION_ID));
-    elementMap.put("leader", new Integer(LEADER_ID));
-    elementMap.put("record", new Integer(RECORD_ID));
-    elementMap.put("controlfield", new Integer(CONTROLFIELD_ID));
-    elementMap.put("datafield", new Integer(DATAFIELD_ID));
-    elementMap.put("subfield", new Integer(SUBFIELD_ID));
-  }
-
-  /**
-   * Default constructor.
-   * 
-   * @param queue
-   */
-  public MarcXmlHandler(RecordStack queue) {
-    this.queue = queue;
-    factory = MarcFactory.newInstance();
-  }
-
-  public void startDocument() throws SAXException {
-  }
-
-  public void startElement(String uri, String name, String qName,
-      Attributes atts) throws SAXException {
-
-    String realname = (name.length() == 0) ? qName : name;
-    Integer elementType = (Integer) elementMap.get(realname);
-
-    if (elementType == null)
-      return;
-
-    switch (elementType.intValue()) {
-    case COLLECTION_ID:
-      break;
-    case RECORD_ID:
-      record = factory.newRecord();
-      break;
-    case LEADER_ID:
-      sb = new StringBuffer();
-      break;
-    case CONTROLFIELD_ID:
-      sb = new StringBuffer();
-      tag = atts.getValue(TAG_ATTR);
-      controlField = factory.newControlField(tag);
-      break;
-    case DATAFIELD_ID:
-      tag = atts.getValue(TAG_ATTR);
-      String ind1 = atts.getValue(IND_1_ATTR);
-      String ind2 = atts.getValue(IND_2_ATTR);
-      if(ind1 == null) {
-          throw new MarcException("missing ind1");
-      }
-      if(ind2 == null) {
-          throw new MarcException("missing ind2");
-      }
-      if (ind1.length() == 0) ind1 = " ";
-      if (ind2.length() == 0) ind2 = " ";
-      dataField = factory.newDataField(tag, ind1.charAt(0), ind2.charAt(0));
-      break;
-    case SUBFIELD_ID:
-      sb = new StringBuffer();
-      String code = atts.getValue(CODE_ATTR);
-      if(code == null || code.length() == 0) {
-          code=" "; // throw new MarcException("missing subfield 'code' attribute");
-      }
-      subfield = factory.newSubfield(code.charAt(0));
-    }
-  }
-
-  public void characters(char[] ch, int start, int length) throws SAXException {
-    if (sb != null)
-      sb.append(ch, start, length);
-  }
-
-  public void endElement(String uri, String name, String qName)
-      throws SAXException {
-
-    String realname = (name.length() == 0) ? qName : name;
-    Integer elementType = (Integer) elementMap.get(realname);
-
-    if (elementType == null)
-      return;
-
-    switch (elementType.intValue()) {
-    case COLLECTION_ID:
-      break;
-    case RECORD_ID:
-      queue.push(record);
-      break;
-    case LEADER_ID:
-      Leader leader = factory.newLeader(sb.toString());
-      record.setLeader(leader);
-      break;
-    case CONTROLFIELD_ID:
-      controlField.setData(sb.toString());
-      record.addVariableField(controlField);
-      break;
-    case DATAFIELD_ID:
-      record.addVariableField(dataField);
-      break;
-    case SUBFIELD_ID:
-      subfield.setData(sb.toString());
-      dataField.addSubfield(subfield);
+    static {
+        ELEMENTS = new HashMap<String, Integer>();
+        ELEMENTS.put("collection", new Integer(COLLECTION_ID));
+        ELEMENTS.put("leader", new Integer(LEADER_ID));
+        ELEMENTS.put("record", new Integer(RECORD_ID));
+        ELEMENTS.put("controlfield", new Integer(CONTROLFIELD_ID));
+        ELEMENTS.put("datafield", new Integer(DATAFIELD_ID));
+        ELEMENTS.put("subfield", new Integer(SUBFIELD_ID));
     }
 
-  }
+    /**
+     * Default constructor.
+     *
+     * @param queue - a queue of records read
+     */
+    public MarcXmlHandler(final RecordStack queue) {
+        this.queue = queue;
+        factory = MarcFactory.newInstance();
+    }
 
-  public void endDocument() throws SAXException {
-    queue.end();
-  }
+    /**
+     * An event fired at the start of the document.
+     */
+    @Override
+    public void startDocument() throws SAXException {
+    }
 
-  public void ignorableWhitespace(char[] data, int offset, int length)
-      throws SAXException {
-    // not implemented
-  }
+    /**
+     * An event fired at the start of an element.
+     */
+    @Override
+    public void startElement(final String uri, final String name, final String qName, final Attributes atts)
+            throws SAXException {
+        final String realname = name.length() == 0 ? qName : name;
+        final Integer elementType = ELEMENTS.get(realname);
 
-  public void endPrefixMapping(String prefix) throws SAXException {
-  }
+        if (elementType == null) {
+            return;
+        }
 
-  public void skippedEntity(String name) throws SAXException {
-    // not implemented
-  }
+        switch (elementType.intValue()) {
+            case COLLECTION_ID:
+                break;
+            case RECORD_ID:
+                record = factory.newRecord();
+                break;
+            case LEADER_ID:
+                sb = new StringBuffer();
+                break;
+            case CONTROLFIELD_ID:
+                tag = atts.getValue(TAG_ATTR);
+                controlField = factory.newControlField(tag);
+                sb = new StringBuffer();
+                break;
+            case DATAFIELD_ID:
+                tag = atts.getValue(TAG_ATTR);
 
-  public void setDocumentLocator(Locator locator) {
-    // not implemented
-  }
+                String ind1 = atts.getValue(IND_1_ATTR);
+                String ind2 = atts.getValue(IND_2_ATTR);
 
-  public void processingInstruction(String target, String data)
-      throws SAXException {
-    // not implemented
-  }
+                if (ind1 == null) {
+                    throw new MarcException("DataField (" + tag + ") missing first indicator");
+                }
 
-  public void startPrefixMapping(String prefix, String uri) throws SAXException {
-//  not implemented
-  }
+                if (ind2 == null) {
+                    throw new MarcException("DataField (" + tag + ") missing second indicator");
+                }
+
+                if (ind1.length() == 0) {
+                    ind1 = " ";
+                }
+
+                if (ind2.length() == 0) {
+                    ind2 = " ";
+                }
+
+                dataField = factory.newDataField(tag, ind1.charAt(0), ind2.charAt(0));
+                break;
+            case SUBFIELD_ID:
+                String code = atts.getValue(CODE_ATTR);
+                if (code == null || code.length() == 0) {
+                    code = " "; // throw new
+                                // MarcException("missing subfield 'code' attribute");
+                }
+                subfield = factory.newSubfield(code.charAt(0));
+                sb = new StringBuffer();
+        }
+    }
+
+    /**
+     * An event fired as characters are consumed.
+     *
+     * @param ch - an array of characters to output
+     * @param start - the offset into that array to start writing from
+     * @param length - the number of characters to write
+     */
+    @Override
+    public void characters(final char[] ch, final int start, final int length) throws SAXException {
+        if (sb != null) {
+            sb.append(ch, start, length);
+        }
+    }
+
+    /**
+     * An event fired at the end of an element.
+     *
+     * @param uri - the uri
+     * @param name - the name
+     * @param qName - the qname
+     */
+    @Override
+    public void endElement(final String uri, final String name, final String qName) throws SAXException {
+        final String realname = name.length() == 0 ? qName : name;
+        final Integer elementType = ELEMENTS.get(realname);
+
+        if (elementType == null) {
+            return;
+        }
+
+        switch (elementType.intValue()) {
+            case COLLECTION_ID:
+                break;
+            case RECORD_ID:
+                queue.push(record);
+                break;
+            case LEADER_ID:
+                final Leader leader = factory.newLeader(sb.toString());
+                record.setLeader(leader);
+                break;
+            case CONTROLFIELD_ID:
+                controlField.setData(sb.toString());
+                record.addVariableField(controlField);
+                break;
+            case DATAFIELD_ID:
+                record.addVariableField(dataField);
+                break;
+            case SUBFIELD_ID:
+                subfield.setData(sb.toString());
+                dataField.addSubfield(subfield);
+        }
+
+    }
+
+    /**
+     * An event fired at the end of the document.
+     */
+    @Override
+    public void endDocument() throws SAXException {
+        queue.end();
+    }
+
+    /**
+     * An event fired while consuming ignorable whitespace.
+     *
+     * @param data - the white space data to ignore
+     * @param offset - the offset at which to start ignoring
+     * @param length - how many characters to ignore
+     */
+    @Override
+    public void ignorableWhitespace(final char[] data, final int offset, final int length) throws SAXException {
+        // not implemented
+    }
+
+    /**
+     * An event fired at the end of prefix mapping.
+     *
+     * @param prefix - the prefix
+     * @throws SAXParseException - when there is an exception
+     */
+    @Override
+    public void endPrefixMapping(final String prefix) throws SAXException {}
+
+    /**
+     * An event fired while consuming a skipped entity.
+     *
+     * @param name - the entity to skip
+     * @throws SAXParseException - when there is an exception
+     */
+    @Override
+    public void skippedEntity(final String name) throws SAXException {
+        // not implemented
+    }
+
+    /**
+     * An event fired while consuming a document locator.
+     *
+     * @param locator - the locator
+     */
+    @Override
+    public void setDocumentLocator(final Locator locator) {
+        // not implemented
+    }
+
+    /**
+     * An event fired while consuming a processing instruction.
+     *
+     * @param target - the target
+     * @param data - the data
+     * @throws SAXParseException - when there is an exception
+     */
+    @Override
+    public void processingInstruction(final String target, final String data) throws SAXException {
+        // not implemented
+    }
+
+    /**
+     * An event fired at the start of prefix mapping.
+     *
+     * @param prefix - the prefix
+     * @param uri - the uri
+     * @throws SAXParseException - when there is an exception
+     */
+    @Override
+    public void startPrefixMapping(final String prefix, final String uri) throws SAXException {
+        // not implemented
+    }
 
 }

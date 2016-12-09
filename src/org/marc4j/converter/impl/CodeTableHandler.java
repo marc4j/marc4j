@@ -17,6 +17,7 @@
  * License along with MARC4J; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 package org.marc4j.converter.impl;
 
 import java.io.File;
@@ -35,16 +36,13 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * <p>
  * <code>CodeTableHandler</code> is a SAX2 <code>ContentHandler</code> that
  * builds a data structure to facilitate AnselToUnicode character conversion.
  * 
  * @author Corey Keith
- * 
  * @see DefaultHandler
  */
-public class CodeTableHandler extends DefaultHandler
-{
+public class CodeTableHandler extends DefaultHandler {
 
     private HashMap<Integer, HashMap<Integer, Character>> sets;
 
@@ -74,13 +72,21 @@ public class CodeTableHandler extends DefaultHandler
     /** Locator object */
     protected Locator locator;
 
-    public HashMap<Integer, HashMap<Integer, Character>> getCharSets()
-    {
+    /**
+     * Gets the character sets hashtable.
+     * 
+     * @return The character sets
+     */
+    public HashMap<Integer, HashMap<Integer, Character>> getCharSets() {
         return sets;
     }
 
-    public HashMap<Integer, Vector<Integer>> getCombiningChars()
-    {
+    /**
+     * Gets the combining characters.
+     * 
+     * @return The combining characters
+     */
+    public HashMap<Integer, Vector<Integer>> getCombiningChars() {
         return combiningchars;
     }
 
@@ -89,108 +95,124 @@ public class CodeTableHandler extends DefaultHandler
      * Registers the SAX2 <code>Locator</code> object.
      * </p>
      * 
-     * @param locator
-     *            the {@link Locator}object
+     * @param locator the {@link Locator}object
      */
-    public void setDocumentLocator(Locator locator)
-    {
+    @Override
+    public void setDocumentLocator(final Locator locator) {
         this.locator = locator;
     }
 
-    public void startElement(String uri, String name, String qName, Attributes atts) throws SAXParseException
-    {
-        if (name.equals("characterSet"))
-        {
+    /**
+     * An event fired at the start of an element.
+     * 
+     * @param uri - the uri
+     * @param name - the name
+     * @param qName - the qname
+     * @param atts - the attributes
+     * @throws SAXParseException - when there is an exception
+     */
+    @Override
+    public void startElement(final String uri, final String name, final String qName,
+            final Attributes atts) throws SAXParseException {
+        if (name.equals("characterSet")) {
             charset = new HashMap<Integer, Character>();
             isocode = Integer.valueOf(atts.getValue("ISOcode"), 16);
             combining = new Vector<Integer>();
-        }
-        else if (name.equals("marc"))
+        } else if (name.equals("marc")) {
             data = new StringBuffer();
-        else if (name.equals("codeTables"))
-        {
+        } else if (name.equals("codeTables")) {
             sets = new HashMap<Integer, HashMap<Integer, Character>>();
             combiningchars = new HashMap<Integer, Vector<Integer>>();
+        } else if (name.equals("ucs")) {
+            data = new StringBuffer();
+        } else if (name.equals("alt")) {
+            data = new StringBuffer();
+        } else if (name.equals("isCombining")) {
+            data = new StringBuffer();
+        } else if (name.equals("code")) {
+            iscombining = false;
         }
-        else if (name.equals("ucs"))
-            data = new StringBuffer();
-        else if (name.equals("alt"))
-            data = new StringBuffer();
-        else if (name.equals("isCombining"))
-            data = new StringBuffer();
-        else if (name.equals("code")) iscombining = false;
     }
 
-    public void characters(char[] ch, int start, int length)
-    {
-        if (data != null)
-        {
+    /**
+     * An event fired as characters are consumed.
+     * 
+     * @param ch - the array of characters that was found
+     * @param start - the starts point in ch for where to start copying data
+     * @param length - the number of characters to copy
+     */
+    @Override
+    public void characters(final char[] ch, final int start, final int length) {
+        if (data != null) {
             data.append(ch, start, length);
         }
     }
 
-    public void endElement(String uri, String name, String qName) throws SAXParseException
-    {
-        if (name.equals("characterSet"))
-        {
+    /**
+     * An event fired at the end of parsing an element.
+     * 
+     * @param uri - the uri
+     * @param name - the name
+     * @param qName - the qname
+     * @throws SAXParseException - when there is an exception
+     */
+    @Override
+    public void endElement(final String uri, final String name, final String qName)
+            throws SAXParseException {
+        if (name.equals("characterSet")) {
             sets.put(isocode, charset);
             combiningchars.put(isocode, combining);
             combining = null;
             charset = null;
-        }
-        else if (name.equals("marc"))
-        {
+        } else if (name.equals("marc")) {
             marc = Integer.valueOf(data.toString(), 16);
-        }
-        else if (name.equals("ucs"))
-        {
-            if (data.length() > 0)
+        } else if (name.equals("ucs")) {
+            if (data.length() > 0) {
                 ucs = new Character((char) Integer.parseInt(data.toString(), 16));
-            else
+            } else {
                 ucs = null;
-        }
-        else if (name.equals("alt"))
-        {
-            if (useAlt && data.length() > 0)
-            {
+            }
+        } else if (name.equals("alt")) {
+            if (useAlt && data.length() > 0) {
                 ucs = new Character((char) Integer.parseInt(data.toString(), 16));
                 useAlt = false;
             }
-        }
-        else if (name.equals("code"))
-        {
-            if (iscombining)
-            {
+        } else if (name.equals("code")) {
+            if (iscombining) {
                 combining.add(marc);
             }
             charset.put(marc, ucs);
-        }
-        else if (name.equals("isCombining"))
-        {
-            if (data.toString().equals("true")) iscombining = true;
+        } else if (name.equals("isCombining")) {
+            if (data.toString().equals("true")) {
+                iscombining = true;
+            }
         }
 
         data = null;
     }
 
-    public static void main(String[] args)
-    {
+    /**
+     * The main class on the CodeTableHandler. FIXME needed? 
+     * 
+     * @param args - the command line arguments for the CodeTableHandler program
+     */
+    public static void main(final String[] args) {
         @SuppressWarnings("unused")
         HashMap<Integer, HashMap<Integer, Character>> charsets = null;
 
-        try
-        {
+        try {
 
-            SAXParserFactory factory = SAXParserFactory.newInstance();
+            final SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
             factory.setValidating(false);
-            SAXParser saxParser = factory.newSAXParser();
-            XMLReader rdr = saxParser.getXMLReader();
+            final SAXParser saxParser = factory.newSAXParser();
+            final XMLReader rdr = saxParser.getXMLReader();
 
-            File file = new File("C:\\Documents and Settings\\ckeith\\Desktop\\Projects\\Code Tables\\codetables.xml");
-            InputSource src = new InputSource(new FileInputStream(file));
+            final File file = new File(
+                    "C:\\Documents and Settings\\ckeith\\Desktop\\Projects\\Code Tables\\codetables.xml");
+            final InputSource src = new InputSource(new FileInputStream(file));
 
-            CodeTableHandler saxUms = new CodeTableHandler();
+            final CodeTableHandler saxUms = new CodeTableHandler();
 
             rdr.setContentHandler(saxUms);
             rdr.parse(src);
@@ -200,9 +222,7 @@ public class CodeTableHandler extends DefaultHandler
             // System.out.println( charsets.toString() );
             System.out.println(saxUms.getCombiningChars());
 
-        }
-        catch (Exception exc)
-        {
+        } catch (final Exception exc) {
             exc.printStackTrace(System.out);
             // System.err.println( "Exception: " + exc );
         }

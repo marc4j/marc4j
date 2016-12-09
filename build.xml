@@ -15,6 +15,14 @@
         <mkdir dir="${build.generated-src.dir}"/>
         <mkdir dir="${lib.dir}"/>
         <ivy:retrieve />
+  <!--      <property file="${user.home}/gnupg.properties"/>
+        <taskdef resource="org/apache/commons/openpgp/ant/antlib.xml">
+            <classpath>
+                <pathelement location="${user.home}/.m2/repository/org/bouncycastle/bcprov-jdk12/130/bcprov-jdk12-130.jar"/>
+                <pathelement location="${user.home}/.m2/repository/org/apache/commons/commons-openpgp/1.0-SNAPSHOT/commons-openpgp-1.0-SNAPSHOT.jar"/>
+                <pathelement location="${user.home}/.m2/repository/org/bouncycastle/bcpg-jdk12/130/bcpg-jdk12-130.jar"/>
+            </classpath>
+        </taskdef><condition property="gpg.dir" value="${user.home}/AppData/Roaming/gnupg"><os family="windows"/></condition><property name="gpg.dir" location="${user.home}/.gnupg"/>         -->
         <property name="prepared" value="true"/>
     </target>
 
@@ -125,8 +133,7 @@
                 <exclude name="org/marc4j/test" />
             </packageset>
             <classpath refid="classpath" />
-            <link offline="true" href="http://java.sun.com/products/jdk/1.4/docs/api/" packagelistLoc="." />
-            <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
+            <link offline="true" href="http://java.sun.com/products/jdk/1.6/docs/api/" packagelistLoc="." />
         </javadoc>
     </target>
 
@@ -145,6 +152,14 @@
         <property name="tmp.arc.dir" value="${tmp.dir}/${prefix}" />
         <property name="dist.arc" value="${dist.dir}/${prefix}" />
         <mkdir dir="${tmp.arc.dir}" />
+        <copy file="${build.dir}/${jar.name}" tofile="${dist.dir}/${jar.name}" overwrite="true" />
+        <copy file="${basedir}/pom_template.xml" tofile="${dist.dir}/${project.name}-${version}.pom" overwrite="true" >
+            <filterchain>
+                <replacetokens>
+                    <token key="VERSION" value="${version}"/>
+                </replacetokens>
+            </filterchain>
+        </copy>
         <copy todir="${tmp.arc.dir}">
             <fileset dir=".">
                 <include name="LICENSE.*" />
@@ -181,6 +196,42 @@
         <delete file="${dist.arc}.zip" />
         <zip compress="true" basedir="${tmp.dir}" zipfile="${dist.arc}.zip" />
         <delete dir="${tmp.dir}" />
+        <jar jarfile="${dist.dir}/${jar.javadoc.name}">
+            <manifest>
+                <section name="org/marc4j">
+                  <attribute name="Specification-Title" value="marc4j"/>
+                  <attribute name="Specification-Version" value="${specversion}"/> 
+                  <attribute name="Specification-Vendor" value="org.marc4j"/> 
+
+                  <attribute name="Implementation-Title" value="marc4j"/>
+                  <attribute name="Implementation-Version" value="${version}"/> 
+                  <attribute name="Implementation-Vendor" value="Team marc4j"/>
+                </section>
+            </manifest>
+            <fileset dir="${apidoc.dir}">
+                <include name="**" />
+            </fileset>
+        </jar>
+        <jar jarfile="${dist.dir}/${jar.sources.name}" overwrite="true">
+            <manifest>
+                <section name="org/marc4j">
+                  <attribute name="Specification-Title" value="marc4j"/>
+                  <attribute name="Specification-Version" value="${specversion}"/> 
+                  <attribute name="Specification-Vendor" value="org.marc4j"/> 
+
+                  <attribute name="Implementation-Title" value="marc4j"/>
+                  <attribute name="Implementation-Version" value="${version}"/> 
+                  <attribute name="Implementation-Vendor" value="Team marc4j"/>
+                </section>
+            </manifest>
+            <fileset dir="${src.dir}">
+                <include name="**/*.java" />
+            	<exclude name ="**/samples/**" />
+            </fileset>
+            <fileset dir="${build.generated-src.dir}">
+                <include name="**/*.java" />
+            </fileset>
+        </jar>
     </target>
 
     <property name="ivy.install.version" value="2.3.0"/>

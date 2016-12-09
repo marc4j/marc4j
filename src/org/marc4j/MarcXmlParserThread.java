@@ -16,8 +16,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with MARC4J; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *  
+ *
  */
+
 package org.marc4j;
 
 import javax.xml.transform.sax.TransformerHandler;
@@ -41,23 +42,20 @@ public class MarcXmlParserThread extends Thread {
     /**
      * Creates a new instance and registers the <code>RecordQueue</code>.
      * 
-     * @param queue
-     *            the record queue
+     * @param queue the record queue
      */
-    public MarcXmlParserThread(RecordStack queue) {
+    public MarcXmlParserThread(final RecordStack queue) {
         this.queue = queue;
     }
 
     /**
-     * Creates a new instance and registers the <code>RecordQueue</code> and
-     * the <code>InputStream</code>.
+     * Creates a new instance and registers the <code>RecordQueue</code> and the
+     * <code>InputStream</code>.
      * 
-     * @param queue
-     *            the record queue
-     * @param input
-     *            the input stream
+     * @param queue the record queue
+     * @param input the input stream
      */
-    public MarcXmlParserThread(RecordStack queue, InputSource input) {
+    public MarcXmlParserThread(final RecordStack queue, final InputSource input) {
         this.queue = queue;
         this.input = input;
     }
@@ -74,10 +72,9 @@ public class MarcXmlParserThread extends Thread {
     /**
      * Sets the content handler to transform the source to MARCXML.
      * 
-     * @param th -
-     *            the transformation content handler
+     * @param th - the transformation content handler
      */
-    public void setTransformerHandler(TransformerHandler th) {
+    public void setTransformerHandler(final TransformerHandler th) {
         this.th = th;
     }
 
@@ -93,32 +90,31 @@ public class MarcXmlParserThread extends Thread {
     /**
      * Sets the input stream.
      * 
-     * @param input
-     *            the input stream
+     * @param input the input stream
      */
-    public void setInputSource(InputSource input) {
+    public void setInputSource(final InputSource input) {
         this.input = input;
     }
 
     /**
      * Creates a new <code>MarcXmlHandler</code> instance, registers the
-     * <code>RecordQueue</code> and sends the <code>InputStream</code> to
-     * the <code>MarcXmlParser</code> parser.
+     * <code>RecordQueue</code> and sends the <code>InputStream</code> to the
+     * <code>MarcXmlParser</code> parser.
      */
+    @Override
     public void run() {
         try {
-            MarcXmlHandler handler = new MarcXmlHandler(queue);
-            MarcXmlParser parser = new MarcXmlParser(handler);
-            if (th == null)
+            final MarcXmlHandler handler = new MarcXmlHandler(queue);
+            final MarcXmlParser parser = new MarcXmlParser(handler);
+
+            if (th == null) {
                 parser.parse(input);
-            else
+            } else {
                 parser.parse(input, th);
-        } 
-        catch (MarcException me)
-        {
+            }
+        } catch (final MarcException me) {
             queue.passException(me);
-        }
-        finally {
+        } finally {
             queue.end();
         }
     }

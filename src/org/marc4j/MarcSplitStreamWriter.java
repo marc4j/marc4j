@@ -1,79 +1,89 @@
+
 package org.marc4j;
 
-import org.marc4j.Constants;
-import org.marc4j.MarcException;
-import org.marc4j.MarcStreamWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Leader;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+public class MarcSplitStreamWriter extends MarcStreamWriter {
 
-public class MarcSplitStreamWriter extends MarcStreamWriter
-{
+    private final int recordThreshold;
 
-    private int recordThreshhold;
-    private String fieldsToSplit;
-    
-    public MarcSplitStreamWriter(OutputStream out, int threshhold, String fieldsToSplit)
-    {
+    private final String fieldsToSplit;
+
+    /**
+     * Creates a MarcSplitStreamWriter with a record threshold and fields to split from the supplied
+     * {@link OutputStream}.
+     *
+     * @param out - the OutputStream to use for output
+     * @param threshold - the record size in bytes above which record ought to be split
+     * @param fieldsToSplit - a list of field tags that can be split over multiple records
+     */
+    public MarcSplitStreamWriter(final OutputStream out, final int threshold, final String fieldsToSplit) {
         super(out, false);
-        recordThreshhold = threshhold;
+        recordThreshold = threshold;
         this.fieldsToSplit = fieldsToSplit;
     }
 
-    public MarcSplitStreamWriter(OutputStream out, String encoding, int threshhold, String fieldsToSplit)
-    {
+    /**
+     * Creates a MarcSplitStreamWriter with an encoding, a record threshold, and fields to split from the supplied
+     * {@link OutputStream}.
+     *
+     * @param out - the OutputStream to use for output
+     * @param encoding - the encoding to use for outputting the record
+     * @param threshold - the record size in bytes above which record ought to be split
+     * @param fieldsToSplit - a list of field tags that can be split over multiple records
+     */
+    public MarcSplitStreamWriter(final OutputStream out, final String encoding, final int threshold,
+            final String fieldsToSplit) {
         super(out, encoding, false);
-        recordThreshhold = threshhold;
+        recordThreshold = threshold;
         this.fieldsToSplit = fieldsToSplit;
     }
 
     /**
      * Writes a <code>Record</code> object to the writer.
-     * 
-     * @param record -
-     *            the <code>Record</code> object
+     *
+     * @param record - the <code>Record</code> object
      */
-    public void write(Record record) {
+    @Override
+    public void write(final Record record) {
         boolean doneWithRec = false;
-        for (DataField df: record.getDataFields())
-        {
-            if (!df.getTag().matches(fieldsToSplit)) continue;
+        for (final DataField df : record.getDataFields()) {
+            if (!df.getTag().matches(fieldsToSplit)) {
+                continue;
+            }
             df.setId(null);
         }
-        
-        while (!doneWithRec)
-        {
+
+        while (!doneWithRec) {
             try {
                 int previous = 0;
-                ByteArrayOutputStream data = new ByteArrayOutputStream();
-                ByteArrayOutputStream dir = new ByteArrayOutputStream();
-                
+                final ByteArrayOutputStream data = new ByteArrayOutputStream();
+                final ByteArrayOutputStream dir = new ByteArrayOutputStream();
+
                 // control fields
-                for (ControlField cf: record.getControlFields())
-                {
+                for (final ControlField cf : record.getControlFields()) {
                     data.write(getDataElement(cf.getData()));
                     data.write(Constants.FT);
                     dir.write(getEntry(cf.getTag(), data.size() - previous, previous));
                     previous = data.size();
                 }
-    
+
                 // data fields
-                for (DataField df: record.getDataFields())
-                {
-                    if (df.getTag().matches(fieldsToSplit)) 
-                    {
+                for (final DataField df : record.getDataFields()) {
+                    if (df.getTag().matches(fieldsToSplit)) {
                         continue;
                     }
                     data.write(df.getIndicator1());
                     data.write(df.getIndicator2());
-                    for (Subfield sf : df.getSubfields())
-                    {
+                    for (final Subfield sf : df.getSubfields()) {
                         data.write(Constants.US);
                         data.write(sf.getCode());
                         data.write(getDataElement(sf.getData()));
@@ -84,55 +94,55 @@ public class MarcSplitStreamWriter extends MarcStreamWriter
                 }
                 // data fields
                 doneWithRec = true;
-                for (DataField df: record.getDataFields())
-                {
-                    if (previous >= recordThreshhold)  
-                    {
+                for (final DataField df : record.getDataFields()) {
+                    if (previous >= recordThreshold) {
                         doneWithRec = false;
                         break;
                     }
-                    if (!df.getTag().matches(fieldsToSplit)) continue;
-                    if (!(df.getId()== null || df.getId().intValue() != 0)) continue;
+                    if (!df.getTag().matches(fieldsToSplit)) {
+                        continue;
+                    }
+                    if (!(df.getId() == null || df.getId().intValue() != 0)) {
+                        continue;
+                    }
                     df.setId(new Long(0));
                     data.write(df.getIndicator1());
                     data.write(df.getIndicator2());
-                    for (Subfield sf : df.getSubfields())
-                    {
+                    for (final Subfield sf : df.getSubfields()) {
                         data.write(Constants.US);
                         data.write(sf.getCode());
                         data.write(getDataElement(sf.getData()));
                     }
                     data.write(Constants.FT);
-                    dir.write(getEntry(df.getTag(), data.size() - previous,
-                            previous));
+                    dir.write(getEntry(df.getTag(), data.size() - previous, previous));
                     previous = data.size();
                 }
                 dir.write(Constants.FT);
-    
+
                 // base address of data and logical record length
-                Leader ldr = record.getLeader();
-    
-                int baseAddress = 24 + dir.size();
+                final Leader ldr = record.getLeader();
+
+                final int baseAddress = 24 + dir.size();
                 ldr.setBaseAddressOfData(baseAddress);
-                int recordLength = ldr.getBaseAddressOfData() + data.size() + 1;
+                final int recordLength = ldr.getBaseAddressOfData() + data.size() + 1;
                 ldr.setRecordLength(recordLength);
-    
+
                 // write record to output stream
                 dir.close();
                 data.close();
-                
-                if (!allowOversizeEntry && (hasOversizeLength))
-                {
-                    throw new MarcException("Record has field that is too long to be a valid MARC binary record. The maximum length for a field counting all of the sub-fields is 9999 bytes.");
+
+                if (!allowOversizeEntry && hasOversizeLength) {
+                    throw new MarcException("Record has field that is too long to be a valid MARC binary record. "
+                            + "The maximum length for a field counting all of the sub-fields is 9999 bytes.");
                 }
                 writeLeader(ldr);
                 out.write(dir.toByteArray());
                 out.write(data.toByteArray());
                 out.write(Constants.RT);
-    
-            } catch (IOException e) {
+
+            } catch (final IOException e) {
                 throw new MarcException("IO Error occured while writing record", e);
-            } catch (MarcException e) {
+            } catch (final MarcException e) {
                 throw e;
             }
         }
