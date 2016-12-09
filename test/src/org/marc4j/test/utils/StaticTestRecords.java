@@ -32,7 +32,8 @@ public class StaticTestRecords {
     public static final String RESOURCES_6_BYTE_OFFSET_IN_DIRECTORY = "/datos-20161010-slice.mrc";
     public static final String RESOURCES_UNORDERED_DIRECTORY = "/unordered-directory-entries.mrc";
     public static final String RESOURCES_BAD_TOO_LARGE_HATHI_RECORD = "/bad_hathi_records.mrc";
-
+    public static final String RESOURCES_INCOMPLETE_ESC_SEQ_MRC = "/incomplete_esc_seq.mrc";
+    
     public static Record chabon[] = new Record[2];
     public static Record summerland[] = new Record[1];
     private static MarcFactory factory;

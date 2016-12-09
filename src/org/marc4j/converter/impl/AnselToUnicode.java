@@ -267,13 +267,43 @@ public class AnselToUnicode extends CharConverter {
                         loadedMultibyte = true;
                     }
 
-                    switch (data[cdt.offset + 2 + extra + extra2]) {
+                    int switchOffset = cdt.offset + 2 + extra + extra2;
+                    if (switchOffset >= data.length) {
+                        cdt.offset += 1;
+                        if (curReader != null) {
+                            curReader.addError(MarcError.MINOR_ERROR, "Incomplete character set code found following escape character. Discarding escape character.");
+                        } else {
+                            throw new MarcException("Incomplete character set code found following escape character.");
+                        }
+                        break;
+                    }
+                    switch (data[switchOffset]) {
                         case 0x29: // ')'
                         case 0x2d: // '-'
-                            set_cdt(cdt, 1, data, 3 + extra + extra2, true);
+                            int offset2d = 3 + extra + extra2;
+                            if (cdt.offset + offset2d >= data.length) {
+                                cdt.offset += 1;
+                                if (curReader != null) {
+                                    curReader.addError(MarcError.MINOR_ERROR, "Incomplete character set code found following escape character. Discarding escape character.");
+                                } else {
+                                    throw new MarcException("Incomplete character set code found following escape character.");
+                                }
+                                break;
+                            }
+                            set_cdt(cdt, 1, data, offset2d, true);
                             break;
                         case 0x2c: // ','
-                            set_cdt(cdt, 0, data, 3 + extra + extra2, true);
+                            int offset2c = 3 + extra + extra2;
+                            if (cdt.offset + offset2c >= data.length) {
+                                cdt.offset += 1;
+                                if (curReader != null) {
+                                    curReader.addError(MarcError.MINOR_ERROR, "Incomplete character set code found following escape character. Discarding escape character.");
+                                } else {
+                                    throw new MarcException("Incomplete character set code found following escape character.");
+                                }
+                                break;
+                            }
+                            set_cdt(cdt, 0, data, offset2c, true); 
                             break;
                         case 0x31: // '1'
                             cdt.g0 = data[cdt.offset + 2 + extra + extra2];

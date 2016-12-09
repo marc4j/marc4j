@@ -1,6 +1,7 @@
 package org.marc4j.test;
 
 import org.junit.Test;
+import org.marc4j.MarcError;
 import org.marc4j.MarcException;
 import org.marc4j.MarcPermissiveStreamReader;
 import org.marc4j.MarcReader;
@@ -318,6 +319,53 @@ public class PermissiveReaderTest {
        assertNull("Tested records are unexpectedly different: "+diff12, diff12);
 
     }
-    
+
+    @Test
+    public void testIncompleteEscSeq() throws Exception {
+        int i = 0;
+        InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_INCOMPLETE_ESC_SEQ_MRC);
+        // One subfield in eacg if twi 880 tags has a 'esc' followed by a '$' followed by nothing else. (i.e. invalid) (700-07, 700-10)
+        // Another has the $ followed by a ")" and nothing else (i.e. invalid) (700-11)
+        // Another has the $ followed by a "-" and nothing else (i.e. invalid) (700-12)
+        // Another has the $ followed by a "," and nothing else (i.e. invalid) (700-13)
+        assertNotNull(input);
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+        boolean found07 = false;
+        boolean found10 = false;
+        boolean found11 = false;
+        boolean found12 = false;
+        boolean found13 = false;
+        while (reader.hasNext()) {
+            Record record = reader.next();
+            List<ControlField> fields = record.getControlFields();
+            assertNotNull(fields);
+            ControlField field = fields.get(0);
+            assertNotNull(field);
+            assertEquals("ocn436459302", field.getData());
+            for (MarcError error : record.getErrors()) {
+                if (error.message.startsWith("Incomplete character set code found following escape character.")) {
+                    if (error.curField.contains("880(700-07)")) {
+                        found07 = true;
+                    } else if (error.curField.contains("880(700-10")) {
+                        found10 = true;
+                    } else if (error.curField.contains("880(700-11")) {
+                        found11 = true;
+                    } else if (error.curField.contains("880(700-12")) {
+                        found12 = true;
+                    } else if (error.curField.contains("880(700-13")) {
+                        found13 = true;
+                    }
+                }
+            }
+            i++;
+        }
+        input.close();
+        assertEquals(1, i);
+        assertTrue(found07);
+        assertTrue(found10);
+        assertTrue(found11);
+        assertTrue(found12);
+        assertTrue(found13);
+     }
     
 }
