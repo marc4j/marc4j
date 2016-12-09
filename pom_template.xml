@@ -107,13 +107,5 @@
     </dependency>
   </dependencies>
 
-  <!-- Enables pushing project documentation up to an S3 bucket -->
-  <distributionManagement>
-    <site>
-      <id>s3.site</id>
-      <url>s3://projects.freelibrary.info/freelib-marc4j</url>
-    </site>
-  </distributionManagement>
-
   <groupId>org.marc4j</groupId>
 </project>
