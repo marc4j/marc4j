@@ -153,7 +153,7 @@
         <property name="dist.arc" value="${dist.dir}/${prefix}" />
         <mkdir dir="${tmp.arc.dir}" />
         <copy file="${build.dir}/${jar.name}" tofile="${dist.dir}/${jar.name}" overwrite="true" />
-        <copy file="${basedir}/pom.xml" tofile="${dist.dir}/${project.name}-${version}.pom" overwrite="true" >
+        <copy file="${basedir}/pom_template.xml" tofile="${dist.dir}/${project.name}-${version}.pom" overwrite="true" >
             <filterchain>
                 <replacetokens>
                     <token key="VERSION" value="${version}"/>
