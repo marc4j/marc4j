@@ -120,14 +120,16 @@ public interface Record extends Serializable {
     /**
      * Returns the first instance of the variable field with the given tag.
      *
-     * @return VariableField - the variable field
+     * @param tag - the tag of the field to return
+     * @return the first field that matches the supplied tag
      */
     public VariableField getVariableField(String tag);
 
     /**
      * Returns a list of variable fields with the given tag.
      *
-     * @return List - the variable fields
+     * @param tag - the tag of the field to return
+     * @return a list of fields that matches the supplied tag
      */
     public List<VariableField> getVariableFields(String tag);
 
@@ -141,10 +143,10 @@ public interface Record extends Serializable {
      *
      * List fields = record.getVariableFields(tags);
      * </pre>
-     *
-     * @return List - the variable fields
+     * @param tags - an array of tags any fields that match will be returned
+     * @return a list of fields that matches one of the supplied tags
      */
-    public List<VariableField> getVariableFields(String[] tag);
+    public List<VariableField> getVariableFields(String[] tags);
 
     /**
      * Returns the <code>Leader</code>.
@@ -202,8 +204,8 @@ public interface Record extends Serializable {
     public List<VariableField> find(String[] tag, String pattern);
 
     /**
-     *  Logs an error message using the stated severity level.  Uses the values passed  
-     *  in id, field, and subfield to note the location of the error.
+     * Logs an error message using the stated severity level.  Uses the values passed  
+     * in id, field, and subfield to note the location of the error.
      * 
      * @param field - the tag of the field currently being processed
      * @param subfield - the subfield tag of the subfield currently being processed
@@ -214,21 +216,23 @@ public interface Record extends Serializable {
     public void addError(String field, String subfield, int severity, String message);
 
     /**
-     *  Copies a List of errors into the current error handler
+     * Copies a List of errors into the current error handler
      * 
      * @param newErrors - A list of Errors.
      */
     public void addErrors(List<MarcError> newErrors);
 
     /**
-     *  Returns true if any errors were found for this record
-     * 
+     * Returns true if any errors were found for this record
+     *
+     * @return true if any errors were found for this record
      */
     public boolean hasErrors();
 
     /**
-     *  Returns the errors found for this record
-     * 
+     * Returns the errors found for this record
+     *
+     * @return List of all Errors that were found for this record
      */
     public List<MarcError> getErrors();
 

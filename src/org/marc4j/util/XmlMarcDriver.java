@@ -95,6 +95,7 @@ public class XmlMarcDriver {
      * <li>-usage - show usage</li>
      * <li>&lt;input file&gt; - input file with MARCXML records or a transformation source
      * </ul>
+     * @param args - the command-line arguments
      */
     public static void main(final String args[]) {
         final long start = System.currentTimeMillis();

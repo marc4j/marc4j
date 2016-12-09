@@ -69,6 +69,9 @@ public class UnicodeToAnsel extends CharConverter {
      * Creates a new instance and loads the MARC4J supplied Ansel/Unicode conversion tables based on the official LC
      * tables. Loads in the generated class ReverseCodeTableGenerated which contains switch statements to lookup the
      * MARC-8 encodings for given Unicode characters.
+     *
+     * @param defaultCharsetOnlyPlusNCR - true to enable special mode where <i>no alternate character sets are used</i>
+     *        anything outside the standard base MARC8 lookup table will be written out using a Numeric Code Point
      */
     public UnicodeToAnsel(final boolean defaultCharsetOnlyPlusNCR) {
         dontChangeCharset = true;
@@ -84,7 +87,8 @@ public class UnicodeToAnsel extends CharConverter {
      * mapping. The mapping file should follow the structure of LC's XML MARC-8
      * to Unicode mapping (see:
      * http://www.loc.gov/marc/specifications/codetables.xml).
-     *  
+     *
+     * @param pathname - the name of a file to read to built the ReverseCodeTable instead of the standard LC table
      */
     public UnicodeToAnsel(final String pathname) {
         rct = new ReverseCodeTableHash(pathname);
@@ -97,7 +101,8 @@ public class UnicodeToAnsel extends CharConverter {
      * mapping. The mapping file should follow the structure of LC's XML MARC-8
      * to Unicode mapping (see:
      * http://www.loc.gov/marc/specifications/codetables.xml).
-     *  
+     *
+     * @param in - an InputStream to read to built the ReverseCodeTable instead of the standard LC table
      */
     public UnicodeToAnsel(final InputStream in) {
         rct = new ReverseCodeTableHash(in);

@@ -43,6 +43,8 @@ public class ControlFieldImpl extends VariableFieldImpl implements ControlField 
 
     /**
      * Creates a new <code>ControlField</code> and sets the tag name.
+     * 
+     * @param tag The tag for the <code>ControlField</code>
      */
     public ControlFieldImpl(final String tag) {
         super(tag);

@@ -34,6 +34,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Creates <code>Record</code> objects from SAX events and pushes each item onto the top of the
@@ -100,7 +101,7 @@ public class MarcXmlHandler implements ContentHandler {
     /**
      * Default constructor.
      *
-     * @param queue
+     * @param queue - a queue of records read
      */
     public MarcXmlHandler(final RecordStack queue) {
         this.queue = queue;
@@ -193,9 +194,9 @@ public class MarcXmlHandler implements ContentHandler {
     /**
      * An event fired at the end of an element.
      *
-     * @param uri
-     * @param name
-     * @param qName
+     * @param uri - the uri
+     * @param name - the name
+     * @param qName - the qname
      */
     @Override
     public void endElement(final String uri, final String name, final String qName) throws SAXException {
@@ -241,10 +242,9 @@ public class MarcXmlHandler implements ContentHandler {
     /**
      * An event fired while consuming ignorable whitespace.
      *
-     * @param data
-     * @param offset
-     * @param length
-     * @throws SAXException
+     * @param data - the white space data to ignore
+     * @param offset - the offset at which to start ignoring
+     * @param length - how many characters to ignore
      */
     @Override
     public void ignorableWhitespace(final char[] data, final int offset, final int length) throws SAXException {
@@ -254,8 +254,8 @@ public class MarcXmlHandler implements ContentHandler {
     /**
      * An event fired at the end of prefix mapping.
      *
-     * @param prefix
-     * @throws SAXException
+     * @param prefix - the prefix
+     * @throws SAXParseException - when there is an exception
      */
     @Override
     public void endPrefixMapping(final String prefix) throws SAXException {}
@@ -263,8 +263,8 @@ public class MarcXmlHandler implements ContentHandler {
     /**
      * An event fired while consuming a skipped entity.
      *
-     * @param name
-     * @throws SAXException
+     * @param name - the entity to skip
+     * @throws SAXParseException - when there is an exception
      */
     @Override
     public void skippedEntity(final String name) throws SAXException {
@@ -274,7 +274,7 @@ public class MarcXmlHandler implements ContentHandler {
     /**
      * An event fired while consuming a document locator.
      *
-     * @param locator
+     * @param locator - the locator
      */
     @Override
     public void setDocumentLocator(final Locator locator) {
@@ -284,9 +284,9 @@ public class MarcXmlHandler implements ContentHandler {
     /**
      * An event fired while consuming a processing instruction.
      *
-     * @param target
-     * @param data
-     * @throws SAXException
+     * @param target - the target
+     * @param data - the data
+     * @throws SAXParseException - when there is an exception
      */
     @Override
     public void processingInstruction(final String target, final String data) throws SAXException {
@@ -296,8 +296,9 @@ public class MarcXmlHandler implements ContentHandler {
     /**
      * An event fired at the start of prefix mapping.
      *
-     * @param prefix
-     * @param uri
+     * @param prefix - the prefix
+     * @param uri - the uri
+     * @throws SAXParseException - when there is an exception
      */
     @Override
     public void startPrefixMapping(final String prefix, final String uri) throws SAXException {

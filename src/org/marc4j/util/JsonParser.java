@@ -55,41 +55,41 @@ public class JsonParser extends Object {
 
     private final boolean optUnquotedKeywords;                    // parser option
 
-    private final ArrayList<ObjectData> objectStack;                            // stack of object data for
+    private final ArrayList<ObjectData> objectStack;              // stack of object data for
 
     // nested objects
 
-    private final StringBuilder accumulator;                            // text accumulator
+    private final StringBuilder accumulator;                      // text accumulator
 
     // PARSER VARIABLES
-    private String inpName;                                // the name of the input source (for location
+    private String inpName;                                       // the name of the input source (for location
 
     // reporting)
 
-    private Reader inpReader;                              // input inpReader
+    private Reader inpReader;                                     // input inpReader
 
-    private boolean inpClose;                               // close input inpReader when it reaches end of
+    private boolean inpClose;                                     // close input inpReader when it reaches end of
 
     // stream
 
-    private int inpLine;                                // input line number
+    private int inpLine;                                          // input line number
 
-    private int inpColumn;                              // input column
+    private int inpColumn;                                        // input column
 
-    private ObjectData objectData;                             // current object data
+    private ObjectData objectData;                                // current object data
 
-    private int pushBack;                               // push-back character (will be returned by next read)
+    private int pushBack;                                         // push-back character (will be returned by next read)
 
     // EVENT VARIABLES
-    private int evtCode;                                // current event code
+    private int evtCode;                                          // current event code
 
-    private int evtLine;                                // current event line number
+    private int evtLine;                                          // current event line number
 
-    private int evtColumn;                              // current event column number
+    private int evtColumn;                                        // current event column number
 
-    private String mbrName;                                // current event member name
+    private String mbrName;                                       // current event member name
 
-    private String mbrValue;                               // current event member value
+    private String mbrValue;                                      // current event member value
 
     // *****************************************************************************
     // INSTANCE CREATE/DELETE

@@ -62,6 +62,7 @@ public abstract class MarcFactory {
      * resource</li>
      * <li>the default factory class</li>
      * </ol>
+     * @return the MarcFactory to use for creating Records and their Fields
      */
     public static MarcFactory newInstance() {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -141,6 +142,7 @@ public abstract class MarcFactory {
     /**
      * Creates a new control field with the given tag and returns the instance.
      *
+     * @param tag - the tag to use for the newly created ControlField
      * @return ControlField
      */
     public abstract ControlField newControlField(String tag);
@@ -149,6 +151,8 @@ public abstract class MarcFactory {
      * Creates a new control field with the given tag and data and returns the
      * instance.
      *
+     * @param tag - the tag to use for the newly created ControlField
+     * @param data - the data to use for the newly created ControlField
      * @return ControlField
      */
     public abstract ControlField newControlField(String tag, String data);
@@ -164,6 +168,9 @@ public abstract class MarcFactory {
      * Creates a new data field with the given tag and indicators and returns
      * the instance.
      *
+     * @param tag - the tag to use for the newly created DataField
+     * @param ind1 - the first Indicator to use for the newly created DataField
+     * @param ind2 - the second Indicator to use for the newly created DataField
      * @return DataField
      */
     public abstract DataField newDataField(String tag, char ind1, char ind2);
@@ -172,6 +179,10 @@ public abstract class MarcFactory {
      * Creates a new data field with the given tag and indicators and subfields
      * and returns the instance.
      *
+     * @param tag - the tag to use for the newly created DataField
+     * @param ind1 - the first Indicator to use for the newly created DataField
+     * @param ind2 - the second Indicator to use for the newly created DataField
+     * @param subfieldCodesAndData - one or more strings to define the Subfields for this DataField
      * @return DataField
      */
     public abstract DataField newDataField(String tag, char ind1, char ind2,
@@ -187,6 +198,7 @@ public abstract class MarcFactory {
     /**
      * Creates a new leader with the given <code>String</code> object.
      *
+     * @param ldr - a string to use to build a new Leader
      * @return Leader
      */
     public abstract Leader newLeader(String ldr);
@@ -201,6 +213,7 @@ public abstract class MarcFactory {
     /**
      * Returns a new record instance.
      *
+     * @param leader - a Leader to include in the new Record
      * @return Record
      */
     public abstract Record newRecord(Leader leader);
@@ -208,6 +221,7 @@ public abstract class MarcFactory {
     /**
      * Returns a new record instance.
      *
+     * @param leader - a string to use to build a new Leader to include in the new Record
      * @return Record
      */
     public abstract Record newRecord(String leader);
@@ -222,6 +236,7 @@ public abstract class MarcFactory {
     /**
      * Creates a new subfield with the given identifier.
      *
+     * @param code - the subfield code to use for the newly created Subfield
      * @return Subfield
      */
     public abstract Subfield newSubfield(char code);
@@ -229,6 +244,8 @@ public abstract class MarcFactory {
     /**
      * Creates a new subfield with the given identifier and data.
      *
+     * @param code - the subfield code to use for the newly created Subfield
+     * @param data - the data to use for the newly created SubField
      * @return Subfield
      */
     public abstract Subfield newSubfield(char code, String data);

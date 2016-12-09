@@ -239,6 +239,8 @@ public class RecordImpl implements Record {
     /**
      * Gets a {@link List} of {@link VariableField}s from the {@link Record}
      * including the LEADER recast as ControlField for field matching purposes.
+     * 
+     * @return a List of all VariableFields plus the Leader represented as a ControlField
      */
     public List<VariableField> getVariableFieldsWithLeader() {
         final List<VariableField> fields = new ArrayList<VariableField>();

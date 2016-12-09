@@ -44,6 +44,8 @@ public abstract class VariableFieldImpl implements VariableField {
 
     /**
      * Creates a new <code>VariableField</code> and sets the tag name.
+     *
+     * @param tag The tag for the <code>VariableField</code>
      */
     public VariableFieldImpl(final String tag) throws MarcException {
         if (tag == null) {

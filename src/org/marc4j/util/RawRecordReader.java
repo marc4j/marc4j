@@ -32,7 +32,7 @@ public class RawRecordReader {
     /**
      * Creates a raw record reader from the supplied {@link InputStream}.
      *
-     * @param is
+     * @param is - the InputStream to read
      */
     public RawRecordReader(final InputStream is) {
         input = new DataInputStream(new BufferedInputStream(is));
@@ -41,8 +41,8 @@ public class RawRecordReader {
     /**
      * Creates a raw record reader from the supplied {@link InputStream} and merge records boolean flag.
      *
-     * @param is
-     * @param mergeRecords
+     * @param is - the InputStream to read
+     * @param mergeRecords - true to cause subsequent records with identical record ids to be combined.
      */
     public RawRecordReader(final InputStream is, final boolean mergeRecords) {
         this.mergeRecords = mergeRecords;
@@ -52,7 +52,7 @@ public class RawRecordReader {
     /**
      * Returns <code>true</code> if there is another raw record to read; else, <code>false</code>.
      *
-     * @return Returns <code>true</code> if there is another raw record to read
+     * @return returns <code>true</code> if there is another raw record to read
      */
     public boolean hasNext() {
         if (nextRec == null) {
@@ -92,7 +92,19 @@ public class RawRecordReader {
     }
 
     /**
-     * @param args
+     * main routine for reading a file of binary MarcRecord mostly as chunks of 
+     * uninterpreted data. The accepted command line arguments are:
+     * <ul>
+     * <li>-skip &lt;num&gt;      the number of records to skip over without processing (default 0)</li>
+     * <li>-num &lt;num&gt;       the number of records to process (default all of them)</li>
+     * <li>-nomerge                    disable the automatic merging of subsequent records that have the same id</li>
+     * <li>-id                         instead of outputting the record data, only output the id of the records</li>
+     * <li>-h &lt;pattern&gt;  a regex specifying field tags. Only those records that have one of the specified field tag(s) will be returned.</li>
+     * <li>&lt;pattern&gt;     a regex specifying record ids. Only those records whose id matches the pattern will be returned</li>
+     * <li>&lt;filename.txt&gt;   the name of a file containing records ids, (one per line)
+     *             Only those records whose id matches one of the ids in that file will be returned</li>
+     * </ul>
+     * @param args - the command-line arguments
      */
     public static void main(final String[] args) {
         RawRecordReader reader;

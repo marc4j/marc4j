@@ -22,7 +22,7 @@ public class RoundtripTest  {
      * then reads those records.  The test then compares those records with
      * the original records, expecting them to be identical.
      *
-     * @throws Exception
+     * @throws Exception - when something goes wrong
      */
     @Test
     public void testWriteAndReadRoundtrip() throws Exception {
@@ -71,7 +71,7 @@ public class RoundtripTest  {
      * Marc records. The test then compares those records with the original
      * records, expecting them to be identical.
      *
-     * @throws Exception
+     * @throws Exception - when something goes wrong
      */
     @Test
     public void testWriteAndReadRoundtripConverted() throws Exception {
@@ -125,7 +125,7 @@ public class RoundtripTest  {
      * Previously the UnicodeToAnsel conversion would produce output in this situation 
      * that the AnselToUnicode converter would claim had errors.
      *
-     * @throws Exception
+     * @throws Exception - when something goes wrong
      */
     @Test
     public void testWriteAndReadRoundtripChineseConverted() throws Exception {
@@ -179,7 +179,7 @@ public class RoundtripTest  {
      * Previously the UnicodeToAnsel conversion would produce output in this situation 
      * that the AnselToUnicode converter would claim had errors.
      *
-     * @throws Exception
+     * @throws Exception - when something goes wrong
      */
     @Test
     public void testWriteAndReadRoundtripChineseConvertedPermissive() throws Exception {
@@ -229,7 +229,7 @@ public class RoundtripTest  {
      * Marc records. The test then compares those binary Marc records with the original
      * records, expecting them to be identical.
      *
-     * @throws Exception
+     * @throws Exception - when something goes wrong
      */
     @Test
     public void testConvertToXMLRoundtrip() throws Exception {
@@ -299,7 +299,7 @@ public class RoundtripTest  {
      * It is possible to guarantee roundtripping from normalized utf-8 encoded records to
      * marc8 encoded binary marc records back to normalized utf-8 records.
      *
-     * @throws Exception
+     * @throws Exception - when something goes wrong
      */
     @Test
     public void testConvertToXMLNormalizedRoundtrip() throws Exception {
@@ -352,7 +352,7 @@ public class RoundtripTest  {
      * back in and writes them out as utf-8 encoded MarcXML records. The test then compares those MarcXML records 
      * with the utf-8 encoded MarcXML records, expecting them to be identical.
      *
-     * @throws Exception
+     * @throws Exception - when something goes wrong
      */
     @Test
     public void testConvertToMarc8NCRRoundtrip() throws Exception {
@@ -396,6 +396,4 @@ public class RoundtripTest  {
                 RecordTestingUtils.assertEqualsIgnoreLeader(r1, r2);
         } while (r1 != null && r2 != null);
     }
-
-
 }

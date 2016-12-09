@@ -34,7 +34,7 @@ public class ReverseCodeTableGenerator {
     /**
      * The main class for the reverse code table generator.
      *
-     * @param args
+     * @param args - the command line arguments for the ReverseCodeTableGenerator program
      */
     public static void main(final String[] args) {
         Hashtable<Character, Hashtable<Integer, char[]>> charsets = null;

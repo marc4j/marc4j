@@ -62,8 +62,8 @@ public class Normalizer {
     /**
      * Normalizes the supplied string using the supplied mode.
      *
-     * @param str
-     * @param mode
+     * @param str - the string to normalize
+     * @param mode - one of:   1 for NONE, 2 for NFD, 3 for NFKD, 4 for NFC, 5 for NFKD 
      * @return the normalized representation of the string
      */
     public static String normalize(final String str, final int mode) {

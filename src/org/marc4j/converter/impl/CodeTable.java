@@ -51,9 +51,9 @@ public class CodeTable implements CodeTableInterface {
     /**
      * Returns <code>true</code> if combining; else, <code>false</code>.
      *
-     * @param i
-     * @param g0
-     * @param g1
+     * @param i - the character code to check
+     * @param g0 - the current g0 character set in use
+     * @param g1 - the current g1 character code in use
      * @return Returns <code>true</code> if combining
      */
     @Override
@@ -70,8 +70,8 @@ public class CodeTable implements CodeTableInterface {
     /**
      * Returns the <code>char</code> for the supplied <code>int</code> and mode.
      *
-     * @param c
-     * @param mode
+     * @param c - the character being looked up
+     * @param mode - the current mode of the converter
      * @return Returns the <code>char</code> for the supplied <code>int</code> and mode
      */
     @Override
@@ -108,7 +108,7 @@ public class CodeTable implements CodeTableInterface {
     /**
      * Creates a CodeTable from the supplied {@link InputStream}.
      *
-     * @param byteStream
+     * @param byteStream - an InputStream to read to create the code table
      */
     public CodeTable(final InputStream byteStream) {
         try {
@@ -133,7 +133,7 @@ public class CodeTable implements CodeTableInterface {
     /**
      * Creates a CodeTable from the supplied file name.
      *
-     * @param filename
+     * @param filename - the name of a file to read to create the code table
      */
     public CodeTable(final String filename) {
         try {
@@ -159,7 +159,7 @@ public class CodeTable implements CodeTableInterface {
     /**
      * Creates a CodeTable from the supplied {@link URI}.
      *
-     * @param uri
+     * @param uri - a URI to access to read data to use to create the code table
      */
     public CodeTable(final URI uri) {
         try {

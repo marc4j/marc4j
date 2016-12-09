@@ -1,4 +1,5 @@
-/** A formatter that is like a << new DecimalFormat("00000") with
+/** 
+ * A formatter that is like a << new DecimalFormat("00000") with
  * setMaximumIntegerDigits(5), but if
  * the number to be formatted is greater than 99999, it will truncate
  * it to 99999 instead of just writing out 5 least significant digits.
@@ -35,7 +36,7 @@ public class CustomDecimalFormat extends DecimalFormat {
     /**
      * Creates a custom decimal format with the supplied number of digits.
      *
-     * @param numberDigits
+     * @param numberDigits - the number of digits to allow
      */
     public CustomDecimalFormat(final int numberDigits) {
         super(formatString.substring(0, numberDigits));
@@ -49,8 +50,9 @@ public class CustomDecimalFormat extends DecimalFormat {
     /**
      * Creates a custom decimal format with the supplied number of digits.
      *
-     * @param numberDigits
-     * @param overflowType
+     * @param numberDigits - the number of digits to allow
+     * @param overflowType - one of 0 for REP_ALL_ZEROS, 1 for REP_ALL_NINES or 2 for REP_TRUNCATE
+
      */
     public CustomDecimalFormat(final int numberDigits, final int overflowType) {
         super(formatString.substring(0, numberDigits));
@@ -62,8 +64,7 @@ public class CustomDecimalFormat extends DecimalFormat {
     }
 
     @Override
-    public StringBuffer format(double number, final StringBuffer toAppendTo,
-            final FieldPosition pos) {
+    public StringBuffer format(double number, final StringBuffer toAppendTo, final FieldPosition pos) {
         if (number > maximumValue) {
             number = getOverflowRepresentation((long) number);
         }
@@ -72,8 +73,7 @@ public class CustomDecimalFormat extends DecimalFormat {
     }
 
     @Override
-    public StringBuffer format(long number, final StringBuffer toAppendTo,
-            final FieldPosition pos) {
+    public StringBuffer format(long number, final StringBuffer toAppendTo, final FieldPosition pos) {
         if (number > maximumValue) {
             number = getOverflowRepresentation(number);
         }

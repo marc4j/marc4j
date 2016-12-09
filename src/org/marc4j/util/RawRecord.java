@@ -29,7 +29,7 @@ public class RawRecord {
     /**
      * Creates a RawRecord from the supplied {@link DataInputStream}.
      *
-     * @param ds
+     * @param ds - a DataStreamObject to read data from.
      */
     public RawRecord(final DataInputStream ds) {
         init(ds);
@@ -131,8 +131,8 @@ public class RawRecord {
     /**
      * Creates a new raw record from the two supplied raw records.
      *
-     * @param rec1
-     * @param rec2
+     * @param rec1 - the first RawRecord to combine 
+     * @param rec2 - the second RawRecord to combine
      */
     public RawRecord(final RawRecord rec1, final RawRecord rec2) {
 
@@ -157,9 +157,10 @@ public class RawRecord {
     }
 
     /**
-     * Gets the value of the field with the supplied ID.
+     *  A shortcut method for getting a single field value from a RawRecord.
+     *  If multiple fields with that tag exist this will return the first one encountered.
      *
-     * @param idField
+     * @param idField - the tag of the field to extract from the RawRecord data.
      * @return The value of the field with the supplied ID
      */
     public String getFieldVal(final String idField) {
@@ -207,10 +208,11 @@ public class RawRecord {
     /**
      * Gets the raw record as a {@link Record}.
      *
-     * @param permissive
-     * @param toUtf8
-     * @param combinePartials
-     * @param defaultEncoding
+     * @param permissive - true to enable permissive error handling
+     * @param toUtf8 - true to specify should be converted to UTF-8 
+     * @param combinePartials - a list of field tags that should be copied from the 2nd 
+     *        (and 3rd etc.) RawRecord in the rawRecordData member to the Record being created.
+     * @param defaultEncoding - the expected encoding that should be found in the rawRecordData
      * @return a {@link Record} built from the current record data
      */
     public Record getAsRecord(final boolean permissive, final boolean toUtf8,

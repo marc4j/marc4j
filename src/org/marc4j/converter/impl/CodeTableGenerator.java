@@ -43,7 +43,7 @@ public class CodeTableGenerator extends CodeTable {
     /**
      * Creates a CodeTableGenerator from the supplied {@link InputStream}.
      *
-     * @param byteStream
+     * @param byteStream - a stream of bytes to use to create the CodeTable
      */
     public CodeTableGenerator(final InputStream byteStream) {
         super(byteStream);
@@ -52,7 +52,7 @@ public class CodeTableGenerator extends CodeTable {
     /**
      * The main function called when generating a codetable.
      *
-     * @param args
+     * @param args - the command line arguments for the CodeTableGenerator program
      */
     public static void main(final String args[]) {
         final InputStream in = CodeTable.class.getResourceAsStream("resources/codetables.xml");

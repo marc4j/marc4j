@@ -105,11 +105,11 @@ public class CodeTableHandler extends DefaultHandler {
     /**
      * An event fired at the start of an element.
      * 
-     * @param uri
-     * @param name
-     * @param qName
-     * @param atts
-     * @throws SAXParseException
+     * @param uri - the uri
+     * @param name - the name
+     * @param qName - the qname
+     * @param atts - the attributes
+     * @throws SAXParseException - when there is an exception
      */
     @Override
     public void startElement(final String uri, final String name, final String qName,
@@ -137,9 +137,9 @@ public class CodeTableHandler extends DefaultHandler {
     /**
      * An event fired as characters are consumed.
      * 
-     * @param ch
-     * @param start
-     * @param length
+     * @param ch - the array of characters that was found
+     * @param start - the starts point in ch for where to start copying data
+     * @param length - the number of characters to copy
      */
     @Override
     public void characters(final char[] ch, final int start, final int length) {
@@ -151,10 +151,10 @@ public class CodeTableHandler extends DefaultHandler {
     /**
      * An event fired at the end of parsing an element.
      * 
-     * @param uri
-     * @param name
-     * @param qName
-     * @throws SAXParseException
+     * @param uri - the uri
+     * @param name - the name
+     * @param qName - the qname
+     * @throws SAXParseException - when there is an exception
      */
     @Override
     public void endElement(final String uri, final String name, final String qName)
@@ -192,9 +192,9 @@ public class CodeTableHandler extends DefaultHandler {
     }
 
     /**
-     * The main class on the CodeTableHandler. FIXME needed?
+     * The main class on the CodeTableHandler. FIXME needed? 
      * 
-     * @param args
+     * @param args - the command line arguments for the CodeTableHandler program
      */
     public static void main(final String[] args) {
         @SuppressWarnings("unused")

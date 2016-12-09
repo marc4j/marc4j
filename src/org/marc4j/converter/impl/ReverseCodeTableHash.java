@@ -52,7 +52,7 @@ public class ReverseCodeTableHash extends ReverseCodeTable {
      * Returns <code>true</code> if the supplied {@link Character} is a
      * combining character; else, <code>false</code>.
      * 
-     * @param c
+     * @param c - the character to test
      * @return Returns <code>true</code> if combining
      */
     @Override
@@ -63,7 +63,7 @@ public class ReverseCodeTableHash extends ReverseCodeTable {
     /**
      * Gets the character table for the supplied {@link Character}.
      * 
-     * @param c
+     * @param c - the character to lookup
      * @return The character table for the supplied {@link Character}
      */
     @Override
@@ -74,7 +74,7 @@ public class ReverseCodeTableHash extends ReverseCodeTable {
     /**
      * Creates a reverse codetable hash from the supplied {@link InputStream}.
      * 
-     * @param byteStream
+     * @param byteStream - a Stream to read to create the ReverseCodeTable
      */
     public ReverseCodeTableHash(final InputStream byteStream) {
         try {
@@ -103,7 +103,7 @@ public class ReverseCodeTableHash extends ReverseCodeTable {
     /**
      * Creates a reverse codetable hash from the supplied file name.
      * 
-     * @param filename
+     * @param filename - the name of a file to read to create the ReverseCodeTable
      */
     public ReverseCodeTableHash(final String filename) {
         try {
@@ -132,7 +132,7 @@ public class ReverseCodeTableHash extends ReverseCodeTable {
     /**
      * Creates a reverse codetable hash from the supplied {@link URI}.
      * 
-     * @param uri
+     * @param uri - a URI to access to read data to create the ReverseCodeTable
      */
     public ReverseCodeTableHash(final URI uri) {
         try {

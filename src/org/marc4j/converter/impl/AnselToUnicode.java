@@ -157,6 +157,8 @@ public class AnselToUnicode extends CharConverter {
 
     /**
      * Creates a new instance and loads the MARC4J supplied conversion tables based on the official LC tables.
+     *
+     * @param loadMultibyte - true to cause the full translation table to be loaded, including the multi-byte CJK characters
      */
     public AnselToUnicode(final boolean loadMultibyte) {
         ct = loadGeneratedTable(loadMultibyte);
@@ -164,6 +166,9 @@ public class AnselToUnicode extends CharConverter {
 
     /**
      * Creates a new instance and loads the MARC4J supplied conversion tables based on the official LC tables.
+     *
+     * @param curReader - the MarcPermissiveStreamReader currently in use, 
+     *       used for recording Errors detected in translation the field data.
      */
     public AnselToUnicode(final MarcPermissiveStreamReader curReader) {
         ct = loadGeneratedTable(false);
@@ -200,9 +205,9 @@ public class AnselToUnicode extends CharConverter {
      * 
      * Use this constructor to create an instance with a customized code table
      * mapping. The mapping file should follow the structure of LC's XML MARC-8
-     * to Unicode mapping (see:
-     * http://www.loc.gov/marc/specifications/codetables.xml).
-     *  
+     * to Unicode mapping (see: http://www.loc.gov/marc/specifications/codetables.xml).
+     *
+     * @param pathname - path to file to use instead of the official LC codetable
      */
     public AnselToUnicode(final String pathname) {
         ct = new CodeTable(pathname);
@@ -214,9 +219,9 @@ public class AnselToUnicode extends CharConverter {
      * 
      * Use this constructor to create an instance with a customized code table
      * mapping. The mapping file should follow the structure of LC's XML MARC-8
-     * to Unicode mapping (see:
-     * http://www.loc.gov/marc/specifications/codetables.xml).
+     * to Unicode mapping (see: http://www.loc.gov/marc/specifications/codetables.xml).
      *  
+     * @param in - an InputStream to use instead of the official LC codetable data
      */
     public AnselToUnicode(final InputStream in) {
         ct = new CodeTable(in);
