@@ -425,7 +425,7 @@ public class MarcXmlWriter implements MarcWriter {
     /**
      * Writes the root end tag to the result.
      *
-     * @throws SAXException - for a poorly formed document
+     * @throws MarcException - for a poorly formed document
      */
     protected void writeEndDocument() {
         try {
