@@ -38,6 +38,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.marc4j.converter.CharConverter;
+import org.marc4j.converter.impl.AnselToUnicode;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Leader;
@@ -196,6 +197,9 @@ public class MarcXmlWriter implements MarcWriter {
     private boolean normalize = false;
 
     private boolean checkNonXMLChars = false;
+
+    private MarcXmlWriter() {
+    }
 
     /**
      * Constructs an instance with the specified output stream.
@@ -416,9 +420,11 @@ public class MarcXmlWriter implements MarcWriter {
         try {
             final AttributesImpl atts = new AttributesImpl();
             handler.startDocument();
-            handler.startElement(Constants.MARCXML_NS_URI, COLLECTION, COLLECTION, atts);
-        } catch (final SAXException e) {
-            throw new MarcException("SAX error occured while writing start document", e);
+            handler.startPrefixMapping(Constants.MARCXML_NS_PREFIX, Constants.MARCXML_NS_URI);
+            handler.startElement(Constants.MARCXML_NS_URI, COLLECTION, Constants.MARCXML_NS_PREFIX + ":" + COLLECTION,
+                    atts);
+        } catch (final SAXException details) {
+            throw new MarcException("SAX error occured while writing start document", details);
         }
     }
 
@@ -433,8 +439,8 @@ public class MarcXmlWriter implements MarcWriter {
                 handler.ignorableWhitespace("\n".toCharArray(), 0, 1);
             }
 
-            handler.endElement(Constants.MARCXML_NS_URI, COLLECTION, COLLECTION);
-            handler.endPrefixMapping("");
+            handler.endElement(Constants.MARCXML_NS_URI, COLLECTION, Constants.MARCXML_NS_PREFIX + ":" + COLLECTION);
+            handler.endPrefixMapping(Constants.MARCXML_NS_URI);
             handler.endDocument();
         } catch (final SAXException e) {
             throw new MarcException("SAX error occured while writing end document", e);
@@ -453,6 +459,74 @@ public class MarcXmlWriter implements MarcWriter {
             toXml(record);
         } catch (final SAXException e) {
             throw new MarcException("SAX error occured while writing record", e);
+        }
+    }
+
+    /**
+     * A convenience method that writes a single Record object to the result. The assumption is the record needs to be
+     * converted from Ansel to Unicode and that the record doesn't need to be indented.
+     *
+     * @param record The <code>Record</code> to write
+     * @param stream The XML output stream
+     * @throws SAXException
+     */
+    public static void writeSingleRecord(final Record record, final OutputStream stream) throws IOException {
+        writeSingleRecord(record, stream, true, false);
+    }
+
+    /**
+     * A convenience method that writes a single Record object to the result. The assumption is the record needs to be
+     * converted from Ansel to Unicode.
+     *
+     * @param record The <code>Record</code> to write
+     * @param stream The XML output stream
+     * @param indent If the XML output should be indented
+     * @throws SAXException
+     */
+    public static void writeSingleRecord(final Record record, final OutputStream stream, final boolean indent)
+            throws IOException {
+        writeSingleRecord(record, stream, true, indent);
+    }
+
+    /**
+     * A convenience method that writes a single Record object to the result.
+     *
+     * @param record The <code>Record</code> to write
+     * @param stream The XML output stream
+     * @param encode If the text should be converted from Ansel to Unicode
+     * @param indent Whether the output XML should be indented
+     * @throws SAXException
+     */
+    public static void writeSingleRecord(final Record record, final OutputStream stream, final boolean encode,
+            final boolean indent) throws IOException {
+        try {
+            final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(stream, "UTF-8"));
+            final MarcXmlWriter writer = new MarcXmlWriter();
+
+            if (encode) {
+                writer.setConverter(new AnselToUnicode());
+            }
+
+            writer.setIndent(indent);
+            writer.setUnicodeNormalization(true);
+            writer.setHandler(new StreamResult(out), null);
+            writer.handler.startDocument();
+            writer.handler.startPrefixMapping(Constants.MARCXML_NS_PREFIX, Constants.MARCXML_NS_URI);
+            writer.toXml(record);
+
+            if (indent) {
+                writer.handler.ignorableWhitespace("\n".toCharArray(), 0, 1);
+            }
+
+            writer.handler.endPrefixMapping(Constants.MARCXML_NS_URI);
+            writer.handler.endDocument();
+
+            out.write("\n");
+            out.close();
+        } catch (final SAXException details) {
+            throw new MarcException("SAX error occured while writing record", details);
+        } catch (final UnsupportedEncodingException details) {
+            throw new MarcException(details.getMessage(), details);
         }
     }
 
@@ -486,17 +560,24 @@ public class MarcXmlWriter implements MarcWriter {
             handler.ignorableWhitespace("\n  ".toCharArray(), 0, 3);
         }
 
-        handler.startElement(Constants.MARCXML_NS_URI, RECORD, RECORD, atts);
+        if (record.getType() != null) {
+            final AttributesImpl rAtts = new AttributesImpl();
+
+            rAtts.addAttribute("", "type", "type", "", record.getType());
+            handler.startElement(Constants.MARCXML_NS_URI, RECORD, Constants.MARCXML_NS_PREFIX + ":" + RECORD, rAtts);
+        } else {
+            handler.startElement(Constants.MARCXML_NS_URI, RECORD, Constants.MARCXML_NS_PREFIX + ":" + RECORD, atts);
+        }
 
         if (indent) {
             handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
         }
 
-        handler.startElement(Constants.MARCXML_NS_URI, LEADER, LEADER, atts);
+        handler.startElement(Constants.MARCXML_NS_URI, LEADER, Constants.MARCXML_NS_PREFIX + ":" + LEADER, atts);
         final Leader leader = record.getLeader();
         temp = getDataElement(leader.toString());
         handler.characters(temp, 0, temp.length);
-        handler.endElement(Constants.MARCXML_NS_URI, LEADER, LEADER);
+        handler.endElement(Constants.MARCXML_NS_URI, LEADER, Constants.MARCXML_NS_PREFIX + ":" + LEADER);
 
         for (final ControlField field : record.getControlFields()) {
             atts = new AttributesImpl();
@@ -506,52 +587,57 @@ public class MarcXmlWriter implements MarcWriter {
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
             }
 
-            handler.startElement(Constants.MARCXML_NS_URI, CONTROL_FIELD, CONTROL_FIELD, atts);
+            handler.startElement(Constants.MARCXML_NS_URI, CONTROL_FIELD, Constants.MARCXML_NS_PREFIX + ":" +
+                    CONTROL_FIELD, atts);
             temp = getDataElement(field.getData());
             handler.characters(temp, 0, temp.length);
-            handler.endElement(Constants.MARCXML_NS_URI, CONTROL_FIELD, CONTROL_FIELD);
+            handler.endElement(Constants.MARCXML_NS_URI, CONTROL_FIELD, Constants.MARCXML_NS_PREFIX + ":" +
+                    CONTROL_FIELD);
         }
 
         for (final DataField field : record.getDataFields()) {
             atts = new AttributesImpl();
             atts.addAttribute("", "tag", "tag", "CDATA", getDataElementString(field.getTag()));
-            atts.addAttribute("", "ind1", "ind1", "CDATA", getDataElementString(String
-                    .valueOf(field.getIndicator1())));
-            atts.addAttribute("", "ind2", "ind2", "CDATA", getDataElementString(String
-                    .valueOf(field.getIndicator2())));
+            atts.addAttribute("", "ind1", "ind1", "CDATA", getDataElementString(String.valueOf(field
+                    .getIndicator1())));
+            atts.addAttribute("", "ind2", "ind2", "CDATA", getDataElementString(String.valueOf(field
+                    .getIndicator2())));
 
             if (indent) {
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
             }
 
-            handler.startElement(Constants.MARCXML_NS_URI, DATA_FIELD, DATA_FIELD, atts);
+            handler.startElement(Constants.MARCXML_NS_URI, DATA_FIELD, Constants.MARCXML_NS_PREFIX + ":" + DATA_FIELD,
+                    atts);
+
             for (final Subfield subfield : field.getSubfields()) {
                 atts = new AttributesImpl();
-                atts.addAttribute("", "code", "code", "CDATA", getDataElementString(String
-                        .valueOf(subfield.getCode())));
+                atts.addAttribute("", "code", "code", "CDATA", getDataElementString(String.valueOf(subfield
+                        .getCode())));
 
                 if (indent) {
                     handler.ignorableWhitespace("\n      ".toCharArray(), 0, 7);
                 }
 
-                handler.startElement(Constants.MARCXML_NS_URI, SUBFIELD, SUBFIELD, atts);
+                handler.startElement(Constants.MARCXML_NS_URI, SUBFIELD, Constants.MARCXML_NS_PREFIX + ":" + SUBFIELD,
+                        atts);
                 temp = getDataElement(subfield.getData());
                 handler.characters(temp, 0, temp.length);
-                handler.endElement(Constants.MARCXML_NS_URI, SUBFIELD, SUBFIELD);
+                handler.endElement(Constants.MARCXML_NS_URI, SUBFIELD, Constants.MARCXML_NS_PREFIX + ":" + SUBFIELD);
             }
 
             if (indent) {
                 handler.ignorableWhitespace("\n    ".toCharArray(), 0, 5);
             }
 
-            handler.endElement(Constants.MARCXML_NS_URI, DATA_FIELD, DATA_FIELD);
+            handler.endElement(Constants.MARCXML_NS_URI, DATA_FIELD, Constants.MARCXML_NS_PREFIX + ":" + DATA_FIELD);
         }
 
         if (indent) {
             handler.ignorableWhitespace("\n  ".toCharArray(), 0, 3);
         }
 
-        handler.endElement(Constants.MARCXML_NS_URI, RECORD, RECORD);
+        handler.endElement(Constants.MARCXML_NS_URI, RECORD, Constants.MARCXML_NS_PREFIX + ":" + RECORD);
     }
 
     protected String getDataElementString(final String data) {
@@ -566,6 +652,7 @@ public class MarcXmlWriter implements MarcWriter {
         if (normalize) {
             dataElement = Normalizer.normalize(dataElement, Normalizer.NFC);
         }
+
         if (checkNonXMLChars) {
             dataElement = CheckNonXMLChars(dataElement);
         }
@@ -576,6 +663,11 @@ public class MarcXmlWriter implements MarcWriter {
         return getDataElementString(data).toCharArray();
     }
 
+    /**
+     * Iterate through the characters in the dataElement, if any of them are invalid characters 
+     * or control characters or "discouraged" characters, replace character with a &lt;U+XXXX&gt;
+     * representation of the character. 
+     */
     protected String CheckNonXMLChars(final String dataElement) {
         final StringBuffer out = new StringBuffer(dataElement.length());
         for (final char ch : dataElement.toCharArray()) {
@@ -610,12 +702,15 @@ public class MarcXmlWriter implements MarcWriter {
         if (!valid.matcher(s).matches()) {
             return true;         // not in valid ranges
         }
+
         if (ctrlChar.matcher(s).matches()) {
             return true;         // a control character
         }
+
         if (discouraged.matcher(s).matches()) {
             return true;        // "Characters allowed but discouraged"
         }
+
         return false;
     }
 }
