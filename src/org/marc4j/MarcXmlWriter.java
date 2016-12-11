@@ -75,8 +75,7 @@ import org.xml.sax.helpers.AttributesImpl;
  *
  * </pre>
  * <p>
- * To perform a character conversion like MARC-8 to UCS/Unicode register a
- * <code>CharConverter</code>:
+ * To perform a character conversion like MARC-8 to UCS/Unicode register a <code>CharConverter</code>:
  * </p>
  * <pre>
  * writer.setConverter(new AnselToUnicode());
@@ -99,9 +98,8 @@ import org.xml.sax.helpers.AttributesImpl;
  * a dedicated XML serializer.
  * </p>
  * <p>
- * The following example uses
- * <code>org.apache.xml.serialize.XMLSerializer</code> to write MARC records
- * to XML using MARC-8 to UCS/Unicode conversion and Unicode normalization:
+ * The following example uses <code>org.apache.xml.serialize.XMLSerializer</code> to write MARC records to XML using
+ * MARC-8 to UCS/Unicode conversion and Unicode normalization:
  * </p>
  * <pre>
  *

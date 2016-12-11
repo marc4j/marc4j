@@ -3,9 +3,12 @@ package org.marc4j.test.utils;
 import org.marc4j.marc.*;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Iterator;
 import java.util.List;
 
@@ -157,6 +160,20 @@ public class TestUtils {
         if (comparison != null) {
             fail("actual differs from expected as shown below:" + System.getProperty("line.separator") + comparison);
         }
+    }
+
+    public static String readFileIntoString(String fileName) throws IOException {
+        InputStream stream = TestUtils.class.getResourceAsStream(fileName);
+        assertNotNull(fileName, stream);
+        BufferedReader in = new BufferedReader(new InputStreamReader(stream, "UTF8"));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = in.readLine()) != null) {
+            sb.append(line).append("\n");
+        }
+        in.close();
+
+        return(sb.toString());
     }
 
     public static String compareFilesContentsLineByLine(String expected, String actual) {

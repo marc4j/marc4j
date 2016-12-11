@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record>
+    <leader>00759cam a2200229 a 4500</leader>
+    <controlfield tag="001">11939876</controlfield>
+    <controlfield tag="005">20041229190604.0</controlfield>
+    <controlfield tag="008">000313s2000    nyu           000 1 eng  </controlfield>
+    <datafield tag="020" ind1=" " ind2=" ">
+      <subfields code="a">0679450041 (acid-free paper)</subfields>
+    </datafield>
+    <datafield tag="040" ind1=" " ind2=" ">
+      <subfield code="a">DLC</subfield>
+      <subfield code="c">DLC</subfield>
+      <subfield code="d">DLC</subfield>
+    </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+      <subfield code="a">Chabon, Michael.</subfield>
+    </datafield>
+    <datafield tag="245" ind1="1" ind2="4">
+      <subfield code="a">The amazing adventures of Kavalier and Clay :</subfield>
+      <subfield code="b">a novel /</subfield>
+      <subfield code="c">Michael Chabon.</subfield>
+    </datafield>
+    <datafield tag="260" ind1=" " ind2=" ">
+      <subfield code="a">New York :</subfield>
+      <subfield code="b">Random House,</subfield>
+      <subfield code="c">c2000.</subfield>
+    </datafield>
+    <datafield tag="300" ind1=" " ind2=" ">
+      <subfield code="a">639 p. ;</subfield>
+      <subfield code="c">25 cm.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Comic books, strips, etc.</subfield>
+      <subfield code="x">Authorship</subfield>
+      <subfield code="v">Fiction.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Heroes in mass media</subfield>
+      <subfield code="v">Fiction.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Czech Americans</subfield>
+      <subfield code="v">Fiction.</subfield>
+    </datafield>
+    <datafield tag="651" ind1=" " ind2="0">
+      <subfield code="a">New York (N.Y.)</subfield>
+      <subfield code="v">Fiction.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Young men</subfield>
+      <subfield code="v">Fiction.</subfield>
+    </datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+      <subfield code="a">Cartoonists</subfield>
+      <subfield code="v">Fiction.</subfield>
+    </datafield>
+    <datafield tag="655" ind1=" " ind2="7">
+      <subfield code="a">Humorous stories.</subfield>
+      <subfield code="2">gsafd</subfield>
+    </datafield>
+    <datafield tag="655" ind1=" " ind2="7">
+      <subfield code="a">Bildungsromane.</subfield>
+      <subfield code="2">gsafd</subfield>
+    </datafield>
+  </record>
+</collection>
