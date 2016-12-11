@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import org.marc4j.converter.CharConverter;
 import org.marc4j.converter.impl.AnselToUnicode;
@@ -149,9 +151,12 @@ public class MarcStreamReader implements MarcReader {
         }
     }
 
-    private void parseRecord(final Record record, byte[] byteArray, final byte[] recordBuf,
+    private void parseRecord(final Record record, final byte[] aByteArray, final byte[] recordBuf,
             final int recordLength) {
-        Leader ldr;
+        final Leader ldr;
+
+        byte[] byteArray = aByteArray;
+
         ldr = factory.newLeader();
         ldr.setRecordLength(recordLength);
         int directoryLength = 0;
@@ -189,6 +194,8 @@ public class MarcStreamReader implements MarcReader {
 
         final String[] tags = new String[size];
         final int[] lengths = new int[size];
+        final int[] starts = new int[size];
+        final HashMap<Integer, Integer> unsortedStartIndex = new HashMap<Integer, Integer>();
 
         final byte[] tag = new byte[3];
         final byte[] length = new byte[4];
@@ -207,14 +214,25 @@ public class MarcStreamReader implements MarcReader {
                 lengths[i] = Integer.parseInt(tmp);
 
                 inputrec.readFully(start);
+
+                tmp = new String(start);
+                starts[i] = Integer.parseInt(tmp);
+                unsortedStartIndex.put(starts[i], i);
             }
+
+            // Sort starting character positions
+            Arrays.sort(starts);
 
             if (inputrec.read() != Constants.FT) {
                 throw new MarcException("expected field terminator at end of directory");
             }
 
-            for (int i = 0; i < size; i++) {
+            int i = 0;
+            for (int s = 0; s < size; s++) {
+                i = unsortedStartIndex.get(starts[s]).intValue();
+
                 getFieldLength(inputrec);
+
                 if (Verifier.isControlField(tags[i])) {
                     byteArray = new byte[lengths[i] - 1];
                     inputrec.readFully(byteArray);
@@ -398,6 +416,12 @@ public class MarcStreamReader implements MarcReader {
         } else if (encoding.equals("ISO-8859-1") || encoding.equals("ISO8859_1") || encoding.equals("ISO_8859_1")) {
             try {
                 dataElement = new String(bytes, "ISO-8859-1");
+            } catch (final UnsupportedEncodingException e) {
+                throw new MarcException("unsupported encoding", e);
+            }
+        } else if (override) {
+            try {
+                dataElement = new String(bytes, encoding);
             } catch (final UnsupportedEncodingException e) {
                 throw new MarcException("unsupported encoding", e);
             }
