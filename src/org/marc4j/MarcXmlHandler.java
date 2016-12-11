@@ -22,7 +22,9 @@
 package org.marc4j;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
@@ -34,7 +36,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * Creates <code>Record</code> objects from SAX events and pushes each item onto the top of the
@@ -83,6 +84,11 @@ public class MarcXmlHandler implements ContentHandler {
     /** The second indicator attribute name string */
     private static final String IND_2_ATTR = "ind2";
 
+    /** The type attribute name string */
+    private static final String TYPE_ATTR = "type";
+
+    private static final Set<String> RECORD_TYPES;
+
     /** Set for mapping of element strings to constants (Integer) */
     private static final Map<String, Integer> ELEMENTS;
 
@@ -96,6 +102,13 @@ public class MarcXmlHandler implements ContentHandler {
         ELEMENTS.put("controlfield", new Integer(CONTROLFIELD_ID));
         ELEMENTS.put("datafield", new Integer(DATAFIELD_ID));
         ELEMENTS.put("subfield", new Integer(SUBFIELD_ID));
+
+        RECORD_TYPES = new HashSet<String>();
+        RECORD_TYPES.add("Bibliographic");
+        RECORD_TYPES.add("Authority");
+        RECORD_TYPES.add("Holdings");
+        RECORD_TYPES.add("Classification");
+        RECORD_TYPES.add("Community");
     }
 
     /**
@@ -122,28 +135,44 @@ public class MarcXmlHandler implements ContentHandler {
     public void startElement(final String uri, final String name, final String qName, final Attributes atts)
             throws SAXException {
         final String realname = name.length() == 0 ? qName : name;
-        final Integer elementType = ELEMENTS.get(realname);
+        final Integer elementType = ELEMENTS.get(stripNsPrefix(realname));
 
         if (elementType == null) {
-            return;
+            throw new MarcException("Unexpected XML element: " + realname);
         }
 
         switch (elementType.intValue()) {
             case COLLECTION_ID:
                 break;
             case RECORD_ID:
+                final String typeAttr = atts.getValue(TYPE_ATTR);
+
                 record = factory.newRecord();
+
+                if (typeAttr != null && RECORD_TYPES.contains(typeAttr)) {
+                    record.setType(typeAttr);
+                }
+
                 break;
             case LEADER_ID:
                 sb = new StringBuffer();
                 break;
             case CONTROLFIELD_ID:
                 tag = atts.getValue(TAG_ATTR);
+
+                if (tag == null) {
+                    throw new MarcException("ControlField missing tag value");
+                }
+
                 controlField = factory.newControlField(tag);
                 sb = new StringBuffer();
                 break;
             case DATAFIELD_ID:
                 tag = atts.getValue(TAG_ATTR);
+
+                if (tag == null) {
+                    throw new MarcException("DataField missing tag value");
+                }
 
                 String ind1 = atts.getValue(IND_1_ATTR);
                 String ind2 = atts.getValue(IND_2_ATTR);
@@ -168,10 +197,15 @@ public class MarcXmlHandler implements ContentHandler {
                 break;
             case SUBFIELD_ID:
                 String code = atts.getValue(CODE_ATTR);
-                if (code == null || code.length() == 0) {
-                    code = " "; // throw new
-                                // MarcException("missing subfield 'code' attribute");
+
+                if (code == null) {
+                    throw new MarcException("Subfield missing code attribute");
                 }
+
+                if (code.length() == 0) {
+                    code = " ";
+                }
+
                 subfield = factory.newSubfield(code.charAt(0));
                 sb = new StringBuffer();
         }
@@ -201,10 +235,10 @@ public class MarcXmlHandler implements ContentHandler {
     @Override
     public void endElement(final String uri, final String name, final String qName) throws SAXException {
         final String realname = name.length() == 0 ? qName : name;
-        final Integer elementType = ELEMENTS.get(realname);
+        final Integer elementType = ELEMENTS.get(stripNsPrefix(realname));
 
         if (elementType == null) {
-            return;
+            throw new MarcException("Unexpected XML element: " + realname);
         }
 
         switch (elementType.intValue()) {
@@ -305,4 +339,20 @@ public class MarcXmlHandler implements ContentHandler {
         // not implemented
     }
 
+    /**
+     * Handle namespace prefixes; also fixes issue with broken SAX emitters that spit out QName instead of local name.
+     * None of our MARCXML local names should have colons.
+     *
+     * @param aName An element name
+     * @return The element name without a namespace prefix
+     */
+    private String stripNsPrefix(final String aName) {
+        final int index = aName.indexOf(":");
+
+        if (index == -1 || index + 1 == aName.length()) {
+            return aName;
+        } else {
+            return aName.substring(index + 1);
+        }
+    }
 }
