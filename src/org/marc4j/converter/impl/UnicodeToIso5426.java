@@ -20,8 +20,9 @@
 
 package org.marc4j.converter.impl;
 
+import java.text.Normalizer;
+
 import org.marc4j.converter.CharConverter;
-import org.marc4j.util.Normalizer;
 
 /**
  * <p>
@@ -48,8 +49,8 @@ public class UnicodeToIso5426 extends CharConverter {
     public String convert(final char data[]) {
         // Conversion does not support "combining diacritical" characters
         // Must normalize first for correct results
-        final char[] normalizedData = Normalizer.normalize(
-                String.valueOf(data), Normalizer.NFC).toCharArray();
+        final char[] normalizedData = Normalizer.normalize(String.valueOf(data),
+                Normalizer.Form.NFC).toCharArray();
 
         final StringBuffer sb = new StringBuffer();
         for (int i = 0; i < normalizedData.length; i++) {

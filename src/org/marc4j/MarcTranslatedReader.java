@@ -18,6 +18,8 @@ package org.marc4j;
  * limitations under the License.
  */
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.List;
 
 import org.marc4j.converter.CharConverter;
@@ -27,7 +29,6 @@ import org.marc4j.marc.Leader;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
-import org.marc4j.util.Normalizer;
 
 /**
  * @author Robert Haschart
@@ -38,7 +39,7 @@ public class MarcTranslatedReader implements MarcReader {
 
     CharConverter convert;
 
-    int unicodeNormalize = Normalizer.NONE;
+    Form unicodeNormalize = null;
 
     /**
      * Creates a MARC translated reader that can normalize Unicode.
@@ -51,7 +52,7 @@ public class MarcTranslatedReader implements MarcReader {
         convert = new AnselToUnicode();
 
         if (unicodeNormalizeBool) {
-            this.unicodeNormalize = Normalizer.NFC;
+            this.unicodeNormalize = Normalizer.Form.NFC;
         }
     }
 
@@ -68,15 +69,15 @@ public class MarcTranslatedReader implements MarcReader {
         convert = new AnselToUnicode();
 
         if (unicodeNormalizeStr.equals("KC")) {
-            unicodeNormalize = Normalizer.NFKC;
+            unicodeNormalize = Normalizer.Form.NFKC;
         } else if (unicodeNormalizeStr.equals("KD")) {
-            unicodeNormalize = Normalizer.NFKD;
+            unicodeNormalize = Normalizer.Form.NFKD;
         } else if (unicodeNormalizeStr.equals("C")) {
-            unicodeNormalize = Normalizer.NFC;
+            unicodeNormalize = Normalizer.Form.NFC;
         } else if (unicodeNormalizeStr.equals("D")) {
-            unicodeNormalize = Normalizer.NFD;
+            unicodeNormalize = Normalizer.Form.NFD;
         } else {
-            unicodeNormalize = Normalizer.NONE;
+            unicodeNormalize = null;
         }
     }
 
@@ -101,7 +102,7 @@ public class MarcTranslatedReader implements MarcReader {
             is_utf_8 = true;
         }
 
-        if (is_utf_8 && unicodeNormalize == Normalizer.NONE) {
+        if (is_utf_8 && unicodeNormalize == null) {
             return (rec);
         }
 
@@ -123,7 +124,7 @@ public class MarcTranslatedReader implements MarcReader {
                     newData = convert.convert(newData);
                 }
 
-                if (unicodeNormalize != Normalizer.NONE) {
+                if (unicodeNormalize != null) {
                     newData = Normalizer.normalize(newData, unicodeNormalize);
                 }
 

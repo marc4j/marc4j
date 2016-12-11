@@ -4,13 +4,13 @@ package org.marc4j;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.text.Normalizer;
 
 import org.marc4j.converter.CharConverter;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
-import org.marc4j.util.Normalizer;
 
 public class MarcJsonWriter implements MarcWriter {
 
@@ -391,7 +391,7 @@ public class MarcJsonWriter implements MarcWriter {
         }
 
         if (normalize) {
-            data = Normalizer.normalize(data, Normalizer.NFC);
+            data = Normalizer.normalize(data, Normalizer.Form.NFC);
         }
 
         final StringBuffer buffer = new StringBuffer();

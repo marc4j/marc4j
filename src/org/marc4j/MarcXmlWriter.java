@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.text.Normalizer;
 import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
@@ -45,7 +46,6 @@ import org.marc4j.marc.Leader;
 import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
-import org.marc4j.util.Normalizer;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -650,7 +650,7 @@ public class MarcXmlWriter implements MarcWriter {
         }
 
         if (normalize) {
-            dataElement = Normalizer.normalize(dataElement, Normalizer.NFC);
+            dataElement = Normalizer.normalize(dataElement, Normalizer.Form.NFC);
         }
 
         if (checkNonXMLChars) {

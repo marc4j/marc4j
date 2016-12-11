@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,7 +48,6 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 import org.marc4j.marc.impl.Verifier;
-import org.marc4j.util.Normalizer;
 
 /**
  * An iterator over a collection of MARC records in ISO 2709 format, that is designed
@@ -1443,7 +1443,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 dataElement = dataElement1;
             } else {
                 conversionCheck1 = conversionCheck1 + "|>" + Normalizer.normalize(dataElement1,
-                        Normalizer.NFC);
+                        Normalizer.Form.NFC);
                 conversionCheck2 = conversionCheck2 + "|>" + dataElement2;
                 conversionCheck3 = conversionCheck3 + "|>" + dataElement3;
                 dataElement = dataElement1 + "%%@%%" + dataElement2 + "%%@%%" + dataElement3;

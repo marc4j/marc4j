@@ -22,9 +22,9 @@ package org.marc4j.converter.impl;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.text.Normalizer;
 
 import org.marc4j.converter.CharConverter;
-import org.marc4j.util.Normalizer;
 
 /**
  * <p>
@@ -189,7 +189,7 @@ public class UnicodeToAnsel extends CharConverter {
                 // and merely use the &#xXXXX; Numeric Character Reference form to represent the original
                 // unicode character
                 final String tmpnorm = c.toString();
-                final String tmpNormed = Normalizer.normalize(tmpnorm, Normalizer.NFD);
+                final String tmpNormed = Normalizer.normalize(tmpnorm, Normalizer.Form.NFD);
 
                 if (!tmpNormed.equals(tmpnorm)) {
                     if (allCharsHaveMatch(rct, tmpNormed)) {
@@ -197,7 +197,7 @@ public class UnicodeToAnsel extends CharConverter {
                         continue;
                     } else if (tmpNormed.length() > 2) {
                         final String firstTwo = tmpNormed.substring(0, 2);
-                        final String partialNormed = Normalizer.normalize(firstTwo, Normalizer.NFC);
+                        final String partialNormed = Normalizer.normalize(firstTwo, Normalizer.Form.NFC);
 
                         if (!partialNormed.equals(firstTwo) && allCharsHaveMatch(rct, partialNormed) &&
                                 allCharsHaveMatch(rct, tmpNormed.substring(2))) {
