@@ -20,6 +20,8 @@
 
 package org.marc4j;
 
+import java.util.Iterator;
+
 import org.marc4j.marc.Record;
 
 /**
@@ -32,20 +34,37 @@ import org.marc4j.marc.Record;
  * 
  * @author Bas Peters
  */
-public interface MarcReader {
+public abstract class MarcReader implements Iterable<Record>, Iterator<Record> {
 
     /**
      * Returns true if the iteration has more records, false otherwise.
      * 
      * @return Returns true if the iteration has more records
      */
-    public boolean hasNext();
+    @Override
+    public abstract boolean hasNext();
 
     /**
      * Returns the next record in the iteration.
      * 
      * @return Record - the record object
      */
-    public Record next();
+    @Override
+    public abstract Record next();
 
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("remove() not supported on this class");
+    }
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public Iterator<Record> iterator() {
+        return (this);
+
+    }
 }

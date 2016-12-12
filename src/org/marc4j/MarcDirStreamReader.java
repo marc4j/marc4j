@@ -38,7 +38,7 @@ import org.marc4j.marc.Record;
  * @author Robert Haschart
  */
 
-public class MarcDirStreamReader implements MarcReader {
+public class MarcDirStreamReader extends MarcReader {
 
     File list[];
 

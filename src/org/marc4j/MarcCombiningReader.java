@@ -23,7 +23,7 @@ import org.marc4j.marc.VariableField;
  * @author rh9ec
  */
 
-public class MarcCombiningReader implements MarcReader {
+public class MarcCombiningReader extends MarcReader {
 
     Record currentRecord = null;
 

@@ -105,7 +105,7 @@ import org.marc4j.marc.impl.Verifier;
  *
  * @author Robert Haschart
  */
-public class MarcPermissiveStreamReader implements MarcReader {
+public class MarcPermissiveStreamReader extends MarcReader {
 
     private DataInputStream input = null;
 

@@ -12,7 +12,7 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Record;
 
-public class PersonalNamesReader implements MarcReader {
+public class PersonalNamesReader extends MarcReader {
 
     private BufferedReader br = null;
     

@@ -33,7 +33,7 @@ import org.marc4j.marc.VariableField;
 /**
  * @author Robert Haschart
  */
-public class MarcTranslatedReader implements MarcReader {
+public class MarcTranslatedReader extends MarcReader {
 
     MarcReader reader;
 

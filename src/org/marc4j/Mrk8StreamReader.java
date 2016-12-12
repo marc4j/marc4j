@@ -54,7 +54,7 @@ import org.marc4j.marc.VariableField;
  *
  * @author Binaek Sarkar
  */
-public class Mrk8StreamReader implements MarcReader {
+public class Mrk8StreamReader extends MarcReader {
 
     private final Scanner input;
 

@@ -12,7 +12,7 @@ import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.util.JsonParser;
 
-public class MarcJsonReader implements MarcReader {
+public class MarcJsonReader extends MarcReader {
 
     MarcFactory factory;
 

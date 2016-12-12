@@ -9,7 +9,7 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 
-public class MarcUnprettyXmlReader implements MarcReader {
+public class MarcUnprettyXmlReader extends MarcReader {
 
     private MarcXmlReader reader = null;
 

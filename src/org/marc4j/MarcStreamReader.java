@@ -70,7 +70,7 @@ import org.marc4j.marc.impl.Verifier;
  * @author Bas Peters
  * 
  */
-public class MarcStreamReader implements MarcReader {
+public class MarcStreamReader extends MarcReader {
 
     private DataInputStream input = null;
 

@@ -72,7 +72,7 @@ import org.xml.sax.InputSource;
  *
  * @author Bas Peters
  */
-public class MarcXmlReader implements MarcReader {
+public class MarcXmlReader extends MarcReader {
 
     private final RecordStack queue;
 
