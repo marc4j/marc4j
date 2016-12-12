@@ -65,7 +65,7 @@ public class Mrk8StreamReader implements MarcReader {
     /**
      * Constructs an instance with the specified input stream.
      *
-     * @param input
+     * @param input - the data to read
      */
     public Mrk8StreamReader(final InputStream input) {
         this.input = new Scanner(new BufferedInputStream(input), StandardCharsets.UTF_8.name());

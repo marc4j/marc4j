@@ -466,7 +466,7 @@ public class MarcXmlWriter implements MarcWriter {
      *
      * @param record The <code>Record</code> to write
      * @param stream The XML output stream
-     * @throws SAXException
+     * @throws IOException - when there is an exception
      */
     public static void writeSingleRecord(final Record record, final OutputStream stream) throws IOException {
         writeSingleRecord(record, stream, true, false);
@@ -479,7 +479,7 @@ public class MarcXmlWriter implements MarcWriter {
      * @param record The <code>Record</code> to write
      * @param stream The XML output stream
      * @param indent If the XML output should be indented
-     * @throws SAXException
+     * @throws IOException - when there is an exception
      */
     public static void writeSingleRecord(final Record record, final OutputStream stream, final boolean indent)
             throws IOException {
@@ -493,7 +493,7 @@ public class MarcXmlWriter implements MarcWriter {
      * @param stream The XML output stream
      * @param encode If the text should be converted from Ansel to Unicode
      * @param indent Whether the output XML should be indented
-     * @throws SAXException
+     * @throws IOException - when there is an exception
      */
     public static void writeSingleRecord(final Record record, final OutputStream stream, final boolean encode,
             final boolean indent) throws IOException {
@@ -665,6 +665,8 @@ public class MarcXmlWriter implements MarcWriter {
      * Iterate through the characters in the dataElement, if any of them are invalid characters 
      * or control characters or "discouraged" characters, replace character with a &lt;U+XXXX&gt;
      * representation of the character. 
+     * @param dataElement - the data value to check for invalid XML characters
+     * @return the same string with invalid characters replaced with a &lt;U+XXXX&gt; representation
      */
     protected String CheckNonXMLChars(final String dataElement) {
         final StringBuffer out = new StringBuffer(dataElement.length());

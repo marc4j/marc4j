@@ -289,7 +289,6 @@ public class MarcXmlHandler implements ContentHandler {
      * An event fired at the end of prefix mapping.
      *
      * @param prefix - the prefix
-     * @throws SAXParseException - when there is an exception
      */
     @Override
     public void endPrefixMapping(final String prefix) throws SAXException {}
@@ -298,7 +297,6 @@ public class MarcXmlHandler implements ContentHandler {
      * An event fired while consuming a skipped entity.
      *
      * @param name - the entity to skip
-     * @throws SAXParseException - when there is an exception
      */
     @Override
     public void skippedEntity(final String name) throws SAXException {
@@ -320,7 +318,6 @@ public class MarcXmlHandler implements ContentHandler {
      *
      * @param target - the target
      * @param data - the data
-     * @throws SAXParseException - when there is an exception
      */
     @Override
     public void processingInstruction(final String target, final String data) throws SAXException {
@@ -332,7 +329,6 @@ public class MarcXmlHandler implements ContentHandler {
      *
      * @param prefix - the prefix
      * @param uri - the uri
-     * @throws SAXParseException - when there is an exception
      */
     @Override
     public void startPrefixMapping(final String prefix, final String uri) throws SAXException {

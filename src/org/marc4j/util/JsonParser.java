@@ -169,47 +169,72 @@ public class JsonParser extends Object {
 
     /**
      * Get the name assigned to the input source at construction. This is informational only.
+     * @return the name assigned to the input source at construction
      */
     public String getInputName() {
         return inpName;
     }
 
-    /** Get the current location in the input source. */
+    /** 
+     * Get the current location in the input source.
+     * @return the current location in the input source.
+     */
     public Location getInputLocation() {
         return createLocation(inpLine, inpColumn);
     }
 
-    /** Get the name of the current object. */
+    /** 
+     * Get the name of the current object. 
+     * @return the name of the current object.
+     */
     public String getObjectName() {
         return objectData.name;
     }
 
-    /** Get the code for the current event. */
+    /**
+     * Get the code for the current event.
+     * @return the code for the current event.
+     */
     public int getEventCode() {
         return evtCode;
     }
 
-    /** Get the name for the current event. */
+    /** 
+     * Get the name for the current event.
+     * @return the name for the current event.
+     */
     public String getEventName() {
         return getEventName(evtCode);
     }
 
-    /** Get the input source line number for the current event. */
+    /** 
+     * Get the input source line number for the current event.
+     * @return the input source line number for the current event.
+     */
     public int getEventLine() {
         return evtLine;
     }
 
-    /** Get the input source column number for the current event. */
+    /**
+     * Get the input source column number for the current event.
+     * @return he input source column number for the current event
+     */
     public int getEventColumn() {
         return evtColumn;
     }
 
-    /** Get the input source location for the current event. */
+    /**
+     * Get the input source location for the current event.
+     * @return the input source location for the current event
+     */
     public Location getEventLocation() {
         return createLocation(evtLine, evtColumn);
     }
 
-    /** Get the current object member name. */
+    /**
+     * Get the current object member name.
+     * @return the current object member name
+     */
     public String getMemberName() {
         return mbrName;
     }
@@ -225,12 +250,16 @@ public class JsonParser extends Object {
      * the static methods <code>isQuoted()</code> and <code>stripQuotes</code>. Alternatively, the methods
      * <code>getTypedMemberValue()</code> or <code>createTypeValue()</code> may be used to get a Java typed object,
      * which may be identified using <code>instanceof</code>.
+     * @return the current object member value (valid only if the current event is EVT_OBJECT_MEMBER)
      */
     public String getMemberValue() {
         return mbrValue;
     }
 
-    /** Get the current object member array flag. This indicates that the current member is an array. */
+    /**
+     * Get the current object member array flag. This indicates that the current member is an array. 
+     * @return true if the current member is an array
+     */
     public boolean getMemberArray() {
         return objectData.arrayDepth != 0;
     }
@@ -249,6 +278,8 @@ public class JsonParser extends Object {
      * <li>Anything else - BigDecimal (exception thrown from the BigDecimal constructor if not a valid number)
      * </ul>
      *
+     * @param val - the data to process
+     * @return the current object member value applying JSON typing rules
      * @throws NumberFormatException If an unquoted value which is no null, true or false is not a valid decimal
      *         number.
      */
@@ -266,6 +297,7 @@ public class JsonParser extends Object {
      * @param inpnam A text description of the source, used only for location text.
      * @param inpsrc Input source.
      * @param inpcls Whether to close the input source at end-of-input.
+     * @return the current JSONParser object for chaining purposes
      */
     public JsonParser setInput(final String inpnam, final Reader inpsrc, final boolean inpcls) {
         reset(false);
@@ -289,6 +321,7 @@ public class JsonParser extends Object {
      * @param inpsrc Input source.
      * @param inpenc Character encoding used by the input source.
      * @param inpcls Whether to close the input source at end-of-input.
+     * @return the current JSONParser object for chaining purposes
      */
     public JsonParser setInput(final String inpnam, final InputStream inpsrc, final String inpenc,
             final boolean inpcls) {
@@ -317,6 +350,7 @@ public class JsonParser extends Object {
      * @param inpfil Input source.
      * @param inpenc Character encoding used by the input source.
      * @param bufsiz Size of input buffer for reading from the file.
+     * @return the current JSONParser object for chaining purposes
      */
     public JsonParser setInput(final String inpfil, final String inpenc, final int bufsiz) {
         reset(false);
@@ -350,6 +384,7 @@ public class JsonParser extends Object {
      * @param inpfil Input source.
      * @param inpenc Character encoding used by the input source.
      * @param bufsiz Size of input buffer for reading from the file.
+     * @return the current JSONParser object for chaining purposes
      */
     public JsonParser setInput(final File inpfil, final String inpenc, final int bufsiz) {
         reset(false);
@@ -379,6 +414,7 @@ public class JsonParser extends Object {
 
     /**
      * Parse next event from input source.
+     * @return the next event from the input source
      */
     public int next() {
         try {
@@ -1097,6 +1133,8 @@ public class JsonParser extends Object {
      * <li>"..." - String value after quotes are stripped
      * <li>Anything else - BigDecimal (exception thrown from the BigDecimal constructor if not a valid number)
      * </ul>
+     * @param val - the value to use to create a typed member
+     * @return a types member value based on the contents of val
      * @throws NumberFormatException If an unquoted value which is no null, true or false is not a valid decimal number.
      */
     static public Object createTypedValue(final String val) {
@@ -1117,6 +1155,8 @@ public class JsonParser extends Object {
 
     /**
      * Get a text name for the event code.
+     * @param cod - the event code
+     * @return the event name for that event code
      */
     static public String getEventName(final int cod) {
         if (cod < 1) {
@@ -1130,6 +1170,8 @@ public class JsonParser extends Object {
 
     /**
      * Strip the text-value-indicating quotes from the supplied member value, if any.
+     * @param val - a string perhaps surrounded with quotes
+     * @return the string with the quotes removed
      */
     static public String stripQuotes(String val) {
         if (isQuoted(val)) {
@@ -1140,6 +1182,8 @@ public class JsonParser extends Object {
 
     /**
      * Test if the member value is enclosed in text-value-indicating quotes.
+     * @param val - a string perhaps surrounded with quotes
+     * @return if the member value is enclosed in text-value-indicating quotes
      */
     static public boolean isQuoted(final String val) {
         int len;
@@ -1291,7 +1335,10 @@ public class JsonParser extends Object {
             this.code = code;
         }
 
-        /** Return the numeric code for this exception condition. */
+        /** 
+         * Return the numeric code for this exception condition.
+         * @return the numeric code for this exception condition
+         */
         public int getCode() {
             return code;
         }
