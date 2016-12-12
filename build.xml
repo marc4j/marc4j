@@ -99,16 +99,16 @@
         </junit>
     </target>
 
-    <target name="jar" depends="compile-all">
+    <target name="jar" depends="compile-all,version">
         <jar jarfile="${build.dir}/${jar.name}">
             <manifest>
                 <section name="org/marc4j">
                   <attribute name="Specification-Title" value="marc4j"/>
-                  <attribute name="Specification-Version" value="${specversion}"/> 
-                  <attribute name="Specification-Vendor" value="org.marc4j"/> 
+                  <attribute name="Specification-Version" value="${specversion}"/>
+                  <attribute name="Specification-Vendor" value="org.marc4j"/>
 
                   <attribute name="Implementation-Title" value="marc4j"/>
-                  <attribute name="Implementation-Version" value="${version}"/> 
+                  <attribute name="Implementation-Version" value="${version}"/>
                   <attribute name="Implementation-Vendor" value="Team marc4j"/>
                 </section>
             </manifest>
@@ -135,7 +135,7 @@
             <classpath refid="classpath" />
             <link offline="true" href="http://java.sun.com/products/jdk/1.6/docs/api/" packagelistLoc="." />
         </javadoc>
-    	<property name="javadoc.already.run" value="true" />
+        <property name="javadoc.already.run" value="true" />
     </target>
 
     <target name="clean" depends="init">
@@ -147,7 +147,7 @@
         <delete dir="${ivy.jar.dir}"/>
 
     </target>
-    <target name="dist" depends="jar,javadoc">
+    <target name="dist" depends="jar,javadoc" unless="dist.already.run" >
         <property name="prefix" value="${project.name}-${version}" />
         <property name="tmp.dir" value="${dist.dir}/tmp" />
         <property name="tmp.arc.dir" value="${tmp.dir}/${prefix}" />
@@ -201,11 +201,11 @@
             <manifest>
                 <section name="org/marc4j">
                   <attribute name="Specification-Title" value="marc4j"/>
-                  <attribute name="Specification-Version" value="${specversion}"/> 
-                  <attribute name="Specification-Vendor" value="org.marc4j"/> 
+                  <attribute name="Specification-Version" value="${specversion}"/>
+                  <attribute name="Specification-Vendor" value="org.marc4j"/>
 
                   <attribute name="Implementation-Title" value="marc4j"/>
-                  <attribute name="Implementation-Version" value="${version}"/> 
+                  <attribute name="Implementation-Version" value="${version}"/>
                   <attribute name="Implementation-Vendor" value="Team marc4j"/>
                 </section>
             </manifest>
@@ -217,20 +217,71 @@
             <manifest>
                 <section name="org/marc4j">
                   <attribute name="Specification-Title" value="marc4j"/>
-                  <attribute name="Specification-Version" value="${specversion}"/> 
-                  <attribute name="Specification-Vendor" value="org.marc4j"/> 
+                  <attribute name="Specification-Version" value="${specversion}"/>
+                  <attribute name="Specification-Vendor" value="org.marc4j"/>
 
                   <attribute name="Implementation-Title" value="marc4j"/>
-                  <attribute name="Implementation-Version" value="${version}"/> 
+                  <attribute name="Implementation-Version" value="${version}"/>
                   <attribute name="Implementation-Vendor" value="Team marc4j"/>
                 </section>
             </manifest>
             <fileset dir="${src.dir}">
                 <include name="**/*.java" />
-            	<exclude name ="**/samples/**" />
+                <exclude name ="**/samples/**" />
             </fileset>
             <fileset dir="${build.generated-src.dir}">
                 <include name="**/*.java" />
+            </fileset>
+        </jar>
+        <property name="dist.already.run" value="true" />
+    </target>
+
+    <target name="sign" depends="dist" if="gpg.exe" unless="is.snapshot" >
+        <delete dir="${dist.dir}" includes="*.asc" />
+        <input message="Enter Pass Phrase for Signing" addproperty="passphrase" >
+<!--            <handler classname="org.apache.tools.ant.input.SecureInputHandler" /> -->
+        </input>
+        <!--  - -batch -a - -passphrase "ENTERED_PASSPHRASE" - -detach-sign $file -->
+        <exec executable="${gpg.exe}" dir="${dist.dir}" searchpath="true" >
+            <arg value="--batch" />
+            <arg value="-a" />
+            <arg value="--passphrase" />
+            <arg value="${passphrase}" />
+            <arg value="--detach-sign" />
+            <arg value="${jar.name}" />
+        </exec>
+        <exec executable="C:/Program Files (x86)/GNU/GnuPG/pub/gpg" dir="${dist.dir}" searchpath="true" >
+            <env key="PATH" path="C:/Program Files (x86)/GNU/GnuPG/pub" />
+            <arg value="--batch" />
+            <arg value="-a" />
+            <arg value="--passphrase" />
+            <arg value="${passphrase}" />
+            <arg value="--detach-sign" />
+            <arg value="${jar.sources.name}" />
+        </exec>
+        <exec executable="C:/Program Files (x86)/GNU/GnuPG/pub/gpg" dir="${dist.dir}" searchpath="true" >
+            <env key="PATH" path="C:/Program Files (x86)/GNU/GnuPG/pub" />
+            <arg value="--batch" />
+            <arg value="-a" />
+            <arg value="--passphrase" />
+            <arg value="${passphrase}" />
+            <arg value="--detach-sign" />
+            <arg value="${jar.javadoc.name}" />
+        </exec>
+        <exec executable="C:/Program Files (x86)/GNU/GnuPG/pub/gpg" dir="${dist.dir}" searchpath="true" >
+            <env key="PATH" path="C:/Program Files (x86)/GNU/GnuPG/pub" />
+            <arg value="--batch" />
+            <arg value="-a" />
+            <arg value="--passphrase" />
+            <arg value="${passphrase}" />
+            <arg value="--detach-sign" />
+            <arg value="${project.name}-${version}.pom" />
+        </exec>
+        <jar jarfile="${dist.dir}/bundle-${version}.jar" >
+            <fileset dir="${dist.dir}">
+                <include name="marc4j*.jar" />
+                <include name="marc4j*.pom" />
+                <include name="marc4j*.asc" />
             </fileset>
         </jar>
     </target>
@@ -256,5 +307,82 @@
         </path>
         <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
     </target>
+
+
+    <target name="-version1" unless="versionstr" >
+        <mkdir dir="${dist.dir}/tmp" />
+        <get src="https://api.github.com/repos/marc4j/marc4j/releases/latest" dest="${dist.dir}/tmp/git.release.txt" />
+        <loadfile srcfile="${dist.dir}/tmp/git.release.txt" property="versionstr" >
+            <filterchain>
+                <tokenfilter>
+                    <replacestring from="," to=",${line.separator}" />
+                </tokenfilter>
+                <linecontains>
+                   <contains value="tag_name"/>
+                </linecontains>
+                <tokenfilter>
+                     <replaceregex pattern=".*&quot;tag_name&quot;:[ ]*&quot;([0-9.]*).*" replace="\1" />
+                </tokenfilter>
+                <striplinebreaks/>
+            </filterchain>
+        </loadfile>
+        <loadresource property="specversion">
+          <propertyresource name="versionstr"/>
+          <filterchain>
+            <tokenfilter>
+              <filetokenizer/>
+              <replaceregex pattern="[.][0-9]*$" replace=""/>
+            </tokenfilter>
+          </filterchain>
+        </loadresource>
+        <echo message="specversion = ${specversion}" />
+        <echo message="versionstr = ${versionstr}" />
+    </target>
+
+    <target name="-version2" unless="versionsuffix" >
+        <get src="https://api.github.com/repos/marc4j/marc4j/compare/${versionstr}...master" dest="${dist.dir}/tmp/git.commits.txt" />
+   <!--     <copy file="${reports.tests}/git.commits.txt" tofile="${reports.tests}/git.commits.out.txt" overwrite="true" >
+            <filterchain>
+                <tokenfilter>
+                    <replacestring from="," to=", ${line.separator}" />
+                </tokenfilter>
+                <linecontains>
+                   <contains value="total_commits"/>
+                </linecontains>
+            </filterchain>
+        </copy> -->
+        <loadfile srcfile="${dist.dir}/tmp/git.commits.txt" property="versionsuffix" >
+            <filterchain>
+                <tokenfilter>
+                    <replacestring from="," to=", ${line.separator}" />
+                </tokenfilter>
+                <linecontains>
+                   <contains value="total_commits"/>
+                </linecontains>
+                <striplinebreaks/>
+                <tokenfilter>
+                     <replaceregex pattern=".*&quot;total_commits&quot;:[ ]*([1-9][0-9]*).*" replace="-SNAPSHOT-\1" />
+                </tokenfilter>
+            </filterchain>
+        </loadfile>
+        <echo message="versionsuffix = ${versionsuffix}" />
+        <property name="versionsuffix" value="" />
+        <echo message="versionsuffix = ${versionsuffix}" />
+     <!--    <delete dir="${dist.dir}/tmp" /> -->
+    </target>
+
+    <target name="version" unless="version" depends="-version1,-version2" description="Get the version number to use from github" >
+        <property name="version" value="${versionstr}${versionsuffix}" />
+        <echo message="version = ${version}" />
+        <condition property="is.snapshot">
+            <contains string="${version}" substring="SNAPSHOT" />
+        </condition>
+        <echo message="is.snapshot = ${is.snapshot}" />
+        <property name="jar.name" value="${project.name}-${version}.jar" />
+        <property name="jar.sources.name" value="${project.name}-${version}-sources.jar" />
+        <property name="jar.javadoc.name" value="${project.name}-${version}-javadoc.jar" />
+        <property name="test.jar.name" value="${project.name}_test-${version}.jar" />
+    </target>
+
 
 </project>
