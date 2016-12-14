@@ -59,6 +59,8 @@ public class MarcXmlHandler implements ContentHandler {
 
     private String tag;
 
+    private String prev_tag = "n/a";
+
     /** Constants representing each valid tag type */
     private static final int COLLECTION_ID = 1;
 
@@ -138,7 +140,12 @@ public class MarcXmlHandler implements ContentHandler {
         final Integer elementType = ELEMENTS.get(stripNsPrefix(realname));
 
         if (elementType == null) {
-            throw new MarcException("Unexpected XML element: " + realname);
+            if (record != null) {
+                record.addError("n/a", "n/a", MarcError.MINOR_ERROR, "Unexpected XML element: " + realname);
+                return;  
+            } else { 
+                throw new MarcException("Unexpected XML element: " + realname);
+            }
         }
 
         switch (elementType.intValue()) {
@@ -152,7 +159,8 @@ public class MarcXmlHandler implements ContentHandler {
                 if (typeAttr != null && RECORD_TYPES.contains(typeAttr)) {
                     record.setType(typeAttr);
                 }
-
+                prev_tag = "n/a";
+                
                 break;
             case LEADER_ID:
                 sb = new StringBuffer();
@@ -161,7 +169,12 @@ public class MarcXmlHandler implements ContentHandler {
                 tag = atts.getValue(TAG_ATTR);
 
                 if (tag == null) {
-                    throw new MarcException("ControlField missing tag value");
+                    if (record != null) {
+                        record.addError("n/a", "n/a", MarcError.MINOR_ERROR, "Missing tag element in ControlField after tag: "+ prev_tag);
+                    } else {
+                        throw new MarcException("ControlField missing tag value, found outside a record element");
+                    }
+                    break;
                 }
 
                 controlField = factory.newControlField(tag);
@@ -171,18 +184,33 @@ public class MarcXmlHandler implements ContentHandler {
                 tag = atts.getValue(TAG_ATTR);
 
                 if (tag == null) {
-                    throw new MarcException("DataField missing tag value");
+                    if (record != null) {
+                        record.addError("n/a", "n/a", MarcError.MINOR_ERROR, "Missing tag element in datafield after tag: "+prev_tag);
+                    } else {
+                        throw new MarcException("DataField missing tag value, found outside a record element");
+                    }
+                    break;
                 }
 
                 String ind1 = atts.getValue(IND_1_ATTR);
                 String ind2 = atts.getValue(IND_2_ATTR);
 
                 if (ind1 == null) {
-                    throw new MarcException("DataField (" + tag + ") missing first indicator");
+                    if (record != null) {
+                        record.addError(tag, "n/a", MarcError.MINOR_ERROR, "DataField (" + tag + ") missing first indicator");
+                    } else {
+                        throw new MarcException("DataField (" + tag + ") missing first indicator, found outside a record element");
+                    }
+                    break;
                 }
 
                 if (ind2 == null) {
-                    throw new MarcException("DataField (" + tag + ") missing second indicator");
+                    if (record != null) {
+                        record.addError(tag, "n/a", MarcError.MINOR_ERROR, "DataField (" + tag + ") missing second indicator");
+                    } else {
+                        throw new MarcException("DataField (" + tag + ") missing second indicator, found outside a record element");
+                    }
+                    break;
                 }
 
                 if (ind1.length() == 0) {
@@ -199,7 +227,12 @@ public class MarcXmlHandler implements ContentHandler {
                 String code = atts.getValue(CODE_ATTR);
 
                 if (code == null) {
-                    throw new MarcException("Subfield missing code attribute");
+                    if (record != null) {
+                        record.addError(tag, "n/a", MarcError.MINOR_ERROR, "Subfield (" + tag + ") missing code attribute");
+                    } else {
+                        throw new MarcException("Subfield in DataField (" + tag + ") missing code attribute");
+                    }
+                    break;
                 }
 
                 if (code.length() == 0) {
@@ -209,6 +242,7 @@ public class MarcXmlHandler implements ContentHandler {
                 subfield = factory.newSubfield(code.charAt(0));
                 sb = new StringBuffer();
         }
+        prev_tag = tag;
     }
 
     /**
@@ -238,7 +272,12 @@ public class MarcXmlHandler implements ContentHandler {
         final Integer elementType = ELEMENTS.get(stripNsPrefix(realname));
 
         if (elementType == null) {
-            throw new MarcException("Unexpected XML element: " + realname);
+            if (record != null) {
+                //record.addError("n/a", "n/a", MarcError.MINOR_ERROR, "Unexpected XML element: " + realname);
+                return;  
+            } else { 
+                throw new MarcException("Unexpected XML element: " + realname);
+            }
         }
 
         switch (elementType.intValue()) {
@@ -252,15 +291,25 @@ public class MarcXmlHandler implements ContentHandler {
                 record.setLeader(leader);
                 break;
             case CONTROLFIELD_ID:
-                controlField.setData(sb.toString());
-                record.addVariableField(controlField);
+                if (controlField != null) {
+                    controlField.setData(sb.toString());
+                    record.addVariableField(controlField);
+                    controlField = null;
+                }
                 break;
             case DATAFIELD_ID:
-                record.addVariableField(dataField);
+                if (dataField != null) {
+                    record.addVariableField(dataField);
+                    dataField = null;
+                }
                 break;
             case SUBFIELD_ID:
-                subfield.setData(sb.toString());
-                dataField.addSubfield(subfield);
+                if (dataField != null && subfield != null) {
+                    subfield.setData(sb.toString());
+                    dataField.addSubfield(subfield);
+                    subfield = null;
+                }
+                break;
         }
 
     }

@@ -1,0 +1,55 @@
+<!--  this file has no prolog and only has one record. -->
+<record xmlns="http://www.loc.gov/MARC21/slim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"><identifier>KOHA-LFL:5</identifier><datestamp>2016-01-21T13:51:42Z</datestamp>
+
+  <leader>00757cam a22002055a 4500</leader>
+  <controlfield tag="001">121564</controlfield>
+  <controlfield tag="005">20160121135142.0</controlfield>
+  <controlfield tag="008">970205s1996    enk           000 0 eng  </controlfield>
+  <datafield ind1=" " ind2=" " tag="010">
+    <subfield code="a">   97112390 </subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="020">
+    <subfield code="a">0851705774</subfield>
+    <subfield code="c">$62.17</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="040">
+    <subfield code="a">DLC</subfield>
+    <subfield code="c">DLC</subfield>
+    <subfield code="d">DLC</subfield>
+  </datafield>
+  <datafield ind1="0" ind2="0" tag="050">
+    <subfield code="a">ACQUISITION IN PROCESS</subfield>
+  </datafield>
+  <datafield ind1="1" ind2=" " tag="100">
+    <subfield code="a">Penz, Francois.</subfield>
+    <subfield code="9">19</subfield>
+  </datafield>
+  <datafield ind1="1" ind2="0" tag="245">
+    <subfield code="a">Cinema and architecture : from historical to digital /</subfield>
+    <subfield code="c">edited by Francois Penz and Maureen Thomas.</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="260">
+    <subfield code="a">London :</subfield>
+    <subfield code="b">BFI (British Film Institute) Publishing,</subfield>
+    <subfield code="c">1996.</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="300">
+    <subfield code="a">192 p.</subfield>
+  </datafield>
+  <datafield ind1="4" ind2="2" tag="856">
+    <subfield code="3">Publisher description</subfield>
+    <subfield code="u">http://www.loc.gov/catdir/enhancements/fy0812/97112390-d.html</subfield>
+  </datafield>
+  <datafield ind1="4" ind2="1" tag="856">
+    <subfield code="3">Table of contents only</subfield>
+    <subfield code="u">http://www.loc.gov/catdir/enhancements/fy0812/97112390-t.html</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="942">
+    <subfield code="2">ddc</subfield>
+    <subfield code="c">BK</subfield>
+  </datafield>
+  <datafield ind1=" " ind2=" " tag="999">
+    <subfield code="c">5</subfield>
+    <subfield code="d">5</subfield>
+  </datafield>
+</record>
