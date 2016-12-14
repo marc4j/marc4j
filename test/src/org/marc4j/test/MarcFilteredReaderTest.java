@@ -22,7 +22,7 @@ public class MarcFilteredReaderTest {
         assertNotNull(input);
         String[] expectedIds = { "u55", "u89", "u233", "u377" };
         
-        MarcFilteredReader reader = new MarcFilteredReader(new MarcStreamReader(input), "700a", null, null);
+        MarcFilteredReader reader = new MarcFilteredReader(new MarcStreamReader(input), "700a", null);
         int cnt = 0;
         while (reader.hasNext())
         {
@@ -39,7 +39,7 @@ public class MarcFilteredReaderTest {
         assertNotNull(input);
         String[] expectedIds = { "u144", "u233" };
         
-        MarcFilteredReader reader = new MarcFilteredReader(new MarcStreamReader(input), "600a:650a/Ar", null, null);
+        MarcFilteredReader reader = new MarcFilteredReader(new MarcStreamReader(input), "600a:650a/Ar", null);
         int cnt = 0;
         while (reader.hasNext())
         {
@@ -56,7 +56,7 @@ public class MarcFilteredReaderTest {
         assertNotNull(input);
         String[] expectedIds = { "u3", "u377" };
         
-        MarcFilteredReader reader = new MarcFilteredReader(new MarcStreamReader(input), null, "600a:650a", null);
+        MarcFilteredReader reader = new MarcFilteredReader(new MarcStreamReader(input), null, "600a:650a");
         int cnt = 0;
         while (reader.hasNext())
         {
@@ -73,7 +73,7 @@ public class MarcFilteredReaderTest {
         assertNotNull(input);
         String[] expectedIds = { "u2", "u3", "u8", "u13", "u21", "u34", "u55", "u89", "u377" };
         
-        MarcFilteredReader reader = new MarcFilteredReader(new MarcStreamReader(input), null, "600a:650a/Ar", null);
+        MarcFilteredReader reader = new MarcFilteredReader(new MarcStreamReader(input), null, "600a:650a/Ar");
         int cnt = 0;
         while (reader.hasNext())
         {

@@ -31,37 +31,38 @@ import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 
 /**
+ * This class provides a capability of filtering {@link Record} objects as they are being read.  
+ * You can specify one or more fields one of which MUST be present, or one of which must contain the 
+ * provided character string.  You can also specify one or more fields which must NOT be present, 
+ * or which must NOT contain the provided character string.
  * 
+ * This code in this class was only a part of the MarcFilteredReader class from the SolrMarc project. 
+ * That class was split into two separate classes, this one, and {@link MarcScriptedRecordEditReader}
+ *  
  * @author Robert Haschart
  */
 public class MarcFilteredReader implements MarcReader {
 
-    String[][] includeRecordIfFieldsPresent = null;
+    final String[][] includeRecordIfFieldsPresent;
 
-    String includeRecordIfFieldContains = null;
+    final String includeRecordIfFieldContains;
 
-    String[][] includeRecordIfFieldsMissing = null;
+    final String[][] includeRecordIfFieldsMissing;
 
-    String includeRecordIfFieldDoesntContain = null;
-
-    String deleteSubfieldsSpec = null;
+    final String includeRecordIfFieldDoesntContain;
 
     Record currentRecord = null;
 
-    MarcReader reader;
-
-    private Properties remapProperties = null;
+    final MarcReader reader;
 
     /**
      * 
-     * @param r
-     * @param ifFieldPresent
-     * @param ifFieldMissing
+     * @param reader - the MarcReader to read records that are to be filtered
+     * @param ifFieldPresent - a specification of fields the record SHOULD have to be processed
+     * @param ifFieldMissing - a specification of fields the record SHOULD NOT have to be processed
      */
-    public MarcFilteredReader(final MarcReader r, final String ifFieldPresent,
-            final String ifFieldMissing, final String deleteSubfields) {
+    public MarcFilteredReader(final MarcReader r, final String ifFieldPresent, final String ifFieldMissing) {
 
-        deleteSubfieldsSpec = deleteSubfields;
         if (ifFieldPresent != null) {
             final String present[] = ifFieldPresent.split("/", 2);
             final String tagPlus[] = present[0].split(":");
@@ -72,8 +73,14 @@ public class MarcFilteredReader implements MarcReader {
             }
             if (present.length > 1) {
                 includeRecordIfFieldContains = present[1];
+            } else {
+                includeRecordIfFieldContains = null;
             }
+        } else {
+            includeRecordIfFieldsPresent = null;
+            includeRecordIfFieldContains = null;
         }
+            
         if (ifFieldMissing != null) {
             final String missing[] = ifFieldMissing.split("/", 2);
             final String tagPlus[] = missing[0].split(":");
@@ -84,16 +91,14 @@ public class MarcFilteredReader implements MarcReader {
             }
             if (missing.length > 1) {
                 includeRecordIfFieldDoesntContain = missing[1];
+            } else {
+                includeRecordIfFieldDoesntContain = null;
             }
+        } else {
+            includeRecordIfFieldsMissing = null;
+            includeRecordIfFieldDoesntContain = null;
         }
         reader = r;
-    }
-
-    public MarcFilteredReader(final MarcReader r, final String ifFieldPresent,
-            final String ifFieldMissing, final String deleteSubfields,
-            final Properties remapProperties) {
-        this(r, ifFieldPresent, ifFieldMissing, deleteSubfields);
-        this.remapProperties = remapProperties;
     }
 
     /**
@@ -109,7 +114,9 @@ public class MarcFilteredReader implements MarcReader {
     }
 
     /**
-     * Returns the next marc file in the iteration
+     * Returns the next marc file in the iteration the meets the filter criteria
+     * 
+     * @return the next marc file in the iteration
      */
     @Override
     public Record next() {
@@ -131,19 +138,7 @@ public class MarcFilteredReader implements MarcReader {
             } catch (final MarcException me) {
                 throw me;
             }
-            if (deleteSubfieldsSpec != null) {
-                deleteSubfields(rec);
-            }
-            // if (remapProperties != null)
-            // {
-            // boolean keepRecord = remapRecord(rec);
-            // if (keepRecord == false)
-            // {
-            // //
-            // logger.info("Remap Rules say record "+rec.getControlNumber()+" should be skipped");
-            // continue;
-            // }
-            // }
+
             if (rec != null && includeRecordIfFieldsPresent != null) {
                 for (final String[] tagAndSf : includeRecordIfFieldsPresent) {
                     final List<VariableField> fields = rec.getVariableFields(tagAndSf[0]);
@@ -206,592 +201,4 @@ public class MarcFilteredReader implements MarcReader {
         }
         return currentRecord;
     }
-
-    void deleteSubfields(final Record rec) {
-        final String fieldSpecs[] = deleteSubfieldsSpec.split(":");
-        for (final String fieldSpec : fieldSpecs) {
-            final String tag = fieldSpec.substring(0, 3);
-            String subfield = null;
-            if (fieldSpec.length() > 3) {
-                subfield = fieldSpec.substring(3);
-            }
-            final List<VariableField> list = rec.getVariableFields(tag);
-            for (final VariableField field : list) {
-                if (field instanceof DataField) {
-                    final DataField df = (DataField) field;
-                    if (subfield != null) {
-                        final List<Subfield> sfs = df.getSubfields(subfield.charAt(0));
-                        if (sfs != null && sfs.size() != 0) {
-                            rec.removeVariableField(df);
-                            for (final Subfield sf : sfs) {
-                                df.removeSubfield(sf);
-                            }
-                            rec.addVariableField(df);
-                        }
-                    } else {
-                        rec.removeVariableField(df);
-                    }
-                }
-            }
-        }
-    }
-
-    // private boolean remapRecord(Record rec)
-    // {
-    // List<VariableField> fields = rec.getVariableFields();
-    // List<VariableField> fToDelete = new ArrayList<VariableField>();
-    // List<VariableField> fToInsert = new ArrayList<VariableField>();
-    // boolean keepRecord = true;
-    // for (VariableField field : fields)
-    // {
-    // String tag = field.getTag();
-    // if (remapProperties.containsKey(tag))
-    // {
-    // if (Verifier.isControlNumberField(tag))
-    // {
-    // for (int i = 0; remapProperties.containsKey(tag+"_"+i); i++)
-    // {
-    // String remapString = remapProperties.getProperty(tag+"_"+i);
-    // String mapParts[] = remapString.split("=>");
-    // if (eval(mapParts[0], (ControlField)field, rec))
-    // {
-    // keepRecord &= process(mapParts[1], field, null, fToDelete, fToInsert,
-    // rec);
-    // }
-    // }
-    // }
-    // else
-    // {
-    // // List<Subfield> subfields = ((DataField)field).getSubfields();
-    // List<Subfield> sfToDelete = new ArrayList<Subfield>();
-    // for (int i = 0; remapProperties.containsKey(tag+"_"+i); i++)
-    // {
-    // String remapString = remapProperties.getProperty(tag+"_"+i);
-    // String mapParts[] = remapString.split("=>");
-    // if (eval(mapParts[0], (DataField)field, rec))
-    // {
-    // keepRecord &= process(mapParts[1], field, sfToDelete, fToDelete,
-    // fToInsert, rec);
-    // }
-    // }
-    //
-    // if (sfToDelete.size() != 0)
-    // {
-    // for (Subfield sf : sfToDelete)
-    // {
-    // ((DataField)field).removeSubfield(sf);
-    // }
-    // }
-    // }
-    // }
-    // if (!keepRecord) break;
-    // }
-    // if (keepRecord && remapProperties.containsKey("once"))
-    // {
-    // // List<Subfield> sfToDelete = new ArrayList<Subfield>();
-    // for (int i = 0; remapProperties.containsKey("once_"+i); i++)
-    // {
-    // String remapString = remapProperties.getProperty("once_"+i);
-    // String mapParts[] = remapString.split("=>");
-    // if (eval(mapParts[0], null, rec))
-    // {
-    // keepRecord &= process(mapParts[1], null, null, fToDelete, fToInsert,
-    // rec);
-    // }
-    // }
-    // }
-    // if (keepRecord && fToDelete.size() != 0)
-    // {
-    // for (VariableField field : fToDelete)
-    // {
-    // rec.removeVariableField(field);
-    // }
-    // }
-    // if (keepRecord && fToInsert.size() != 0)
-    // {
-    // for (VariableField field : fToInsert)
-    // {
-    // if (field instanceof DataField)
-    // {
-    // int index = 0;
-    // for (DataField df : (List<DataField>)rec.getDataFields())
-    // {
-    // if (df.getTag().compareTo(field.getTag()) >= 0)
-    // break;
-    // index++;
-    // }
-    // rec.getDataFields().add(index, (DataField)field);
-    // }
-    // else if (field.getTag().equals("001"))
-    // {
-    // rec.addVariableField(field);
-    // }
-    // else if (field instanceof ControlField)
-    // {
-    // int index = 0;
-    // for (ControlField df : (List<ControlField>)rec.getControlFields())
-    // {
-    // if (df.getTag().compareTo(field.getTag()) >= 0)
-    // break;
-    // index++;
-    // }
-    // rec.getControlFields().add(index, (ControlField)field);
-    // }
-    // }
-    // }
-    // return(keepRecord);
-    // }
-    //
-    // private boolean eval(String conditional, VariableField field, Record
-    // record)
-    // {
-    // List<Subfield> subfields;
-    // if (conditional.startsWith("true()"))
-    // {
-    // return(true);
-    // }
-    // else if (conditional.startsWith("not("))
-    // {
-    // String arg = getOneConditional(conditional);
-    // if (arg != null)
-    // {
-    // return(!eval(arg, field, record));
-    // }
-    // }
-    // else if (conditional.startsWith("indicatormatches("))
-    // {
-    // String args[] = getTwoArgs(conditional);
-    // if (field != null && field instanceof DataField && args.length == 2 &&
-    // args[0].length() == 1 && args[1].length() == 1)
-    // {
-    // char indicator1 = ((DataField)field).getIndicator1();
-    // char indicator2 = ((DataField)field).getIndicator2();
-    // if ((args[0].charAt(0) == '*' || args[0].charAt(0) == indicator1) &&
-    // (args[1].charAt(0) == '*' || args[1].charAt(0) == indicator2))
-    // {
-    // return(true);
-    // }
-    // return(false);
-    // }
-    // }
-    // else if (conditional.startsWith("subfieldmatches("))
-    // {
-    // String args[] = getTwoArgs(conditional);
-    // if (field != null && field instanceof DataField && args.length == 2 &&
-    // args[0].length() == 1)
-    // {
-    // subfields = ((DataField)field).getSubfields(args[0].charAt(0));
-    // for (Subfield sf : subfields)
-    // {
-    // if (sf.getData().matches(args[1]))
-    // return(true);
-    // }
-    // }
-    // else if (field != null && field instanceof ControlField && args.length ==
-    // 2)
-    // {
-    // if (((ControlField)field).getData().matches(args[1])) return(true);
-    // }
-    // }
-    // else if (conditional.startsWith("subfieldcontains("))
-    // {
-    // String args[] = getTwoArgs(conditional);
-    // if (field != null && field instanceof DataField && args.length == 2 &&
-    // args[0].length() == 1)
-    // {
-    // subfields = ((DataField)field).getSubfields(args[0].charAt(0));
-    // for (Subfield sf : subfields)
-    // {
-    // if (sf.getData().contains(args[1]))
-    // return(true);
-    // }
-    // }
-    // else if (field != null && field instanceof ControlField && args.length ==
-    // 2)
-    // {
-    // if (((ControlField)field).getData().contains(args[1])) return(true);
-    // }
-    // }
-    // else if (conditional.startsWith("subfieldexists("))
-    // {
-    // String arg = getOneArg(conditional);
-    // if (field != null && field instanceof DataField && arg.length() == 1)
-    // {
-    // subfields = ((DataField)field).getSubfields(arg.charAt(0));
-    // if (subfields.size() > 0) return(true);
-    // }
-    // else if (field != null && field instanceof ControlField)
-    // {
-    // return(true);
-    // }
-    // }
-    // else if (conditional.startsWith("and("))
-    // {
-    // String args[] = getTwoConditionals(conditional);
-    // if (args.length == 2)
-    // {
-    // return(eval(args[0], field, record) && eval(args[1], field, record));
-    // }
-    // }
-    // else if (conditional.startsWith("or("))
-    // {
-    // String args[] = getTwoConditionals(conditional);
-    // if (args.length == 2)
-    // {
-    // return(eval(args[0], field, record) || eval(args[1], field, record));
-    // }
-    // }
-    // else if (conditional.startsWith("fieldexists("))
-    // {
-    // String args[] = getThreeArgs(conditional);
-    // if (args.length == 3 && args[0].matches("[0-9][0-9][0-9]") &&
-    // args[1].length() == 1)
-    // {
-    // for (VariableField vf :
-    // (List<VariableField>)record.getVariableFields(args[0]))
-    // {
-    // if (vf instanceof DataField)
-    // {
-    // for (Subfield sf :
-    // (List<Subfield>)((DataField)vf).getSubfields(args[1].charAt(0)))
-    // {
-    // if (sf.getData().equals(args[2]) || sf.getData().matches(args[2]))
-    // return(true);
-    // }
-    // }
-    // }
-    // }
-    // return(false);
-    // }
-    // return false;
-    // }
-    //
-    // private boolean process(String command, VariableField field,
-    // List<Subfield> sfToDelete, List<VariableField> fToDelete,
-    // List<VariableField> fToInsert, Record record)
-    // {
-    // List<Subfield> subfields;
-    // if (command.startsWith("replace("))
-    // {
-    // String args[] = getThreeArgs(command);
-    // if (field != null && field instanceof DataField && args.length == 3 &&
-    // args[0].length() == 1)
-    // {
-    // subfields = ((DataField)field).getSubfields(args[0].charAt(0));
-    // for (Subfield sf : subfields)
-    // {
-    // String newData = sf.getData().replaceAll(args[1], args[2]);
-    // if (!newData.equals(sf.getData()))
-    // {
-    // sf.setData(newData);
-    // }
-    // }
-    // }
-    // else if (field != null && field instanceof ControlField && args.length ==
-    // 3)
-    // {
-    // String newData = ((ControlField)field).getData().replaceAll(args[1],
-    // args[2]);
-    // if (!newData.equals(((ControlField)field).getData()))
-    // {
-    // ((ControlField)field).setData(newData);
-    // }
-    // }
-    // }
-    // else if (command.startsWith("append("))
-    // {
-    // String args[] = getTwoArgs(command);
-    // if (field != null && field instanceof DataField && args.length == 2 &&
-    // args[0].length() == 1)
-    // {
-    // subfields = ((DataField)field).getSubfields(args[0].charAt(0));
-    // for (Subfield sf : subfields)
-    // {
-    // String newData = sf.getData() + args[1];
-    // if (!newData.equals(sf.getData()))
-    // {
-    // sf.setData(newData);
-    // }
-    // }
-    // }
-    // else if (field != null && field instanceof ControlField && args.length ==
-    // 2)
-    // {
-    // String newData = ((ControlField)field).getData() + args[1];
-    // ((ControlField)field).setData(newData);
-    // }
-    // }
-    // else if (command.startsWith("prepend("))
-    // {
-    // String args[] = getTwoArgs(command);
-    // if (field != null && field instanceof DataField && args.length == 2 &&
-    // args[0].length() == 1)
-    // {
-    // subfields = ((DataField)field).getSubfields(args[0].charAt(0));
-    // for (Subfield sf : subfields)
-    // {
-    // String newData = args[1] + sf.getData();
-    // if (!newData.equals(sf.getData()))
-    // {
-    // sf.setData(newData);
-    // }
-    // }
-    // }
-    // else if (field != null && field instanceof ControlField && args.length ==
-    // 2)
-    // {
-    // String newData = args[1] + ((ControlField)field).getData();
-    // ((ControlField)field).setData(newData);
-    // }
-    // }
-    // else if (command.startsWith("deletesubfield("))
-    // {
-    // String arg = getOneArg(command);
-    // if (field != null && field instanceof DataField && arg.length() == 1)
-    // {
-    // subfields = ((DataField)field).getSubfields(arg.charAt(0));
-    // for (Subfield sf : subfields)
-    // {
-    // sfToDelete.add(sf);
-    // }
-    // }
-    // else if (field != null && field instanceof ControlField)
-    // {
-    // fToDelete.add(field);
-    // }
-    // }
-    // else if (command.startsWith("both("))
-    // {
-    // String args[] = getTwoConditionals(command);
-    // @SuppressWarnings("unused")
-    // boolean returncode = true;
-    // if (args.length == 2)
-    // {
-    // returncode = process(args[0], field, sfToDelete, fToDelete, fToInsert,
-    // record);
-    // returncode &= process(args[1], field, sfToDelete, fToDelete, fToInsert,
-    // record);
-    // }
-    // }
-    // else if (command.startsWith("deletefield("))
-    // {
-    // fToDelete.add(field);
-    // }
-    // else if (command.startsWith("deleteotherfield("))
-    // {
-    // String args[] = getThreeArgs(command);
-    // if (args.length == 3 && args[0].matches("[0-9][0-9][0-9]") &&
-    // args[1].length() == 1)
-    // {
-    // for (VariableField vf :
-    // (List<VariableField>)record.getVariableFields(args[0]))
-    // {
-    // subfields = ((DataField)vf).getSubfields(args[1].charAt(0));
-    // for (Subfield sf : subfields)
-    // {
-    // if (sf.getData().equals(args[2]) || sf.getData().matches(args[2]))
-    // {
-    // fToDelete.add(vf);
-    // }
-    // }
-    // }
-    // }
-    // }
-    // else if (command.startsWith("insertfield("))
-    // {
-    // String arg = getOneArg(command);
-    // VariableField vf = createFieldFromString(arg, null);
-    // if (vf != null) fToInsert.add(vf);
-    // }
-    // else if (command.startsWith("insertparameterizedfield("))
-    // {
-    // String args[] = getThreeArgs(command);
-    // Pattern p = Pattern.compile(args[2]);
-    // Matcher m;
-    // if (field != null && field instanceof DataField)
-    // {
-    // m =
-    // p.matcher(((DataField)field).getSubfield(args[1].charAt(0)).getData());
-    // }
-    // else
-    // {
-    // m = p.matcher(((ControlField)field).getData());
-    // }
-    // VariableField vf;
-    // if (m.matches())
-    // {
-    // vf = createFieldFromString(args[0], stringsFromMatcher(m));
-    // }
-    // else
-    // {
-    // vf = createFieldFromString(args[0], null);
-    // }
-    // if (vf != null) fToInsert.add(vf);
-    // }
-    // else if (command.startsWith("reject()"))
-    // {
-    // return(false);
-    // }
-    //
-    // return(true);
-    // }
-    //
-    // private String[] stringsFromMatcher(Matcher m)
-    // {
-    // String result[] = new String[m.groupCount()+1];
-    // result[0] = m.group(0);
-    // for (int i = 0; i < m.groupCount(); i++)
-    // {
-    // result[i+1] = m.group(i+1);
-    // }
-    // return result;
-    // }
-    //
-    // static Pattern newControlFieldDef =
-    // Pattern.compile("=?([0][0][0-9]) [ ]?(.*)");
-    // static Pattern newDataFieldDef =
-    // Pattern.compile("=?([0-9][0-9][0-9]) [ ]?([0-9 \\|])([0-9 \\|])([$].*)");
-    // static Pattern newSubfieldDef =
-    // Pattern.compile("[$]([a-z0-9])(([^$]|\\[$]|[$][{][0-9]*[}])*)(.*)");
-    // static MarcFactory factory = null;
-    //
-    // private VariableField createFieldFromString(String arg, String
-    // argmatches[])
-    // {
-    // Matcher mdf = newDataFieldDef.matcher(arg);
-    // Matcher cdf = newControlFieldDef.matcher(arg);
-    // if (factory == null) factory = MarcFactory.newInstance();
-    // if (cdf.matches()) // make a control field
-    // {
-    // ControlField cf = factory.newControlField(mdf.group(1));
-    // String data = cdf.group(2);
-    // if (argmatches != null)
-    // {
-    // data = fillParameters(data, argmatches);
-    // }
-    // cf.setData(data);
-    // return(cf);
-    // }
-    // else if (mdf.matches())
-    // {
-    // char ind1 = mdf.group(2).charAt(0);
-    // if (ind1 < '0' || ind1 > '9') ind1 = ' ';
-    // char ind2 = mdf.group(3).charAt(0);
-    // if (ind2 < '0' || ind2 > '9') ind2 = ' ';
-    // DataField df = factory.newDataField(mdf.group(1), ind1, ind2);
-    // String sfData = mdf.group(4);
-    // while (!sfData.isEmpty())
-    // {
-    // Matcher sm = newSubfieldDef.matcher(sfData);
-    // if (sm.matches())
-    // {
-    // char code = sm.group(1).charAt(0);
-    // String data = sm.group(2);
-    // if (argmatches != null)
-    // {
-    // data = fillParameters(data, argmatches);
-    // }
-    // sfData = sm.group(4);
-    // Subfield sf = factory.newSubfield(code, data);
-    // df.addSubfield(sf);
-    // }
-    // }
-    // return(df);
-    // }
-    // return null;
-    // }
-    //
-    // private String fillParameters(String data, String argmatches[])
-    // {
-    // for (int i = 0; i < argmatches.length; i++)
-    // {
-    // if (data.contains("${"+(i+1)+"}"))
-    // {
-    // data = data.replaceAll("[$][{]"+(i+1)+"[}]", argmatches[i+1]);
-    // }
-    // }
-    // return data;
-    // }
-    //
-    // static Pattern oneArg =
-    // Pattern.compile("[a-z]*[(]\"((\\\"|[^\"])*)\"[ ]*[)]");
-    // private String getOneArg(String conditional)
-    // {
-    // Matcher m = oneArg.matcher(conditional.trim());
-    // if (m.matches())
-    // {
-    // return(m.group(1).replaceAll("\\\"", "\""));
-    // }
-    // return null;
-    // }
-    //
-    // static Pattern twoArgs =
-    // Pattern.compile("[a-z]*[(]\"((\\\"|[^\"])*)\",[ ]*\"((\\\"|[^\"])*)\"[)]");
-    // private String[] getTwoArgs(String conditional)
-    // {
-    // Matcher m = twoArgs.matcher(conditional.trim());
-    // if (m.matches())
-    // {
-    // String result[] = new String[]{m.group(1).replaceAll("\\\"", "\""),
-    // m.group(3).replaceAll("\\\"", "\"")};
-    // return(result);
-    // }
-    // return null;
-    // }
-    //
-    // static Pattern threeArgs =
-    // Pattern.compile("[a-z]*[(][ ]*\"((\\\"|[^\"])*)\",[ ]*\"((\\\"|[^\"])*)\",[ ]*\"((\\\"|[^\"])*)\"[)]");
-    // private String[] getThreeArgs(String conditional)
-    // {
-    // Matcher m = threeArgs.matcher(conditional.trim());
-    // if (m.matches())
-    // {
-    // String result[] = new String[]{m.group(1).replaceAll("\\\"", "\""),
-    // m.group(3).replaceAll("\\\"", "\""), m.group(5).replaceAll("\\\"",
-    // "\"")};
-    // return(result);
-    // }
-    // return null;
-    // }
-    //
-    // static Pattern twoConditionals =
-    // Pattern.compile("[a-z]*[(]([a-z]*[(].*[)]),[ ]*([a-z]*[(].*[)])[)]");
-    // private String[] getTwoConditionals(String conditional)
-    // {
-    // Matcher m = twoConditionals.matcher(conditional.trim());
-    // if (m.matches())
-    // {
-    // String result[] = new String[]{m.group(1), m.group(2)};
-    // return(result);
-    // }
-    // return null;
-    // }
-    //
-    //
-    // static Pattern oneConditional =
-    // Pattern.compile("[a-z]*[(]([a-z]*[(].*[)])[)]");
-    // private String getOneConditional(String conditional)
-    // {
-    // Matcher m = oneConditional.matcher(conditional.trim());
-    // if (m.matches())
-    // {
-    // String result = m.group(1);
-    // return(result);
-    // }
-    // return null;
-    // }
-    //
-    // static Pattern argAndConditional =
-    // Pattern.compile("[a-z]*[(][ ]*\"((\\\"|[^\"])*)\",[ ]*([a-z]*[(].*[)])[)]");
-    // private String[] getArgAndConditional(String conditional)
-    // {
-    // Matcher m = argAndConditional.matcher(conditional.trim());
-    // if (m.matches())
-    // {
-    // String result[] = new String[]{m.group(1), m.group(2)};
-    // return(result);
-    // }
-    // return null;
-    // }
-
 }
