@@ -15,6 +15,7 @@ import org.marc4j.test.utils.TestUtils;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -45,5 +46,25 @@ public class MarcScriptedEditRecordReaderTest {
             List<Subfield> sfs = ((DataField)df).getSubfields("wcidlmk");
             assertTrue("subfields not deleted", sfs.size() == 0);
         }
+    }
+    
+    @Test
+    public void testApplyEdit() throws Exception {
+        String[] expected700Fields = { "3DD Group (Firm)", "Kanopy (Firm)" };
+        InputStream input = getClass().getResourceAsStream("/kan1222221.mrc");
+        assertNotNull(input);
+        
+        InputStream editmap = getClass().getResourceAsStream("/video_recs_map.properties");
+        Properties editmapProperties = new Properties();
+        editmapProperties.load(editmap);
+        
+        MarcReader reader =  new MarcScriptedRecordEditReader(new MarcStreamReader(input), editmapProperties);
+        Record record = reader.next();
+        List<VariableField> dfs = record.getVariableFields("700");
+        int i = 0;
+        for (VariableField df: dfs) {
+            assertTrue("fields not edited", ((DataField)df).getSubfield('a').getData().equals(expected700Fields[i++]));
+        }
+
     }
 }
