@@ -27,7 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
+import org.marc4j.converter.CharConverter;
+import org.marc4j.converter.impl.AnselToUnicode;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Leader;
 import org.marc4j.marc.MarcFactory;
@@ -53,6 +56,7 @@ import org.marc4j.marc.VariableField;
  * </p>
  *
  * @author Binaek Sarkar
+ * @author Robert Haschart
  */
 public class Mrk8StreamReader implements MarcReader {
 
@@ -60,7 +64,13 @@ public class Mrk8StreamReader implements MarcReader {
 
     private final MarcFactory factory;
 
+    private boolean toUTF8;
+
     private String lastLineRead;
+
+    private Pattern nonAsciiChar = Pattern.compile("[^\\u0020-\\u007F]");
+
+    private CharConverter Marc8ToUTF8 = null;
 
     /**
      * Constructs an instance with the specified input stream.
@@ -68,8 +78,19 @@ public class Mrk8StreamReader implements MarcReader {
      * @param input - the data to read
      */
     public Mrk8StreamReader(final InputStream input) {
+        this(input, false);
+    }
+
+    /**
+     * Constructs an instance with the specified input stream.
+     *
+     * @param input - the data to read
+     * @param toUtf8 - true if the record returned should be converted to UTF-8
+     */
+    public Mrk8StreamReader(final InputStream input, boolean toUtf8) {
         this.input = new Scanner(new BufferedInputStream(input), StandardCharsets.UTF_8.name());
         this.factory = MarcFactory.newInstance();
+        this.toUTF8 = toUtf8;
     }
 
     /**
@@ -96,6 +117,7 @@ public class Mrk8StreamReader implements MarcReader {
         if (this.lastLineRead != null && this.lastLineRead.substring(1, 4).equalsIgnoreCase("LDR")) {
             lines.add(lastLineRead);
         }
+        boolean hasHiBitCharacters = false;
         while (this.input.hasNextLine()) {
             final String line = this.input.nextLine();
 
@@ -110,11 +132,14 @@ public class Mrk8StreamReader implements MarcReader {
             }
 
             lines.add(line);
+            if (hasHiBitCharacters == false && nonAsciiChar.matcher(line).find()) {
+                hasHiBitCharacters = true;
+            }
         }
-        return this.parse(lines);
+        return this.parse(lines, hasHiBitCharacters);
     }
 
-    protected Record parse(final List<String> lines) {
+    protected Record parse(final List<String> lines, boolean isUTF8) {
         if (lines == null || lines.isEmpty()) {
             return null;
         }
@@ -133,17 +158,16 @@ public class Mrk8StreamReader implements MarcReader {
             } else {
                 final VariableField field;
                 if (this.isControlField(tag)) {
-                    field = this.factory.newControlField(tag, line.substring(6));
+                    field = this.factory.newControlField(tag, unescapeFieldValue(line.substring(6)));;
                 } else {
                     // this is obviously a data field
                     final String data = line.substring(6);
 
-                    final char indicator1 = (data.startsWith("\\", 0) ? ' ' : data.charAt(0));
-                    final char indicator2 = (data.startsWith("\\", 1) ? ' ' : data.charAt(1));
+                    final char indicator1 = (data.charAt(0) == '\\' ? ' ' : data.charAt(0));
+                    final char indicator2 = (data.charAt(1) == '\\' ? ' ' : data.charAt(1));
 
                     if (!this.isValidIndicator(indicator1) || !this.isValidIndicator(indicator2)) {
-                        throw new MarcException(
-                                "Wrong indicator format. It has to be a number or a space");
+                        throw new MarcException("Wrong indicator format. It has to be a number or a space");
                     }
 
                     field = this.factory.newDataField(tag, indicator1, indicator2);
@@ -151,15 +175,21 @@ public class Mrk8StreamReader implements MarcReader {
                     final List<String> subs = Arrays.asList(data.substring(3).split("\\$"));
 
                     for (String sub : subs) {
-                        final Subfield subfield = this.factory.newSubfield(sub.charAt(0), sub
-                                .substring(1));
+                        String subData;
+                        subData = Mrk8TranslationTable.fromMrk8(sub.substring(1));
+                        if (!isUTF8 && toUTF8) {
+                            if (Marc8ToUTF8 == null) {
+                                Marc8ToUTF8 = new AnselToUnicode();
+                            }
+                            subData = Marc8ToUTF8.convert(subData);
+                        }
+                        final Subfield subfield = this.factory.newSubfield(sub.charAt(0), subData);
                         ((DataField) field).addSubfield(subfield);
                     }
                 }
                 record.addVariableField(field);
             }
         }
-
         return record;
     }
 
@@ -170,12 +200,22 @@ public class Mrk8StreamReader implements MarcReader {
     protected Leader getLeader(final String substring) {
         final Leader leader = this.factory.newLeader();
         leader.unmarshal(substring);
-        return null;
+        return leader;
+    }
+
+    protected String unescapeFieldValue(String fieldValue)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (char c : fieldValue.toCharArray()) {
+            if (c == '\\') sb.append(' ');
+            else           sb.append(c);
+        }
+        return(sb.toString());
     }
 
     protected boolean isControlField(final String tag) {
         // can probably be replaced with (Integer.parseInt(tag)<10)
-        return ((tag.length() == 3) && tag.startsWith("00") && (tag.charAt(2) >= '0') && (tag
-                .charAt(2) <= '9'));
+        return ((tag.length() == 3) && tag.startsWith("00") &&
+                (tag.charAt(2) >= '0') && (tag.charAt(2) <= '9'));
     }
 }

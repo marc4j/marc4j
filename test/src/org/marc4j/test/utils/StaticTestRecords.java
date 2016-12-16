@@ -18,6 +18,9 @@ public class StaticTestRecords {
     public static final String RESOURCES_SUMMERLAND_MARC_JSON_JSON = "/summerland-marc-json.json";
     public static final String RESOURCES_SUMMERLAND_INDENTED_MARC_JSON_JSON = "/summerland-indented-marc-json.json";
     public static final String RESOURCES_BRKRTEST_MRC = "/brkrtest.mrc";
+    public static final String RESOURCES_BRKRTEST_MRK = "/brkrtest.mrk";
+    public static final String RESOURCES_BRKRTEST_MRK8 = "/brkrtest.mrk8";
+    public static final String RESOURCES_BRKRTEST_UTF8_MRC = "/brkrtest_UTF8.mrc";
     public static final String RESOURCES_CHABON_MRC = "/chabon.mrc";
     public static final String RESOURCES_CHABON_XML = "/chabon.xml";
     public static final String RESOURCES_OCLC814388508_XML = "/OCLC_814388508.xml";    
