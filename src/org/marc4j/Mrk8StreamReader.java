@@ -116,6 +116,7 @@ public class Mrk8StreamReader implements MarcReader {
         }
         if (this.lastLineRead != null && this.lastLineRead.substring(1, 4).equalsIgnoreCase("LDR")) {
             lines.add(lastLineRead);
+            this.lastLineRead = null;
         }
         boolean hasHiBitCharacters = false;
         while (this.input.hasNextLine()) {
@@ -125,9 +126,9 @@ public class Mrk8StreamReader implements MarcReader {
                 // this is a blank line. We do not need it
                 continue;
             }
-            this.lastLineRead = line;
             if (line.substring(1, 4).equalsIgnoreCase("LDR") && lines.size() > 0) {
                 // we have reached the next record... break for parsing;
+                this.lastLineRead = line;
                 break;
             }
 

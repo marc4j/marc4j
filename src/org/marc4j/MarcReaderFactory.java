@@ -30,7 +30,7 @@ public class MarcReaderFactory {
             readers.add(reader);
         }
         MarcReader result = new MarcMultiplexReader(readers, Arrays.asList(inputFilenames));
-        result = decorateMarcReader(result, config, searchDirectories);
+  //      result = decorateMarcReader(result, config, searchDirectories);
         return result;
     }
 
@@ -86,6 +86,8 @@ public class MarcReaderFactory {
 
         boolean inputTypeJSON = false;
 
+        boolean inputTypeMrk8 = false;
+
         MarcReader reader;
 
         InputStream is;
@@ -126,6 +128,8 @@ public class MarcReaderFactory {
             inputTypeXML = true;
         } else if (filestart.contains("<!--")) {
             inputTypeXML = true;
+        } else if (filestart.contains("=LDR  ")) {
+            inputTypeMrk8 = true;
         }
 
         if (inputTypeXML) {
@@ -134,9 +138,12 @@ public class MarcReaderFactory {
         } else if (inputTypeJSON) {
             // to_utf_8 = true;
             reader = new MarcJsonReader(is);
+        } else if (inputTypeMrk8) {
+            // to_utf_8 = true;
+            reader = new Mrk8StreamReader(is, config.toUtf8());
         } else if (inputTypeBinary) {
-            reader = new MarcPermissiveStreamReader(is, config.isPermissiveReader(), config
-                    .toUtf8(), config.getDefaultEncoding());
+            reader = new MarcPermissiveStreamReader(is, config.isPermissiveReader(), 
+                    config.toUtf8(), config.getDefaultEncoding());
         } else {
             // logger.error("Fatal error: Unable to determine type of inputfile");
             throw new IllegalArgumentException(
