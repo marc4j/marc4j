@@ -101,21 +101,15 @@ public class MarcJsonWriter implements MarcWriter {
         final StringBuffer buf = new StringBuffer();
         buf.append("{");
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");
 
         buf.append(ql + "leader" + ql + ":\"").append(record.getLeader().toString()).append("\",");
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");
 
         buf.append(ql + "controlfield" + ql + ":");
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");
 
         buf.append("[");
         boolean firstField = true;
@@ -135,21 +129,15 @@ public class MarcJsonWriter implements MarcWriter {
                     .append("\"" + unicodeEscape(cf.getData()) + "\" }");
         }
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");
 
         buf.append("]");
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");
 
         buf.append("datafield :");
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");
 
         buf.append("[");
         firstField = true;
@@ -215,40 +203,37 @@ public class MarcJsonWriter implements MarcWriter {
             buf.append("}");
         }
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");
 
         buf.append("]");
 
-        if (indent) {
-            buf.append("\n");
-        }
+        indent(buf, "\n");
 
         buf.append("}\n");
 
         return (buf.toString());
     }
 
+    private void indent(StringBuffer buf, String indentStr) {
+        if (indent) {
+            buf.append(indentStr);
+        }
+        
+    }
+
     protected String toMarcInJson(final Record record) {
         final StringBuffer buf = new StringBuffer();
         buf.append("{");
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");;
 
         buf.append(ql + "leader" + ql + ":\"").append(record.getLeader().toString()).append("\",");
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");;
 
         buf.append(ql + "fields" + ql + ":");
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");;
 
         buf.append("[");
         boolean firstField = true;
@@ -370,15 +355,11 @@ public class MarcJsonWriter implements MarcWriter {
             buf.append("}");
         }
 
-        if (indent) {
-            buf.append("\n    ");
-        }
+        indent(buf, "\n    ");;
 
         buf.append("]");
 
-        if (indent) {
-            buf.append("\n");
-        }
+        indent(buf, "\n");;
 
         buf.append("}\n");
 
