@@ -11,7 +11,6 @@ import java.util.Iterator;
 
 import org.junit.Test;
 import org.marc4j.MarcError;
-import org.marc4j.MarcException;
 import org.marc4j.MarcXmlReader;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;

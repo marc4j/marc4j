@@ -143,6 +143,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
 
     private String conversionCheck3 = null;
 
+    @SuppressWarnings("deprecation")
     private final ErrorHandler errors;
 
     static String validSubfieldCodes = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -325,6 +326,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
      *
      * @return Record - the record object
      */
+    @SuppressWarnings("deprecation")
     @Override
     public Record next() {
         record = factory.newRecord();
@@ -714,7 +716,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                // Constants.FT)
         {
             int totalOffset = 0;
-            boolean flaggedError1 = false, flaggedError2 = false, fixedError3 = false;
+            boolean flaggedError1 = false, flaggedError2 = false; //, fixedError3 = false;
             boolean doneWithDirectory = false;
             for (int i = 0; !doneWithDirectory; i++) {
                 int increment = 12;
@@ -739,7 +741,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     if (recordBuf[directoryLength] == Constants.FT && recordBuf[directoryLength + lengthA] == Constants.FT) {
                         record.addError("n/a", "n/a", MarcError.MAJOR_ERROR,
                                 "Directory length is not a multiple of 12 bytes long.  Prepending a zero and trying to continue.");
-                        fixedError3 = true;
+//                        fixedError3 = true;
                         tag = tagA;
                         length = lengthA;
                         offset = offsetA;
@@ -885,17 +887,17 @@ public class MarcPermissiveStreamReader implements MarcReader {
         }
     }
 
-    private boolean byteCompare(final byte[] lenCheck, final int offset, final int length,
-            final int totalOffset) {
-        int divisor = 1;
-        for (int i = offset + length - 1; i >= offset; i--, divisor *= 10) {
-            if (totalOffset / divisor % 10 + '0' != lenCheck[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
+//    private boolean byteCompare(final byte[] lenCheck, final int offset, final int length,
+//            final int totalOffset) {
+//        int divisor = 1;
+//        for (int i = offset + length - 1; i >= offset; i--, divisor *= 10) {
+//            if (totalOffset / divisor % 10 + '0' != lenCheck[i]) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+//
     public void addError(final int severity, final String message) {
         record.addError(currentField, currentSubfield, severity, message);
     }

@@ -41,6 +41,11 @@ import org.marc4j.marc.VariableField;
  */
 public class RecordImpl implements Record {
 
+    /**
+     * A <code>serialVersionUID</code> for the class.
+     */
+    private static final long serialVersionUID = -4751021372496524250L;
+
     private Long id;
 
     private Leader leader;

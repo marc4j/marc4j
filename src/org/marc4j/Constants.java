@@ -21,8 +21,6 @@
 
 package org.marc4j;
 
-import java.util.regex.Pattern;
-
 /**
  * Defines constant values.
  *

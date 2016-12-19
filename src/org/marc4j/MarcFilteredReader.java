@@ -22,23 +22,21 @@ package org.marc4j;
  */
 
 import java.util.List;
-import java.util.Properties;
 
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
-import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 
 /**
- * This class provides a capability of filtering {@link Record} objects as they are being read.  
- * You can specify one or more fields one of which MUST be present, or one of which must contain the 
- * provided character string.  You can also specify one or more fields which must NOT be present, 
+ * This class provides a capability of filtering {@link Record} objects as they are being read.
+ * You can specify one or more fields one of which MUST be present, or one of which must contain the
+ * provided character string.  You can also specify one or more fields which must NOT be present,
  * or which must NOT contain the provided character string.
- * 
- * This code in this class was only a part of the MarcFilteredReader class from the SolrMarc project. 
+ *
+ * This code in this class was only a part of the MarcFilteredReader class from the SolrMarc project.
  * That class was split into two separate classes, this one, and {@link MarcScriptedRecordEditReader}
- *  
+ *
  * @author Robert Haschart
  */
 public class MarcFilteredReader implements MarcReader {
@@ -56,12 +54,12 @@ public class MarcFilteredReader implements MarcReader {
     final MarcReader reader;
 
     /**
-     * 
+     *
      * @param reader - the MarcReader to read records that are to be filtered
      * @param ifFieldPresent - a specification of fields the record SHOULD have to be processed
      * @param ifFieldMissing - a specification of fields the record SHOULD NOT have to be processed
      */
-    public MarcFilteredReader(final MarcReader r, final String ifFieldPresent, final String ifFieldMissing) {
+    public MarcFilteredReader(final MarcReader reader, final String ifFieldPresent, final String ifFieldMissing) {
 
         if (ifFieldPresent != null) {
             final String present[] = ifFieldPresent.split("/", 2);
@@ -80,7 +78,7 @@ public class MarcFilteredReader implements MarcReader {
             includeRecordIfFieldsPresent = null;
             includeRecordIfFieldContains = null;
         }
-            
+
         if (ifFieldMissing != null) {
             final String missing[] = ifFieldMissing.split("/", 2);
             final String tagPlus[] = missing[0].split(":");
@@ -98,7 +96,7 @@ public class MarcFilteredReader implements MarcReader {
             includeRecordIfFieldsMissing = null;
             includeRecordIfFieldDoesntContain = null;
         }
-        reader = r;
+        this.reader = reader;
     }
 
     /**
@@ -115,7 +113,7 @@ public class MarcFilteredReader implements MarcReader {
 
     /**
      * Returns the next marc file in the iteration the meets the filter criteria
-     * 
+     *
      * @return the next marc file in the iteration
      */
     @Override
@@ -142,7 +140,7 @@ public class MarcFilteredReader implements MarcReader {
             if (rec != null && includeRecordIfFieldsPresent != null) {
                 for (final String[] tagAndSf : includeRecordIfFieldsPresent) {
                     final List<VariableField> fields = rec.getVariableFields(tagAndSf[0]);
-                    
+
                     for (final VariableField vf : fields) {
                         if (vf instanceof ControlField) {
                             if (includeRecordIfFieldContains == null || ((ControlField) vf)
@@ -169,7 +167,7 @@ public class MarcFilteredReader implements MarcReader {
                 boolean useRecord = true;
                 for (final String[] tagAndSf : includeRecordIfFieldsMissing) {
                     final List<VariableField> fields = rec.getVariableFields(tagAndSf[0]);
- 
+
                     for (final VariableField vf : fields) {
                         if (vf instanceof ControlField) {
                             if (includeRecordIfFieldDoesntContain == null || ((ControlField) vf)

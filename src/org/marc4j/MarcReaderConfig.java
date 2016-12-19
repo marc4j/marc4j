@@ -124,8 +124,9 @@ public class MarcReaderConfig {
     /**
      * Map the allowed  parm (unicodeNormalize2) is not null compare it against
      * the valid values and return the correct value to use as the parm
-     * @param parm
-     * @return
+     * @param unicodeNormalizeStr - String specifying the type of normalization to perform
+     *         null or any undefined str value will indicate no normalization
+     * @return the MarcReaderConfig object for chaining purposes.
      */
     public MarcReaderConfig setUnicodeNormalize(final String unicodeNormalizeStr) {
         if (unicodeNormalizeStr == null) {

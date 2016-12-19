@@ -32,6 +32,11 @@ import org.marc4j.marc.Subfield;
  */
 public class SubfieldImpl implements Subfield {
 
+    /**
+     * A <code>serialVersionUID</code> for the class.
+     */
+    private static final long serialVersionUID = -5652216007819993017L;
+
     private Long id;
 
     private char code;

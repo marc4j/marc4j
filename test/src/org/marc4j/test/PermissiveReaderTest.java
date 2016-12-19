@@ -93,6 +93,7 @@ public class PermissiveReaderTest {
         // the next two?
         MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
 
+        @SuppressWarnings("unused")
         Record bad_record = reader.next();
 
         // Bad record is a total loss, don't even bother trying to read
@@ -203,6 +204,7 @@ public class PermissiveReaderTest {
             while (reader.hasNext())
             {
                 Record record = reader.next();
+                @SuppressWarnings("unused")
                 List<VariableField> fields = record.getVariableFields("880");
 
             }
@@ -294,6 +296,7 @@ public class PermissiveReaderTest {
        String diff12 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record1, record2);
        String diff23 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record2, record3);
        String diff34 = RecordTestingUtils.getFirstRecordDifferenceIgnoreLeader(record3, record4);
+       assertNull("Tested records are unexpectedly different: "+diff12, diff12);
        assertNull("Tested records are unexpectedly different: "+diff23, diff23);
        assertNull("Tested records are unexpectedly different: "+diff34, diff34);
 
@@ -324,7 +327,7 @@ public class PermissiveReaderTest {
     public void testIncompleteEscSeq() throws Exception {
         int i = 0;
         InputStream input = getClass().getResourceAsStream(StaticTestRecords.RESOURCES_INCOMPLETE_ESC_SEQ_MRC);
-        // One subfield in eacg if twi 880 tags has a 'esc' followed by a '$' followed by nothing else. (i.e. invalid) (700-07, 700-10)
+        // One subfield in each of the 880 tags has a 'esc' followed by a '$' followed by nothing else. (i.e. invalid) (700-07, 700-10)
         // Another has the $ followed by a ")" and nothing else (i.e. invalid) (700-11)
         // Another has the $ followed by a "-" and nothing else (i.e. invalid) (700-12)
         // Another has the $ followed by a "," and nothing else (i.e. invalid) (700-13)
@@ -367,5 +370,19 @@ public class PermissiveReaderTest {
         assertTrue(found12);
         assertTrue(found13);
      }
-    
+
+//    @Test
+//    public void testProblemRecords() throws IOException {
+//        InputStream input = getClass().getResourceAsStream("/problemrecords.mrc");
+//        assertNotNull(input);
+//        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+//        Record record1; 
+//        Record record2;
+//        Record record3;
+//        if (reader.hasNext()) record1 = reader.next();
+//        if (reader.hasNext()) record2 = reader.next();
+//        if (reader.hasNext()) record3 = reader.next();
+//        input.close();
+//
+//    }
 }

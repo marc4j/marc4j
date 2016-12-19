@@ -28,11 +28,11 @@ import org.w3c.dom.NodeList;
 
 public class MarcXmlWriterTest extends XMLTestCase {
 
-    @Test
-    public void testMarcXmlWriterConstructor() throws Exception {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-    }
+//    @Test
+//    public void testMarcXmlWriterConstructor() throws Exception {
+//        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//
+//    }
 
     /**
      * Tests the {@link MarcXmlWriter}

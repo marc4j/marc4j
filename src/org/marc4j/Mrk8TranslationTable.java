@@ -46,9 +46,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Mrk8TranslationTable  {
-    
+
     public static String fromMrk8(final String datafield) {
-        
+
         if (datafield.indexOf('{') == -1) {
             return(datafield);
         }
@@ -73,7 +73,7 @@ public class Mrk8TranslationTable  {
         }
         return(sb.toString());
     }
-    
+
     private static String lookup(String toLookup) {
         if (mrk8Map == null) {
             mrk8Map = new LinkedHashMap<String,String>();
@@ -82,7 +82,7 @@ public class Mrk8TranslationTable  {
                 mrk8Map.put(mrk8Table[i][0], translateVal);
             }
         }
-        int maxlen = "DoubleLongLeftRightArrow".length() + 2;
+//        int maxlen = "DoubleLongLeftRightArrow".length() + 2;
         String lookupVal = mrk8Map.get(toLookup);
         if (lookupVal == null) {
 //            if (toLookup.matches("[{][A-Za-z0-9]*[}]") && toLookup.length() < maxlen) {
@@ -91,10 +91,10 @@ public class Mrk8TranslationTable  {
 //            else {
                 lookupVal = toLookup;
 //            }
-        } 
+        }
         return(lookupVal);
     }
-    
+
     private static String translate(String s)
     {
         StringBuilder sb = new StringBuilder();
@@ -114,8 +114,8 @@ public class Mrk8TranslationTable  {
     }
 
     private static Map<String, String> mrk8Map = null;
-    
-    private final static String[][] mrk8Table = 
+
+    private final static String[][] mrk8Table =
        {{"{0}", "30x" },  // zero
         {"{00}", "00x" },  // hex value 00
         {"{01}", "01x" },  // hex value 01

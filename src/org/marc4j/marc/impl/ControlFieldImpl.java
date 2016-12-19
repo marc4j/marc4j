@@ -32,6 +32,11 @@ import org.marc4j.marc.ControlField;
  */
 public class ControlFieldImpl extends VariableFieldImpl implements ControlField {
 
+    /**
+     * A <code>serialVersionUID</code> for the class.
+     */
+    private static final long serialVersionUID = 583390927730540000L;
+
     private Long id;
 
     private String data;

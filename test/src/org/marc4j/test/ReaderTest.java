@@ -2,7 +2,6 @@ package org.marc4j.test;
 
 import org.junit.Test;
 import org.marc4j.MarcStreamReader;
-import org.marc4j.MarcXmlReader;
 import org.marc4j.marc.Record;
 import org.marc4j.test.utils.StaticTestRecords;
 import org.marc4j.test.utils.TestUtils;

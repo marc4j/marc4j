@@ -32,6 +32,7 @@ import java.util.List;
  * @author Robert Haschart
  */
 @Deprecated
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ErrorHandler {
 
     /**

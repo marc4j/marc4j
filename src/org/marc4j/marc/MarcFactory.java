@@ -112,19 +112,24 @@ public abstract class MarcFactory {
                     return null;
                 }
             case 2:
+                InputStream in = null;
                 try {
                     final String serviceKey = "/META-INF/services/" + propertyName;
-                    final InputStream in = (loader != null) ? loader
+                    in = (loader != null) ? loader
                             .getResourceAsStream(serviceKey) : MarcFactory.class
                             .getResourceAsStream(serviceKey);
                     if (in != null) {
                         final BufferedReader r = new BufferedReader(new InputStreamReader(in));
                         final String ret = r.readLine();
                         r.close();
-
                         return ret;
                     }
                 } catch (final IOException e) {
+                } finally {
+                    try {
+                        if (in != null) in.close();
+                    } catch (IOException e) {
+                    }
                 }
                 return null;
             default:

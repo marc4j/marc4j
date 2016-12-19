@@ -31,6 +31,11 @@ import org.marc4j.marc.Leader;
  */
 public class LeaderImpl implements Leader {
 
+    /**
+     * A <code>serialVersionUID</code> for the class.
+     */
+    private static final long serialVersionUID = 8300445263515491860L;
+
     private Long id;
 
     /** The logical record length (Position 0-4). */

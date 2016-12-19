@@ -28,6 +28,11 @@ package org.marc4j;
 public class MarcException extends RuntimeException {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = -7600942667740838717L;
+
+    /**
      * Create a new <code>MarcException</code> with no detail message.
      */
     public MarcException() {

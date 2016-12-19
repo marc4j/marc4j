@@ -1285,6 +1285,11 @@ public class JsonParser extends Object {
 
     static public class Escape extends RuntimeException {
 
+        /**
+         * A <code>serialVersionUID</code> for the class.
+         */
+        private static final long serialVersionUID = 7769040813982342515L;
+
         /** General exception. */
         static public final int GENERAL = 1;
 

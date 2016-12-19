@@ -584,9 +584,9 @@ public class MarcScriptedRecordEditReader implements MarcReader {
         return null;
     }
 
-    static Pattern argAndConditional = Pattern
-            .compile("[a-z]*[(][ ]*\"((\\\"|[^\"])*)\",[ ]*([a-z]*[(].*[)])[)]");
+    static Pattern argAndConditional = Pattern.compile("[a-z]*[(][ ]*\"((\\\"|[^\"])*)\",[ ]*([a-z]*[(].*[)])[)]");
 
+    @SuppressWarnings("unused")
     private String[] getArgAndConditional(final String conditional) {
         final Matcher m = argAndConditional.matcher(conditional.trim());
         if (m.matches()) {

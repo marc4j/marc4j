@@ -3,8 +3,6 @@ package org.marc4j.converter.impl;
 
 import java.util.Hashtable;
 
-import org.xml.sax.helpers.DefaultHandler;
-
 /**
  * <p>
  * <code>ReverseCodeTable</code> is a set of methods to facilitate Unicode to MARC-8 character conversion, it tracks

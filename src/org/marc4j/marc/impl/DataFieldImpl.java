@@ -41,6 +41,11 @@ import org.marc4j.marc.Subfield;
  */
 public class DataFieldImpl extends VariableFieldImpl implements DataField {
 
+    /**
+     * A <code>serialVersionUID</code> for the class.
+     */
+    private static final long serialVersionUID = -9010227887211125868L;
+
     private Long id;
 
     private char ind1;

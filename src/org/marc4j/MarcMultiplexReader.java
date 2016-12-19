@@ -33,8 +33,8 @@ public class MarcMultiplexReader implements MarcReader {
         boolean hasNext = false;
         while (curReader == null || !(hasNext = curReader.hasNext())) {
             if (readerIterator.hasNext()) {
-                final String readerName = nameIterator.hasNext() ? nameIterator.next()
-                        : "" + readerCnt;
+//                final String readerName = nameIterator.hasNext() ? nameIterator.next()
+//                        : "" + readerCnt;
                 // logger.info("Switching to reader: "+readerName);
                 curReader = readerIterator.next();
                 readerCnt++;

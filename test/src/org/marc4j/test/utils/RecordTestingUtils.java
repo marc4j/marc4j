@@ -66,7 +66,7 @@ public class RecordTestingUtils
     public static String getFirstRecordDifferenceIgnoreLeader(Record expected, Record actual)
     {
         String actualId = actual.getControlNumber();
-        String errmsg = "Record " + actualId + " wasn't as expected";
+//        String errmsg = "Record " + actualId + " wasn't as expected";
 
         String expectedSubstring = expected.toString().substring(24);
         String actualSubstring = actual.toString().substring(24);
