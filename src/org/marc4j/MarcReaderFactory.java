@@ -30,7 +30,7 @@ public class MarcReaderFactory {
             readers.add(reader);
         }
         MarcReader result = new MarcMultiplexReader(readers, Arrays.asList(inputFilenames));
-  //      result = decorateMarcReader(result, config, searchDirectories);
+        result = decorateMarcReader(result, config, searchDirectories);
         return result;
     }
 
