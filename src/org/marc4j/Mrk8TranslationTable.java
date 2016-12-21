@@ -36,8 +36,8 @@
 * Columns in this table are delimited by a comma ","               *
 *                                                                  *
 ********************************************************************
-* Mnemonic, hex value, decimal value, name/comment                 *
-* {**},     ??,        ???,           *[character name (FORMAT)]   *
+* Mnemonic, hex value // name/comment                              *
+* {**},     ??                // [character name (FORMAT)]         *
 *__________________________________________________________________*/
 
 package org.marc4j;
@@ -95,18 +95,15 @@ public class Mrk8TranslationTable  {
         return(lookupVal);
     }
 
-    private static String translate(String s)
-    {
+    private static String translate(String s) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i += 4)
-        {
+        for (int i = 0; i < s.length(); i += 4) {
             sb.append((char)(charToNibble(s.charAt(i)) * 16 + charToNibble(s.charAt(i+1))));
         }
         return sb.toString();
     }
 
-    private static int charToNibble(char c)
-    {
+    private static int charToNibble(char c) {
         if (c >= '0' && c <= '9') return ((int)(c - '0'));
         if (c >= 'A' && c <= 'F') return ((int)(c - 'A' + 10));
         if (c >= 'a' && c <= 'f') return ((int)(c - 'a' + 10));
@@ -115,8 +112,8 @@ public class Mrk8TranslationTable  {
 
     private static Map<String, String> mrk8Map = null;
 
-    private final static String[][] mrk8Table =
-       {{"{0}", "30x" },  // zero
+    private final static String[][] mrk8Table = {
+        {"{0}", "30x" },  // zero
         {"{00}", "00x" },  // hex value 00
         {"{01}", "01x" },  // hex value 01
         {"{02}", "02x" },  // hex value 02
