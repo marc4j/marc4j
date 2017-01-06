@@ -361,7 +361,8 @@
                 </linecontains>
                 <striplinebreaks/>
                 <tokenfilter>
-                     <replaceregex pattern=".*&quot;total_commits&quot;:[ ]*([1-9][0-9]*).*" replace="-SNAPSHOT-\1" />
+                    <replaceregex pattern=".*&quot;total_commits&quot;:[ ]*([1-9][0-9]*).*" replace="-SNAPSHOT-\1" />
+                    <replaceregex pattern=".*&quot;total_commits&quot;:[ ]*(0).*" replace="" />
                 </tokenfilter>
             </filterchain>
         </loadfile>
