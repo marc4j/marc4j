@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.marc4j.MarcReader;
 import org.marc4j.MarcScriptedRecordEditReader;
 import org.marc4j.MarcStreamReader;
+import org.marc4j.MarcXmlReader;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
@@ -59,6 +60,26 @@ public class MarcScriptedEditRecordReaderTest {
         int i = 0;
         for (VariableField df: dfs) {
             assertTrue("fields not edited", ((DataField)df).getSubfield('a').getData().equals(expected700Fields[i++]));
+        }
+
+    }
+    
+    @Test
+    public void testDelete710Field() throws Exception {
+        String[] expected710Fields = { "Different College" };
+        InputStream input = getClass().getResourceAsStream("/summerlandwith710.xml");
+        assertNotNull(input);
+
+        InputStream editmap = getClass().getResourceAsStream("/delete_710_map.properties");
+        Properties editmapProperties = new Properties();
+        editmapProperties.load(editmap);
+
+        MarcReader reader =  new MarcScriptedRecordEditReader(new MarcXmlReader(input), editmapProperties);
+        Record record = reader.next();
+        List<VariableField> dfs = record.getVariableFields("710");
+        int i = 0;
+        for (VariableField df: dfs) {
+            assertTrue("fields not edited", ((DataField)df).getSubfield('a').getData().equals(expected710Fields[i++]));
         }
 
     }
