@@ -1592,9 +1592,9 @@ public class MarcPermissiveStreamReader implements MarcReader {
             // either contain
             // an extraneous %x or which are missing the final semicolon
             if (permissive && dataElement
-                    .matches("[^&]*&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][^;].*")) {
+                    .matches("[^&]*&#x[0-9A-Fa-f]+[^;].*")) {
                 final Pattern pattern = Pattern
-                        .compile("&#x([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])(%x)?;?");
+                        .compile("&#x([0-9A-Fa-f]+)(%x)?;?");
                 final Matcher matcher = pattern.matcher(dataElement);
                 final StringBuffer newElement = new StringBuffer();
 

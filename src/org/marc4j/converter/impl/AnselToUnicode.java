@@ -531,9 +531,9 @@ public class AnselToUnicode extends CharConverter {
         String dataElement = sb.toString();
 
         if (translateNCR && dataElement
-                .matches("[^&]*&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f];.*")) {
+                .matches("[^&]*&#x[0-9A-Fa-f]+;.*")) {
             final Pattern pattern = Pattern
-                    .compile("&#x([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]);");
+                    .compile("&#x([0-9A-Fa-f]+);");
             final Matcher matcher = pattern.matcher(dataElement);
             final StringBuffer newElement = new StringBuffer();
 
@@ -801,22 +801,38 @@ public class AnselToUnicode extends CharConverter {
     private char getCharCDT(final char[] data, final CodeTracker cdt) {
         char c = getChar(data[cdt.offset], cdt.g0, cdt.g1);
 
-        if (translateNCR && c == '&' && data.length >= cdt.offset + 8) {
-            final String tmp = new String(data, cdt.offset, 8);
-            if (tmp.matches("&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f];")) {
-                c = getCharFromCodePoint(tmp.substring(3, 7));
-                cdt.offset += 8;
-            } else if (tmp.matches("&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]%") && data.length >= cdt.offset + 10) {
-                final String tmp1 = new String(data, cdt.offset, 10);
-                if (tmp1.matches("&#x[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]%x;")) {
-                    c = getCharFromCodePoint(tmp1.substring(3, 7));
-                    cdt.offset += 10;
-                    if (curReader != null) {
-                        curReader.addError(MarcError.MINOR_ERROR,
-                                        "Subfield contains malformed Unicode Numeric Character Reference : " + tmp1);
+        if (translateNCR && c == '&' && data.length >= cdt.offset + 5) {
+            if (data[cdt.offset+1] == '#' && data[cdt.offset+2] == 'x') {
+                int len = 0;
+                for (; cdt.offset + 3 + len < data.length; len++ ) {
+                    char c1 = data[cdt.offset + 3 + len];
+                    if ((c1 >= '0' && c1 <= '9') || (c1 >= 'A' && c1 <= 'F') || (c1 > 'a' && c1 <= 'f')) {
+                        continue;
+                    } else if (len >= 1 && c1 == ';') {
+                        c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
+                        cdt.offset += len + 4;
+                        break;
+                    } else if (len >= 1 && c1 == '%' && data.length > cdt.offset + len + 4 && 
+                            data[cdt.offset + 3 + len + 1] =='x' && (data.length == cdt.offset + len + 5 || data[cdt.offset + 3 + len + 2] !=';' )) {
+                        c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
+                        if (curReader != null) {
+                            curReader.addError(MarcError.MINOR_ERROR,
+                                            "Subfield contains malformed Unicode Numeric Character Reference : " + new String(data, cdt.offset, len+5));
+                        }
+                        cdt.offset += len + 5;
+                        break;
+                    } else if (len >= 1 && c1 == '%' && data.length > cdt.offset + len + 5 && 
+                         data[cdt.offset + 3 + len + 1] =='x' && data[cdt.offset + 3 + len + 2] ==';' ) {
+                        c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
+                        if (curReader != null) {
+                            curReader.addError(MarcError.MINOR_ERROR,
+                                          "Subfield contains malformed Unicode Numeric Character Reference : " + new String(data, cdt.offset, len+6));
+                        }
+                        cdt.offset += len + 6;
+                        break;
+                    } else {
+                        cdt.offset++;
                     }
-                } else {
-                    cdt.offset++;
                 }
             } else {
                 cdt.offset++;
@@ -824,7 +840,6 @@ public class AnselToUnicode extends CharConverter {
         } else {
             cdt.offset++;
         }
-
         return c;
     }
 
