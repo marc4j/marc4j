@@ -309,7 +309,7 @@
     </target>
 
 
-    <target name="-version1" unless="versionstr" >
+    <target name="-version1" unless="version" >
         <mkdir dir="${dist.dir}/tmp" />
         <get src="https://api.github.com/repos/marc4j/marc4j/releases/latest" dest="${dist.dir}/tmp/git.release.txt" />
         <loadfile srcfile="${dist.dir}/tmp/git.release.txt" property="versionstr" >
@@ -339,18 +339,8 @@
         <echo message="versionstr = ${versionstr}" />
     </target>
 
-    <target name="-version2" unless="versionsuffix" >
+    <target name="-version2" unless="version" >
         <get src="https://api.github.com/repos/marc4j/marc4j/compare/${versionstr}...master" dest="${dist.dir}/tmp/git.commits.txt" />
-   <!--     <copy file="${reports.tests}/git.commits.txt" tofile="${reports.tests}/git.commits.out.txt" overwrite="true" >
-            <filterchain>
-                <tokenfilter>
-                    <replacestring from="," to=", ${line.separator}" />
-                </tokenfilter>
-                <linecontains>
-                   <contains value="total_commits"/>
-                </linecontains>
-            </filterchain>
-        </copy> -->
         <loadfile srcfile="${dist.dir}/tmp/git.commits.txt" property="versionsuffix" >
             <filterchain>
                 <tokenfilter>
@@ -361,7 +351,7 @@
                 </linecontains>
                 <striplinebreaks/>
                 <tokenfilter>
-                    <replaceregex pattern=".*&quot;total_commits&quot;:[ ]*([1-9][0-9]*).*" replace="-SNAPSHOT-\1" />
+                    <replaceregex pattern=".*&quot;total_commits&quot;:[ ]*([1-9][0-9]*).*" replace="-\1-SNAPSHOT" />
                     <replaceregex pattern=".*&quot;total_commits&quot;:[ ]*(0).*" replace="" />
                 </tokenfilter>
             </filterchain>
@@ -372,7 +362,38 @@
      <!--    <delete dir="${dist.dir}/tmp" /> -->
     </target>
 
-    <target name="version" unless="version" depends="-version1,-version2" description="Get the version number to use from github" >
+    <available file=".git" type="dir" property="git.present"/>
+
+    <target name="git.revision" description="Store git revision in ${repository.version}" if="git.present" unless="version">
+        <property environment="env"/>
+        <exec executable="git" outputproperty="git.revision" failifexecutionfails="false" errorproperty="git.not.found">
+            <arg value="describe"/>
+            <arg value="--tags"/>
+            <arg value="--dirty=-SNAPSHOT"/>
+            <arg value="--always"/>
+        </exec>
+        <exec executable="git" outputproperty="git.major.revision" failifexecutionfails="false" errorproperty="git.not.found">
+            <arg value="describe"/>
+            <arg value="--tags"/>
+            <arg value="--abbrev=0"/>
+        </exec>
+        <condition property="version" value="${git.revision}">
+            <and>
+                <isset property="git.revision"/>
+                <length string="${git.revision}" trim="yes" length="0" when="greater"/>
+            </and>
+        </condition>
+        <condition property="versionstr" value="${git.major.revision}">
+            <and>
+                <isset property="git.major.revision"/>
+                <length string="${git.major.revision}" trim="yes" length="0" when="greater"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="version" depends="git.revision,-version1,-version2" description="Get the version number to use from github" >
+        <echo message="git.revision = ${git.revision}" />
+
         <property name="version" value="${versionstr}${versionsuffix}" />
         <echo message="version = ${version}" />
         <condition property="is.snapshot">
