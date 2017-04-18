@@ -114,7 +114,9 @@ public class MarcReaderFactory {
         inputTypeBinary = false;
         inputTypeJSON = false;
 
-        if (filestart.substring(0, 5).equalsIgnoreCase("<?xml")) {
+        if (numRead == -1 || filestart.length() == 0) {
+            inputTypeBinary = true;
+        } else if (filestart.substring(0, 5).equalsIgnoreCase("<?xml")) {
             inputTypeXML = true;
         } else if (filestart.startsWith("{")) {
             inputTypeJSON = true;
