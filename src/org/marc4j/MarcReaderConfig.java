@@ -117,6 +117,18 @@ public class MarcReaderConfig {
         return this;
     }
 
+    public MarcReaderConfig setCombineConsecutiveRecordsFields(final String combineConsecutiveRecordsFieldsStr) {
+        if (combineConsecutiveRecordsFieldsStr == null ||
+            combineConsecutiveRecordsFieldsStr.isEmpty() ) {
+            return(setCombineConsecutiveRecordsFields(null, null, null));
+        }
+        String combineParms[] = combineConsecutiveRecordsFieldsStr.split("::",3);
+        String fieldList =  combineParms.length >= 1 ? combineParms[0] : null;
+        String leftField =  combineParms.length >= 2 ? combineParms[1] : null;
+        String rightField = combineParms.length >= 3 ? combineParms[2] : null;
+        return(setCombineConsecutiveRecordsFields(combineConsecutiveRecordsFields, leftField, rightField));
+    }
+
     public String getUnicodeNormalize() {
         return unicodeNormalize;
     }
