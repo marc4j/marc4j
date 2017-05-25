@@ -812,6 +812,14 @@ public class AnselToUnicode extends CharConverter {
                         c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
                         cdt.offset += len + 4;
                         break;
+                    } else if (len == 0 && c1 == ';') {
+                        if (curReader != null) {
+                            curReader.addError(MarcError.MAJOR_ERROR,
+                                            "Subfield contains missing Unicode Numeric Character Reference : " + new String(data, cdt.offset, 4));
+                        }
+                        cdt.offset += 4;
+                        c = getCharCDT(data, cdt);
+                        break;
                     } else if (len >= 1 && c1 == '%' && data.length > cdt.offset + len + 4 && 
                             data[cdt.offset + 3 + len + 1] =='x' && (data.length == cdt.offset + len + 5 || data[cdt.offset + 3 + len + 2] !=';' )) {
                         c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
