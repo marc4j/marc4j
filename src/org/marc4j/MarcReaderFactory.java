@@ -64,7 +64,7 @@ public class MarcReaderFactory {
         } else {
             is = new BufferedInputStream(new FileInputStream(inputFilename));
         }
-        MarcReader reader = makeReader(config, is);
+        MarcReader reader = makeReaderInternal(config, is);
         reader = decorateMarcReader(reader, config, searchDirectories);
         return reader;
     }
@@ -73,11 +73,19 @@ public class MarcReaderFactory {
             throws IOException {
 
         InputStream is = new FileInputStream(inputFilename);
-        MarcReader reader = makeReader(config, is);
+        MarcReader reader = makeReaderInternal(config, is);
         return reader;
     }
 
     public static MarcReader makeReader(MarcReaderConfig config, final InputStream input)
+            throws IOException {
+        MarcReader reader = makeReaderInternal(config, input);
+        reader = decorateMarcReader(reader, config, new String[]{"."});
+        return(reader);
+    }
+
+
+    private static MarcReader makeReaderInternal(MarcReaderConfig config, final InputStream input)
             throws IOException {
 
         boolean inputTypeXML = false;
