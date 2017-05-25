@@ -149,11 +149,15 @@ public class MarcFilteredReader implements MarcReader {
                                 break;
                             }
                         } else {
-                            if (includeRecordIfFieldContains == null || ((DataField) vf)
-                                    .getSubfieldsAsString(tagAndSf[1]).contains(
-                                            includeRecordIfFieldContains)) {
+                            if (includeRecordIfFieldContains == null) {
                                 currentRecord = rec;
                                 break;
+                            } else {
+                                String subfieldVal = ((DataField) vf).getSubfieldsAsString(tagAndSf[1]);
+                                if (subfieldVal != null && subfieldVal.contains(includeRecordIfFieldContains)) {
+                                    currentRecord = rec;
+                                    break;
+                                }
                             }
                         }
                     }
