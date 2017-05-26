@@ -8,7 +8,11 @@
 
     <property file="build.properties" />
 
-    <target name="prepare" depends="init,setup-ivy" unless="prepared">
+    <tstamp>
+        <format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss Z" timezone="GMT" />
+    </tstamp>
+
+        <target name="prepare" depends="init,setup-ivy" unless="prepared">
         <mkdir dir="${build.dir}" />
         <mkdir dir="${build.classes.dir}"/>
         <mkdir dir="${build.test-classes.dir}"/>
@@ -102,6 +106,9 @@
     <target name="jar" depends="compile-all,version">
         <jar jarfile="${build.dir}/${jar.name}">
             <manifest>
+                <attribute name="Main-Class" value="org.marc4j.util.RecordIODriver"/>
+                <attribute name="Version" value="${version}"/>
+                <attribute name="Built-Date" value="${TODAY}"/>
                 <section name="org/marc4j">
                   <attribute name="Specification-Title" value="marc4j"/>
                   <attribute name="Specification-Version" value="${specversion}"/>
