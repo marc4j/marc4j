@@ -58,7 +58,7 @@ import org.marc4j.marc.VariableField;
 public class Mrk8StreamWriter implements MarcWriter, Closeable {
 
     private final PrintWriter mrk8Writer;
-    private final CharsetEncoder encoder;
+//    private final CharsetEncoder encoder;
 
     /**
      * Constructs an instance and creates a {@link MarcWriter} object with the
@@ -67,7 +67,7 @@ public class Mrk8StreamWriter implements MarcWriter, Closeable {
      * @param output The {@link OutputStream} to write to
      */
     public Mrk8StreamWriter(final OutputStream output) {
-        this.encoder = StandardCharsets.UTF_8.newEncoder();
+ //       this.encoder = StandardCharsets.UTF_8.newEncoder();
         this.mrk8Writer = new PrintWriter(output);
     }
 
@@ -89,11 +89,11 @@ public class Mrk8StreamWriter implements MarcWriter, Closeable {
             if (field instanceof ControlField) {
                 final ControlField controlField = (ControlField) field;
                 String data;
-                try {
-                    data = this.encoder.encode(CharBuffer.wrap(controlField.getData())).asCharBuffer().toString();
-                } catch (CharacterCodingException cce) {
+//                try {
+//                    data = this.encoder.encode(CharBuffer.wrap(controlField.getData())).asCharBuffer().toString();
+//                } catch (CharacterCodingException cce) {
                     data = controlField.getData();
-                }
+//                }
                 recordStringBuilder.append(data);
             } else if (field instanceof DataField) {
                 final DataField dataField = (DataField) field;
@@ -102,11 +102,11 @@ public class Mrk8StreamWriter implements MarcWriter, Closeable {
 
                 for (final Subfield subField : dataField.getSubfields()) {
                     String data;
-                    try {
-                        data = this.encoder.encode(CharBuffer.wrap(subField.getData())).asCharBuffer().toString();
-                    } catch (CharacterCodingException cce) {
+//                    try {
+//                        data = this.encoder.encode(CharBuffer.wrap(subField.getData())).asCharBuffer().toString();
+//                    } catch (CharacterCodingException cce) {
                         data = subField.getData();
-                    }
+//                    }
                     recordStringBuilder.append("$").append(subField.getCode()).append(data);
                 }
             }
