@@ -209,7 +209,6 @@ public class PermissiveReaderExample
 
     }
     
-    @SuppressWarnings("unchecked")
 	public static void dumpErrors(PrintStream out, List<MarcError> errors)
     {
         if (errors != null) 

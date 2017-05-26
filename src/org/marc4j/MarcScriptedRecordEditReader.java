@@ -213,7 +213,7 @@ public class MarcScriptedRecordEditReader implements MarcReader {
             }
         }
         String tagPlus0 = "once_0";
-        if (keepRecord && remapProperties.containsKey("tagPlus0")) {
+        if (keepRecord && remapProperties.containsKey(tagPlus0)) {
             // List<Subfield> sfToDelete = new ArrayList<Subfield>();
             for (int i = 0; remapProperties.containsKey("once_" + i); i++) {
                 final String remapString = remapProperties.getProperty("once_" + i);

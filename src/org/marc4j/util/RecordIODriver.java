@@ -40,7 +40,6 @@ public class RecordIODriver
      * @param args - the command-line arguments
      */
     public static void main(final String args[]) {
-        final long start = System.currentTimeMillis();
 
         String input = null;
         String output = null;

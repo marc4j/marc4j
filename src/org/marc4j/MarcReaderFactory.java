@@ -107,7 +107,6 @@ public class MarcReaderFactory {
         is.mark(20);
         final byte[] buffer = new byte[15];
 
-        @SuppressWarnings("unused")
         int numRead;
 
         try {
