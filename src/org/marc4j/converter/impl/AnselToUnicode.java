@@ -806,7 +806,7 @@ public class AnselToUnicode extends CharConverter {
                 int len = 0;
                 for (; cdt.offset + 3 + len < data.length; len++ ) {
                     char c1 = data[cdt.offset + 3 + len];
-                    if ((c1 >= '0' && c1 <= '9') || (c1 >= 'A' && c1 <= 'F') || (c1 > 'a' && c1 <= 'f')) {
+                    if ((c1 >= '0' && c1 <= '9') || (c1 >= 'A' && c1 <= 'F') || (c1 >= 'a' && c1 <= 'f')) {
                         continue;
                     } else if (len >= 1 && c1 == ';') {
                         c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
