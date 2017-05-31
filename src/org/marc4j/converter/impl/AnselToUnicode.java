@@ -839,7 +839,12 @@ public class AnselToUnicode extends CharConverter {
                         cdt.offset += len + 6;
                         break;
                     } else {
+                        if (curReader != null) {
+                            curReader.addError(MarcError.MINOR_ERROR,
+                                            "Subfield contains malformed Unicode Numeric Character Reference : " + new String(data, cdt.offset, len+5));
+                        }
                         cdt.offset++;
+                        break;
                     }
                 }
             } else {
