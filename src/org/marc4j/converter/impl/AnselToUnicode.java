@@ -811,7 +811,7 @@ public class AnselToUnicode extends CharConverter {
                     } else if (len >= 1 && c1 == ';') {
                         c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
                         cdt.offset += len + 4;
-                        break;
+                        return c;
                     } else if (len == 0 && c1 == ';') {
                         if (curReader != null) {
                             curReader.addError(MarcError.MAJOR_ERROR,
@@ -819,7 +819,7 @@ public class AnselToUnicode extends CharConverter {
                         }
                         cdt.offset += 4;
                         c = getCharCDT(data, cdt);
-                        break;
+                        return c;
                     } else if (len >= 1 && c1 == '%' && data.length > cdt.offset + len + 4 && 
                             data[cdt.offset + 3 + len + 1] =='x' && (data.length == cdt.offset + len + 5 || data[cdt.offset + 3 + len + 2] !=';' )) {
                         c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
@@ -828,7 +828,7 @@ public class AnselToUnicode extends CharConverter {
                                             "Subfield contains malformed Unicode Numeric Character Reference : " + new String(data, cdt.offset, len+5));
                         }
                         cdt.offset += len + 5;
-                        break;
+                        return c;
                     } else if (len >= 1 && c1 == '%' && data.length > cdt.offset + len + 5 && 
                          data[cdt.offset + 3 + len + 1] =='x' && data[cdt.offset + 3 + len + 2] ==';' ) {
                         c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
@@ -837,16 +837,23 @@ public class AnselToUnicode extends CharConverter {
                                           "Subfield contains malformed Unicode Numeric Character Reference : " + new String(data, cdt.offset, len+6));
                         }
                         cdt.offset += len + 6;
-                        break;
+                        return c;
                     } else {
                         if (curReader != null) {
                             curReader.addError(MarcError.MINOR_ERROR,
-                                            "Subfield contains malformed Unicode Numeric Character Reference : " + new String(data, cdt.offset, len+5));
+                                            "Subfield contains malformed Unicode Numeric Character Reference : " + new String(data, cdt.offset, len+3));
                         }
                         cdt.offset++;
-                        break;
+                        return c;
                     }
                 }
+                if (curReader != null) {
+                    curReader.addError(MarcError.MINOR_ERROR,
+                                    "Subfield contains unterminated Unicode Numeric Character Reference : " + new String(data, cdt.offset, len+3));
+                }
+                c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
+                cdt.offset += len + 3;
+                return c;
             } else {
                 cdt.offset++;
             }
