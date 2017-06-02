@@ -106,7 +106,7 @@
     <target name="jar" depends="compile-all,version">
         <jar jarfile="${build.dir}/${jar.name}">
             <manifest>
-                <attribute name="Main-Class" value="org.marc4j.util.RecordIODriver"/>
+                <attribute name="Main-Class" value="org.marc4j.util.UtilDriver"/>
                 <attribute name="Version" value="${version}"/>
                 <attribute name="Built-Date" value="${TODAY}"/>
                 <section name="org/marc4j">
