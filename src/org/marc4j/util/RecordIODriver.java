@@ -20,8 +20,7 @@ import org.marc4j.Mrk8StreamWriter;
 import org.marc4j.converter.impl.UnicodeToAnsel;
 import org.marc4j.marc.Record;
 
-public class RecordIODriver
-{
+public class RecordIODriver {
     /**
      * Provides a static entry point.
      * <p>
@@ -163,12 +162,10 @@ public class RecordIODriver
         config.setPermissiveReader(!strict);
 
         MarcReader reader = null;
-        try
-        {
+        try {
             reader = MarcReaderFactory.makeReader(config, in);
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

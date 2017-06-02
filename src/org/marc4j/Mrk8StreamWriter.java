@@ -19,7 +19,6 @@
  */
 package org.marc4j;
 
-import java.io.Closeable;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -52,7 +51,7 @@ import org.marc4j.marc.VariableField;
  *
  * @author Binaek Sarkar
  */
-public class Mrk8StreamWriter implements MarcWriter, Closeable {
+public class Mrk8StreamWriter implements MarcWriter {
 
     private final PrintWriter mrk8Writer;
 //    private final CharsetEncoder encoder;
@@ -78,7 +77,7 @@ public class Mrk8StreamWriter implements MarcWriter, Closeable {
         final StringBuilder recordStringBuilder = new StringBuilder();
 
         final Leader ldr = record.getLeader();
-        recordStringBuilder.append("=").append("LDR").append("  ").append(ldr.marshal());
+        recordStringBuilder.append("=").append("LDR").append("  ").append(ldr.marshal()).append(System.lineSeparator());;
 
         for (final VariableField field : record.getVariableFields()) {
             recordStringBuilder.append("=").append(field.getTag()).append("  ");

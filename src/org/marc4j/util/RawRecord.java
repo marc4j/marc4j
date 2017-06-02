@@ -249,19 +249,4 @@ public class RawRecord {
         }
         return (length);
     }
-
-    // public boolean hasNext()
-    // {
-    // // TODO Auto-generated method stub
-    // return false;
-    // }
-    //
-    // public Record next()
-    // {
-    // // TODO Auto-generated method stub
-    // return null;
-    // }
-    //
-    //
-
 }
