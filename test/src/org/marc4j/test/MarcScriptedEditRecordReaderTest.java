@@ -9,6 +9,7 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
+import org.marc4j.test.utils.RecordTestingUtils;
 
 import java.io.InputStream;
 import java.util.List;
@@ -63,7 +64,28 @@ public class MarcScriptedEditRecordReaderTest {
         }
 
     }
-    
+
+    @Test
+    public void testApplyEditGetty() throws Exception {
+        InputStream toEditInput = getClass().getResourceAsStream("/getty_test_1.mrc");
+        assertNotNull(toEditInput);
+
+        InputStream expectedRecInput = getClass().getResourceAsStream("/getty_test_output.mrc");
+        assertNotNull(expectedRecInput);
+
+        InputStream editmap = getClass().getResourceAsStream("/edit_getty.properties");
+        Properties editmapProperties = new Properties();
+        editmapProperties.load(editmap);
+
+        MarcReader reader1 =  new MarcScriptedRecordEditReader(new MarcStreamReader(toEditInput), editmapProperties);
+        Record editedRecord = reader1.next();
+
+        MarcReader reader2 =  new MarcStreamReader(expectedRecInput);
+        Record expectedRecord = reader2.next();
+
+        RecordTestingUtils.assertEqualsIgnoreLeader(expectedRecord, editedRecord);
+    }
+
     @Test
     public void testDelete710Field() throws Exception {
         String[] expected710Fields = { "Different College" };
