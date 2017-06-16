@@ -610,7 +610,13 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 if (recordBuf.length != byteCheck.length) {
                     boolean foundESC = false;
 
-                    for (int i = 0; i < recordBuf.length; i++) {
+                    int minLen = recordBuf.length;
+                    if (byteCheck.length < minLen) { 
+                        minLen = byteCheck.length;
+                        record.addError("n/a", "n/a", MarcError.MINOR_ERROR,
+                                "Record claims to be UTF-8, but a possible bad encoding was found. It could be a different encoding, or it could be malformed UTF8 data.");
+                    }
+                    for (int i = 0; i < minLen; i++) {
                         if (recordBuf[i] == 0x1B) {
                             record.addError("n/a", "n/a", MarcError.MINOR_ERROR,
                                     "Record claims to be UTF-8, but its not. Its probably MARC8.");
@@ -619,7 +625,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                             break;
                         }
 
-                        if (!foundESC && byteCheck[i] != recordBuf[i]) {
+                        if (byteCheck[i] != recordBuf[i]) {
                             encoding = "MARC8-Maybe";
                         }
 
