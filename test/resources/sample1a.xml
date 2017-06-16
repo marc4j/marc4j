@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?><marcxml:collection xmlns:marcxml="http://www.loc.gov/MARC21/slim">
+  <marcxml:record>
+    <marcxml:leader>01025cam a2200277Ia 4500</marcxml:leader>
+    <marcxml:controlfield tag="001">370589</marcxml:controlfield>
+    <marcxml:controlfield tag="003">NBYdb</marcxml:controlfield>
+    <marcxml:controlfield tag="005">20080115002728.0</marcxml:controlfield>
+    <marcxml:controlfield tag="008">870818t18941887miu           000 0 eng d</marcxml:controlfield>
+    <marcxml:datafield tag="035" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">(OCoLC)ocm16504428</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="035" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">(NBYdb)370589</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="040" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">EEX</marcxml:subfield>
+      <marcxml:subfield code="c">EEX</marcxml:subfield>
+      <marcxml:subfield code="d">IBV</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="090" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">HG527</marcxml:subfield>
+      <marcxml:subfield code="b">.E55 1894</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="049" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">IBVA</marcxml:subfield>
+      <marcxml:subfield code="l">bklr</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="100" ind1="1" ind2=" ">
+      <marcxml:subfield code="a">Emery, Sarah E. Van De Vort,</marcxml:subfield>
+      <marcxml:subfield code="d">1838-1895.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="245" ind1="1" ind2="0">
+      <marcxml:subfield code="a">Seven financial conspiracies which have enslaved the American people /</marcxml:subfield>
+      <marcxml:subfield code="c">by Sarah E.V. Emery.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="250" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">[Rev. ed.]</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="260" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">Lansing, Mich. :</marcxml:subfield>
+      <marcxml:subfield code="b">R. Smith &amp; Co.,</marcxml:subfield>
+      <marcxml:subfield code="c">1894, c1887.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="300" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">112 p. ;</marcxml:subfield>
+      <marcxml:subfield code="c">15 cm.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="490" ind1="0" ind2=" ">
+      <marcxml:subfield code="a">American series ;</marcxml:subfield>
+      <marcxml:subfield code="v">no. 1</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="505" ind1="0" ind2=" ">
+      <marcxml:subfield code="a">The civil war preliminary to an infamous plot.--The exception clause.--The banking system.--Contraction.--The credit-strengthening act.--Refunding.--Demonetization of silver.--Resumption.--Conclusion.--Sherman versus Emery.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="650" ind1=" " ind2="0">
+      <marcxml:subfield code="a">Silver question.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="946" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">OCLC RECON PROJECT</marcxml:subfield>
+      <marcxml:subfield code="a">rc2817</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="910" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">142847</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="994" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">02</marcxml:subfield>
+      <marcxml:subfield code="b">IBV</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="947" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">MARS</marcxml:subfield>
+      <marcxml:subfield code="a">20071227</marcxml:subfield>
+    </marcxml:datafield>
+  </marcxml:record>
+  <marcxml:record>
+    <marcxml:leader>00697cx  a22001091  4500</marcxml:leader>
+    <marcxml:controlfield tag="001">377291</marcxml:controlfield>
+    <marcxml:controlfield tag="003">NBYdb</marcxml:controlfield>
+    <marcxml:controlfield tag="004">370589</marcxml:controlfield>
+    <marcxml:controlfield tag="005">20150501221044.0</marcxml:controlfield>
+    <marcxml:controlfield tag="008">0506220u||||8|||4001uu|||0000000</marcxml:controlfield>
+    <marcxml:datafield tag="852" ind1="7" ind2=" ">
+      <marcxml:subfield code="b">gen</marcxml:subfield>
+      <marcxml:subfield code="h">H</marcxml:subfield>
+      <marcxml:subfield code="i">75</marcxml:subfield>
+      <marcxml:subfield code="i">.26</marcxml:subfield>
+      <marcxml:subfield code="t">1</marcxml:subfield>
+      <marcxml:subfield code="2">localCutter</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="856" ind1="4" ind2="2">
+      <marcxml:subfield code="u">https://requests.newberry.org/aeon.dll?Action=10&amp;Form=30&amp;ReferenceNumber=370589&amp;ItemInfo1=%28OCoLC%29ocm16504428&amp;ItemTitle=Seven%20financial%20conspiracies%20which%20have%20enslaved%20the%20American%20people%20%2F&amp;ItemAuthor=Emery%2C%20Sarah%20E.%20Van%20De%20Vort%2C&amp;ItemPlace=Lansing%2C%20Mich.%20%3A&amp;ItemPublisher=R.%20Smith%20%26%20Co.%2C&amp;ItemDate=1894%2C%20c1887.&amp;ItemEdition=%5BRev.%20ed.%5D&amp;Location=General%20Collections&amp;CallNumber=H%2075%20.26%20&amp;ItemIssue=1</marcxml:subfield>
+      <marcxml:subfield code="y">Request</marcxml:subfield>
+    </marcxml:datafield>
+  </marcxml:record>
+  <marcxml:record>
+    <marcxml:leader>00697cx  a22001091  4500</marcxml:leader>
+    <marcxml:controlfield tag="001">375291</marcxml:controlfield>
+    <marcxml:controlfield tag="003">NBYdb</marcxml:controlfield>
+    <marcxml:controlfield tag="004">367589</marcxml:controlfield>
+    <marcxml:controlfield tag="005">20150501221044.0</marcxml:controlfield>
+    <marcxml:controlfield tag="008">0506220u||||8|||4001uu|||0000000</marcxml:controlfield>
+    <marcxml:datafield tag="852" ind1="7" ind2=" ">
+      <marcxml:subfield code="b">gen</marcxml:subfield>
+      <marcxml:subfield code="h">H</marcxml:subfield>
+      <marcxml:subfield code="i">75</marcxml:subfield>
+      <marcxml:subfield code="i">.26</marcxml:subfield>
+      <marcxml:subfield code="t">1</marcxml:subfield>
+      <marcxml:subfield code="2">localCutter</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="856" ind1="4" ind2="2">
+      <marcxml:subfield code="u">https://requests.newberry.org/aeon.dll?Action=10&amp;Form=30&amp;ReferenceNumber=370589&amp;ItemInfo1=%28OCoLC%29ocm16504428&amp;ItemTitle=Seven%20financial%20conspiracies%20which%20have%20enslaved%20the%20American%20people%20%2F&amp;ItemAuthor=Emery%2C%20Sarah%20E.%20Van%20De%20Vort%2C&amp;ItemPlace=Lansing%2C%20Mich.%20%3A&amp;ItemPublisher=R.%20Smith%20%26%20Co.%2C&amp;ItemDate=1894%2C%20c1887.&amp;ItemEdition=%5BRev.%20ed.%5D&amp;Location=General%20Collections&amp;CallNumber=H%2075%20.26%20&amp;ItemIssue=1</marcxml:subfield>
+      <marcxml:subfield code="y">Request</marcxml:subfield>
+    </marcxml:datafield>
+  </marcxml:record>
+  <marcxml:record>
+    <marcxml:leader>01055cam a22003494a 4500</marcxml:leader>
+    <marcxml:controlfield tag="001">370607</marcxml:controlfield>
+    <marcxml:controlfield tag="003">NBYdb</marcxml:controlfield>
+    <marcxml:controlfield tag="005">20080115002730.0</marcxml:controlfield>
+    <marcxml:controlfield tag="008">990817s2000    enka     b    001 0 eng  </marcxml:controlfield>
+    <marcxml:datafield tag="010" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">   99046013 </marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="035" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">(OCoLC)ocm42435002</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="035" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">(NBYdb)370607</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="040" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">DLC</marcxml:subfield>
+      <marcxml:subfield code="c">DLC</marcxml:subfield>
+      <marcxml:subfield code="d">WCM</marcxml:subfield>
+      <marcxml:subfield code="d">UKM</marcxml:subfield>
+      <marcxml:subfield code="d">MUQ</marcxml:subfield>
+      <marcxml:subfield code="d">IBV</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="015" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">GBA0-32777</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="019" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">44015807</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="020" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">0198162065</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="020" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">0195181654 (pbk.)</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="029" ind1="1" ind2=" ">
+      <marcxml:subfield code="a">UKM</marcxml:subfield>
+      <marcxml:subfield code="b">bA032777</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="042" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">pcc</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="050" ind1="0" ind2="0">
+      <marcxml:subfield code="a">MT130.M25</marcxml:subfield>
+      <marcxml:subfield code="b">Z93 2000</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="082" ind1="0" ind2="0">
+      <marcxml:subfield code="a">784.2/184</marcxml:subfield>
+      <marcxml:subfield code="2">21</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="049" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">IBVA</marcxml:subfield>
+      <marcxml:subfield code="m">no</marcxml:subfield>
+      <marcxml:subfield code="r">rep</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="100" ind1="1" ind2=" ">
+      <marcxml:subfield code="a">Zychowicz, James L.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="245" ind1="1" ind2="0">
+      <marcxml:subfield code="a">Mahler's Fourth symphony /</marcxml:subfield>
+      <marcxml:subfield code="c">James L. Zychowicz.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="260" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">Oxford ;</marcxml:subfield>
+      <marcxml:subfield code="a">New York :</marcxml:subfield>
+      <marcxml:subfield code="b">Oxford University Press,</marcxml:subfield>
+      <marcxml:subfield code="c">2000.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="300" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">xiii, 191 p. :</marcxml:subfield>
+      <marcxml:subfield code="b">ill. ;</marcxml:subfield>
+      <marcxml:subfield code="c">23 cm.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="440" ind1=" " ind2="0">
+      <marcxml:subfield code="a">Studies in musical genesis and structure</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="504" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">Includes bibliographical references (p. [182]-188) and index.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="600" ind1="1" ind2="0">
+      <marcxml:subfield code="a">Mahler, Gustav,</marcxml:subfield>
+      <marcxml:subfield code="d">1860-1911.</marcxml:subfield>
+      <marcxml:subfield code="t">Symphonies,</marcxml:subfield>
+      <marcxml:subfield code="n">no. 4,</marcxml:subfield>
+      <marcxml:subfield code="r">G major.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="910" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">Gift 2005 AJL</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="994" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">01</marcxml:subfield>
+      <marcxml:subfield code="b">IBV</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="947" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">MARS</marcxml:subfield>
+      <marcxml:subfield code="a">20071227</marcxml:subfield>
+    </marcxml:datafield>
+  </marcxml:record>
+  <marcxml:record>
+    <marcxml:leader>00585cx  a22001094  4500</marcxml:leader>
+    <marcxml:controlfield tag="001">377309</marcxml:controlfield>
+    <marcxml:controlfield tag="003">NBYdb</marcxml:controlfield>
+    <marcxml:controlfield tag="004">370607</marcxml:controlfield>
+    <marcxml:controlfield tag="005">20150502024110.0</marcxml:controlfield>
+    <marcxml:controlfield tag="008">0506234u    8   1001uu   0901128</marcxml:controlfield>
+    <marcxml:datafield tag="852" ind1="0" ind2=" ">
+      <marcxml:subfield code="b">gen</marcxml:subfield>
+      <marcxml:subfield code="h">MT130.M25</marcxml:subfield>
+      <marcxml:subfield code="i">Z93 2000</marcxml:subfield>
+      <marcxml:subfield code="t">1</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="856" ind1="4" ind2="2">
+      <marcxml:subfield code="u">https://requests.newberry.org/aeon.dll?Action=10&amp;Form=30&amp;ReferenceNumber=370607&amp;ItemInfo1=%28OCoLC%29ocm42435002&amp;ItemTitle=Mahler%27s%20Fourth%20symphony%20%2F&amp;ItemAuthor=Zychowicz%2C%20James%20L.&amp;ItemPlace=Oxford%20%3B&amp;ItemPublisher=Oxford%20University%20Press%2C&amp;ItemDate=2000.&amp;Location=General%20Collections&amp;CallNumber=MT130.M25%20Z93%202000%20&amp;ItemIssue=1</marcxml:subfield>
+      <marcxml:subfield code="y">Request</marcxml:subfield>
+    </marcxml:datafield>
+  </marcxml:record>
+  <marcxml:record>
+    <marcxml:leader>01152cam a22003494a 4500</marcxml:leader>
+    <marcxml:controlfield tag="001">370627</marcxml:controlfield>
+    <marcxml:controlfield tag="003">NBYdb</marcxml:controlfield>
+    <marcxml:controlfield tag="005">20080115002736.0</marcxml:controlfield>
+    <marcxml:controlfield tag="008">030818s2003    fr ab    b    001 0 fre c</marcxml:controlfield>
+    <marcxml:datafield tag="035" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">(OCoLC)ocm53442238</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="035" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">(NBYdb)370627</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="040" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">AUXAM</marcxml:subfield>
+      <marcxml:subfield code="b">eng</marcxml:subfield>
+      <marcxml:subfield code="c">AUXAM</marcxml:subfield>
+      <marcxml:subfield code="d">CGU</marcxml:subfield>
+      <marcxml:subfield code="d">OCLCQ</marcxml:subfield>
+      <marcxml:subfield code="d">TZT</marcxml:subfield>
+      <marcxml:subfield code="d">IBV</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="019" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">53096322</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="020" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">2900122341</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="029" ind1="1" ind2=" ">
+      <marcxml:subfield code="a">TZT</marcxml:subfield>
+      <marcxml:subfield code="b">JTL00116150</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="042" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">pcc</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="043" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">e-fr---</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="050" ind1=" " ind2="4">
+      <marcxml:subfield code="a">SD194.P42</marcxml:subfield>
+      <marcxml:subfield code="b">G373 2003</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="072" ind1=" " ind2="7">
+      <marcxml:subfield code="a">DC</marcxml:subfield>
+      <marcxml:subfield code="2">lcco</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="082" ind1="1" ind2="4">
+      <marcxml:subfield code="a">944</marcxml:subfield>
+      <marcxml:subfield code="2">1</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="049" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">IBVA</marcxml:subfield>
+      <marcxml:subfield code="m">no</marcxml:subfield>
+      <marcxml:subfield code="r">rep</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="100" ind1="1" ind2=" ">
+      <marcxml:subfield code="a">Garbit, Jacques,</marcxml:subfield>
+      <marcxml:subfield code="d">1922-</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="245" ind1="1" ind2="4">
+      <marcxml:subfield code="a">Les Lionnais du Perche-- des scieurs de long venus du Haut-Forez :</marcxml:subfield>
+      <marcxml:subfield code="b">XVIIe-XIXe siècles /</marcxml:subfield>
+      <marcxml:subfield code="c">Jacques Garbit ; avec le concours du Parc naturel régional du Perche.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="260" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">Ceton :</marcxml:subfield>
+      <marcxml:subfield code="b">Fédération des Amis du Perche,</marcxml:subfield>
+      <marcxml:subfield code="c">2003.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="300" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">285 p. :</marcxml:subfield>
+      <marcxml:subfield code="b">ill., maps ;</marcxml:subfield>
+      <marcxml:subfield code="c">24 cm.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="504" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">Includes bibliographical references (p. 217-224) and index.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="650" ind1=" " ind2="0">
+      <marcxml:subfield code="a">Foresters</marcxml:subfield>
+      <marcxml:subfield code="z">France</marcxml:subfield>
+      <marcxml:subfield code="z">Perche.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="650" ind1=" " ind2="0">
+      <marcxml:subfield code="a">Migration, Internal</marcxml:subfield>
+      <marcxml:subfield code="z">France</marcxml:subfield>
+      <marcxml:subfield code="z">Perche.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="651" ind1=" " ind2="0">
+      <marcxml:subfield code="a">Perche (France)</marcxml:subfield>
+      <marcxml:subfield code="x">Economic conditions.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="910" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">2005062305 AJL</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="994" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">01</marcxml:subfield>
+      <marcxml:subfield code="b">IBV</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="947" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">MARS</marcxml:subfield>
+      <marcxml:subfield code="a">20071227</marcxml:subfield>
+    </marcxml:datafield>
+  </marcxml:record>
+  <marcxml:record>
+    <marcxml:leader>00688cx  a22001094  4500</marcxml:leader>
+    <marcxml:controlfield tag="001">377328</marcxml:controlfield>
+    <marcxml:controlfield tag="003">NBYdb</marcxml:controlfield>
+    <marcxml:controlfield tag="004">370627</marcxml:controlfield>
+    <marcxml:controlfield tag="005">20150502180435.0</marcxml:controlfield>
+    <marcxml:controlfield tag="008">0506234u    8   1001uu   0901128</marcxml:controlfield>
+    <marcxml:datafield tag="852" ind1="0" ind2=" ">
+      <marcxml:subfield code="b">gen</marcxml:subfield>
+      <marcxml:subfield code="h">SD194.P42</marcxml:subfield>
+      <marcxml:subfield code="i">G373 2003</marcxml:subfield>
+      <marcxml:subfield code="t">1</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="856" ind1="4" ind2="2">
+      <marcxml:subfield code="u">https://requests.newberry.org/aeon.dll?Action=10&amp;Form=30&amp;ReferenceNumber=370627&amp;ItemInfo1=%28OCoLC%29ocm53442238&amp;ItemTitle=Les%20Lionnais%20du%20Perche--%20des%20scieurs%20de%20long%20venus%20du%20Haut-Forez%20%3AXVIIe-XIXe%20si%C3%A8cles%20%2F&amp;ItemAuthor=Garbit%2C%20Jacques%2C&amp;ItemPlace=Ceton%20%3A&amp;ItemPublisher=F%C3%A9d%C3%A9ration%20des%20Amis%20du%20Perche%2C&amp;ItemDate=2003.&amp;Location=General%20Collections&amp;CallNumber=SD194.P42%20G373%202003%20&amp;ItemIssue=1</marcxml:subfield>
+      <marcxml:subfield code="y">Request</marcxml:subfield>
+    </marcxml:datafield>
+  </marcxml:record>
+  <marcxml:record>
+    <marcxml:leader>01286cam a2200397 a 4500</marcxml:leader>
+    <marcxml:controlfield tag="001">370636</marcxml:controlfield>
+    <marcxml:controlfield tag="003">NBYdb</marcxml:controlfield>
+    <marcxml:controlfield tag="005">20080115002738.0</marcxml:controlfield>
+    <marcxml:controlfield tag="008">030331m19922002lu       bd   001 0 fre  </marcxml:controlfield>
+    <marcxml:datafield tag="035" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">(OCoLC)ocm28219150</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="035" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">(NBYdb)370636</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="040" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">NLC</marcxml:subfield>
+      <marcxml:subfield code="b">fre</marcxml:subfield>
+      <marcxml:subfield code="c">NLC</marcxml:subfield>
+      <marcxml:subfield code="d">IND</marcxml:subfield>
+      <marcxml:subfield code="d">OCLCQ</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="016" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">930105745</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="020" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">2503502482 (v. 1)</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="020" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">2890921131 (Sciences et culture : v. 1) :</marcxml:subfield>
+      <marcxml:subfield code="c">124,95 $</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="029" ind1="0" ind2=" ">
+      <marcxml:subfield code="a">NLC</marcxml:subfield>
+      <marcxml:subfield code="b">930105745</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="041" ind1="1" ind2=" ">
+      <marcxml:subfield code="a">fre</marcxml:subfield>
+      <marcxml:subfield code="h">ita</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="055" ind1="0" ind2="1">
+      <marcxml:subfield code="a">BV173</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="055" ind1="0" ind2="0">
+      <marcxml:subfield code="a">BV173</marcxml:subfield>
+      <marcxml:subfield code="b">N8614 1992</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="082" ind1="0" ind2=" ">
+      <marcxml:subfield code="a">264/.003</marcxml:subfield>
+      <marcxml:subfield code="2">20</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="090" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">BV173</marcxml:subfield>
+      <marcxml:subfield code="b">.N8614 1992</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="049" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">Ref</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="130" ind1="0" ind2=" ">
+      <marcxml:subfield code="a">Nuovo dizionario di liturgia.</marcxml:subfield>
+      <marcxml:subfield code="l">French.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="245" ind1="0" ind2="0">
+      <marcxml:subfield code="a">Dictionnaire encyclopedique de la liturgie /</marcxml:subfield>
+      <marcxml:subfield code="c">sous la direction de Domenico Sartore et Achille M. Triacca ; adaptation franc̜&lt;U+00bf&gt;&lt;U+00bf&gt;£ise sous la direction d'Henri Delhougne.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="260" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">[Turnhout, Belgium] :</marcxml:subfield>
+      <marcxml:subfield code="b">Brepols,</marcxml:subfield>
+      <marcxml:subfield code="c">c1992-c2002.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="300" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">2 v. ;</marcxml:subfield>
+      <marcxml:subfield code="c">24 cm.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="500" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">Translation of: Nuovo dizionario di liturgia.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="500" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">Includes index.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="505" ind1="0" ind2=" ">
+      <marcxml:subfield code="a">v. 1.  A-L -- v. 2.  M-Z.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="650" ind1=" " ind2="0">
+      <marcxml:subfield code="a">Liturgics</marcxml:subfield>
+      <marcxml:subfield code="v">Dictionaries</marcxml:subfield>
+      <marcxml:subfield code="x">French.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="700" ind1="1" ind2=" ">
+      <marcxml:subfield code="a">Sartore, Domenico.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="700" ind1="1" ind2=" ">
+      <marcxml:subfield code="a">Triacca, Achille M.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="700" ind1="1" ind2=" ">
+      <marcxml:subfield code="a">Delhougne, Henri.</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="910" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">2005062305/JFC</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="994" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">C0</marcxml:subfield>
+      <marcxml:subfield code="b">IBV</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="947" ind1=" " ind2=" ">
+      <marcxml:subfield code="a">MARS</marcxml:subfield>
+      <marcxml:subfield code="a">20071227</marcxml:subfield>
+    </marcxml:datafield>
+  </marcxml:record>
+  <marcxml:record>
+    <marcxml:leader>00231cx  a22001094  4500</marcxml:leader>
+    <marcxml:controlfield tag="001">377337</marcxml:controlfield>
+    <marcxml:controlfield tag="003">NBYdb</marcxml:controlfield>
+    <marcxml:controlfield tag="004">370636</marcxml:controlfield>
+    <marcxml:controlfield tag="005">20060331075545.0</marcxml:controlfield>
+    <marcxml:controlfield tag="008">0506234u    8   1001uu   0901128</marcxml:controlfield>
+    <marcxml:datafield tag="852" ind1="0" ind2=" ">
+      <marcxml:subfield code="b">ref</marcxml:subfield>
+      <marcxml:subfield code="k">Ref</marcxml:subfield>
+      <marcxml:subfield code="h">BV173</marcxml:subfield>
+      <marcxml:subfield code="i">.N8614 1992</marcxml:subfield>
+      <marcxml:subfield code="t">1</marcxml:subfield>
+    </marcxml:datafield>
+    <marcxml:datafield tag="866" ind1=" " ind2="0">
+      <marcxml:subfield code="8">0</marcxml:subfield>
+      <marcxml:subfield code="a">v.1-v.2</marcxml:subfield>
+    </marcxml:datafield>
+  </marcxml:record>
+</marcxml:collection>
