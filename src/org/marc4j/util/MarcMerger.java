@@ -14,9 +14,8 @@ import java.io.PrintStream;
 import java.util.Comparator;
 
 /**
- * Read a binary marc file
+ * Merge an existing file of binary MARC records, with a set new records, edited records, and deleted records.
  * @author Robert Haschart
- * @version $Id: RawRecordReader.java 700 2009-05-21 19:42:48Z rh9ec@virginia.edu $
  *
  */
 public class MarcMerger
@@ -28,8 +27,8 @@ public class MarcMerger
 
 
 	/**
-	 * 
-	 * @param args
+	 * main program for merging class.
+	 * @param args - the provided command line arguments
 	 */
     public static void main(String[] args)
     {
@@ -92,7 +91,6 @@ public class MarcMerger
             }
             catch (FileNotFoundException e)
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
                 System.exit(1);
             }
@@ -146,21 +144,6 @@ public class MarcMerger
 
     }
  
-//    private static String getNextFile(String filename)
-//    {
-//        File filepath = new File(filename);
-//        String filePrefix = filepath.getParent();
-//        String name = filepath.getName();
-//        String name1 = name.replaceAll("([^0-9]*)[0-9]*.*", "$1");
-//        String name2 = name.replaceAll("[^0-9]*([0-9]*).*", "$1");
-//        String name3 = name.replaceAll("[^0-9]*[0-9]*(.*)", "$1");
-//        int nameVal = 100000000 + Integer.parseInt(name2);
-//        String newName2 = String.valueOf(nameVal + 1);
-//        newName2 = newName2.substring(newName2.length() - name2.length());
-//        String newName = ((filePrefix == null) ? "" : filePrefix + File.separator) + name1 + newName2 + name3;
-//        return(newName);
-//    }
-
     static void processMergeRecords(RawRecordReader mainFile, String minID, String maxID, RawRecordReader newOrModified, DataInputStream deleted, OutputStream out, OutputStream newRecsOut) 
     {
         Comparator<String> compare = new StringNaturalCompare();

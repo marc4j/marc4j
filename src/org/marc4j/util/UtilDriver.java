@@ -1,48 +1,12 @@
 package org.marc4j.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marc4j.MarcJsonWriter;
-import org.marc4j.MarcReader;
-import org.marc4j.MarcReaderConfig;
-import org.marc4j.MarcReaderFactory;
-import org.marc4j.MarcStreamWriter;
-import org.marc4j.MarcTxtWriter;
-import org.marc4j.MarcWriter;
-import org.marc4j.MarcXmlWriter;
-import org.marc4j.Mrk8StreamWriter;
-import org.marc4j.converter.impl.UnicodeToAnsel;
-import org.marc4j.marc.Record;
-
 public class UtilDriver
 {
-    /**
-     * Provides a static entry point.
-     * <p>
-     * Arguments:
-     * </p>
-     * <ul>
-     * <li>-out &lt;output file&gt; - write to output file</li>
-     * <li>-convert &lt;encoding&gt; - convert &lt;encoding&gt; to UTF-8
-     * (Supported encodings: MARC8, ISO5426, ISO6937)</li>
-     * <li>-encode &lt;encoding&gt; - read data using encoding &lt;encoding&gt;</li>
-     * <li>-normalize - perform Unicode normalization</li>
-     * <li>-usage - show usage</li>
-     * <li>&lt;input file&gt; - input file with MARC records
-     * </ul>
-     *
-     * @param args - the command-line arguments
-     */
     public static String[][] commands = { {"marcdiff", "org.marc4j.util.MarcDiff" },
                                           {"getrecord", "org.marc4j.util.RawRecordReader" },
                                           {"getids", "org.marc4j.util.RawRecordReader", "-id" },
@@ -52,8 +16,29 @@ public class UtilDriver
                                           {"to_xml", "org.marc4j.util.RecordIODriver", "-convert", "xml"},
                                           {"to_utf8", "org.marc4j.util.RecordIODriver", "-convert", "utf8"},
                                           {"marcbreaker", "org.marc4j.util.RecordIODriver", "-convert", "mrk8"},
-                                          {"to_marc8", "org.marc4j.util.RecordIODriver", "-convert", "marc8"}};
+                                          {"to_marc8", "org.marc4j.util.RecordIODriver", "-convert", "marc8"},
+                                          {"marcsplit", "org.marc4j.util.SplitFile" }};
     
+    /**
+     * Provides a single entry point for starting one of several command line utilities 
+     * <p>
+     * Such as:
+     * <ul>
+     * <li>marcdiff     -   org.marc4j.util.MarcDiff </li>
+     * <li>getrecord    -   org.marc4j.util.RawRecordReader </li>
+     * <li>getids       -   org.marc4j.util.RawRecordReader -id </li>
+     * <li>marcsort     -   org.marc4j.util.MarcSorter </li>
+     * <li>marcupdate   -   org.marc4j.util.MarcMerger </li>
+     * <li>printrecord  -   org.marc4j.util.RecordIODriver -convert text</li>
+     * <li>to_xml       -   org.marc4j.util.RecordIODriver -convert xml </li>
+     * <li>to_utf8      -   org.marc4j.util.RecordIODriver -convert utf8 </li>
+     * <li>marcbreaker  -   org.marc4j.util.RecordIODriver -convert mrk8 </li>
+     * <li>to_marc8     -   org.marc4j.util.RecordIODriver -convert marc8 </li>
+     * <li>marcsplit    -   org.marc4j.util.SplitFile </li>
+     * </ul>
+     *
+     * @param args - the command-line arguments
+     */
     public static void main(final String args[]) {
 
         if (args.length == 0) {
@@ -129,6 +114,10 @@ public class UtilDriver
         System.err.println("          to_utf8 - convert records into binary MARC records using the UTF8 character encoding");
         System.err.println("          to_marc8 - convert records into binary MARC records using the MARC8 character encoding");
         System.err.println("          marcbreaker - convert records into MarcEdit ASCII encoding (using the UTF8 character encoding)");
+        System.err.println("          marcsplit - split a file of binary MARC records into smaller chunks");
+        System.err.println("");
+        System.err.println("Note: the arguments accepted by many of the above utilities are different.");
+        System.err.println("      For most of them passing an argument of -help or -usage will describe the arguments that utility accepts.");
         System.exit(0);
     }
 

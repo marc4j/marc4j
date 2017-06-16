@@ -21,9 +21,9 @@ import org.marc4j.marc.Record;
 public class SplitFile {
 
     /**
-     * Commandline interface for splitting records.
+     * Command line interface for splitting records.
      * 
-     * @param args
+     * @param args - the command-line arguments
      */
     public static void main(String[] args) {
         final long start = System.currentTimeMillis();

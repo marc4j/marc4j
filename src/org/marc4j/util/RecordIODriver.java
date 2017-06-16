@@ -57,38 +57,38 @@ public class RecordIODriver {
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-out") || args[i].equals("-o")) {
                 if (i == args.length - 1) {
-                    usage();
+                    usage("Missing argument for option "+args[i]+ " should be file to write output", 1);
                 }
                 output = args[++i].trim();
             } else if (args[i].equals("-edit")) {
                 if (i == args.length - 1) {
-                    usage();
+                    usage("Missing argument for option "+args[i]+ " should be properties file describing edits to perform", 1);
                 }
                 editProperties = args[++i].trim();
 
             } else if (args[i].equals("-delete")) {
                 if (i == args.length - 1) {
-                    usage();
+                    usage("Missing argument for option "+args[i]+ " should be a colon-spearated list of fields/subfields to delete from the records that are read", 1);
                 }
                 deleteSubfieldsSpec = args[++i].trim();
             } else if (args[i].equals("-convert")) {
                 if (i == args.length - 1) {
-                    usage();
+                    usage("Missing argument for option "+args[i]+ " should specify format in which to generate output", 1);
                 }
                 convert = args[++i].trim();
             } else if (args[i].equals("-matches")) {
                 if (i == args.length - 1) {
-                    usage();
+                    usage("Missing argument for option "+args[i]+ " should be field that must exist, with optional string that must be present", 1);
                 }
                 filterIfPresent = args[++i].trim();
             } else if (args[i].equals("-notmatches")) {
                 if (i == args.length - 1) {
-                    usage();
+                    usage("Missing argument for option "+args[i]+ " should be field that must NOT exist, with optional string that must NOT be present", 1);
                 }
                 filterIfMissing = args[++i].trim();
             } else if (args[i].equals("-encoding")) {
                 if (i == args.length - 1) {
-                    usage();
+                    usage("Missing argument for option "+args[i]+ " should specify the expected encoding of the input file(s)", 1);
                 }
                 encoding = args[++i].trim();
            /*  } else if (args[i].equals("-pretty")) {
@@ -99,29 +99,28 @@ public class RecordIODriver {
                 strict = true;
             } else if (args[i].equals("-combine")) {
                 if (i == args.length - 1) {
-                    usage();
+                    usage("Missing argument for option "+args[i]+ " should specify how consecutive records with matching ids should be combined", 1);
                 }
                 combineConsecutiveRecordsFieldParm = args[++i].trim();
             } else if (args[i].equals("-usage")) {
-                usage();
+                usage(null, 0);
             } else if (args[i].equals("-help")) {
-                usage();
+                usage("Missing argument for option "+args[i]+ " should specify command-line option ", 0);
+            } else if (args[i].startsWith("-") && args[i].length() > 1) {
+                usage("Unknown command line option "+args[i], 1);
             } else {
                 input = args[i].trim();
 
                 // Must be last arg
                 if (i != args.length - 1) {
-                    usage();
+                    usage("Input file should come after all of the command line options ", 1);
                 }
             }
-        }
-        if (input == null) {
-            usage();
         }
 
         InputStream in = null;
         try {
-            if (input.equals("-")) {
+            if (input == null || input.equals("-")) {
                 in = System.in;
             }
             else {
@@ -149,7 +148,7 @@ public class RecordIODriver {
         if (editProperties != null) {
             File editFile = new File(editProperties);
             if (!editFile.exists() || !editFile.canRead()) {
-                System.err.println("Unable to read Edit Properties file:  " + editFile.getAbsolutePath());
+                System.err.println("Error: Unable to read Edit Properties file:  " + editFile.getAbsolutePath());
                 System.exit(2);
             }
         }
@@ -166,7 +165,6 @@ public class RecordIODriver {
             reader = MarcReaderFactory.makeReader(config, in);
         }
         catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         MarcWriter writer = null;
@@ -205,7 +203,7 @@ public class RecordIODriver {
             Mrk8StreamWriter mrkwriter = new Mrk8StreamWriter(out);
             writer = mrkwriter;
         } else {
-            System.err.println("Unknown character set");
+            System.err.println("Error : Unknown output format: "+ convert );
             System.exit(1);
         }
 
@@ -215,16 +213,17 @@ public class RecordIODriver {
             writer.write(record);
         }
         writer.close();
-
-        //System.err.println("Total time: " + (System.currentTimeMillis() - start) + " miliseconds");
     }
 
-    private static void usage() {
-        System.err.println("Usage: java -cp marc4j.jar org.marc4j.util.RecordIODriver [-options] <file.mrc>");
-        System.err.println("   or: java -cp marc4j.jar org.marc4j.util.RecordIODriver [-options] <file.xml>");
-        System.err.println("   or: java -cp marc4j.jar org.marc4j.util.RecordIODriver [-options] <file.json>");
+    private static void usage(String error, int exitcode) {
+        if (error != null) {
+            System.err.println("Error: "+ error);
+        }
+        System.err.println("Usage: org.marc4j.util.RecordIODriver [-options] <file.mrc>");
+        System.err.println("   or: org.marc4j.util.RecordIODriver [-options] <file.xml>");
+        System.err.println("   or: org.marc4j.util.RecordIODriver [-options] <file.json>");
         System.err.println("       -convert <format> = Produce output in the specified format");
-        System.err.println("       Valid formats are: xml, json, utf8, marc8, mrk8, ncr, text ");
+        System.err.println("           Valid formats are: xml, json, utf8, marc8, mrk8, ncr, text ");
         System.err.println("       -encoding <inputFile encoding> = expected character encoding of input file");
         System.err.println("       -normalize = perform Unicode normalization");
         System.err.println("       -combine = combine consecutive that have the same record id");
@@ -236,7 +235,7 @@ public class RecordIODriver {
         System.err.println("       -out <file> = Output to <file> instead of stdout");
         System.err.println("       -help <option> = more verbose help message about the specified option");
         System.err.println("       -usage = this message");
-        System.exit(0);
+        System.exit(exitcode);
     }
 
 

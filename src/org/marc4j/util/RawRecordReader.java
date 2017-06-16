@@ -63,8 +63,8 @@ public class RawRecordReader {
             if (afterNextRec == null) {
                 afterNextRec = new RawRecord(input);
                 if (mergeRecords) {
-                    while (afterNextRec != null && afterNextRec.getRecordBytes() != null && afterNextRec
-                            .getRecordId().equals(nextRec.getRecordId())) {
+                    while (afterNextRec != null && afterNextRec.getRecordBytes() != null && 
+                            afterNextRec.getRecordId() != null && afterNextRec.getRecordId().equals(nextRec.getRecordId())) {
                         nextRec = new RawRecord(nextRec, afterNextRec);
                         afterNextRec = new RawRecord(input);
                     }
@@ -107,67 +107,88 @@ public class RawRecordReader {
      * @param args - the command-line arguments
      */
     public static void main(final String[] args) {
-        RawRecordReader reader;
+        RawRecordReader reader = null;
 
-        if (args.length < 2) {
-            System.err.println("Error: No records specified for extraction");
-        }
+//        if (args.length < 2) {
+//            System.err.println("Error: No records specified for extraction");
+//        }
 
         try {
             int numToSkip = 0;
             int numToOutput = -1;
             int offset = 0;
-
-            if (args[offset].equals("-")) {
-                reader = new RawRecordReader(System.in);
-            } else {
-                reader = new RawRecordReader(new FileInputStream(new File(args[offset])));
-            }
-            offset++;
-
-            while (offset < args.length && (args[offset].equals("-skip") || args[offset]
-                    .equals("-num"))) {
-                if (args[offset].equals("-skip")) {
-                    numToSkip = Integer.parseInt(args[offset + 1]);
-                    offset += 2;
-                } else if (args[offset].equals("-num")) {
-                    numToOutput = Integer.parseInt(args[offset + 1]);
-                    offset += 2;
+            boolean merge = true;
+            boolean idsOnly = false;
+            String idRegex = null;
+            String hasFieldRegex = null;
+            String idsLookedForFile = null;
+            
+            while (offset >= 0 && offset < args.length) {
+                if (args[offset].startsWith("-")) {
+                    if (args[offset].equals("-")) {
+                        reader = new RawRecordReader(System.in);
+                        offset++;
+                    } else if (args[offset].equals("-skip")) {
+                        if (offset == args.length - 1) {
+                            usage("Missing argument for option "+args[offset]+ " should be number of records to skip", 1);
+                        }
+                        numToSkip = Integer.parseInt(args[offset + 1]);
+                        offset += 2;
+                    } else if (args[offset].equals("-num")) {
+                        if (offset == args.length - 1) {
+                            usage("Missing argument for option "+args[offset]+ " should be number of records to output", 1);
+                        }
+                        numToOutput = Integer.parseInt(args[offset + 1]);
+                        offset += 2;
+                    } else if (args[offset].equals("-nomerge")) {
+                        merge = false;
+                        offset++;
+                    } else if (args[offset].equals("-id")) {
+                        idsOnly = false;
+                        offset++;
+                    } else if (args[offset].equals("-h")) {
+                        if (offset == args.length - 1) {
+                            usage("Missing argument for option "+args[offset]+ " should be regex for field(s) that must be present", 1);
+                        }
+                        hasFieldRegex = args[offset + 1].trim();
+                        offset += 2;
+                    } else if (args[offset].equals("-usage")) {
+                        usage(null, 0);
+                    } 
+                }
+                else if (args[offset].endsWith(".mrc")) {
+                    reader = new RawRecordReader(new FileInputStream(new File(args[offset++])));
+                }
+                else if (args[offset].endsWith(".txt")) {
+                    idsLookedForFile = args[offset++];
+                }
+                else {
+                    idRegex = args[offset++].trim();
                 }
             }
+            
+            if (reader == null) {
+                reader = new RawRecordReader(System.in);
+            } 
 
-            if (offset < args.length && args[offset].equals("-nomerge")) {
-                reader.mergeRecords = false;
-                offset++;
-            }
-
-            if (numToSkip != 0 || numToOutput != -1) {
+            reader.mergeRecords = merge;
+            
+            if (idsOnly) {
+                printIds(reader, numToSkip, numToOutput);
+            } else if (numToSkip != 0 || numToOutput != -1) {
                 processInput(reader, numToSkip, numToOutput);
-            } else if (args[offset].equals("-id")) {
-                printIds(reader);
-            } else if (args[offset].equals("-h") && args.length >= 3) {
-                final String idRegex = args[offset + 1].trim();
-                processInput(reader, null, idRegex, null);
-            } else if (!args[offset].endsWith(".txt")) {
-                final String idRegex = args[offset].trim();
+            } else if (hasFieldRegex != null) {                
+                processInput(reader, null, hasFieldRegex, null);
+            } else if (idRegex != null) {
                 processInput(reader, idRegex, null, null);
-            } else {
-                final File idList = new File(args[offset]);
+            } else if (idsLookedForFile != null) {
+                final File idList = new File(idsLookedForFile);
                 final BufferedReader idStream = new BufferedReader(new InputStreamReader(
                         new BufferedInputStream(new FileInputStream(idList))));
                 String line;
-                String findReplace[] = null;
-
-                if (args.length > 2) {
-                    findReplace = args[2].split("->");
-                }
-
                 final LinkedHashSet<String> idsLookedFor = new LinkedHashSet<String>();
 
                 while ((line = idStream.readLine()) != null) {
-                    if (findReplace != null) {
-                        line = line.replaceFirst(findReplace[0], findReplace[1]);
-                    }
 
                     idsLookedFor.add(line);
                 }
@@ -175,14 +196,31 @@ public class RawRecordReader {
                 idStream.close();
                 processInput(reader, null, null, idsLookedFor);
 
+            } else {
+                processInput(reader, null, null, null);
             }
         } catch (final EOFException e) {
             // Done Reading input, Be happy
         } catch (final IOException e) {
-            // e.printStackTrace();
+            e.printStackTrace();
             // logger.error(e.getMessage());
         }
 
+    }
+
+    private static void usage(String error, int exitcode) {
+        if (error != null) {
+            System.err.println("Error: "+ error);
+        }
+        System.err.println("Usage: org.marc4j.util.RawRecordReader [-options] <file.mrc>");
+        System.err.println("       -id           Output record ids only");
+        System.err.println("       -h <field>    Only output records containing the specified field");
+        System.err.println("       -skip <num>   Number of records to skip before outputing any");
+        System.err.println("       -num <num>    Number of records to output before terminating");
+        System.err.println("       idfile.txt    Name of file containing pull-list of records to output");
+        System.err.println("       id            Regex specifying id(s) of records to output");
+        System.err.println("       -usage        Show this message");
+        System.exit(exitcode);
     }
 
     private static void processInput(final RawRecordReader reader, final int numToSkip,
@@ -209,11 +247,25 @@ public class RawRecordReader {
         }
     }
 
-    static void printIds(final RawRecordReader reader) throws IOException {
+    static void printIds(final RawRecordReader reader, final int numToSkip,
+            final int numToOutput) throws IOException {
+        int num = 0;
+        int numOutput = 0;
+        
         while (reader.hasNext()) {
             final RawRecord rec = reader.next();
-            final String id = rec.getRecordId();
-            System.out.println(id);
+            num++;
+
+            if (num <= numToSkip) {
+                continue;
+            }
+
+            if (numToOutput == -1 || numOutput < numToOutput) {
+                final String id = rec.getRecordId();
+                System.out.println(id);
+                
+                numOutput++;
+            }
         }
     }
 
