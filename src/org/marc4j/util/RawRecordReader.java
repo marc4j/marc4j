@@ -144,7 +144,7 @@ public class RawRecordReader {
                         merge = false;
                         offset++;
                     } else if (args[offset].equals("-id")) {
-                        idsOnly = false;
+                        idsOnly = true;
                         offset++;
                     } else if (args[offset].equals("-h")) {
                         if (offset == args.length - 1) {
@@ -166,13 +166,13 @@ public class RawRecordReader {
                     idRegex = args[offset++].trim();
                 }
             }
-            
+
             if (reader == null) {
                 reader = new RawRecordReader(System.in);
             } 
 
             reader.mergeRecords = merge;
-            
+
             if (idsOnly) {
                 printIds(reader, numToSkip, numToOutput);
             } else if (numToSkip != 0 || numToOutput != -1) {
@@ -251,7 +251,7 @@ public class RawRecordReader {
             final int numToOutput) throws IOException {
         int num = 0;
         int numOutput = 0;
-        
+
         while (reader.hasNext()) {
             final RawRecord rec = reader.next();
             num++;
@@ -263,7 +263,7 @@ public class RawRecordReader {
             if (numToOutput == -1 || numOutput < numToOutput) {
                 final String id = rec.getRecordId();
                 System.out.println(id);
-                
+
                 numOutput++;
             }
         }
@@ -274,8 +274,8 @@ public class RawRecordReader {
         while (reader.hasNext()) {
             final RawRecord rec = reader.next();
             final String id = rec.getRecordId();
-            if (idsLookedFor == null && recordHas == null && id.matches(idRegex) || idsLookedFor != null && idsLookedFor
-                    .contains(id)) {
+            if (idsLookedFor == null && recordHas == null && (idRegex == null || id.matches(idRegex)) || 
+                    idsLookedFor != null && idsLookedFor.contains(id)) {
                 final byte recordBytes[] = rec.getRecordBytes();
                 System.out.write(recordBytes);
                 System.out.flush();
