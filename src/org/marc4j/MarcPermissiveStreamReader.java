@@ -1245,10 +1245,19 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 } else if (hasEsc && inCyrillic) {
                     final String prev = new String(field, i - (flen - 1), flen - 1);
 
-                    if (!(field[i + 1] >= 'a' && field[i + 1] <= 'z') || prev.equals("\u001b(N")) {
+                    if (!(field[i + 1] >= 'a' && field[i + 1] <= 'z')) {
                         addError(MarcError.MINOR_ERROR,
                                 "Subfield separator found in Cyrillic string, changing separator to a vertical bar, and continuing");
                         field[i] = 0x7C;
+                        justCleaned = true;
+                    }
+                    else if ((field[i + 1] >= 'a' && field[i + 1] <= 'z' && field.length > i + 3 && 
+                            field[i + 2] >= 'A' && field[i + 2] <= 'Z' && 
+                            field[i + 3] >= 'A' && field[i + 3] <= 'Z' )  || prev.equals("\u001b(N")){
+                        addError(MarcError.MINOR_ERROR,
+                                "Subfield separator found in Cyrillic string, changing separator to a vertical bar, and changing subfield code character to uppercase");
+                        field[i] = 0x7C;
+                        field[i + 1] = (byte)Character.toUpperCase(field[i + 1]);
                         justCleaned = true;
                     }
                 } else if (hasEsc && !(field[i + 1] >= 'a' && field[i + 1] <= 'z' || field[i + 1] >= '0' && field[i + 1] <= '9')) {
