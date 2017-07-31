@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.Normalizer;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -14,8 +15,25 @@ public class MarcDiff
 {
     static boolean verbose = false;
     static boolean noCompare = false;
+    static boolean cntOnly = false;
     static String writeDifferentRecords = null;
-
+    static int cntMissing = 0;
+    static int cntNew = 0;
+    static int cntBoth = 0;
+    static int cntDiffRough = 0;
+    static int cntDiffFine = 0;
+    static int cntSameWhenNormalized = 0;
+    static int cntSameWhenLigature = 0;
+    static int cntDiffLeaderOnly = 0;
+    static int cntDiffLeaderLengthOnly = 0;
+    static int cntMissingFields = 0;
+    static int cntNewFields = 0;
+    static int cntMissingFieldsOnly = 0;
+    static int cntNewFieldsOnly = 0;
+    static int cntMissingAndNewFieldsOnly = 0;
+    static int cntNumSignificantDiff = 0;
+    static int fixCnt = 0;
+    
     public static void main(String[] args)
     {
         int i = 0;
@@ -25,12 +43,16 @@ public class MarcDiff
         while (i < args.length && args[i].startsWith("-") && args[i].length() > 1) {
             if (args[i].equals("-v")) {
                 verbose = true;
+                System.err.println("Verbose = true");
                 i++;
             } else if (args[0].startsWith("-mrc")) {
                 writeDifferentRecords = args[0].substring(1);
                 i++;
             } else if (args[i].startsWith("-nc")) {
                 noCompare = true;
+                i++;
+            } else if (args[i].startsWith("-cnt")) {
+                cntOnly = true;
                 i++;
             } else if (args[i].startsWith("-usage")) {
                 usage(null, 0);
@@ -95,31 +117,72 @@ public class MarcDiff
                     byte rec2bytes[] = rec2.getRecordBytes();
                     if (!java.util.Arrays.equals(rec1bytes, rec2bytes)) {
                         writeRecord(writeDifferentRecords, verbose, rec1, rec2);
+                        cntDiffRough ++;
                     }
 
+                    if (cntDiffRough != cntDiffFine + fixCnt) {
+                        boolean fixit = false;
+                        int length = Math.min(rec1bytes.length, rec2bytes.length);
+                        for (int r1 = 0; r1 <length; r1++) {
+                            if (rec1bytes[r1] != rec2bytes[r1]) {
+                                fixit = true;
+                            }
+                        }
+                        if (rec1bytes.length != rec2bytes.length) fixit = true;
+                        Record r1 = rec1.getAsRecord(true, true, "999", "MARC8");
+                        Record r2 = rec2.getAsRecord(true, true, "999", "MARC8");
+                        String str1 = r1.toString();
+                        String str2 = r2.toString();
+
+                        if (fixit) fixCnt++;
+                    }
                     rec1 = (reader1.hasNext()) ? reader1.next() : null;
                     rec2 = (reader2.hasNext()) ? reader2.next() : null;
+                    cntBoth ++;
                 }
                 else if (compVal < 0) {
                     writeRecord(writeDifferentRecords, verbose, rec1, null);
                     rec1 = (reader1.hasNext()) ? reader1.next() : null;
+                    cntMissing ++;
                 }
                 else if (compVal > 0) {
                     writeRecord(writeDifferentRecords, verbose, null, rec2);
                     rec2 = (reader2.hasNext()) ? reader2.next() : null;
+                    cntNew ++;
                 }
             }
             while (rec1 != null) {
                 writeRecord(writeDifferentRecords, verbose, rec1, null);
                 rec1 = (reader1.hasNext()) ? reader1.next() : null;
+                cntMissing ++;
             }
             while (rec2 != null) {
                 writeRecord(writeDifferentRecords, verbose, null, rec2);
                 rec2 = (reader2.hasNext()) ? reader2.next() : null;
+                cntNew ++;
             }
         }
         catch (IOException ioe) {
             System.err.println("Error: Trouble writing to stdout, can this even happen?");
+        }
+        if (cntOnly) {
+            System.out.println("" + cntMissing + " records in file1 but not in file2");
+            System.out.println("" + cntNew + " records in file2 but not in file1");
+            System.out.println("" + cntBoth + " records in both files");
+            System.out.println("" + (cntBoth - ( cntDiffFine + cntMissingFieldsOnly + cntNewFieldsOnly + cntMissingAndNewFieldsOnly)) + " are the same in both files");
+            System.out.println("" + (cntMissingFields) + " have missing fields");
+            System.out.println("  " + (cntMissingFieldsOnly) + " of those are otherwise are the same");
+            System.out.println("" + (cntNewFields) + " have new fields");
+            System.out.println("  " + (cntNewFieldsOnly) + " of those are otherwise are the same");
+            System.out.println("  " + (cntMissingAndNewFieldsOnly) + " have both missing fields and new fields but are otherwise are the same");
+            System.out.println("" + (cntDiffRough) + " are different");
+            System.out.println("" + (cntDiffFine) + " have different field contents");
+            System.out.println("  " + (cntDiffLeaderLengthOnly) + " of these only differ in the lengths in the leader");
+            System.out.println("  " + (cntDiffLeaderOnly) + " of these only differ in the other fields in the leader");
+            System.out.println("  " + (cntSameWhenNormalized) + " of these are the same when accented characters are normalized");
+            System.out.println("  " + (cntSameWhenLigature) + " of these are the same when two part combining characters are fixed");
+            System.out.println("  " + (cntNumSignificantDiff) + " have significant differences");
+            System.out.println("  " + (cntDiffRough - cntDiffFine) + " have no detectable differences");
         }
     }
 
@@ -133,6 +196,7 @@ public class MarcDiff
         System.err.println("       -mrc1   Write out binary MARC records from the first file only that are new or different from the corresponding record in file 2");
         System.err.println("       -mrc2   Write out binary MARC records from the second file only that are new or different from the corresponding record in file 1");
         System.err.println("       -nc     Simply compare files based on the position of binary MARC records, rather than checking for correspondence of record ids");
+        System.err.println("       -cnt    Simply count the differences between the files without showing them");
         System.err.println("       -usage = this message");
         System.exit(exitcode);
     }
@@ -158,21 +222,26 @@ public class MarcDiff
                 Record r2 = rec2.getAsRecord(true, true, "999", "MARC8");
                 String str1 = r1.toString();
                 String str2 = r2.toString();
-                if (!verbose) System.out.println("record with id: " + rec1.getRecordId() + " different in file1 and file2");
+                if (!verbose && !cntOnly) System.out.println("record with id: " + rec1.getRecordId() + " different in file1 and file2");
                 if (!str1.equals(str2)) {
-                    showDiffs(System.out, str1, str2, verbose, null);
+                    if (!cntOnly) {
+                        showDiffs(System.out, str1, str2, verbose, null);
+                    }
+                    else {
+                        cntDiffs(str1, str2, verbose); 
+                    }
                 }
             }
             else if (rec1 != null) {
-                System.out.println("record with id: " + rec1.getRecordId() + " found in file1 but not in file2");
-                if (verbose) {
+                if (!cntOnly) System.out.println("record with id: " + rec1.getRecordId() + " found in file1 but not in file2");
+                if (verbose && !cntOnly) {
                     Record rec = rec1.getAsRecord(true, true, "999", "MARC8");
                     System.out.println(rec.toString());
                 }
             }
             else {
-                System.out.println("record with id: " + rec2.getRecordId() + " found in file2 but not in file1");
-                if (verbose) {
+                if (!cntOnly) System.out.println("record with id: " + rec2.getRecordId() + " found in file2 but not in file1");
+                if (verbose && !cntOnly) {
                     Record rec = rec2.getAsRecord(true, true, "999", "MARC8");
                     System.out.println(rec.toString());
                 }
@@ -180,12 +249,119 @@ public class MarcDiff
         }
     }
 
+    
+    private static void cntDiffs(String str1, String str2, boolean verbose) {
+        boolean incrementStillDiffWhenNormalized = false;
+        boolean incrementStillDiffWhenLigature = false;
+        boolean incrementDiffLeaderImpt = false;
+        boolean incrementDiffLeaderLength = false;
+        boolean incrementNewFields = false;
+        boolean incrementMissingFields = false;
+        boolean incrementDiff = false;
+        String str1Lines[] = str1.split("\n");
+        String str2Lines[] = str2.split("\n");
+        int index1 = 0;
+        int index2 = 0;
+        while (index1 < str1Lines.length && index2 < str2Lines.length) {
+            if (str1Lines[index1].equals(str2Lines[index2])) {
+                index1++; index2++;
+            }
+            else if (hasMatch(str2Lines, index2+1, str1Lines[index1])) {
+                incrementNewFields = true;
+                index2++;
+            }
+            else if (hasMatch(str1Lines, index1+1, str2Lines[index2])) {
+                incrementMissingFields = true;
+                index1++;
+            }
+            else {
+                String s1 = str1Lines[index1];
+                String s2 = str2Lines[index2];
+                String s1Norm = Normalizer.normalize(s1,  Normalizer.Form.NFC);
+                String s2Norm = Normalizer.normalize(s2,  Normalizer.Form.NFC);
+                String s1Ligature = ligatureNormalize(s1Norm);
+                String s2Ligature = ligatureNormalize(s2Norm);
+                if (s1.startsWith("LEADER") && s2.startsWith("LEADER")) {
+                    String s1Leader = s1.replaceFirst("(LEADER )(.....)(.......)(.....)(.......)" , "$1XXXXX$3XXXXX$5");
+                    String s2Leader = s2.replaceFirst("(LEADER )(.....)(.......)(.....)(.......)" , "$1XXXXX$3XXXXX$5");
+                    if (!s1Leader.equals(s2Leader)) {
+                         incrementDiffLeaderImpt = true;
+                    } 
+                    else {
+                        incrementDiffLeaderLength = true;
+                    }
+               }
+               else {
+                    incrementDiff = true;
+                    if (!s1Norm.equals(s2Norm)) {
+                        incrementStillDiffWhenNormalized = true;
+                    }
+                    else {
+                        incrementStillDiffWhenNormalized = incrementStillDiffWhenNormalized;
+                    }
+                    if (!s1Ligature.equals(s2Ligature)) {
+                        incrementStillDiffWhenLigature = true;
+                    }
+                    else {
+                        incrementStillDiffWhenLigature = incrementStillDiffWhenLigature;
+                    }
+                }
+                index1++; index2++;
+            }
+        }
+        while (index1 < str1Lines.length) {
+            incrementMissingFields = true;
+            index1++;
+        }
+        while (index2 < str2Lines.length) {
+            incrementNewFields = true;
+            index2++;
+        }
+        if (incrementDiff && incrementStillDiffWhenNormalized && incrementStillDiffWhenLigature)
+        {
+            if (verbose) showDiffs(System.out, str1, str2, verbose, null);
+            cntNumSignificantDiff ++;
+        }
+        if (incrementDiff && !incrementStillDiffWhenNormalized) 
+            cntSameWhenNormalized ++;
+        if (incrementDiff && incrementStillDiffWhenNormalized && !incrementStillDiffWhenLigature)   
+            cntSameWhenLigature ++;
+        if (incrementDiffLeaderImpt  &&  !incrementMissingFields && !incrementNewFields)     
+            cntDiffLeaderOnly ++;
+        if (incrementDiffLeaderLength &&  !incrementDiff && !incrementMissingFields && !incrementNewFields)     
+            cntDiffLeaderLengthOnly ++;
+        if (!incrementDiff && incrementMissingFields && !incrementNewFields )   cntMissingFieldsOnly++;
+        if (!incrementDiff && incrementNewFields && !incrementMissingFields)    cntNewFieldsOnly++;
+        if (!incrementDiff && incrementMissingFields && incrementNewFields )    cntMissingAndNewFieldsOnly++;
+        if (incrementMissingFields)   cntMissingFields++;
+        if (incrementNewFields)       cntNewFields++;
+        if (incrementDiff)            cntDiffFine++;
+        else {
+            index2++;
+        }
+        if (!incrementDiff && !incrementMissingFields && !incrementNewFields && !incrementDiffLeaderImpt && !incrementDiffLeaderLength)
+        {
+            incrementDiff = !incrementDiff;
+        }
+    }
+
+    private static String ligatureNormalize(String str)
+    {
+        while (str.matches("(.*)\uFE20(.)\uFE21(.*)")) {
+            str = str.replaceFirst("(.*)\uFE20(.)\uFE21(.*)", "$1\u0361$2$3"); 
+        }
+        while (str.matches("(.*)\uFE22(.)\uFE23(.*)")) {
+            str = str.replaceFirst("(.*)\uFE22(.)\uFE23(.*)", "$1\u0360$2$3"); 
+        }
+        return str;
+    }
+
     public static void showDiffs(PrintStream out, String strNorm, String strPerm, boolean verbose, Map<Character,String> map)
     {
         if (strNorm != null) {
             String normLines[] = strNorm.split("\n");
             String permLines[] = strPerm.split("\n");
-            if (normLines.length == permLines.length) {
+ /*           if (normLines.length == permLines.length) {
                 for (int i = 0; i < normLines.length; i++) {
                     if (normLines[i].equals(permLines[i])) {
                         if (verbose) out.println("   " + normLines[i]);
@@ -220,12 +396,45 @@ public class MarcDiff
                         }
                     }
                     else {
-                        out.println(" < " + normLines[i]);
-                        out.println(" > " + permLines[i]);
+                        String s1 = normLines[i];
+                        String s2 = permLines[i];
+                        String s1Norm = Normalizer.normalize(s1,  Normalizer.Form.NFC);
+                        String s2Norm = Normalizer.normalize(s2,  Normalizer.Form.NFC);
+                        String s1Ligature = ligatureNormalize(s1Norm);
+                        String s2Ligature = ligatureNormalize(s2Norm);
+                        String label1 = ">>>"; 
+                        String label2 = "<<<";
+                        if (s1.startsWith("LEADER") && s2.startsWith("LEADER")) {
+                            String s1Leader = s1.replaceFirst("(LEADER )(.....)(.......)(.....)(.......)" , "$1XXXXX$3XXXXX$5");
+                            String s2Leader = s2.replaceFirst("(LEADER )(.....)(.......)(.....)(.......)" , "$1XXXXX$3XXXXX$5");
+                            if (s1Leader.equals(s2Leader)) {
+                                label1 = " > "; 
+                                label2 = " < ";
+                            }
+                                
+                       }
+                       else {
+                            if (s1Norm.equals(s2Norm)) 
+                            {
+                                label1 = " > "; 
+                                label2 = " < ";
+                            }
+                            else if (s1Ligature.equals(s2Ligature)) {
+                                label1 = " >>"; 
+                                label2 = " <<";
+                            }
+                            else {
+                                label1 = ">>>"; 
+                                label2 = "<<<";
+                            }
+                        }
+
+                        out.println(label2 + normLines[i]);
+                        out.println(label1 + permLines[i]);
                     }
                 }
             }
-            else {
+            else {*/
                 int index1 = 0;
                 int index2 = 0;
                 while (index1 < normLines.length && index2 < permLines.length) {
@@ -234,28 +443,61 @@ public class MarcDiff
                         index1++; index2++;
                     }
                     else if (hasMatch(permLines, index2+1, normLines[index1])) {
-                        out.println(" > " + permLines[index2]);
+                        out.println(">>>" + permLines[index2]);
                         index2++;
                     }
                     else if (hasMatch(normLines, index1+1, permLines[index2])) {
-                        out.println(" < " + normLines[index1]);
+                        out.println("<<<" + normLines[index1]);
                         index1++;
                     }
                     else {
-                        out.println(" < " + normLines[index1]);
-                        out.println(" > " + permLines[index2]);
+                        String s1 = normLines[index1];
+                        String s2 = permLines[index2];
+                        String s1Norm = Normalizer.normalize(s1,  Normalizer.Form.NFC);
+                        String s2Norm = Normalizer.normalize(s2,  Normalizer.Form.NFC);
+                        String s1Ligature = ligatureNormalize(s1Norm);
+                        String s2Ligature = ligatureNormalize(s2Norm);
+                        String label1 = ">>>"; 
+                        String label2 = "<<<";
+                        if (s1.startsWith("LEADER") && s2.startsWith("LEADER")) {
+                            String s1Leader = s1.replaceFirst("(LEADER )(.....)(.......)(.....)(.......)" , "$1XXXXX$3XXXXX$5");
+                            String s2Leader = s2.replaceFirst("(LEADER )(.....)(.......)(.....)(.......)" , "$1XXXXX$3XXXXX$5");
+                            if (s1Leader.equals(s2Leader)) {
+                                label1 = " > "; 
+                                label2 = " < ";
+                            }
+                                
+                       }
+                       else {
+                            if (s1Norm.equals(s2Norm)) 
+                            {
+                                label1 = " > "; 
+                                label2 = " < ";
+                            }
+                            else if (s1Ligature.equals(s2Ligature)) {
+                                label1 = " >>"; 
+                                label2 = " <<";
+                            }
+                            else {
+                                label1 = ">>>"; 
+                                label2 = "<<<";
+                            }
+                        }
+
+                        out.println(label2 + normLines[index1]);
+                        out.println(label1 + permLines[index2]);
                         index1++; index2++;
                     }
                 }
                 while (index1 < normLines.length) {
-                    out.println(" < " + normLines[index1]);
+                    out.println("<<<" + normLines[index1]);
                     index1++;
                 }
                 while (index2 < permLines.length) {
-                    out.println(" > " + permLines[index2]);
+                    out.println(">>>" + permLines[index2]);
                     index2++;
                 }
-            }
+            
         }
         else {
             String permLines[] = strPerm.split("\n");
