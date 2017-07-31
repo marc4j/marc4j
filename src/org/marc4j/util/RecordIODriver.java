@@ -53,6 +53,8 @@ public class RecordIODriver {
         boolean pretty = true;
         boolean strict = false;
         boolean marc8Flag = false;
+        boolean writeErrorRecs = true;
+        boolean writeNoErrorRecs = true;
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-out") || args[i].equals("-o")) {
@@ -86,6 +88,12 @@ public class RecordIODriver {
                     usage("Missing argument for option "+args[i]+ " should be field that must NOT exist, with optional string that must NOT be present", 1);
                 }
                 filterIfMissing = args[++i].trim();
+            } else if (args[i].equals("-errors")) {
+                writeErrorRecs = true;
+                writeNoErrorRecs = false;
+            } else if (args[i].equals("-noerrors")) {
+                writeErrorRecs = false;
+                writeNoErrorRecs = true;
             } else if (args[i].equals("-encoding")) {
                 if (i == args.length - 1) {
                     usage("Missing argument for option "+args[i]+ " should specify the expected encoding of the input file(s)", 1);
@@ -171,6 +179,10 @@ public class RecordIODriver {
 
         if (convert.equalsIgnoreCase("text") || convert.equalsIgnoreCase("ASCII")) {
             writer = new MarcTxtWriter(out);
+        } else if (convert.equalsIgnoreCase("errors")) {
+            writer = new MarcTxtWriter(out, "001;err");
+        } else if (convert.matches("([0-9][0-9][0-9]|err)(:([0-9][0-9][0-9]|err))*")) {
+            writer = new MarcTxtWriter(out, convert);
         } else if (convert.equalsIgnoreCase("XML") || convert.equalsIgnoreCase("MARCXML")) {
             MarcXmlWriter xmlwriter = new MarcXmlWriter(out, "UTF8");
             if (pretty)     xmlwriter.setIndent(true);
@@ -208,9 +220,25 @@ public class RecordIODriver {
         }
 
         while (reader.hasNext()) {
-            final Record record = reader.next();
-            record.getLeader().setCharCodingScheme((marc8Flag ? ' ' : 'a'));
-            writer.write(record);
+            String controlNumber = "n/a";
+            String location = "after";
+            try {
+                location = "after";
+                final Record record = reader.next();
+                location = "in";
+                controlNumber = record.getControlNumber();
+                record.getLeader().setCharCodingScheme((marc8Flag ? ' ' : 'a'));
+                if ((writeErrorRecs && writeNoErrorRecs) ||
+                    (writeErrorRecs && record.hasErrors()) ||
+                    (writeNoErrorRecs && !record.hasErrors())) {
+                    writer.write(record);
+                }
+            }
+            catch (RuntimeException re) {
+                System.err.println("Exception "+location+" record: "+ controlNumber + " -- " + re.getMessage());
+                re.printStackTrace(System.err);
+            }
+
         }
         writer.close();
     }
@@ -227,7 +255,8 @@ public class RecordIODriver {
         System.err.println("       -encoding <inputFile encoding> = expected character encoding of input file");
         System.err.println("       -normalize = perform Unicode normalization");
         System.err.println("       -combine = combine consecutive that have the same record id");
-        System.err.println("       -normalize = perform Unicode normalization");
+        System.err.println("       -errors = only output records that are flagged as containing errors");
+        System.err.println("       -noerrors = only output records that are NOT flagged as containing errors");
         System.err.println("       -delete <fields> = a colon-spearated list of fields/subfields to delete from the records that are read");
         System.err.println("       -edit <file.properties> = apply all the edits specified in the file <file.properties> to the records");
         System.err.println("       -matches <pattern> = only output records that match the specified pattern");
