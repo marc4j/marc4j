@@ -488,6 +488,13 @@ public class AnselToUnicode extends CharConverter {
 
                 char c = getCharCDT(data, cdt);
                 boolean greekErrorFixed = false;
+                if (c == '\r' || c == '\n') {
+                    if (curReader != null) {
+                        curReader.addError(MarcError.MINOR_ERROR,
+                                        "Subfield contains new line or carriage return, which are invalid, deleting them");
+                    }
+                    c = ' ';
+                }
 
                 if (curReader != null && cdt.g0 == 0x53 && data[offset] > 0x20 && data[offset] < 0x40) {
                     if (c == 0 && data[offset] > 0x20 && data[offset] < 0x40) {
@@ -520,6 +527,10 @@ public class AnselToUnicode extends CharConverter {
                 } else if (!greekErrorFixed && c == 0) {
                     final String val = "0000" + Integer.toHexString(cdtchar);
                     sb.append("<U+" + val.substring(val.length() - 4, val.length()) + ">");
+                    if (curReader != null) {
+                        curReader.addError(MarcError.MINOR_ERROR,
+                            "Unknown MARC8 character code "+ val.substring(val.length() - 4, val.length()) +" found for code table: " + (char) cdt.g0 + " inserting <U+XXXX>");
+                    }
                 }
             }
 
@@ -811,6 +822,12 @@ public class AnselToUnicode extends CharConverter {
                     } else if (len >= 1 && c1 == ';') {
                         c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
                         cdt.offset += len + 4;
+                        if (c == '\r' || c == '\n') {
+                            if (curReader != null) {
+                                curReader.addError(MarcError.MINOR_ERROR,
+                                                "Subfield contains Unicode Numeric Character Reference for new line or carriage return, which are invalid");
+                            }
+                        }
                         return c;
                     } else if (len == 0 && c1 == ';') {
                         if (curReader != null) {
