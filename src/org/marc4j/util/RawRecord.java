@@ -153,6 +153,12 @@ public class RawRecord {
             return (id);
         }
         id = getFieldVal("001");
+//        if (id == null) {
+//            id = getFieldVal("002");
+//        }
+        if (id == null) {
+            id = getFieldVal("035");
+        }
         return (id);
     }
 
