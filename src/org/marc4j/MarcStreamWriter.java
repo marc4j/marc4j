@@ -72,7 +72,9 @@ public class MarcStreamWriter implements MarcWriter {
 
     protected OutputStream out = null;
 
+    public final static String ENCODING_BY_CHAR_CODE = "per_record";
     protected String encoding = "ISO8859_1";
+    protected String encodingCurrent;
 
     private CharConverter converter = null;
 
@@ -152,6 +154,17 @@ public class MarcStreamWriter implements MarcWriter {
         this.converter = converter;
     }
 
+    protected void setEncodingCurrent(Record record, CharConverter converter)
+    {
+        final Leader ldr = record.getLeader();
+
+        if (converter != null) {
+            ldr.setCharCodingScheme(converter.outputsUnicode() ? 'a' : ' ');
+        }
+        
+        encodingCurrent = encoding.equals(ENCODING_BY_CHAR_CODE) ? (ldr.getCharCodingScheme() == 'a' ? "UTF-8" : "ISO8859_1") : encoding;
+    }
+    
     /**
      * Writes a <code>Record</code> object to the writer.
      *
@@ -159,6 +172,9 @@ public class MarcStreamWriter implements MarcWriter {
      */
     @Override
     public void write(final Record record) {
+
+        setEncodingCurrent(record, converter);
+        
         int previous = 0;
 
         try {
@@ -210,9 +226,6 @@ public class MarcStreamWriter implements MarcWriter {
                 throw new MarcException("Record has field that is too long to be a valid MARC binary record. "
                         + "The maximum length for a field counting all of the sub-fields is 9999 bytes.");
             }
-            if (converter != null) {
-                ldr.setCharCodingScheme(converter.outputsUnicode() ? 'a' : ' ');
-            }
             writeLeader(ldr);
             out.write(dir.toByteArray());
             out.write(data.toByteArray());
@@ -252,9 +265,9 @@ public class MarcStreamWriter implements MarcWriter {
 
     protected byte[] getDataElement(final String data) throws IOException {
         if (converter != null) {
-            return converter.convert(data).getBytes(encoding);
+            return converter.convert(data).getBytes(encodingCurrent);
         }
-        return data.getBytes(encoding);
+        return data.getBytes(encodingCurrent);
     }
 
     protected byte[] getEntry(final String tag, final int length, final int start) throws IOException {

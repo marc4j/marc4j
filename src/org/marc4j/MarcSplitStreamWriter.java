@@ -61,6 +61,7 @@ public class MarcSplitStreamWriter extends MarcStreamWriter {
             }
             df.setId(null);
         }
+        setEncodingCurrent(record, getConverter());
 
         while (!doneWithRec) {
             try {

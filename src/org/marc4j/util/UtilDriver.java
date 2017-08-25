@@ -35,6 +35,7 @@ public class UtilDriver
      * <li>marcbreaker  -   org.marc4j.util.RecordIODriver -convert mrk8 </li>
      * <li>to_marc8     -   org.marc4j.util.RecordIODriver -convert marc8 </li>
      * <li>marcsplit    -   org.marc4j.util.SplitFile </li>
+     * <li>marcpatcher  -   org.marc4j.util.MarcPatcher </li>
      * </ul>
      *
      * @param args - the command-line arguments
@@ -115,6 +116,7 @@ public class UtilDriver
         System.err.println("          to_marc8 - convert records into binary MARC records using the MARC8 character encoding");
         System.err.println("          marcbreaker - convert records into MarcEdit ASCII encoding (using the UTF8 character encoding)");
         System.err.println("          marcsplit - split a file of binary MARC records into smaller chunks");
+        System.err.println("          marcpatcher - patch the location fields in a MARC record");
         System.err.println("");
         System.err.println("Note: the arguments accepted by many of the above utilities are different.");
         System.err.println("      For most of them passing an argument of -help or -usage will describe the arguments that utility accepts.");
