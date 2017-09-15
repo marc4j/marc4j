@@ -197,6 +197,9 @@ public class MarcReaderFactory {
 
                 reader = new MarcScriptedRecordEditReader(reader, marcDeleteSubfields, remapProps);
             }
+            else if (marcDeleteSubfields != null) {
+                reader = new MarcScriptedRecordEditReader(reader, marcDeleteSubfields, null);
+            }
         }
 
         // Do translating last so that if we are Filtering as well as
