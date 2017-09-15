@@ -3,6 +3,7 @@ package org.marc4j;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import org.marc4j.converter.CharConverter;
@@ -23,11 +24,33 @@ public class MarcTxtWriter implements MarcWriter {
     private CharConverter conv = null;
 
     public MarcTxtWriter(OutputStream os) {
-        this.out = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8), true);
+        try {
+            this.out = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8), true);            
+        }
+        catch (java.lang.NoClassDefFoundError ncdf) {
+            try
+            {
+                this.out = new PrintWriter(new OutputStreamWriter(os, "UTF-8"), true);
+            }
+            catch (UnsupportedEncodingException e)
+            {
+            }
+        }
     }
 
     public MarcTxtWriter(OutputStream os, String indexkeyprefix) {
-        this.out = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8), true);
+        try {
+            this.out = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8), true);            
+        }
+        catch (java.lang.NoClassDefFoundError ncdf) {
+            try
+            {
+                this.out = new PrintWriter(new OutputStreamWriter(os, "UTF-8"), true);
+            }
+            catch (UnsupportedEncodingException e)
+            {
+            }
+        }
         this.indexkeyprefix = indexkeyprefix;
     }
 
