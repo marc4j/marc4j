@@ -61,6 +61,18 @@
         <java fork="true" classname="org.marc4j.converter.impl.ReverseCodeTableGenerator" output="${build.generated-src.dir}/org/marc4j/converter/impl/ReverseCodeTableGenerated.java" >
             <classpath location="${build.classes.dir}" />
         </java>
+        <concat >
+            <fileset dir="${build.generated-src.dir}/org/marc4j/converter/impl" includes="Code*.java" />
+            <filterchain>
+                <headfilter lines="15"/>
+            </filterchain>
+        </concat>
+        <concat >
+            <fileset dir="${build.generated-src.dir}/org/marc4j/converter/impl" includes="Rev*.java" />
+            <filterchain>
+                <headfilter lines="15"/>
+            </filterchain>
+        </concat>
     </target>
 
     <target name="compile-codegen" depends="codetablegen">
