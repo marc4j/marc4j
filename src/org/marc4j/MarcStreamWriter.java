@@ -72,6 +72,7 @@ public class MarcStreamWriter implements MarcWriter {
 
     protected OutputStream out = null;
 
+    public final static String ENCODING_FOR_DIR_ENTRIES = "ISO8859_1";
     public final static String ENCODING_BY_CHAR_CODE = "per_record";
     protected String encoding = "ISO8859_1";
     protected String encodingCurrent;
@@ -239,16 +240,17 @@ public class MarcStreamWriter implements MarcWriter {
     }
 
     protected void writeLeader(final Leader ldr) throws IOException {
-        out.write(format5Use.format(ldr.getRecordLength()).getBytes(encoding));
+        String leaderEncoding = ENCODING_FOR_DIR_ENTRIES;
+        out.write(format5Use.format(ldr.getRecordLength()).getBytes(leaderEncoding));
         out.write(ldr.getRecordStatus());
         out.write(ldr.getTypeOfRecord());
-        out.write(new String(ldr.getImplDefined1()).getBytes(encoding));
+        out.write(new String(ldr.getImplDefined1()).getBytes(leaderEncoding));
         out.write(ldr.getCharCodingScheme());
-        out.write(Integer.toString(ldr.getIndicatorCount()).getBytes(encoding));
-        out.write(Integer.toString(ldr.getSubfieldCodeLength()).getBytes(encoding));
-        out.write(format5Use.format(ldr.getBaseAddressOfData()).getBytes(encoding));
-        out.write(new String(ldr.getImplDefined2()).getBytes(encoding));
-        out.write(new String(ldr.getEntryMap()).getBytes(encoding));
+        out.write(Integer.toString(ldr.getIndicatorCount()).getBytes(leaderEncoding));
+        out.write(Integer.toString(ldr.getSubfieldCodeLength()).getBytes(leaderEncoding));
+        out.write(format5Use.format(ldr.getBaseAddressOfData()).getBytes(leaderEncoding));
+        out.write(new String(ldr.getImplDefined2()).getBytes(leaderEncoding));
+        out.write(new String(ldr.getEntryMap()).getBytes(leaderEncoding));
     }
 
     /**
@@ -278,7 +280,7 @@ public class MarcStreamWriter implements MarcWriter {
         if (start > 99999) {
             hasOversizeOffset = true;
         }
-        return (entryUse.getBytes(encoding));
+        return (entryUse.getBytes(ENCODING_FOR_DIR_ENTRIES));
     }
 
     /**
