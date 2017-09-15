@@ -676,6 +676,7 @@ public class MarcPatcher {
             else
                 pOut = System.out;
             marcPatcher = new MarcPatcher(inputFile, locationFile, changedLocationFile, boundWithFile, changedFile, pOut, handleAllLocs);
+            marcPatcher.initLocal();
         }
         catch (IllegalArgumentException e)
         {
