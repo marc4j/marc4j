@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.Map;
 
 import org.marc4j.marc.Record;
+import org.marc4j.util.DiffColorize.ReturnStructure;
 
 public class MarcDiff
 {
@@ -17,6 +18,8 @@ public class MarcDiff
     static boolean noCompare = false;
     static boolean cntOnly = false;
     static String writeDifferentRecords = null;
+    static String color = null;
+    static String[] colors = null;
     static int cntMissing = 0;
     static int cntNew = 0;
     static int cntBoth = 0;
@@ -45,8 +48,13 @@ public class MarcDiff
                 verbose = true;
                 System.err.println("Verbose = true");
                 i++;
-            } else if (args[0].startsWith("-mrc")) {
+            } else if (args[i].startsWith("-mrc")) {
                 writeDifferentRecords = args[0].substring(1);
+                i++;
+            } else if (args[i].startsWith("-color")) {
+                i++;
+                color = args[i];
+                colors = color.split(":");
                 i++;
             } else if (args[i].startsWith("-nc")) {
                 noCompare = true;
@@ -443,11 +451,11 @@ public class MarcDiff
                         index1++; index2++;
                     }
                     else if (hasMatch(permLines, index2+1, normLines[index1])) {
-                        out.println(">>>" + permLines[index2]);
+                        out.println("+++" + permLines[index2]);
                         index2++;
                     }
                     else if (hasMatch(normLines, index1+1, permLines[index2])) {
-                        out.println("<<<" + normLines[index1]);
+                        out.println("---" + normLines[index1]);
                         index1++;
                     }
                     else {
@@ -484,17 +492,28 @@ public class MarcDiff
                             }
                         }
 
-                        out.println(label2 + normLines[index1]);
-                        out.println(label1 + permLines[index2]);
+                        if (color != null)
+                        {
+                            DiffColorize.ReturnStructure rs;
+                            rs = DiffColorize.stringSimilarity(normLines[index1], permLines[index2], colors[0], colors[1], (colors.length > 3 ? colors[2] : colors[0]), (colors.length > 3 ? colors[3] : colors[1]), 50);
+
+                            out.println(label2 + rs.s1);
+                            out.println(label1 + rs.s2);
+                        }
+                        else
+                        {
+                            out.println(label2 + normLines[index1]);
+                            out.println(label1 + permLines[index2]);
+                        }
                         index1++; index2++;
                     }
                 }
                 while (index1 < normLines.length) {
-                    out.println("<<<" + normLines[index1]);
+                    out.println("---" + normLines[index1]);
                     index1++;
                 }
                 while (index2 < permLines.length) {
-                    out.println(">>>" + permLines[index2]);
+                    out.println("+++" + permLines[index2]);
                     index2++;
                 }
             
@@ -513,6 +532,15 @@ public class MarcDiff
         for (int i = index; i < lines.length; i++) {
             if (lines[i].equals(string))
                 return(true);
+        }
+        for (int i = index; i < lines.length; i++) {
+            if (string.substring(0, 3).equals(lines[i].substring(0, 3))) {
+                int lDist = MarcPatcher.getLevenshteinDistance(lines[i], string);
+                   int minLen = Math.min(lines[i].length(), string.length());
+                   if (lDist < 10 || lDist / (0.0 + minLen) < 0.4 ) {
+                       return(true);
+                   }
+            }
         }
         return false;
     }
