@@ -55,10 +55,10 @@
     </target>
 
     <target name="codetablegen" depends="prepare-codetablegen" unless="already.ctged">
-        <java fork="true" classname="org.marc4j.converter.impl.CodeTableGenerator" output="${build.generated-src.dir}/org/marc4j/converter/impl/CodeTableGenerated.java" >
+        <java fork="true" classname="org.marc4j.converter.impl.CodeTableGenerator" errorProperty="CodeTableGenerated.error" output="${build.generated-src.dir}/org/marc4j/converter/impl/CodeTableGenerated.java" >
             <classpath location="${build.classes.dir}" />
         </java>
-        <java fork="true" classname="org.marc4j.converter.impl.ReverseCodeTableGenerator" output="${build.generated-src.dir}/org/marc4j/converter/impl/ReverseCodeTableGenerated.java" >
+        <java fork="true" classname="org.marc4j.converter.impl.ReverseCodeTableGenerator" errorProperty="ReverseCodeTableGenerated.error" output="${build.generated-src.dir}/org/marc4j/converter/impl/ReverseCodeTableGenerated.java" >
             <classpath location="${build.classes.dir}" />
         </java>
         <concat >
