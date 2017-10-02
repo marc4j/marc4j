@@ -634,8 +634,8 @@ public class MarcPatcher {
 //    }
 
     /**
-     * @param args
-     * @throws FileNotFoundException 
+     * @param args -  the command line arguments for the main routine
+     * @throws FileNotFoundException - if the specified file cannot be opened and read
      */
     public static void main(String[] args) throws FileNotFoundException
     {
