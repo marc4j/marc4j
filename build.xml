@@ -146,7 +146,9 @@
     </target>
 
     <target name="clean" depends="init">
-        <delete dir="${dist.dir}" />
+        <delete includeEmptyDirs="true">
+            <fileset dir="${dist.dir}" includes="**/*" defaultexcludes="no"/>
+        </delete>
         <delete dir="${build.dir}" />
     </target>
     <target name="distclean" depends="clean">
