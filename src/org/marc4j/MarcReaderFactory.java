@@ -104,8 +104,8 @@ public class MarcReaderFactory {
         } else {
             is = new BufferedInputStream(input);
         }
-        is.mark(20);
-        final byte[] buffer = new byte[15];
+        is.mark(30);
+        final byte[] buffer = new byte[25];
 
         int numRead;
 
@@ -133,7 +133,11 @@ public class MarcReaderFactory {
             inputTypeXML = true;
         } else if (filestart.contains("<collection")) {
             inputTypeXML = true;
+        } else if (filestart.matches("[^<]*<[^:>]+:collection[ >].*")) {
+            inputTypeXML = true;
         } else if (filestart.contains("<record")) {
+            inputTypeXML = true;
+        } else if (filestart.matches("[^<]*<[^:>]+:record[ >].*")) {
             inputTypeXML = true;
         } else if (filestart.contains("<!--")) {
             inputTypeXML = true;
