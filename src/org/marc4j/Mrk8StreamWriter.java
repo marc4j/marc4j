@@ -89,6 +89,7 @@ public class Mrk8StreamWriter implements MarcWriter {
 //                    data = this.encoder.encode(CharBuffer.wrap(controlField.getData())).asCharBuffer().toString();
 //                } catch (CharacterCodingException cce) {
                     data = controlField.getData();
+                    data = data.replace(' ', '\\');
 //                }
                 recordStringBuilder.append(data);
             } else if (field instanceof DataField) {
@@ -98,11 +99,7 @@ public class Mrk8StreamWriter implements MarcWriter {
 
                 for (final Subfield subField : dataField.getSubfields()) {
                     String data;
-//                    try {
-//                        data = this.encoder.encode(CharBuffer.wrap(subField.getData())).asCharBuffer().toString();
-//                    } catch (CharacterCodingException cce) {
-                        data = subField.getData();
-//                    }
+                    data =  Mrk8TranslationTable.toMrk8(subField.getData());
                     recordStringBuilder.append("$").append(subField.getCode()).append(data);
                 }
             }
