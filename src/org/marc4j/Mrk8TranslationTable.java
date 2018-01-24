@@ -74,6 +74,21 @@ public class Mrk8TranslationTable  {
         return(sb.toString());
     }
 
+    public static String toMrk8(String datafield) {
+        char chars[] = datafield.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        for (char c : chars)
+        {
+            switch (c) {
+                case '$': sb.append("{dollar}"); break;
+                case '{': sb.append("{lcub}");   break;
+                case '}': sb.append("{rcub}");   break;
+                default:  sb.append(c);
+            }
+        }
+        return(sb.toString());
+    }
+
     private static String lookup(String toLookup) {
         if (mrk8Map == null) {
             mrk8Map = new LinkedHashMap<String,String>();
