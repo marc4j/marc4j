@@ -143,8 +143,9 @@ public class MarcFilteredReader implements MarcReader {
 
                     for (final VariableField vf : fields) {
                         if (vf instanceof ControlField) {
-                            if (includeRecordIfFieldContains == null || ((ControlField) vf)
-                                    .getData().contains(includeRecordIfFieldContains)) {
+                            if (includeRecordIfFieldContains == null || 
+                                (!includeRecordIfFieldContains.startsWith("^") && ((ControlField) vf).getData().contains(includeRecordIfFieldContains)) || 
+                                (includeRecordIfFieldContains.startsWith("^")  && ((ControlField) vf).getData().matches(includeRecordIfFieldContains)))  {
                                 currentRecord = rec;
                                 break;
                             }
@@ -154,7 +155,9 @@ public class MarcFilteredReader implements MarcReader {
                                 break;
                             } else {
                                 String subfieldVal = ((DataField) vf).getSubfieldsAsString(tagAndSf[1]);
-                                if (subfieldVal != null && subfieldVal.contains(includeRecordIfFieldContains)) {
+                                if (subfieldVal != null && 
+                                    (!includeRecordIfFieldContains.startsWith("^") && subfieldVal.contains(includeRecordIfFieldContains)) ||
+                                    (includeRecordIfFieldContains.startsWith("^") && subfieldVal.matches(includeRecordIfFieldContains))) {
                                     currentRecord = rec;
                                     break;
                                 }
@@ -174,15 +177,17 @@ public class MarcFilteredReader implements MarcReader {
 
                     for (final VariableField vf : fields) {
                         if (vf instanceof ControlField) {
-                            if (includeRecordIfFieldDoesntContain == null || ((ControlField) vf)
-                                    .getData().contains(includeRecordIfFieldDoesntContain)) {
+                            if (includeRecordIfFieldDoesntContain == null || 
+                                    (!includeRecordIfFieldDoesntContain.startsWith("^") && ((ControlField) vf).getData().contains(includeRecordIfFieldDoesntContain)) ||
+                                    (includeRecordIfFieldDoesntContain.startsWith("^") && ((ControlField) vf).getData().matches(includeRecordIfFieldDoesntContain))) {
                                 useRecord = false;
                                 break;
                             }
                         } else {
-                            if (includeRecordIfFieldDoesntContain == null || ((DataField) vf)
-                                    .getSubfieldsAsString(tagAndSf[1]).contains(
-                                            includeRecordIfFieldDoesntContain)) {
+                            String subfieldVal = ((DataField) vf).getSubfieldsAsString(tagAndSf[1]);
+                            if (includeRecordIfFieldDoesntContain == null || 
+                                (!includeRecordIfFieldDoesntContain.startsWith("^") && subfieldVal.contains(includeRecordIfFieldDoesntContain)) ||
+                                (includeRecordIfFieldDoesntContain.startsWith("^") && subfieldVal.matches(includeRecordIfFieldDoesntContain))) {
                                 useRecord = false;
                                 break;
                             }
