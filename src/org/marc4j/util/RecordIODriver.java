@@ -21,6 +21,68 @@ import org.marc4j.converter.impl.UnicodeToAnsel;
 import org.marc4j.marc.Record;
 
 public class RecordIODriver {
+
+    String input;
+    String output;
+    String convert;
+    boolean normalize = false;
+    boolean pretty = true;
+    boolean marc8Flag = false;
+    boolean writeErrorRecs = true;
+    boolean writeNoErrorRecs = true;
+    MarcReaderConfig readerConfig;
+
+    public RecordIODriver()
+    {
+        readerConfig = new MarcReaderConfig();
+    }
+
+    public String getInputName()
+    {
+        return input;
+    }
+
+    public String getOutputName()
+    {
+        return output;
+    }
+
+    public String getConvertValue()
+    {
+        return convert;
+    }
+
+    public boolean shouldNormalize()
+    {
+        return normalize;
+    }
+
+    public boolean shouldPrettify()
+    {
+        return pretty;
+    }
+
+    public boolean isMarc8()
+    {
+        return marc8Flag;
+    }
+
+    public boolean shouldWriteErrorRecs()
+    {
+        return writeErrorRecs;
+    }
+
+    public boolean shouldWriteNoErrorRecs()
+    {
+        return writeNoErrorRecs;
+    }
+
+    public MarcReaderConfig getReaderConfig()
+    {
+        return readerConfig;
+    }
+
+
     /**
      * Provides a static entry point.
      * <p>
@@ -40,28 +102,89 @@ public class RecordIODriver {
      */
     public static void main(final String args[]) {
 
-        String input = null;
-        String output = null;
+        RecordIODriver driverInfo = new RecordIODriver();
+        processArgumentsToConfig(driverInfo, args);
+
+        InputStream in = null;
+        try {
+            if (driverInfo.input == null || driverInfo.input.equals("-")) {
+                in = System.in;
+            }
+            else {
+                in = new FileInputStream(driverInfo.input);
+            }
+        } catch (final FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        OutputStream out = null;
+        if (driverInfo.output != null) {
+            try {
+                out = new FileOutputStream(driverInfo.output);
+            } catch (final FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            out = System.out;
+        }
+
+        MarcReader reader = null;
+        try {
+            reader = MarcReaderFactory.makeReader(driverInfo.readerConfig, in);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        MarcWriter writer = null;
+        try { 
+            writer = makeWriterFromConvertParm(driverInfo, out);
+        }
+        catch (IllegalArgumentException iae) {
+            System.err.println("Error: "+ iae.getMessage());
+            System.exit(1);
+        }
+
+        while (reader.hasNext()) {
+            String controlNumber = "n/a";
+            String location = "after";
+            try {
+                location = "after";
+                final Record record = reader.next();
+                location = "in";
+                controlNumber = record.getControlNumber();
+                record.getLeader().setCharCodingScheme((driverInfo.marc8Flag ? ' ' : 'a'));
+                if ((driverInfo.writeErrorRecs && driverInfo.writeNoErrorRecs) ||
+                    (driverInfo.writeErrorRecs && record.hasErrors()) ||
+                    (driverInfo.writeNoErrorRecs && !record.hasErrors())) {
+                    writer.write(record);
+                }
+            }
+            catch (RuntimeException re) {
+                System.err.println("Exception "+location+" record: "+ controlNumber + " -- " + re.getMessage());
+                re.printStackTrace(System.err);
+            }
+
+        }
+        writer.close();
+    }
+
+    static protected RecordIODriver processArgumentsToConfig(RecordIODriver driverInfo, String[] args)
+    {
         String editProperties = null;
-        String convert = null;
         String encoding = "MARC8";
         String deleteSubfieldsSpec = null;
         String filterIfPresent = null;
         String filterIfMissing = null;
         String combineConsecutiveRecordsFieldParm = null;
-        boolean normalize = false;
-        boolean pretty = true;
         boolean strict = false;
-        boolean marc8Flag = false;
-        boolean writeErrorRecs = true;
-        boolean writeNoErrorRecs = true;
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-out") || args[i].equals("-o")) {
                 if (i == args.length - 1) {
                     usage("Missing argument for option "+args[i]+ " should be file to write output", 1);
                 }
-                output = args[++i].trim();
+                driverInfo.output = args[++i].trim();
             } else if (args[i].equals("-edit")) {
                 if (i == args.length - 1) {
                     usage("Missing argument for option "+args[i]+ " should be properties file describing edits to perform", 1);
@@ -77,7 +200,7 @@ public class RecordIODriver {
                 if (i == args.length - 1) {
                     usage("Missing argument for option "+args[i]+ " should specify format in which to generate output", 1);
                 }
-                convert = args[++i].trim();
+                driverInfo.convert = args[++i].trim();
             } else if (args[i].equals("-matches")) {
                 if (i == args.length - 1) {
                     usage("Missing argument for option "+args[i]+ " should be field that must exist, with optional string that must be present", 1);
@@ -89,20 +212,20 @@ public class RecordIODriver {
                 }
                 filterIfMissing = args[++i].trim();
             } else if (args[i].equals("-errors")) {
-                writeErrorRecs = true;
-                writeNoErrorRecs = false;
+                driverInfo.writeErrorRecs = true;
+                driverInfo.writeNoErrorRecs = false;
             } else if (args[i].equals("-noerrors")) {
-                writeErrorRecs = false;
-                writeNoErrorRecs = true;
+                driverInfo.writeErrorRecs = false;
+                driverInfo.writeNoErrorRecs = true;
             } else if (args[i].equals("-encoding")) {
                 if (i == args.length - 1) {
                     usage("Missing argument for option "+args[i]+ " should specify the expected encoding of the input file(s)", 1);
                 }
                 encoding = args[++i].trim();
-           /*  } else if (args[i].equals("-pretty")) {
-                pretty = true;*/
+            } else if (args[i].equals("-pretty")) {
+                driverInfo.pretty = true;
             } else if (args[i].equals("-normalize")) {
-                normalize = true;
+                driverInfo.normalize = true;
             } else if (args[i].equals("-strict")) {
                 strict = true;
             } else if (args[i].equals("-combine")) {
@@ -117,7 +240,7 @@ public class RecordIODriver {
             } else if (args[i].startsWith("-") && args[i].length() > 1) {
                 usage("Unknown command line option "+args[i], 1);
             } else {
-                input = args[i].trim();
+                driverInfo.input = args[i].trim();
 
                 // Must be last arg
                 if (i != args.length - 1) {
@@ -126,33 +249,8 @@ public class RecordIODriver {
             }
         }
 
-        InputStream in = null;
-        try {
-            if (input == null || input.equals("-")) {
-                in = System.in;
-            }
-            else {
-                in = new FileInputStream(input);
-            }
-        } catch (final FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        OutputStream out = null;
-        if (output != null) {
-            try {
-                out = new FileOutputStream(output);
-            } catch (final FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else {
-            out = System.out;
-        }
-
-        MarcReaderConfig config = new MarcReaderConfig();
-
-        config.setCombineConsecutiveRecordsFields(combineConsecutiveRecordsFieldParm);
-        config.setUnicodeNormalize(normalize ? "C" : null);
+        driverInfo.readerConfig.setCombineConsecutiveRecordsFields(combineConsecutiveRecordsFieldParm);
+        driverInfo.readerConfig.setUnicodeNormalize(driverInfo.normalize ? "C" : null);
         if (editProperties != null) {
             File editFile = new File(editProperties);
             if (!editFile.exists() || !editFile.canRead()) {
@@ -161,87 +259,72 @@ public class RecordIODriver {
             }
         }
 
-        config.setMarcRemapFilename(editProperties);
-        config.setDeleteSubfieldSpec(deleteSubfieldsSpec);
-        config.setDefaultEncoding(encoding);
-        config.setFilterParams(filterIfPresent, filterIfMissing);
-        config.setToUtf8(true);
-        config.setPermissiveReader(!strict);
+        driverInfo.readerConfig.setMarcRemapFilename(editProperties);
+        driverInfo.readerConfig.setDeleteSubfieldSpec(deleteSubfieldsSpec);
+        driverInfo.readerConfig.setDefaultEncoding(encoding);
+        driverInfo.readerConfig.setFilterParams(filterIfPresent, filterIfMissing);
+        driverInfo.readerConfig.setToUtf8(true);
+        driverInfo.readerConfig.setPermissiveReader(!strict);
 
-        MarcReader reader = null;
-        try {
-            reader = MarcReaderFactory.makeReader(config, in);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        return(driverInfo);
+    }
+
+    static protected MarcWriter makeWriterFromConvertParm(RecordIODriver driverInfo, OutputStream out) {
         MarcWriter writer = null;
 
-        if (convert.equalsIgnoreCase("text") || convert.equalsIgnoreCase("ASCII")) {
+        if (driverInfo.convert.equalsIgnoreCase("text") || driverInfo.convert.equalsIgnoreCase("ASCII")) {
             writer = new MarcTxtWriter(out);
-        } else if (convert.equalsIgnoreCase("errors")) {
+        } else if (driverInfo.convert.equalsIgnoreCase("errors")) {
             writer = new MarcTxtWriter(out, "001;err");
-        } else if (convert.matches("([0-9][0-9][0-9]|err)(:([0-9][0-9][0-9]|err))*")) {
-            writer = new MarcTxtWriter(out, convert);
-        } else if (convert.equalsIgnoreCase("XML") || convert.equalsIgnoreCase("MARCXML")) {
+        } else if (driverInfo.convert.matches("([0-9][0-9][0-9]|err)(:([0-9][0-9][0-9]|err))*")) {
+            writer = new MarcTxtWriter(out, driverInfo.convert);
+        } else if (driverInfo.convert.equalsIgnoreCase("XML") || driverInfo.convert.equalsIgnoreCase("MARCXML")) {
             MarcXmlWriter xmlwriter = new MarcXmlWriter(out, "UTF8");
-            if (pretty)     xmlwriter.setIndent(true);
-            if (normalize)  xmlwriter.setUnicodeNormalization(true);
+            if (driverInfo.pretty)     xmlwriter.setIndent(true);
+            if (driverInfo.normalize)  xmlwriter.setUnicodeNormalization(true);
             writer = xmlwriter;
-        } else if (convert.equalsIgnoreCase("MARC_IN_JSON") || convert.equalsIgnoreCase("json")) {
+        } else if (driverInfo.convert.equalsIgnoreCase("MARC_IN_JSON") || driverInfo.convert.equalsIgnoreCase("json")) {
             MarcJsonWriter jsonwriter = new MarcJsonWriter(out, MarcJsonWriter.MARC_IN_JSON);
-            if (pretty)     jsonwriter.setIndent(true);
-            if (normalize)  jsonwriter.setUnicodeNormalization(true);
+            if (driverInfo.pretty)     jsonwriter.setIndent(true);
+            if (driverInfo.normalize)  jsonwriter.setUnicodeNormalization(true);
             writer = jsonwriter;
-        } else if (convert.equalsIgnoreCase("MARC_JSON") || convert.equalsIgnoreCase("json2")) {
+        } else if (driverInfo.convert.equalsIgnoreCase("MARC_JSON") || driverInfo.convert.equalsIgnoreCase("json2")) {
             MarcJsonWriter jsonwriter = new MarcJsonWriter(out, MarcJsonWriter.MARC_JSON);
-            if (pretty)     jsonwriter.setIndent(true);
-            if (normalize)  jsonwriter.setUnicodeNormalization(true);
+            if (driverInfo.pretty)     jsonwriter.setIndent(true);
+            if (driverInfo.normalize)  jsonwriter.setUnicodeNormalization(true);
             writer = jsonwriter;
-        } else if (convert.equalsIgnoreCase("UTF8") || convert.equalsIgnoreCase("UTF-8")) {
+        } else if (driverInfo.convert.equalsIgnoreCase("UTF8") || driverInfo.convert.equalsIgnoreCase("UTF-8")) {
             MarcStreamWriter binwriter = new MarcStreamWriter(out, "UTF8");
+            if (driverInfo.readerConfig.getCombineConsecutiveRecordsFields() != null) {
+                binwriter.setAllowOversizeEntry(true);
+            }
             writer = binwriter;
-        } else if (convert.equalsIgnoreCase("MARC8")) {
+        } else if (driverInfo.convert.equalsIgnoreCase("MARC8")) {
             MarcStreamWriter binwriter = new MarcStreamWriter(out, "ISO8859_1", true);
             binwriter.setConverter(new UnicodeToAnsel());
-            marc8Flag = true;
+            driverInfo.marc8Flag = true;
+            if (driverInfo.readerConfig.getCombineConsecutiveRecordsFields() != null) {
+                binwriter.setAllowOversizeEntry(true);
+            }
             writer = binwriter;
-        } else if (convert.equalsIgnoreCase("MARC8NCR") || convert.equalsIgnoreCase("NCR")) {
+        } else if (driverInfo.convert.equalsIgnoreCase("MARC8NCR") || driverInfo.convert.equalsIgnoreCase("NCR")) {
             MarcStreamWriter binwriter = new MarcStreamWriter(out, "ISO8859_1", true);
             binwriter.setConverter(new UnicodeToAnsel(true));
-            marc8Flag = true;
+            driverInfo.marc8Flag = true;
+            if (driverInfo.readerConfig.getCombineConsecutiveRecordsFields() != null) {
+                binwriter.setAllowOversizeEntry(true);
+            }
             writer = binwriter;
-        } else if (convert.equalsIgnoreCase("MRK8")) {
+        } else if (driverInfo.convert.equalsIgnoreCase("MRK8")) {
             Mrk8StreamWriter mrkwriter = new Mrk8StreamWriter(out);
             writer = mrkwriter;
         } else {
-            System.err.println("Error : Unknown output format: "+ convert );
-            System.exit(1);
+            throw new IllegalArgumentException("Error : Unknown output format: "+ driverInfo.convert );
+//            System.exit(1);
         }
-
-        while (reader.hasNext()) {
-            String controlNumber = "n/a";
-            String location = "after";
-            try {
-                location = "after";
-                final Record record = reader.next();
-                location = "in";
-                controlNumber = record.getControlNumber();
-                record.getLeader().setCharCodingScheme((marc8Flag ? ' ' : 'a'));
-                if ((writeErrorRecs && writeNoErrorRecs) ||
-                    (writeErrorRecs && record.hasErrors()) ||
-                    (writeNoErrorRecs && !record.hasErrors())) {
-                    writer.write(record);
-                }
-            }
-            catch (RuntimeException re) {
-                System.err.println("Exception "+location+" record: "+ controlNumber + " -- " + re.getMessage());
-                re.printStackTrace(System.err);
-            }
-
-        }
-        writer.close();
+        return(writer);
     }
+
 
     private static void usage(String error, int exitcode) {
         if (error != null) {
