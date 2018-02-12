@@ -31,6 +31,7 @@ import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Record;
+import org.marc4j.marc.impl.RecordImpl;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.VariableField;
 import org.marc4j.marc.impl.Verifier;
@@ -171,11 +172,11 @@ public class MarcScriptedRecordEditReader implements MarcReader {
     }
 
     private boolean remapRecord(final Record rec) {
-        final List<VariableField> fields = rec.getVariableFields();
+        final List<VariableField> fieldS = ((RecordImpl)rec).getVariableFieldsWithLeader();
         final List<VariableField> fToDelete = new ArrayList<VariableField>();
         final List<VariableField> fToInsert = new ArrayList<VariableField>();
         boolean keepRecord = true;
-        for (final VariableField field : fields) {
+        for (final VariableField field : fieldS) {
             final String tag = field.getTag();
             String tagPlus0 = tag + "_0";
             if (remapProperties.containsKey(tagPlus0)) {
@@ -184,8 +185,7 @@ public class MarcScriptedRecordEditReader implements MarcReader {
                         final String remapString = remapProperties.getProperty(tag + "_" + i);
                         final String mapParts[] = remapString.split("=>");
                         if (eval(mapParts[0], field, rec)) {
-                            keepRecord &= process(mapParts[1], field, null, fToDelete, fToInsert,
-                                    rec);
+                            keepRecord &= process(mapParts[1], field, null, fToDelete, fToInsert, rec);
                         }
                     }
                 } else {
@@ -196,8 +196,7 @@ public class MarcScriptedRecordEditReader implements MarcReader {
                         final String remapString = remapProperties.getProperty(tag + "_" + i);
                         final String mapParts[] = remapString.split("=>");
                         if (eval(mapParts[0], field, rec)) {
-                            keepRecord &= process(mapParts[1], field, sfToDelete, fToDelete,
-                                    fToInsert, rec);
+                            keepRecord &= process(mapParts[1], field, sfToDelete, fToDelete, fToInsert, rec);
                         }
                     }
 
