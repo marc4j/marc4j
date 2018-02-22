@@ -447,6 +447,21 @@ public class MarcScriptedRecordEditReader implements MarcReader {
             if (vf != null) {
                 fToInsert.add(vf);
             }
+        } else if (command.startsWith("insertparameterizedsubfield(")) {
+            final String args[] = getFourArgs(command); // 856, "$z${1}","b", "(.*)"
+            final Pattern p = Pattern.compile(args[3]);
+            Matcher m;
+            if (field != null && field instanceof DataField) {
+                m = p.matcher(((DataField) field).getSubfield(args[2].charAt(0)).getData());
+            } else {
+                m = p.matcher(((ControlField) field).getData());
+            }
+            VariableField vf = record.getVariableField(args[0]);
+            if (m.matches() && vf != null && vf instanceof DataField) {
+                vf = addSubfieldFromString((DataField)vf, args[1], stringsFromMatcher(m));
+            } else if (vf != null && vf instanceof DataField){
+                vf = addSubfieldFromString((DataField)vf, args[1], null);
+            }
         } else if (command.startsWith("reject()")) {
             return false;
         }
@@ -517,10 +532,31 @@ public class MarcScriptedRecordEditReader implements MarcReader {
         return null;
     }
 
+    private VariableField addSubfieldFromString(final DataField df, final String argPattern, final String argmatches[]) {
+        final Matcher sfdf = newSubfieldDef.matcher(argPattern);
+        if (factory == null) {
+            factory = MarcFactory.newInstance();
+        }
+
+        String sfData = argPattern;
+        final Matcher sm = newSubfieldDef.matcher(argPattern);
+        if (sm.matches()) {
+            final char code = sm.group(1).charAt(0);
+            String data = sm.group(2);
+            if (argmatches != null) {
+                data = fillParameters(data, argmatches);
+            }
+            sfData = sm.group(4);
+            final Subfield sf = factory.newSubfield(code, data);
+            df.addSubfield(sf);
+        }
+        return df;
+    }
+
     private String fillParameters(String data, final String argmatches[]) {
         for (int i = 0; i < argmatches.length; i++) {
             if (data.contains("${" + (i + 1) + "}")) {
-                data = data.replaceAll("[$][{]" + (i + 1) + "[}]", argmatches[i + 1]);
+                data = data.replaceAll("[$][{]" + (i + 1) + "[}]", Matcher.quoteReplacement(argmatches[i + 1]));
             }
         }
         return data;
@@ -557,6 +593,20 @@ public class MarcScriptedRecordEditReader implements MarcReader {
         if (m.matches()) {
             final String result[] = new String[] { m.group(1).replaceAll("\\\"", "\""),
                     m.group(3).replaceAll("\\\"", "\""), m.group(5).replaceAll("\\\"", "\"") };
+            return result;
+        }
+        return null;
+    }
+
+    static Pattern fourArgs = Pattern
+            .compile("[a-z]*[(][ ]*\"((\\\"|[^\"])*)\",[ ]*\"((\\\"|[^\"])*)\",[ ]*\"((\\\"|[^\"])*)\",[ ]*\"((\\\"|[^\"])*)\"[)]");
+
+    private String[] getFourArgs(final String conditional) {
+        final Matcher m = fourArgs.matcher(conditional.trim());
+        if (m.matches()) {
+            final String result[] = new String[] { m.group(1).replaceAll("\\\"", "\""),
+                    m.group(3).replaceAll("\\\"", "\""), m.group(5).replaceAll("\\\"", "\""),
+                    m.group(7).replaceAll("\\\"", "\"")};
             return result;
         }
         return null;

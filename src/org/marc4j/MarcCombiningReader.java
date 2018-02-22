@@ -259,9 +259,25 @@ public class MarcCombiningReader implements MarcReader {
             final String idsToMerge) {
         final List<VariableField> fields = nextRecord.getVariableFields();
 
+        boolean unique = false;
+        if (idsToMerge.startsWith("unique")) {
+            unique = true;
+        }
         for (final VariableField field : fields) {
             if (field.getTag().matches(idsToMerge)) {
-                currentRecord.addVariableField(field);
+                boolean add = true;
+                if (unique) {
+                    final List<VariableField> existingFields = currentRecord.getVariableFields();
+                    for (VariableField evf : existingFields)
+                        if (evf.getTag().equals(field.getTag())) {
+                            if (evf.toString().equals(field.toString())) {
+                                add = false;
+                            }
+                        }
+                }
+                if (add) {
+                    currentRecord.addVariableField(field);
+                }
             }
         }
         if (nextRecord.hasErrors()) {
