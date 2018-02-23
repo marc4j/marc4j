@@ -174,4 +174,26 @@ public class MarcScriptedEditRecordReaderTest {
             }
         }
     }
+    @Test
+    public void testMoveSubfield4() throws Exception {
+//        String[] expected856Fields = { "Different College" };
+        InputStream input = getClass().getResourceAsStream("/dp_004015001.mrc");
+        assertNotNull(input);
+
+        InputStream editmap = getClass().getResourceAsStream("/move_subfield.properties");
+        Properties editmapProperties = new Properties();
+        editmapProperties.load(editmap);
+
+        MarcReader reader =  new MarcScriptedRecordEditReader(new MarcStreamReader(input), editmapProperties);
+        Record record;
+        while ((record = reader.next()) != null) {
+            VariableField df245 = record.getVariableField("245");
+            assertTrue("Subfieled 245b not deleted.", ((DataField)df245).getSubfield('b') == null);
+            List<VariableField> dfs = record.getVariableFields("856");
+            int i = 0;
+            for (VariableField df: dfs) {
+                assertTrue("fields not edited", ((DataField)df).getSubfield('z') != null);
+            }
+        }
+    }
 }

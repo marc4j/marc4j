@@ -434,18 +434,31 @@ public class MarcScriptedRecordEditReader implements MarcReader {
             final Pattern p = Pattern.compile(args[2]);
             Matcher m;
             if (field != null && field instanceof DataField) {
-                m = p.matcher(((DataField) field).getSubfield(args[1].charAt(0)).getData());
+                boolean hadMatch = false;
+                List<Subfield> sfs = ((DataField) field).getSubfields(args[1].charAt(0));
+                VariableField vf;
+                for (Subfield sf : sfs) {
+                    m = p.matcher(sf.getData());
+                    if (m.matches()) {
+                        hadMatch = true;
+                        vf = createFieldFromString(args[0], stringsFromMatcher(m));
+                        fToInsert.add(0, vf);
+                    } 
+                }
+                if (hadMatch == false) {
+                    vf = createFieldFromString(args[0], null);
+                }
             } else {
+                VariableField vf;
                 m = p.matcher(((ControlField) field).getData());
-            }
-            VariableField vf;
-            if (m.matches()) {
-                vf = createFieldFromString(args[0], stringsFromMatcher(m));
-            } else {
-                vf = createFieldFromString(args[0], null);
-            }
-            if (vf != null) {
-                fToInsert.add(vf);
+                if (m.matches()) {
+                    vf = createFieldFromString(args[0], stringsFromMatcher(m));
+                } else {
+                    vf = createFieldFromString(args[0], null);
+                }
+                if (vf != null) {
+                    fToInsert.add(vf);
+                }
             }
         } else if (command.startsWith("insertparameterizedsubfield(")) {
             final String args[] = getFourArgs(command); // 856, "$z${1}","b", "(.*)"
