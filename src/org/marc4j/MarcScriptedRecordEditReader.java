@@ -471,9 +471,24 @@ public class MarcScriptedRecordEditReader implements MarcReader {
             }
             VariableField vf = record.getVariableField(args[0]);
             if (m.matches() && vf != null && vf instanceof DataField) {
-                vf = addSubfieldFromString((DataField)vf, args[1], stringsFromMatcher(m));
+                vf = addSubfieldFromString((DataField)vf, args[1], stringsFromMatcher(m), 0);
             } else if (vf != null && vf instanceof DataField){
-                vf = addSubfieldFromString((DataField)vf, args[1], null);
+                vf = addSubfieldFromString((DataField)vf, args[1], null, 0);
+            }
+        } else if (command.startsWith("appendparameterizedsubfield(")) {
+            final String args[] = getFourArgs(command); // 856, "$z${1}","b", "(.*)"
+            final Pattern p = Pattern.compile(args[3]);
+            Matcher m;
+            if (field != null && field instanceof DataField) {
+                m = p.matcher(((DataField) field).getSubfield(args[2].charAt(0)).getData());
+            } else {
+                m = p.matcher(((ControlField) field).getData());
+            }
+            VariableField vf = record.getVariableField(args[0]);
+            if (m.matches() && vf != null && vf instanceof DataField) {
+                vf = addSubfieldFromString((DataField)vf, args[1], stringsFromMatcher(m), 1);
+            } else if (vf != null && vf instanceof DataField){
+                vf = addSubfieldFromString((DataField)vf, args[1], null, 1);
             }
         } else if (command.startsWith("reject()")) {
             return false;
@@ -545,7 +560,7 @@ public class MarcScriptedRecordEditReader implements MarcReader {
         return null;
     }
 
-    private VariableField addSubfieldFromString(final DataField df, final String argPattern, final String argmatches[]) {
+    private VariableField addSubfieldFromString(final DataField df, final String argPattern, final String argmatches[], int zeroForInsert) {
         final Matcher sfdf = newSubfieldDef.matcher(argPattern);
         if (factory == null) {
             factory = MarcFactory.newInstance();
@@ -561,7 +576,11 @@ public class MarcScriptedRecordEditReader implements MarcReader {
             }
             sfData = sm.group(4);
             final Subfield sf = factory.newSubfield(code, data);
-            df.addSubfield(sf);
+            if (zeroForInsert == 0) { 
+                df.addSubfield(0, sf);
+            } else {
+                df.addSubfield(sf);
+            }
         }
         return df;
     }
