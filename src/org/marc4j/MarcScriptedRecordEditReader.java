@@ -524,7 +524,7 @@ public class MarcScriptedRecordEditReader implements MarcReader {
         }
         if (cdf.matches()) // make a control field
         {
-            final ControlField cf = factory.newControlField(mdf.group(1));
+            final ControlField cf = factory.newControlField(cdf.group(1));
             String data = cdf.group(2);
             if (argmatches != null) {
                 data = fillParameters(data, argmatches);
