@@ -1,14 +1,6 @@
 
 package org.marc4j.test;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import javax.xml.transform.dom.DOMResult;
-
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.junit.Test;
 import org.marc4j.Constants;
@@ -25,6 +17,13 @@ import org.marc4j.test.utils.TestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import javax.xml.transform.dom.DOMResult;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class MarcXmlWriterTest extends XMLTestCase {
 
@@ -301,7 +300,7 @@ public class MarcXmlWriterTest extends XMLTestCase {
                 assertTrue(line.contains("code=\"&lt;U+0014&gt;\">&lt;U+0014&gt; 2011035923"));
             } else if (line.contains("9781410442444")) {
                 // subfield delimiter in subfield text
-                assertTrue(line.contains("code=\"&lt;U+0031&gt;\">9781410442444 (hbk.)"));
+                assertTrue(line.contains("code=\"&lt;U+001f&gt;\">9781410442444 (hbk.)"));
             }
         }
         testoutput.close();
