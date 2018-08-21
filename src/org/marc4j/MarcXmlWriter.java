@@ -376,10 +376,10 @@ public class MarcXmlWriter implements MarcWriter {
     }
 
     /**
-     * Returns true if this writer will check for non-XML characters and replace them with a form like "&lt;U+xxxx&gt;", 
+     * Returns true if this writer will check for non-XML characters and replace them with a form like "&lt;U+xxxx&gt;",
      * false otherwise.
-     * 
-     * @return boolean - true if this writer checks for (and replaces) non-XML characters, false otherwise. 
+     *
+     * @return boolean - true if this writer checks for (and replaces) non-XML characters, false otherwise.
      */
     public boolean getCheckNonXMLChars() {
         return checkNonXMLChars;
@@ -662,9 +662,9 @@ public class MarcXmlWriter implements MarcWriter {
     }
 
     /**
-     * Iterate through the characters in the dataElement, if any of them are invalid characters 
+     * Iterate through the characters in the dataElement, if any of them are invalid characters
      * or control characters or "discouraged" characters, replace character with a &lt;U+XXXX&gt;
-     * representation of the character. 
+     * representation of the character.
      * @param dataElement - the data value to check for invalid XML characters
      * @return the same string with invalid characters replaced with a &lt;U+XXXX&gt; representation
      */
@@ -673,7 +673,7 @@ public class MarcXmlWriter implements MarcWriter {
         for (final char ch : dataElement.toCharArray()) {
             if (isInvalidXmlChar(ch)) {
                 out.append("<U+");
-                final String hex = "0000" + Integer.toString(ch);
+                final String hex = "0000" + Integer.toString(ch, 16);
                 out.append(hex.substring(hex.length() - 4));
                 out.append('>');
             } else {
@@ -692,8 +692,8 @@ public class MarcXmlWriter implements MarcWriter {
             .compile("[\\uFDD0-\\uFDEF\\x{1FFFE}-\\x{1FFFF}\\x{2FFFE}-\\x{2FFFF}\\x{3FFFE}-\\x{3FFFF}\\x{4FFFE}-\\x{4FFFF}\\x{5FFFE}-\\x{5FFFF}\\x{6FFFE}-\\x{6FFFF}\\x{7FFFE}-\\x{7FFFF}\\x{8FFFE}-\\x{8FFFF}\\x{9FFFE}-\\x{9FFFF}\\x{AFFFE}-\\x{AFFFF}\\x{BFFFE}-\\x{BFFFF}\\x{CFFFE}-\\x{CFFFF}\\x{DFFFE}-\\x{DFFFF}\\x{EFFFE}-\\x{EFFFF}\\x{FFFFE}-\\x{FFFFF}\\x{10FFFE}-\\x{10FFFF}]");
 
     /**
-     * A replacement for the method XmlChar.isInvalid(char ch) found in the 
-     * class com.sun.org.apache.xerces.internal.util.XMLChar;  which, since its an 
+     * A replacement for the method XmlChar.isInvalid(char ch) found in the
+     * class com.sun.org.apache.xerces.internal.util.XMLChar;  which, since its an
      * internal class, apparently shouldn't be used.
      */
     private static boolean isInvalidXmlChar(final char ch) {
