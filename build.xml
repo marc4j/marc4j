@@ -127,7 +127,7 @@
                 <exclude name="**/solrmarc/**/*.class" />
                 <exclude name="**/test/**/*.*" />
                 <include name="**/*.properties" />
-                <exclude name="**/*.xml" />
+                <include name="**/unimarc.xml" />
             </fileset>
         </jar>
     </target>
