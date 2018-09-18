@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2018
  *
  * This file is part of MARC4J
@@ -22,7 +22,6 @@ package org.marc4j.converter.impl;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -35,67 +34,48 @@ import java.util.Vector;
 
 /**
  * <p>
- * <code>ReverseCodeTable</code> defines a data structure to facilitate
+ * <code>UnimarcReverseCodeTableHash</code> defines a data structure to facilitate
  * UnicodeToUnimarc character conversion.
  * </p>
  *
  * @author SirsiDynix from Corey Keith
- *
- * @see DefaultHandler
  */
-public class UnimarcReverseCodeTable {
-    protected static Hashtable charset = null;
+public class UnimarcReverseCodeTableHash extends ReverseCodeTable {
 
-    protected static Vector combining = null;
+    protected static Hashtable<Character, Hashtable<Integer, char[]>> charsets = null;
 
+    protected static Vector<Character> combining = null;
+
+    /**
+     * Returns <code>true</code> if the supplied {@link Character} is a
+     * combining character; else, <code>false</code>.
+     *
+     * @param c - the character to test
+     * @return Returns <code>true</code> if combining
+     */
+    @Override
     public boolean isCombining(Character c) {
         return combining.contains(c);
     }
 
-    public Hashtable codeTableHash(Character c) {
-        Hashtable chars = (Hashtable) charset.get(c);
-        if (chars == null) {
-            System.err.println("Not Found: " + c);
-            return null;
-        } else {
-            return chars;
-        }
+    /**
+     * Gets the character table for the supplied {@link Character}.
+     *
+     * @param c - the character to lookup
+     * @return The character table for the supplied {@link Character}
+     */
+    @Override
+    public Hashtable<Integer, char[]> getCharTable(final Character c) {
+        return charsets.get(c);
     }
 
-    public static boolean inPreviousCharCodeTable(Character c, CodeTableTracker ctt) {
-        Hashtable chars = (Hashtable) charset.get(c);
-        if (chars == null) {
-            System.out.println("Not Found: " + c);
-            return false;
-        } else {
 
-            if ((chars.get(ctt.getPrevious(CodeTableTracker.G0)) != null)
-                || (chars.get(ctt.getPrevious(CodeTableTracker.G1)) != null)) {
-                ctt.makePreviousCurrent();
-                return true;
-            } else {
-                return false;
-            }
-
-        }
-    }
-
-    public static char getChar(Character c, CodeTableTracker ctt) {
-        Hashtable chars = (Hashtable) charset.get(c);
-
-        Integer marc = (Integer) chars.get(ctt.getCurrent(CodeTableTracker.G0));
-
-        if (marc != null) {
-            return (char) marc.intValue();
-        }
-        marc = (Integer) chars.get(ctt.getCurrent(CodeTableTracker.G1));
-        if (marc != null) {
-            return (char) marc.intValue();
-        }
-        return 0x20;
-    }
-
-    public UnimarcReverseCodeTable(InputStream byteStream) {
+    /**
+     * Creates a reverse codetable hash from the supplied {@link InputStream}.
+     *
+     * @param byteStream - a Stream to read to create the ReverseCodeTable
+     */
+    public UnimarcReverseCodeTableHash(InputStream byteStream) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -110,7 +90,7 @@ public class UnimarcReverseCodeTable {
             rdr.setContentHandler(saxUms);
             rdr.parse(src);
 
-            charset = saxUms.getCharSets();
+            charsets = saxUms.getCharSets();
             combining = saxUms.getCombiningChars();
 
         } catch (Exception exc) {
@@ -119,7 +99,12 @@ public class UnimarcReverseCodeTable {
         }
     }
 
-    public UnimarcReverseCodeTable(String filename) {
+    /**
+     * Creates a reverse codetable hash from the supplied file name.
+     *
+     * @param filename - the name of a file to read to create the ReverseCodeTable
+     */
+    public UnimarcReverseCodeTableHash(String filename) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -135,7 +120,7 @@ public class UnimarcReverseCodeTable {
             rdr.setContentHandler(saxUms);
             rdr.parse(src);
 
-            charset = saxUms.getCharSets();
+            charsets = saxUms.getCharSets();
             combining = saxUms.getCombiningChars();
 
         } catch (Exception exc) {
@@ -144,7 +129,7 @@ public class UnimarcReverseCodeTable {
         }
     }
 
-    public UnimarcReverseCodeTable(URI uri) {
+    public UnimarcReverseCodeTableHash(URI uri) {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -159,7 +144,7 @@ public class UnimarcReverseCodeTable {
             rdr.setContentHandler(saxUms);
             rdr.parse(src);
 
-            charset = saxUms.getCharSets();
+            charsets = saxUms.getCharSets();
             combining = saxUms.getCombiningChars();
 
         } catch (Exception exc) {

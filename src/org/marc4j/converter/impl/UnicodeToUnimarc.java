@@ -22,6 +22,7 @@ package org.marc4j.converter.impl;
 
 import org.marc4j.converter.CharConverter;
 
+import java.lang.reflect.Constructor;
 import java.text.Normalizer;
 import java.util.Collections;
 import java.util.Formatter;
@@ -35,7 +36,7 @@ import java.util.Hashtable;
  * @author SirsiDynix, from Bas Peters original UnicodeToAnsel
  */
 public class UnicodeToUnimarc extends CharConverter implements UnimarcConstants {
-    protected UnimarcReverseCodeTable rct;
+    protected ReverseCodeTable rct;
 
     private CodeTableTracker defaultCodeTableTracker = new CodeTableTracker();
     private int workingG0;
@@ -67,8 +68,20 @@ public class UnicodeToUnimarc extends CharConverter implements UnimarcConstants 
      * No-arg constructor.
      */
     public UnicodeToUnimarc() {
-        rct = new UnimarcReverseCodeTable(getClass().getResourceAsStream("resources/unimarc.xml"));
+        rct = loadGeneratedTable();
         resetDefaultGX();
+    }
+
+    private ReverseCodeTable loadGeneratedTable() {
+        try {
+            final Class<?> generated = Class.forName("org.marc4j.converter.impl.UnimarcReverseCodeTableGenerated");
+            final Constructor<?> cons = generated.getConstructor();
+            final Object rct = cons.newInstance();
+
+            return (UnimarcReverseCodeTableHash) rct;
+        } catch (final Exception e) {
+            return new UnimarcReverseCodeTableHash(getClass().getResourceAsStream("resources/unimarc.xml"));
+        }
     }
 
     /**

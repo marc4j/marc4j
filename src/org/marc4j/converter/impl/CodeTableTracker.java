@@ -37,8 +37,8 @@ public class CodeTableTracker {
 
     public CodeTableTracker() {
         g = new Integer[4][3];
-        g[G0][prev] = 0x42; // B
-        g[G1][prev] = 0x45; // E
+        g[G0][prev] = 0x42; // B, MARC-8 default g0.  Unimarc handled a bit differently.
+        g[G1][prev] = 0x45; // E, MARC-8 default g1.  Unimarc handled a bit differently.
         g[G2][prev] = null;
         g[G3][prev] = null;
     }

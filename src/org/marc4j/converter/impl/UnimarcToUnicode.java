@@ -21,6 +21,7 @@ package org.marc4j.converter.impl;
 
 import org.marc4j.converter.CharConverter;
 
+import java.lang.reflect.Constructor;
 import java.text.Normalizer;
 import java.util.Vector;
 
@@ -116,7 +117,7 @@ public class UnimarcToUnicode extends CharConverter implements UnimarcConstants 
         }
     }
 
-    protected CodeTable ct;
+    protected CodeTableInterface ct;
 
     protected CodeTracker altCodeTracker = null;
 
@@ -176,7 +177,20 @@ public class UnimarcToUnicode extends CharConverter implements UnimarcConstants 
      * Default constructor.
      */
     public UnimarcToUnicode() {
-        ct = new CodeTable(getClass().getResourceAsStream("resources/unimarc.xml"));
+        ct = loadGeneratedTable();
+    }
+
+    private CodeTableInterface loadGeneratedTable() {
+        try {
+            final Class<?> generated = Class
+                    .forName("org.marc4j.converter.impl.UnimarcCodeTableGenerated");
+            final Constructor<?> cons = generated.getConstructor();
+            final Object ct = cons.newInstance();
+
+            return (CodeTableInterface) ct;
+        } catch (final Exception e) {
+            return new CodeTable(getClass().getResourceAsStream("resources/unimarc.xml"));
+        }
     }
 
     private void checkMode(char[] data, CodeTracker cdt) {

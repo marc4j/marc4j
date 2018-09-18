@@ -5,13 +5,16 @@ import java.util.Hashtable;
 
 /**
  * <p>
- * <code>ReverseCodeTable</code> is a set of methods to facilitate Unicode to MARC-8 character conversion, it tracks
- * the current charset encodings that are in use, and defines abstract methods isCombining() and getCharTable()which
- * must be overridden in a sub-class to actually implement the Unicode to MARC8 character conversion. There are two
- * defined subclasses: ReverseCodeTableHash which reads in and parses a large XML file at runtime, and
- * ReverseCodeTableGenerated which consists of a couple of switch statements that implement the same two methods. The
- * code for the second of these two sub-classes, ReverseCodeTableGenerated, is generated when the marc4j jar file is
- * created using the same XML file that ReverseCodeTableHash uses.
+ * <code>ReverseCodeTable</code> is a set of methods to facilitate Unicode to MARC-8 or Unimarc character conversion,
+ * it tracks the current charset encodings that are in use, and defines abstract methods isCombining() and
+ * getCharTable()which must be overridden in a sub-class to actually implement the Unicode to MARC8 or Unimarc
+ * character conversion. There are two defined subclasses for MARC-8: ReverseCodeTableHash which reads in and parses
+ * a large XML file at runtime, and ReverseCodeTableGenerated which consists of a couple of switch statements that
+ * implement the same two methods. There are two comparable subclasses for Unimarc: UnimarcReverseCodeTableHash which
+ * reads in and parses a large XML file at runtime, and UnimarcReverseCodeTableGenerated, similar to the MARC-8 class.
+ * The code for the second of each of these pairs of sub-classes, ReverseCodeTableGenerated and
+ * UnimarcReverseCodeTableGenerated, are generated when the marc4j jar file is created using the same XML
+ * files that ReverseCodeTableHash and UnimarcReverseCodeTableHash uses.
  * </p>
  *
  * @author Robert Haschart
@@ -24,8 +27,9 @@ public abstract class ReverseCodeTable {
     static final byte G1 = 1;
 
     /**
-     * Abstract method that must be defined in a sub-class, used in the conversion of Unicode to MARC-8. For a given
-     * Unicode character, determine whether that character is a combining character (an accent mark or diacritic)
+     * Abstract method that must be defined in a sub-class, used in the conversion of Unicode to MARC-8 or to Unimarc.
+     * For a given Unicode character, determine whether that character is a combining character (an accent mark or
+     * diacritic)
      *
      * @param c - the UCS/Unicode character to look up
      * @return boolean - true if character is a combining character
@@ -33,13 +37,14 @@ public abstract class ReverseCodeTable {
     abstract public boolean isCombining(Character c);
 
     /**
-     * Abstract method that must be defined in a sub-class, used in the conversion of Unicode to MARC-8. For a given
-     * Unicode character, return ALL of the possible MARC-8 representations of that character. These are represented
-     * in a Hashtable where the key is the ISOcode of the character set in MARC-8 that the Unicode character appears
-     * in, and the value is the MARC-8 character value in that character set that encodes the given Unicode character.
+     * Abstract method that must be defined in a sub-class, used in the conversion of Unicode to MARC-8 or to Unimarc.
+     * For a given Unicode character, return ALL of the possible MARC-8 representations of that character. These are
+     * represented in a Hashtable where the key is the ISOcode of the character set in MARC-8 that the Unicode
+     * character appears in, and the value is the MARC-8 character value in that character set that encodes the given
+     * Unicode character.
      *
      * @param c - the UCS/Unicode character to look up
-     * @return Hashtable - contains all of the possible MARC-8 representations of that Unicode character
+     * @return Hashtable - contains all of the possible MARC-8 or Unimarc representations of that Unicode character
      */
     abstract public Hashtable<Integer, char[]> getCharTable(Character c);
 
@@ -213,6 +218,7 @@ public abstract class ReverseCodeTable {
     }
 
     /**
+     * USE ONLY FOR MARC8!  Do not use for Unimarc!
      * Lookups up the MARC8 translation of a given Unicode character and determines which of the MARC-8 character sets
      * that have a translation for that Unicode character is the best one to use. If one one charset has a
      * translation, that one will be returned. If more than one charset has a translation then return the first one
@@ -250,11 +256,32 @@ public abstract class ReverseCodeTable {
     }
 
     /**
+     * Get marc character given Unicode character and Code table tracker.
+     * @param c Unicode character
+     * @param ctt Code table tracker
+     * @return marc character (for either Marc-8 or Unimarc, depending on the actual implementing class being used).
+     */
+    public char getChar(Character c, CodeTableTracker ctt) {
+        Hashtable chars = getCharTable(c);
+
+        Integer marc = (Integer) chars.get(ctt.getCurrent(CodeTableTracker.G0));
+
+        if (marc != null) {
+            return (char) marc.intValue();
+        }
+        marc = (Integer) chars.get(ctt.getCurrent(CodeTableTracker.G1));
+        if (marc != null) {
+            return (char) marc.intValue();
+        }
+        return 0x20;
+    }
+
+    /**
      * Utility function for translating a String consisting of one or more two character hex string of the character
      * values into a character array containing those characters
      *
      * @param str - A string containing the two-character hex strings of characters to decode
-     * @return char[] - an array of characters represented by the
+     * @return char[] - an array of characters represented by the str value
      */
     public static char[] deHexify(final String str) {
         char result[] = null;

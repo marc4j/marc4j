@@ -406,7 +406,7 @@ public class AnselToUnicode extends CharConverter {
                     break;
                 default:
                     // unknown code character found.  We aren't going to throw an exception or increment the offset,
-                    // just log the error and return.
+                    // just log the error and return (i.e. basically ignore it and keep processing).
                     if (curReader != null) {
                         curReader.addError(MarcError.MINOR_ERROR,
                                         "Unknown character set code found following escape character. Discarding escape character.");
