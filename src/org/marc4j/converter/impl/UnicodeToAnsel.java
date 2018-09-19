@@ -20,11 +20,13 @@
 
 package org.marc4j.converter.impl;
 
+import org.marc4j.converter.CharConverter;
+
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.text.Normalizer;
-
-import org.marc4j.converter.CharConverter;
+import java.util.Collections;
+import java.util.Formatter;
 
 /**
  * <p>
@@ -51,8 +53,33 @@ public class UnicodeToAnsel extends CharConverter {
     static final char G1 = 0x29;
 
     static final int ASCII = 0x42;
+    static final int ANSEL = 0x45;
+
+    private CodeTableTracker defaultCodeTableTracker = new CodeTableTracker();
 
     boolean dontChangeCharset = false;
+
+    // flag that indicates we should de-normalize the results of the convert method (i.e. de-compose any
+    // composed Unicode characters.  Default false.
+    protected boolean decomposeUnicode = false;
+
+    /**
+     * Returns true if Unicode composed characters should be decomposed.
+     *
+     * @return True if we should decompose Unicode characters, else, false to leave them alone.
+     */
+    public boolean shouldDecomposeUnicode() {
+        return decomposeUnicode;
+    }
+
+    /**
+     * Sets whether we should decompose Unicode composed charactes.
+     *
+     * @param decomposeUnicode True if we should decompose Unicode characters, else, false.  Default false.
+     */
+    public void setDecomposeUnicode(boolean decomposeUnicode) {
+        this.decomposeUnicode = decomposeUnicode;
+    }
 
     /**
      * Creates a new instance and loads the MARC4J supplied Ansel/Unicode conversion tables based on the official LC
@@ -82,7 +109,7 @@ public class UnicodeToAnsel extends CharConverter {
 
     /**
      * Constructs an instance with the specified pathname.
-     * 
+     *
      * Use this constructor to create an instance with a customized code table
      * mapping. The mapping file should follow the structure of LC's XML MARC-8
      * to Unicode mapping (see:
@@ -96,7 +123,7 @@ public class UnicodeToAnsel extends CharConverter {
 
     /**
      * Constructs an instance with the specified input stream.
-     * 
+     *
      * Use this constructor to create an instance with a customized code table
      * mapping. The mapping file should follow the structure of LC's XML MARC-8
      * to Unicode mapping (see:
@@ -125,18 +152,50 @@ public class UnicodeToAnsel extends CharConverter {
     }
 
     /**
+     * Resets the G0 and G1 charsets to the defaults (ASCII/ANSEL)
+     */
+    public void resetDefaultG0AndG1() {
+        defaultCodeTableTracker.setPrevious(CodeTableTracker.G0, ASCII);
+        defaultCodeTableTracker.setPrevious(CodeTableTracker.G1, ANSEL);
+    }
+
+    /**
+     * Allows the caller to set the default G0/G1 char sets
+     * @param altG0Code string pulled from 066 $a
+     * @param altG1Code string pulled from 066 $b
+     */
+    public void setDefaultG0AndG1(String altG0Code, String altG1Code) {
+        if (altG0Code != null && altG0Code.length() > 0) {
+            char ch = altG0Code.charAt(altG0Code.length()-1);
+            defaultCodeTableTracker.setPrevious(CodeTableTracker.G0, (int) ch);
+        }
+        if (altG1Code != null && altG1Code.length() > 0) {
+            char ch = altG1Code.charAt(altG1Code.length()-1);
+            defaultCodeTableTracker.setPrevious(CodeTableTracker.G1, (int) ch);
+        }
+    }
+
+    /**
      * Converts UCS/Unicode data to MARC-8.
      * <p>
-     * If there is no match for a Unicode character, it will be encoded as &amp;#xXXXX; so that if the data is translated
+     * If there is no match for a Unicode character, it will be encoded as &lt;U+xxxx&gt; so that if the data is translated
      * back into Unicode, the original data can be recreated.
      * </p>
      *
-     * @param data - the UCS/Unicode data in an array of char
+     * @param dataElement - the UCS/Unicode data in an array of char
      * @return String - the MARC-8 data
      */
     @Override
-    public String convert(final char data[]) {
-        final StringBuffer sb = new StringBuffer();
+    public String convert(final char dataElement[]) {
+        char[] data;
+        if (shouldDecomposeUnicode()) {
+            data = Normalizer.normalize(new String(dataElement), Normalizer.Form.NFD).toCharArray();
+            data = FixDoubleWidth.decomposeCombinedDoubleChar(data);
+        } else {
+            data = dataElement;
+        }
+
+        final StringBuilder sb = new StringBuilder();
 
         rct.init();
 
@@ -160,15 +219,19 @@ public class UnicodeToAnsel extends CharConverter {
      * </p>
      *
      * @param data - the UCS/Unicode data in an array of char
-     * @return String - the MARC-8 data
+     * @param sb   - The StringBuilder MARC-8 data object to receive the converted data.
      */
-    private void convertPortion(final char data[], final StringBuffer sb) {
+    private void convertPortion(final char data[], final StringBuilder sb) {
         int prev_len = 1;
 
+        final StringBuilder marc = new StringBuilder();
+        CodeTableTracker ctt = new CodeTableTracker(defaultCodeTableTracker);
+
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < data.length; i++) {
-            final Character c = new Character(data[i]);
-            final StringBuffer marc = new StringBuffer();
-            final int charValue = c.charValue();
+            final Character c = data[i];
+            marc.setLength(0);
+            final int charValue = c;
 
             if (charValue == 0x20 && rct.getPreviousG0() != '1') {
                 if (rct.getPreviousG0() == '1') {
@@ -186,7 +249,7 @@ public class UnicodeToAnsel extends CharConverter {
                 // if three (or more) characters long (which indicates multiple diacritic marks), then
                 // re-compose the the main character with the first diacritic, and check whether that
                 // and the remaining diacritics can be translated. If so go with that, otherwise, give up
-                // and merely use the &#xXXXX; Numeric Character Reference form to represent the original
+                // and merely use the <U+xxxx> Numeric Character Reference form to represent the original
                 // unicode character
                 final String tmpnorm = c.toString();
                 final String tmpNormed = Normalizer.normalize(tmpnorm, Normalizer.Form.NFD);
@@ -214,16 +277,13 @@ public class UnicodeToAnsel extends CharConverter {
                     rct.setPreviousG0(ASCII);
                 }
 
-                if (charValue < 0x1000) {
-                    marc.append("&#x" + Integer.toHexString(charValue + 0x10000).toUpperCase().substring(1) + ";");
-                } else {
-                    marc.append("&#x" + Integer.toHexString(charValue).toUpperCase() + ";");
-                    // continue;
-                }
+                marc.append(processEscapeSequence(c, ctt));
             } else if (rct.inPreviousG0CharEntry(c)) {
                 marc.append(rct.getCurrentG0CharEntry(c));
+                ctt.makePreviousCurrent();
             } else if (rct.inPreviousG1CharEntry(c)) {
                 marc.append(rct.getCurrentG1CharEntry(c));
+                ctt.makePreviousCurrent();
             } else if (dontChangeCharset) {
                 if (charValue < 0x1000) {
                     marc.append("&#x" + Integer.toHexString(charValue + 0x10000).toUpperCase().substring(1) + ";");
@@ -231,6 +291,13 @@ public class UnicodeToAnsel extends CharConverter {
                     marc.append("&#x" + Integer.toHexString(charValue).toUpperCase() + ";");
                     // continue;
                 }
+            } else if (rct.codeTableHash(c).keySet().contains(ctt.getPrevious(CodeTableTracker.G1))) {
+                ctt.makePreviousCurrent();
+                char[] ch = rct.getCharEntry(c, ctt.getPrevious(CodeTableTracker.G1));
+                if (ch.length == 1 && ch[0] < 0x80) {
+                    ch[0] = (char) (ch[0] + 0x80);
+                }
+                marc.append(ch);
             } else {
                 // need to change character set
                 // if several MARC-8 character sets contain the given Unicode character, select the
@@ -245,6 +312,7 @@ public class UnicodeToAnsel extends CharConverter {
                     marc.append(ESC);
                     marc.append(G0multibyte);
                     rct.setPreviousG0(charset);
+                    ctt.setPrevious(CodeTableTracker.G0, charset);
                 } else if (marc8[0] < 0x80) {
                     marc.append(ESC);
 
@@ -255,10 +323,12 @@ public class UnicodeToAnsel extends CharConverter {
                     }
 
                     rct.setPreviousG0(charset);
+                    ctt.setPrevious(CodeTableTracker.G0, charset);
                 } else {
                     marc.append(ESC);
                     marc.append(G1);
                     rct.setPreviousG1(charset);
+                    ctt.setPrevious(CodeTableTracker.G1, charset);
                 }
 
                 marc.append((char) charset);
@@ -284,6 +354,20 @@ public class UnicodeToAnsel extends CharConverter {
 
             prev_len = marc.length();
         }
+
+        if (ctt.getPrevious(CodeTableTracker.G1).intValue()
+                != defaultCodeTableTracker.getPrevious(CodeTableTracker.G1).intValue()) {
+            sb.append(ESC);
+            sb.append(G1);
+            sb.append((char) defaultCodeTableTracker.getPrevious(CodeTableTracker.G1).intValue());
+        }
+
+        if (ctt.getPrevious(CodeTableTracker.G0).intValue()
+                != defaultCodeTableTracker.getPrevious(CodeTableTracker.G0).intValue()) {
+            sb.append(ESC);
+            sb.append(G0);
+            sb.append((char) defaultCodeTableTracker.getPrevious(CodeTableTracker.G0).intValue());
+        }
     }
 
     private static boolean allCharsHaveMatch(final ReverseCodeTable rct, final String str) {
@@ -294,6 +378,26 @@ public class UnicodeToAnsel extends CharConverter {
         }
 
         return true;
+    }
+
+    /**
+     * Handle an escape sequence that has no Marc8 equivalent.  Use UnicodeToAnsel with appropriate G0 and G1
+     * settings, convert the character to a &lt;U+xxxx&gt; format, then run through the converter.
+     * @param ch - character with no Marc8 equivalent
+     * @param currentTracker - Current G0 / G1 tracker
+     * @return
+     */
+    private String processEscapeSequence(Character ch, CodeTableTracker currentTracker) {
+        UnicodeToAnsel converter = new UnicodeToAnsel();
+
+        converter.defaultCodeTableTracker.setPrevious(CodeTableTracker.G0, currentTracker.getPrevious(CodeTableTracker.G0));
+        converter.defaultCodeTableTracker.setPrevious(CodeTableTracker.G1, currentTracker.getPrevious(CodeTableTracker.G1));
+
+        StringBuilder sb = new StringBuilder();
+        Formatter f = new Formatter(sb);
+        f.format("<U+%04X>", Collections.singletonList((int) ch).toArray());
+
+        return converter.convert(sb.toString());
     }
 
 }

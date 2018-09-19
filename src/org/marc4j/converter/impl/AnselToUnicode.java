@@ -20,16 +20,17 @@
 
 package org.marc4j.converter.impl;
 
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.marc4j.MarcError;
 import org.marc4j.MarcException;
 import org.marc4j.MarcPermissiveStreamReader;
 import org.marc4j.converter.CharConverter;
+
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.text.Normalizer;
+import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //import org.marc4j.ErrorHandler;
 
@@ -37,12 +38,12 @@ import org.marc4j.converter.CharConverter;
  * <p>
  * A utility to convert MARC-8 data to non-precomposed UCS/Unicode.
  * </p>
- * 
+ *
  * <p>
  * The MARC-8 to Unicode mapping used is the version with the March 2005
  * revisions.
  * </p>
- * 
+ *
  * @author Bas Peters
  * @author Corey Keith
  */
@@ -90,12 +91,9 @@ public class AnselToUnicode extends CharConverter {
     }
 
     class CodeTracker {
-
-        int offset;
-
-        int g0;
-
-        int g1;
+        int offset = 0;
+        int g0 = DEFAULT_G0;
+        int g1 = DEFAULT_G1;
 
         boolean multibyte;
 
@@ -110,12 +108,26 @@ public class AnselToUnicode extends CharConverter {
 
     protected boolean loadedMultibyte = false;
 
+    protected static final int DEFAULT_G0 = 0x42;
+    protected static final int DEFAULT_G1 = 0x45;
+    protected CodeTracker altCodeTracker = null;
+
+    protected ConvertUnicodeSequence unicodeSeqConv = new ConvertUnicodeSequence();
+
     // flag that indicates whether Numeric Character References of the form
     // &#XXXX; should be translated to the
     // unicode code point specified by the 4 hexidecimal digits. As described on
     // this page
     // http://www.loc.gov/marc/specifications/speccharconversion.html#lossless
     protected boolean translateNCR = false;
+
+    // flag that indicates whether we should convert embedded unicode sequences (e.g. <U+xxxx>) to
+    // unicode characters.  Default false.
+    protected boolean convertUnicodeSequence = false;
+
+    // flag that indicates we should normalize the results of the convert method (i.e. compose any
+    // decomposed Unicode characters.  Default false.
+    protected boolean composeUnicode = false;
 
     /**
      * Returns true if should translate to NCR.
@@ -133,6 +145,46 @@ public class AnselToUnicode extends CharConverter {
      */
     public void setTranslateNCR(final boolean translateNCR) {
         this.translateNCR = translateNCR;
+    }
+
+    /**
+     * Returns true if embedded Unicode sequences (i.e. of form &lt;U+xxxx$gt;) should be converted to
+     * the unicode character.  If true, will be done before composing unicode (if that is also true).
+     *
+     * @return True if should convert &lt;U+xxxx&gt; sequences to the unicode character.
+     */
+    public boolean shouldConvertUnicodeSequence() {
+        return convertUnicodeSequence;
+    }
+
+    /**
+     * Sets whether Unicode sequences of &lt;U+xxxx&gt; should be converted to the Unicode character,
+     * or left as is.  If shouldComposeUnicode() is also true, the convert will happen before the
+     * compose.
+     *
+     * @param convertUnicodeSequence True if should translate &lt;U+xxxx&gt; to Unicode characters, false
+     *                               otherwise.  Default false.
+     */
+    public void setShouldConvertUnicodeSequence(boolean convertUnicodeSequence) {
+        this.convertUnicodeSequence = convertUnicodeSequence;
+    }
+
+    /**
+     * Returns true if Unicode decomposed characters should be composed.
+     *
+     * @return True if we should compose Unicode characters, else, false to leave them alone.
+     */
+    public boolean shouldComposeUnicode() {
+        return composeUnicode;
+    }
+
+    /**
+     * Sets whether we should compose Unicode decomposed charactes.
+     *
+     * @param composeUnicode True if we should compose Unicode characters, else, false.  Default false.
+     */
+    public void setComposeUnicode(boolean composeUnicode) {
+        this.composeUnicode = composeUnicode;
     }
 
     /**
@@ -167,7 +219,7 @@ public class AnselToUnicode extends CharConverter {
     /**
      * Creates a new instance and loads the MARC4J supplied conversion tables based on the official LC tables.
      *
-     * @param curReader - the MarcPermissiveStreamReader currently in use, 
+     * @param curReader - the MarcPermissiveStreamReader currently in use,
      *       used for recording Errors detected in translation the field data.
      */
     public AnselToUnicode(final MarcPermissiveStreamReader curReader) {
@@ -202,7 +254,7 @@ public class AnselToUnicode extends CharConverter {
 
     /**
      * Constructs an instance with the specified pathname.
-     * 
+     *
      * Use this constructor to create an instance with a customized code table
      * mapping. The mapping file should follow the structure of LC's XML MARC-8
      * to Unicode mapping (see: http://www.loc.gov/marc/specifications/codetables.xml).
@@ -216,11 +268,11 @@ public class AnselToUnicode extends CharConverter {
 
     /**
      * Constructs an instance with the specified input stream.
-     * 
+     *
      * Use this constructor to create an instance with a customized code table
      * mapping. The mapping file should follow the structure of LC's XML MARC-8
      * to Unicode mapping (see: http://www.loc.gov/marc/specifications/codetables.xml).
-     *  
+     *
      * @param in - an InputStream to use instead of the official LC codetable data
      */
     public AnselToUnicode(final InputStream in) {
@@ -303,7 +355,7 @@ public class AnselToUnicode extends CharConverter {
                                 }
                                 break;
                             }
-                            set_cdt(cdt, 0, data, offset2c, true); 
+                            set_cdt(cdt, 0, data, offset2c, true);
                             break;
                         case 0x31: // '1'
                             cdt.g0 = data[cdt.offset + 2 + extra + extra2];
@@ -353,19 +405,16 @@ public class AnselToUnicode extends CharConverter {
                     extra++;
                     break;
                 default:
-                    // unknown code character found: discard escape sequence and
-                    // return
-                    cdt.offset += 1;
-
+                    // unknown code character found.  We aren't going to throw an exception or increment the offset,
+                    // just log the error and return (i.e. basically ignore it and keep processing).
                     if (curReader != null) {
                         curReader.addError(MarcError.MINOR_ERROR,
                                         "Unknown character set code found following escape character. Discarding escape character.");
-                    } else {
-                        throw new MarcException(
-                                "Unknown character set code found following escape character.");
                     }
-
-                    break;
+                    System.err.println("ESC followed by invalid sequence at offset " + cdt.offset + ":");
+                    System.err.println(data);
+                    // we are not going to throw an exception or increment the offset
+                    return;
             }
         }
         if (curReader != null && (extra != 0 || extra2 != 0)) {
@@ -402,16 +451,22 @@ public class AnselToUnicode extends CharConverter {
         }
 
         if ("34BE1NQS2".indexOf(data[cdt.offset + addnlOffset]) == -1) {
-            cdt.offset += 1;
-            cdt.multibyte = false;
-
             if (curReader != null) {
                 curReader.addError(MarcError.MINOR_ERROR,
                                 "Unknown character set code found following escape character. Discarding escape character.");
-            } else {
-                throw new MarcException(
-                        "Unknown character set code found following escape character.");
             }
+            System.err.println("ESC followed by invalid sequence at offset " + cdt.offset + ":");
+            System.err.println(data);
+            // we are not going to throw an exception
+
+            if (g0_or_g1 == 0) {
+                cdt.g0 = data[cdt.offset + addnlOffset];
+            } else {
+                cdt.g1 = data[cdt.offset + addnlOffset];
+            }
+
+            cdt.offset += 1 + addnlOffset;
+            cdt.multibyte = multibyte;
         } else {
             // All is well, proceed normally
             if (g0_or_g1 == 0) {
@@ -426,6 +481,34 @@ public class AnselToUnicode extends CharConverter {
     }
 
     /**
+     * Resets the G0 and G1 charsets to the defaults (ASCII/ANSEL)
+     */
+    public void resetDefaultG0AndG1() {
+        altCodeTracker = null;
+    }
+
+    /**
+     * Allows the caller to set the default G0/G1 char sets
+     * @param altG0Code string pulled from 066 $a
+     * @param altG1Code string pulled from 066 $b
+     */
+    public void setDefaultG0AndG1(String altG0Code, String altG1Code) {
+        char escape = 0x1B;
+        altCodeTracker = new CodeTracker();
+
+        if (altG0Code != null && altG0Code.length() > 0) {
+            altG0Code = "" + escape + altG0Code;
+            checkMode(altG0Code.toCharArray(), altCodeTracker);
+            altCodeTracker.offset = 0;
+        }
+        if (altG1Code != null && altG1Code.length() > 0) {
+            altG1Code = "" + escape + altG1Code;
+            checkMode(altG1Code.toCharArray(), altCodeTracker);
+            altCodeTracker.offset = 0;
+        }
+    }
+
+    /**
      * <p>
      * Converts MARC-8 data to UCS/Unicode.
      * </p>
@@ -435,14 +518,15 @@ public class AnselToUnicode extends CharConverter {
      */
     @Override
     public String convert(final char data[]) {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         final int len = data.length;
         final CodeTracker cdt = new CodeTracker();
 
-        cdt.g0 = 0x42;
-        cdt.g1 = 0x45;
-        cdt.multibyte = false;
-        cdt.offset = 0;
+        if (altCodeTracker != null) {
+            cdt.g0 = altCodeTracker.g0;
+            cdt.g1 = altCodeTracker.g1;
+            cdt.multibyte = altCodeTracker.multibyte;
+        }
 
         checkMode(data, cdt);
 
@@ -450,11 +534,11 @@ public class AnselToUnicode extends CharConverter {
 
         while (cdt.offset < data.length) {
             if (ct.isCombining(data[cdt.offset], cdt.g0, cdt.g1) && hasNext(cdt.offset, len)) {
-                while (cdt.offset < len && ct.isCombining(data[cdt.offset], cdt.g0, cdt.g1) && 
+                while (cdt.offset < len && ct.isCombining(data[cdt.offset], cdt.g0, cdt.g1) &&
                         hasNext(cdt.offset, len)) {
                     final char c = getCharCDT(data, cdt);
                     if (c != 0) {
-                        diacritics.put(new Character(c));
+                        diacritics.put(c);
                     }
                     checkMode(data, cdt);
                 }
@@ -475,7 +559,7 @@ public class AnselToUnicode extends CharConverter {
                 }
 
                 while (!diacritics.isEmpty()) {
-                    final char c1 = ((Character) diacritics.get()).charValue();
+                    final char c1 = (Character) diacritics.get();
                     sb.append(c1);
                 }
 
@@ -539,6 +623,10 @@ public class AnselToUnicode extends CharConverter {
             }
         }
 
+        if (shouldConvertUnicodeSequence()) {
+            unicodeSeqConv.convert(sb);
+            FixDoubleWidth.removeInvalidSecondHalf(sb);
+        }
         String dataElement = sb.toString();
 
         if (translateNCR && dataElement
@@ -546,7 +634,7 @@ public class AnselToUnicode extends CharConverter {
             final Pattern pattern = Pattern
                     .compile("&#x([0-9A-Fa-f]+);");
             final Matcher matcher = pattern.matcher(dataElement);
-            final StringBuffer newElement = new StringBuffer();
+            final StringBuilder newElement = new StringBuilder();
 
             int prevEnd = 0;
 
@@ -560,11 +648,15 @@ public class AnselToUnicode extends CharConverter {
             dataElement = newElement.toString();
         }
 
-        return dataElement;
+        if (shouldComposeUnicode()) {
+            return Normalizer.normalize(dataElement, Normalizer.Form.NFC);
+        } else {
+            return dataElement;
+        }
     }
 
     private String convertMultibyte(final CodeTracker cdt, final char[] data) {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
 
         int offset = cdt.offset;
 
@@ -614,17 +706,17 @@ public class AnselToUnicode extends CharConverter {
                     sb.append(c);
                     offset += 3;
                 }
-            } else if (offset + 6 < data.length && noneEquals(data, offset, offset + 3, ' ') && 
-                    (getMBChar(makeMultibyte(data[offset + 0], data[offset + 1], data[offset + 2])) == 0 || 
-                     getMBChar(makeMultibyte(data[offset + 3], data[offset + 4], data[offset + 5])) == 0) && 
-                     getMBChar(makeMultibyte(data[offset + 2], data[offset + 3], data[offset + 4])) != 0 && 
-                     noneEquals(data, offset, offset + 5, 0x1b) && 
-                     noneInRange(data, offset, offset + 5, 0x80, 0xFF) && 
+            } else if (offset + 6 < data.length && noneEquals(data, offset, offset + 3, ' ') &&
+                    (getMBChar(makeMultibyte(data[offset + 0], data[offset + 1], data[offset + 2])) == 0 ||
+                     getMBChar(makeMultibyte(data[offset + 3], data[offset + 4], data[offset + 5])) == 0) &&
+                     getMBChar(makeMultibyte(data[offset + 2], data[offset + 3], data[offset + 4])) != 0 &&
+                     noneEquals(data, offset, offset + 5, 0x1b) &&
+                     noneInRange(data, offset, offset + 5, 0x80, 0xFF) &&
                      !nextEscIsMB(data, offset, data.length)) {
 
-                final String mbstr = getMBCharStr(makeMultibyte(data[offset], '[', data[offset + 1])) + 
-                                     getMBCharStr(makeMultibyte(data[offset], ']', data[offset + 1])) + 
-                                     getMBCharStr(makeMultibyte(data[offset], data[offset + 1], '[')) + 
+                final String mbstr = getMBCharStr(makeMultibyte(data[offset], '[', data[offset + 1])) +
+                                     getMBCharStr(makeMultibyte(data[offset], ']', data[offset + 1])) +
+                                     getMBCharStr(makeMultibyte(data[offset], data[offset + 1], '[')) +
                                      getMBCharStr(makeMultibyte(data[offset], data[offset + 1], ']'));
                 if (mbstr.length() == 1) {
                     if (curReader != null) {
@@ -651,16 +743,16 @@ public class AnselToUnicode extends CharConverter {
                     sb.append("[?]");
                     offset += 2;
                 }
-            } else if (offset + 7 < data.length && noneEquals(data, offset, offset + 3, ' ') && 
-                    (getMBChar(makeMultibyte(data[offset + 0], data[offset + 1], data[offset + 2])) == 0 || 
-                     getMBChar(makeMultibyte(data[offset + 3], data[offset + 4], data[offset + 5])) == 0) && 
-                     getMBChar(makeMultibyte(data[offset + 4], data[offset + 5], data[offset + 6])) != 0 && 
-                     noneEquals(data, offset, offset + 6, 0x1b) && 
+            } else if (offset + 7 < data.length && noneEquals(data, offset, offset + 3, ' ') &&
+                    (getMBChar(makeMultibyte(data[offset + 0], data[offset + 1], data[offset + 2])) == 0 ||
+                     getMBChar(makeMultibyte(data[offset + 3], data[offset + 4], data[offset + 5])) == 0) &&
+                     getMBChar(makeMultibyte(data[offset + 4], data[offset + 5], data[offset + 6])) != 0 &&
+                     noneEquals(data, offset, offset + 6, 0x1b) &&
                      noneInRange(data, offset, offset + 6, 0x80, 0xFF) && !nextEscIsMB(data, offset, data.length)) {
 
-                final String mbstr = getMBCharStr(makeMultibyte(data[offset], '[', data[offset + 1])) + 
-                        getMBCharStr(makeMultibyte(data[offset], ']', data[offset + 1])) + 
-                        getMBCharStr(makeMultibyte(data[offset], data[offset + 1], '[')) + 
+                final String mbstr = getMBCharStr(makeMultibyte(data[offset], '[', data[offset + 1])) +
+                        getMBCharStr(makeMultibyte(data[offset], ']', data[offset + 1])) +
+                        getMBCharStr(makeMultibyte(data[offset], data[offset + 1], '[')) +
                         getMBCharStr(makeMultibyte(data[offset], data[offset + 1], ']'));
                 if (mbstr.length() == 1) {
                     if (curReader != null) {
@@ -684,7 +776,7 @@ public class AnselToUnicode extends CharConverter {
                     sb.append("[?]");
                     offset += 2;
                 }
-            } else if (offset + 4 <= data.length && data[offset] > 0x7f && 
+            } else if (offset + 4 <= data.length && data[offset] > 0x7f &&
                     getMBChar(makeMultibyte(data[offset + 1], data[offset + 2], data[offset + 3])) != 0) {
 
                 if (curReader != null) {
@@ -837,7 +929,7 @@ public class AnselToUnicode extends CharConverter {
                         cdt.offset += 4;
                         c = getCharCDT(data, cdt);
                         return c;
-                    } else if (len >= 1 && c1 == '%' && data.length > cdt.offset + len + 4 && 
+                    } else if (len >= 1 && c1 == '%' && data.length > cdt.offset + len + 4 &&
                             data[cdt.offset + 3 + len + 1] =='x' && (data.length == cdt.offset + len + 5 || data[cdt.offset + 3 + len + 2] !=';' )) {
                         c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
                         if (curReader != null) {
@@ -846,7 +938,7 @@ public class AnselToUnicode extends CharConverter {
                         }
                         cdt.offset += len + 5;
                         return c;
-                    } else if (len >= 1 && c1 == '%' && data.length > cdt.offset + len + 5 && 
+                    } else if (len >= 1 && c1 == '%' && data.length > cdt.offset + len + 5 &&
                          data[cdt.offset + 3 + len + 1] =='x' && data[cdt.offset + 3 + len + 2] ==';' ) {
                         c = getCharFromCodePoint(new String(data, cdt.offset+3, len));
                         if (curReader != null) {
