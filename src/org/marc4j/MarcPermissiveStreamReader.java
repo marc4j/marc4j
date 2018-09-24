@@ -20,6 +20,18 @@
 
 package org.marc4j;
 
+import org.marc4j.converter.CharConverter;
+import org.marc4j.converter.impl.AnselToUnicode;
+import org.marc4j.converter.impl.Iso5426ToUnicode;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.Leader;
+import org.marc4j.marc.MarcFactory;
+import org.marc4j.marc.Record;
+import org.marc4j.marc.Subfield;
+import org.marc4j.marc.VariableField;
+import org.marc4j.marc.impl.Verifier;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -37,43 +49,31 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.marc4j.converter.CharConverter;
-import org.marc4j.converter.impl.AnselToUnicode;
-import org.marc4j.converter.impl.Iso5426ToUnicode;
-import org.marc4j.marc.ControlField;
-import org.marc4j.marc.DataField;
-import org.marc4j.marc.Leader;
-import org.marc4j.marc.MarcFactory;
-import org.marc4j.marc.Record;
-import org.marc4j.marc.Subfield;
-import org.marc4j.marc.VariableField;
-import org.marc4j.marc.impl.Verifier;
-
 /**
  * An iterator over a collection of MARC records in ISO 2709 format, that is designed
  * to be able to handle MARC records that have errors in their structure or their encoding.
  * If the permissive flag is set in the call to the constructor, or if a MarcError object
- * is passed in as a parameter to the constructor, this reader will do its best to detect 
+ * is passed in as a parameter to the constructor, this reader will do its best to detect
  * and recover from a number of structural or encoding errors that can occur in a MARC record.
- * Note that if this reader is not set to read permissively, its will operate pretty much 
+ * Note that if this reader is not set to read permissively, its will operate pretty much
  * identically to the MarcStreamReader class.
- * 
+ *
  * Note that no attempt is made to validate the contents of the record at a semantic level.
  * This reader does not know and does not care whether the record has a 245 field, or if the
- * 008 field is the right length, but if the record claims to be UTF-8 or MARC8 encoded and 
+ * 008 field is the right length, but if the record claims to be UTF-8 or MARC8 encoded and
  * you are seeing gibberish in the output, or if the reader is throwing an exception in trying
- * to read a record, then this reader may be able to produce a usable record from the bad 
+ * to read a record, then this reader may be able to produce a usable record from the bad
  * data you have.
- * 
+ *
  * The ability to directly translate the record to UTF-8 as it is being read in is useful in
  * cases where the UTF-8 version of the record will be used directly by the program that is
  * reading the MARC data, for instance if the marc records are to be indexed into a SOLR search
- * engine.  Previously the MARC record could only be translated to UTF-8 as it was being written 
+ * engine.  Previously the MARC record could only be translated to UTF-8 as it was being written
  * out via a MarcStreamWriter or a MarcXmlWriter.
- * 
+ *
  * <p>
  * Example usage:
- * 
+ *
  * <pre>
  * InputStream input = new FileInputStream(&quot;file.mrc&quot;);
  * MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
@@ -82,25 +82,25 @@ import org.marc4j.marc.impl.Verifier;
  *     // Process record
  * }
  * </pre>
- * 
+ *
  * <p>
  * Check the {@link org.marc4j.marc}&nbsp;package for examples about the use of
  * the {@link org.marc4j.marc.Record}&nbsp;object model.
  * Check the file org.marc4j.samples.PermissiveReaderExample.java for an
- * example about using the MarcPermissiveStreamReader in conjunction with the 
+ * example about using the MarcPermissiveStreamReader in conjunction with the
  * MarcError class to report errors encountered while processing records.
  * </p>
- * 
+ *
  * <p>
  * When no encoding is given as an constructor argument the parser tries to
  * resolve the encoding by looking at the character coding scheme (leader
  * position 9) in MARC21 records. For UNIMARC records this position is not
- * defined.   If the reader is operating in permissive mode and no encoding 
- * is given as an constructor argument the reader will look at the leader, 
- * and also at the data of the record to determine to the best of its ability 
- * what character encoding scheme has been used to encode the data in a 
+ * defined.   If the reader is operating in permissive mode and no encoding
+ * is given as an constructor argument the reader will look at the leader,
+ * and also at the data of the record to determine to the best of its ability
+ * what character encoding scheme has been used to encode the data in a
  * particular MARC record.
- *   
+ *
  * </p>
  *
  * @author Robert Haschart
@@ -153,7 +153,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
     /**
      * Constructs an instance with the specified input stream with possible additional functionality
      * being enabled by setting permissive and/or convertToUTF8 to true.
-     * 
+     *
      * If permissive and convertToUTF8 are both set to false, it functions almost identically to the
      * MarcStreamReader class.
      *
@@ -177,14 +177,14 @@ public class MarcPermissiveStreamReader implements MarcReader {
     /**
      * Constructs an instance with the specified input stream with possible additional functionality
      * being enabled by passing in an MarcError object and/or setting convertToUTF8 to true.
-     * 
+     *
      * If errors and convertToUTF8 are both set to false, it functions almost identically to the
      * MarcStreamReader class.
-     * 
-     * If an MarcError object is passed in, that object will be used to log and track any errors 
-     * in the records as the records are decoded.  After the next() function returns, you can query 
+     *
+     * If an MarcError object is passed in, that object will be used to log and track any errors
+     * in the records as the records are decoded.  After the next() function returns, you can query
      * to determine whether any errors were detected in the decoding process.
-     * 
+     *
      * See the  file org.marc4j.samples.PermissiveReaderExample.java to see how this can be done.
      *
      * @param input - the InputStream to read the records from
@@ -208,14 +208,14 @@ public class MarcPermissiveStreamReader implements MarcReader {
     /**
      * Constructs an instance with the specified input stream with possible additional functionality
      * being enabled by setting permissive and/or convertToUTF8 to true.
-     * 
+     *
      * If permissive and convertToUTF8 are both set to false, it functions almost identically to the
      * MarcStreamReader class.
-     * 
+     *
      * The parameter defaultEncoding is used to specify the character encoding that is used in the records
      * that will be read from the input stream.   If permissive is set to true, you can specify "BESTGUESS"
-     * as the default encoding, and the reader will attempt to determine the character encoding used in the 
-     * records being read from the input stream.   This is especially useful if you are working with records 
+     * as the default encoding, and the reader will attempt to determine the character encoding used in the
+     * records being read from the input stream.   This is especially useful if you are working with records
      * downloaded from an external source and the encoding is either unknown or the encoding is different from
      * what the records claim to be.
      *
@@ -239,21 +239,21 @@ public class MarcPermissiveStreamReader implements MarcReader {
     /**
      * Constructs an instance with the specified input stream with possible additional functionality
      * being enabled by setting permissive and/or convertToUTF8 to true.
-     * 
+     *
      * If errors and convertToUTF8 are both set to false, it functions almost identically to the
      * MarcStreamReader class.
-     * 
+     *
      * The parameter defaultEncoding is used to specify the character encoding that is used in the records
      * that will be read from the input stream.   If permissive is set to true, you can specify "BESTGUESS"
-     * as the default encoding, and the reader will attempt to determine the character encoding used in the 
-     * records being read from the input stream.   This is especially useful if you are working with records 
+     * as the default encoding, and the reader will attempt to determine the character encoding used in the
+     * records being read from the input stream.   This is especially useful if you are working with records
      * downloaded from an external source and the encoding is either unknown or the encoding is different from
      * what the records claim to be.
-     * 
-     * If an MarcError object is passed in, that object will be used to log and track any errors 
-     * in the records as the records are decoded.  After the next() function returns, you can query 
+     *
+     * If an MarcError object is passed in, that object will be used to log and track any errors
+     * in the records as the records are decoded.  After the next() function returns, you can query
      * to determine whether any errors were detected in the decoding process.
-     * 
+     *
      * See the  file org.marc4j.samples.PermissiveReaderExample.java to see how this can be done.
      *
      * @param input - the InputStream to read the records from
@@ -273,8 +273,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
     }
 
     /**
-     * @return true if numeric character entities like &amp;#xFFFD; should be converted to their corresponding code point
-     *         if converting to unicode. Default is to convert.
+     * @return true if numeric character entities like &amp;#xFFFD; or &lt;U+FFFD&gt; should be converted to their
+     * corresponding code point if converting to unicode. Default is to convert.
      */
     public boolean isTranslateLosslessUnicodeNumericCodeReferencesEnabled() {
         return translateLosslessUnicodeNumericCodeReferencesEnabled;
@@ -548,7 +548,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                 if (convertToUTF8) {
                     if (permissive) {
                         record.addError("n/a", "n/a", MarcError.MINOR_ERROR,
-                                "Record character encoding should be 'a' or ' ' in this record it is '" + 
+                                "Record character encoding should be 'a' or ' ' in this record it is '" +
                                  ldr.getCharCodingScheme() + "'. Attempting to guess the correct encoding.");
                         encoding = "BESTGUESS";
                     } else {
@@ -611,7 +611,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                     boolean foundESC = false;
 
                     int minLen = recordBuf.length;
-                    if (byteCheck.length < minLen) { 
+                    if (byteCheck.length < minLen) {
                         minLen = byteCheck.length;
                         record.addError("n/a", "n/a", MarcError.MINOR_ERROR,
                                 "Record claims to be UTF-8, but a possible bad encoding was found. It could be a different encoding, or it could be malformed UTF8 data.");
@@ -877,7 +877,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
             // not.
             // Here we make an attempt to determine the actual encoding of the
             // data in the record.
-            if (permissive && conversionCheck1.length() > 1 && 
+            if (permissive && conversionCheck1.length() > 1 &&
                     conversionCheck2.length() > 1 && conversionCheck3.length() > 1) {
                 guessAndSelectCorrectNonUTF8Encoding();
             }
@@ -1251,8 +1251,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
                         field[i] = 0x7C;
                         justCleaned = true;
                     }
-                    else if ((field[i + 1] >= 'a' && field[i + 1] <= 'z' && field.length > i + 3 && 
-                            field[i + 2] >= 'A' && field[i + 2] <= 'Z' && 
+                    else if ((field[i + 1] >= 'a' && field[i + 1] <= 'z' && field.length > i + 3 &&
+                            field[i + 2] >= 'A' && field[i + 2] <= 'Z' &&
                             field[i + 3] >= 'A' && field[i + 3] <= 'Z' )  || prev.equals("\u001b(N")){
                         addError(MarcError.MINOR_ERROR,
                                 "Subfield separator found in Cyrillic string, changing separator to a vertical bar, and changing subfield code character to uppercase");

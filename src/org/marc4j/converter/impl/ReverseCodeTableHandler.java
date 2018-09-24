@@ -20,18 +20,18 @@
 
 package org.marc4j.converter.impl;
 
-import java.util.Hashtable;
-import java.util.Vector;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.util.Hashtable;
+import java.util.Vector;
+
 /**
  * <p>
  * <code>ReverseCodeTableHandler</code> is a SAX2 <code>ContentHandler</code> that builds a data structure to facilitate
- * <code>UnicodeToAnsel</code> character conversion.
+ * <code>UnicodeToAnsel</code> and <code>UnicodeToUnimarc</code> character conversions.
  *
  * @author Corey Keith
  * @see DefaultHandler
