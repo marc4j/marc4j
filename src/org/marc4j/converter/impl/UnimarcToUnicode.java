@@ -19,10 +19,14 @@
  */
 package org.marc4j.converter.impl;
 
+import org.marc4j.ConverterErrorHandler;
+import org.marc4j.MarcError;
+import org.marc4j.MarcException;
 import org.marc4j.converter.CharConverter;
 
 import java.lang.reflect.Constructor;
 import java.text.Normalizer;
+import java.util.Arrays;
 import java.util.Vector;
 
 /**
@@ -173,12 +177,25 @@ public class UnimarcToUnicode extends CharConverter implements UnimarcConstants 
         this.composeUnicode = composeUnicode;
     }
 
+    protected ConverterErrorHandler errorHandler = null;
 
     /**
      * Default constructor.
      */
     public UnimarcToUnicode() {
         ct = loadGeneratedTable();
+    }
+
+    /**
+     * Creates a new instance, and registers a class that handles it's own errors.  When set, this class will
+     * log errors rather than throw exceptions, letting the error handler class handle the errors.
+     *
+     * @param errorHandler A class that handles its own errors, used for recording Errors detected in translation
+     *                  of the field data.
+     */
+    public UnimarcToUnicode(final ConverterErrorHandler errorHandler) {
+        ct = loadGeneratedTable();
+        this.errorHandler = errorHandler;
     }
 
     private CodeTableInterface loadGeneratedTable() {
@@ -208,87 +225,262 @@ public class UnimarcToUnicode extends CharConverter implements UnimarcConstants 
             } else if (isEscape(data[cdt.offset])) {
                 switch (data[cdt.offset + 1]) {
                     case LS1R:
+                        if (cdt.offset + 2 >= data.length) {
+                            cdt.offset += 1;
+                            if (errorHandler != null) {
+                                errorHandler.addError(MarcError.MINOR_ERROR,
+                                        "Incomplete character set code found following escape character. Discarding escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            } else {
+                                throw new MarcException("Incomplete character set code found following escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            }
+                        }
                         cdt.g1 = cdt.workingG1;
                         cdt.offset += 2;
                         cdt.multibyte = cdt.isG1multibyte;
                         break;
                     case LS2:
+                        if (cdt.offset + 2 >= data.length) {
+                            cdt.offset += 1;
+                            if (errorHandler != null) {
+                                errorHandler.addError(MarcError.MINOR_ERROR,
+                                        "Incomplete character set code found following escape character. Discarding escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            } else {
+                                throw new MarcException("Incomplete character set code found following escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            }
+                        }
                         cdt.g0 = cdt.workingG2;
                         cdt.offset += 2;
                         cdt.multibyte = cdt.isG2multibyte;
                         break;
                     case LS2R:
+                        if (cdt.offset + 2 >= data.length) {
+                            cdt.offset += 1;
+                            if (errorHandler != null) {
+                                errorHandler.addError(MarcError.MINOR_ERROR,
+                                        "Incomplete character set code found following escape character. Discarding escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            } else {
+                                throw new MarcException("Incomplete character set code found following escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            }
+                        }
                         cdt.g1 = cdt.workingG2;
                         cdt.offset += 2;
                         cdt.multibyte = cdt.isG2multibyte;
                         break;
                     case LS3:
+                        if (cdt.offset + 2 >= data.length) {
+                            cdt.offset += 1;
+                            if (errorHandler != null) {
+                                errorHandler.addError(MarcError.MINOR_ERROR,
+                                        "Incomplete character set code found following escape character. Discarding escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            } else {
+                                throw new MarcException("Incomplete character set code found following escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            }
+                        }
                         cdt.g0 = cdt.workingG3;
                         cdt.offset += 2;
                         cdt.multibyte = cdt.isG3multibyte;
                         break;
                     case LS3R:
+                        if (cdt.offset + 2 >= data.length) {
+                            cdt.offset += 1;
+                            if (errorHandler != null) {
+                                errorHandler.addError(MarcError.MINOR_ERROR,
+                                        "Incomplete character set code found following escape character. Discarding escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            } else {
+                                throw new MarcException("Incomplete character set code found following escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            }
+                        }
                         cdt.g1 = cdt.workingG3;
                         cdt.offset += 2;
                         cdt.multibyte = cdt.isG3multibyte;
                         break;
                     case 0x28:
                     case 0x2C:
+                        if (cdt.offset + 3 >= data.length) {
+                            cdt.offset += 1;
+                            if (errorHandler != null) {
+                                errorHandler.addError(MarcError.MINOR_ERROR,
+                                        "Incomplete character set code found following escape character. Discarding escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            } else {
+                                throw new MarcException("Incomplete character set code found following escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            }
+                        }
                         cdt.workingG0 = data[cdt.offset + 2];
                         cdt.offset += 3;
                         cdt.isG0multibyte = false;
                         break;
                     case 0x29:
                     case 0x2D:
+                        if (cdt.offset + 3 >= data.length) {
+                            cdt.offset += 1;
+                            if (errorHandler != null) {
+                                errorHandler.addError(MarcError.MINOR_ERROR,
+                                        "Incomplete character set code found following escape character. Discarding escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            } else {
+                                throw new MarcException("Incomplete character set code found following escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            }
+                        }
                         cdt.workingG1 = data[cdt.offset + 2];
                         cdt.offset += 3;
                         cdt.isG1multibyte = false;
                         break;
                     case 0x2A:
                     case 0x2E:
+                        if (cdt.offset + 3 >= data.length) {
+                            cdt.offset += 1;
+                            if (errorHandler != null) {
+                                errorHandler.addError(MarcError.MINOR_ERROR,
+                                        "Incomplete character set code found following escape character. Discarding escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            } else {
+                                throw new MarcException("Incomplete character set code found following escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            }
+                        }
                         cdt.workingG2 = data[cdt.offset + 2];
                         cdt.offset += 3;
                         cdt.isG2multibyte = false;
                         break;
                     case 0x2B:
                     case 0x2F:
+                        if (cdt.offset + 3 >= data.length) {
+                            cdt.offset += 1;
+                            if (errorHandler != null) {
+                                errorHandler.addError(MarcError.MINOR_ERROR,
+                                        "Incomplete character set code found following escape character. Discarding escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            } else {
+                                throw new MarcException("Incomplete character set code found following escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            }
+                        }
                         cdt.workingG3 = data[cdt.offset + 2];
                         cdt.offset += 3;
                         cdt.isG3multibyte = false;
                         break;
                     case 0x24:
+                        if (cdt.offset + 2 >= data.length) {
+                            cdt.offset += 1;
+                            if (errorHandler != null) {
+                                errorHandler.addError(MarcError.MINOR_ERROR,
+                                        "Incomplete character set code found following escape character. Discarding escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            } else {
+                                throw new MarcException("Incomplete character set code found following escape character."
+                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                            }
+                        }
                         switch (data[cdt.offset + 2]) {
                             case 0x2C:
+                                if (cdt.offset + 4 >= data.length) {
+                                    cdt.offset += 1;
+                                    if (errorHandler != null) {
+                                        errorHandler.addError(MarcError.MINOR_ERROR,
+                                                "Incomplete character set code found following escape character. Discarding escape character."
+                                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                                    } else {
+                                        throw new MarcException("Incomplete character set code found following escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                                    }
+                                }
                                 cdt.workingG0 = data[cdt.offset + 3];
                                 cdt.offset += 4;
                                 cdt.isG0multibyte = true;
                                 break;
                             case 0x29:
                             case 0x2D:
+                                if (cdt.offset + 4 >= data.length) {
+                                    cdt.offset += 1;
+                                    if (errorHandler != null) {
+                                        errorHandler.addError(MarcError.MINOR_ERROR,
+                                                "Incomplete character set code found following escape character. Discarding escape character."
+                                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                                    } else {
+                                        throw new MarcException("Incomplete character set code found following escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                                    }
+                                }
                                 cdt.workingG1 = data[cdt.offset + 3];
                                 cdt.offset += 4;
                                 cdt.isG1multibyte = true;
                                 break;
                             case 0x2A:
                             case 0x2E:
+                                if (cdt.offset + 4 >= data.length) {
+                                    cdt.offset += 1;
+                                    if (errorHandler != null) {
+                                        errorHandler.addError(MarcError.MINOR_ERROR,
+                                                "Incomplete character set code found following escape character. Discarding escape character."
+                                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                                    } else {
+                                        throw new MarcException("Incomplete character set code found following escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                                    }
+                                }
                                 cdt.workingG2 = data[cdt.offset + 3];
                                 cdt.offset += 4;
                                 cdt.isG2multibyte = true;
                                 break;
                             case 0x2B:
                             case 0x2F:
+                                if (cdt.offset + 4 >= data.length) {
+                                    cdt.offset += 1;
+                                    if (errorHandler != null) {
+                                        errorHandler.addError(MarcError.MINOR_ERROR,
+                                                "Incomplete character set code found following escape character. Discarding escape character."
+                                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                                    } else {
+                                        throw new MarcException("Incomplete character set code found following escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                                    }
+                                }
                                 cdt.workingG3 = data[cdt.offset + 3];
                                 cdt.offset += 4;
                                 cdt.isG3multibyte = true;
                                 break;
                             default:
+                                if (cdt.offset + 3 >= data.length) {
+                                    cdt.offset += 1;
+                                    if (errorHandler != null) {
+                                        errorHandler.addError(MarcError.MINOR_ERROR,
+                                                "Incomplete character set code found following escape character. Discarding escape character."
+                                                        + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                                    } else {
+                                        throw new MarcException("Incomplete character set code found following escape character."
+                                                + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                                    }
+                                }
                                 cdt.workingG0 = data[cdt.offset + 2];
                                 cdt.offset += 3;
                                 cdt.isG0multibyte = true;
                                 break;
                         }
                     default:
+                        // Unknown code character found: discard escape sequence and return (if have a errorHandler)
                         cdt.offset += 1;
+                        if (errorHandler != null) {
+                            errorHandler.addError(MarcError.MINOR_ERROR,
+                                    "Unknown character set code found following escape character. Discarding escape character."
+                                            + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                        } else {
+                            throw new MarcException("Unknown character set code found following escape character."
+                                    + " At offset " + cdt.offset + ":" + Arrays.toString(data));
+                        }
+
                         break;
                 }
             } else {

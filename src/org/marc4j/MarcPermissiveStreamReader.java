@@ -105,7 +105,7 @@ import java.util.regex.Pattern;
  *
  * @author Robert Haschart
  */
-public class MarcPermissiveStreamReader implements MarcReader {
+public class MarcPermissiveStreamReader implements MarcReader, ConverterErrorHandler {
 
     private DataInputStream input = null;
 
