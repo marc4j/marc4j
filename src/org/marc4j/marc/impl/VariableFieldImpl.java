@@ -86,7 +86,7 @@ public abstract class VariableFieldImpl implements VariableField {
             throw new ClassCastException("A VariableField object expected");
         }
 
-        return tag.compareTo(obj.getTag());
+        return toString().compareTo(obj.toString());
     }
 
     /**

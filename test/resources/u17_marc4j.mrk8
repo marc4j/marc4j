@@ -1,0 +1,30 @@
+=LDR  01150nam a2200361 a 4500
+=001  u17
+=003  SIRSI
+=008  841016s1982    ii b     b    00110 eng  
+=010  \\$a   82906274
+=020  \\$cRs160.00 ({dollar}35.00 U.S.)
+=035  \\$a(Sirsi) o10699449
+=035  \\$a(OCoLC)10699449
+=035  \\$bUX932305=@
+=040  \\$aDLC$cDLC$dVA@
+=043  \\$aa-ii---$aa-pk---
+=049  \\$aVA@@
+=050  0\$aDS485.P2$bA84 1982
+=082  0\$a954/.552035$219
+=090  \\$aDS485.P2$bA84 1982$mVA@@$qALDERMAN
+=100  1\$aArora, A. C.,$d1934-
+=245  10$aBritish policy towards the Punjab states, 1858-1905 /$cA.C. Arora.
+=250  \\$a1st ed.
+=260  \\$aJalandhar :$bExport India Publications,$c1982.
+=300  \\$axv, 390 p. :$bcol. map ;$c25 cm.
+=500  \\$aRevision of the author's thesis (Ph. D.--Punjabi University, Patiala, 1976)
+=500  \\$aIncludes index.
+=504  \\$aBibliography: p. 366-374.
+=596  \\$a2
+=610  20$aPunjab States (Agency)$xHistory.
+=651  \0$aPunjab (India)$xPolitics and government.
+=039  0\$a2$b3$c3$d3$e3
+=970  \\$aMarcive
+=999  \\$aDS485 .P2 A84 1982$wLC$iX000932305$lSTACKS$mALDERMAN$tBOOK
+

@@ -1,6 +1,7 @@
 package org.marc4j.test;
 
 import org.junit.Test;
+import org.marc4j.MarcPermissiveStreamReader;
 import org.marc4j.MarcReader;
 import org.marc4j.MarcScriptedRecordEditReader;
 import org.marc4j.MarcStreamReader;
@@ -104,5 +105,95 @@ public class MarcScriptedEditRecordReaderTest {
             assertTrue("fields not edited", ((DataField)df).getSubfield('a').getData().equals(expected710Fields[i++]));
         }
 
+    }
+
+    @Test
+    public void testMoveSubfield() throws Exception {
+//        String[] expected856Fields = { "Different College" };
+        InputStream input = getClass().getResourceAsStream("/rec1.mrc");
+        assertNotNull(input);
+
+        InputStream editmap = getClass().getResourceAsStream("/move_subfield.properties");
+        Properties editmapProperties = new Properties();
+        editmapProperties.load(editmap);
+
+        MarcReader reader =  new MarcScriptedRecordEditReader(new MarcStreamReader(input), editmapProperties);
+        Record record = reader.next();
+        VariableField df245 = record.getVariableField("245");
+        assertTrue("Subfieled 245b not deleted.", ((DataField)df245).getSubfield('b') == null);
+        List<VariableField> dfs = record.getVariableFields("856");
+        int i = 0;
+        for (VariableField df: dfs) {
+            assertTrue("fields not edited", ((DataField)df).getSubfield('z') != null);
+        }
+
+    }
+
+    @Test
+    public void testMoveSubfield2() throws Exception {
+//        String[] expected856Fields = { "Different College" };
+        InputStream input = getClass().getResourceAsStream("/54-56-008008027.mrc");
+        assertNotNull(input);
+
+        InputStream editmap = getClass().getResourceAsStream("/move_subfield.properties");
+        Properties editmapProperties = new Properties();
+        editmapProperties.load(editmap);
+
+        MarcReader reader =  new MarcScriptedRecordEditReader(new MarcPermissiveStreamReader(input, true, true), editmapProperties);
+        Record record;
+        while ((record = reader.next()) != null) {
+            VariableField df245 = record.getVariableField("245");
+            assertTrue("Subfieled 245b not deleted.", ((DataField)df245).getSubfield('b') == null);
+            List<VariableField> dfs = record.getVariableFields("856");
+            int i = 0;
+            for (VariableField df: dfs) {
+                assertTrue("fields not edited", ((DataField)df).getSubfield('z') != null);
+            }
+        }
+    }
+
+    @Test
+    public void testMoveSubfield3() throws Exception {
+//        String[] expected856Fields = { "Different College" };
+        InputStream input = getClass().getResourceAsStream("/065001035.mrc");
+        assertNotNull(input);
+
+        InputStream editmap = getClass().getResourceAsStream("/move_subfield.properties");
+        Properties editmapProperties = new Properties();
+        editmapProperties.load(editmap);
+
+        MarcReader reader =  new MarcScriptedRecordEditReader(new MarcStreamReader(input), editmapProperties);
+        Record record;
+        while ((record = reader.next()) != null) {
+            VariableField df245 = record.getVariableField("245");
+            assertTrue("Subfieled 245b not deleted.", ((DataField)df245).getSubfield('b') == null);
+            List<VariableField> dfs = record.getVariableFields("856");
+            int i = 0;
+            for (VariableField df: dfs) {
+                assertTrue("fields not edited", ((DataField)df).getSubfield('z') != null);
+            }
+        }
+    }
+    @Test
+    public void testMoveSubfield4() throws Exception {
+//        String[] expected856Fields = { "Different College" };
+        InputStream input = getClass().getResourceAsStream("/dp_004015001.mrc");
+        assertNotNull(input);
+
+        InputStream editmap = getClass().getResourceAsStream("/move_subfield.properties");
+        Properties editmapProperties = new Properties();
+        editmapProperties.load(editmap);
+
+        MarcReader reader =  new MarcScriptedRecordEditReader(new MarcStreamReader(input), editmapProperties);
+        Record record;
+        while ((record = reader.next()) != null) {
+            VariableField df245 = record.getVariableField("245");
+            assertTrue("Subfieled 245b not deleted.", ((DataField)df245).getSubfield('b') == null);
+            List<VariableField> dfs = record.getVariableFields("856");
+            int i = 0;
+            for (VariableField df: dfs) {
+                assertTrue("fields not edited", ((DataField)df).getSubfield('z') != null);
+            }
+        }
     }
 }
