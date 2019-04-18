@@ -630,14 +630,32 @@ public class MarcPermissiveStreamReader implements MarcReader {
                         }
 
                     }
-
-                    if (!foundESC) {
+                    int numUnknownCharacters = 0;
+                    int numValidNonAsciiCharacters = 0;
+                    for (int i = 0; i < utfCheck.length(); i++) {
+                        if (utfCheck.charAt(i) == '\uFFFD') {
+                            numUnknownCharacters ++;
+                        }
+                        if (utfCheck.charAt(i) >= '\u007f') {
+                            numValidNonAsciiCharacters ++;
+                        }
+                    }
+                    if (!foundESC && numUnknownCharacters < 5 && numUnknownCharacters * 10 < numValidNonAsciiCharacters) {
+                        encoding = "UTF8";
+                        record.addError("n/a", "n/a", MarcError.MINOR_ERROR,
+                                "Record claims to be UTF-8, but it has encoding errors, so it might not be ");
+                    }
+                    else if (!foundESC) {
                         record.addError("n/a", "n/a", MarcError.MINOR_ERROR,
                                 "Record claims to be UTF-8, but its not. It may be MARC8, or maybe UNIMARC, or maybe raw ISO-8859-1 ");
                     }
                 }
 
-                if (utfCheck.contains("a$1!")) {
+              /*  if (defaultEncoding.equals("UTF8") && utfCheck.contains("�")) {
+                    record.addError("n/a", "n/a", MarcError.MAJOR_ERROR,
+                            "Record claims to be UTF-8, but it contains invalid bytes producing unknown unicode characters. ");
+                }
+                else*/ if (utfCheck.contains("a$1!")) {
                     encoding = "MARC8-Broken";
                     record.addError("n/a", "n/a", MarcError.MAJOR_ERROR,
                             "Record claims to be UTF-8, but its not. It seems to be MARC8-encoded but with missing escape codes.");
@@ -754,8 +772,8 @@ public class MarcPermissiveStreamReader implements MarcReader {
                         increment = 11;
                     }
                 }
-                // this looks for 6 digit offsets
-                if (totalOffset != offset && totalOffset > 99999 && offset != 99999) {
+                // this looks for 6 digit offsets or for 5 digit lengths
+                if (totalOffset != offset && offset != 99999) {
                     int offset1, offset2, length2;
                     try {
                         offset1 = Integer.parseInt(dirEntry.substring(7, 13));
@@ -774,7 +792,7 @@ public class MarcPermissiveStreamReader implements MarcReader {
                             length = length2;
                             if (!flaggedError2) {
                                 record.addError("n/a", "n/a", MarcError.MAJOR_ERROR,
-                                        "Field is longer than 9999 bytes.  Writing this record out will result in a bad record.");
+                                        "Field is longer than 9999 bytes.  Field length has more than four digits. Trying to continue.");
                                 flaggedError2 = true;
                             }
                             increment = 13;

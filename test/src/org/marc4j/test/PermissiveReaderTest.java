@@ -192,6 +192,29 @@ public class PermissiveReaderTest {
         assertEquals("99999", strLeader.substring(0, 5));
     }
 
+
+    @Test
+    public void testTooLargeFieldDataByteRead() throws Exception {
+        InputStream input = getClass().getResourceAsStream(
+                StaticTestRecords.RESOURCES_BAD_OVERSIZE_FIELD_BAD_DIRECTORY);
+        assertNotNull(input);
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+
+        //First record is fine.
+        Record normal_record = reader.next();
+
+        //second record is fine.
+        Record bad_record = reader.next();
+
+        //is it's marshal'd leader okay?
+        String strLeader = bad_record.getLeader().marshal();
+
+        String too_big_field = ((DataField)bad_record.getVariableField("520")).getSubfieldsAsString("a");
+
+        // And length should be set to our 99999 overflow value
+        assertTrue(too_big_field.length() > 9999);
+    }
+
     @Test
     public void testParseRecordOnUnorderDirectoryEntries()
     {
@@ -370,18 +393,17 @@ public class PermissiveReaderTest {
         assertTrue(found13);
      }
 
-//    @Test
-//    public void testProblemRecords() throws IOException {
-//        InputStream input = getClass().getResourceAsStream("/problemrecords.mrc");
-//        assertNotNull(input);
-//        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
-//        Record record1;
-//        Record record2;
-//        Record record3;
-//        if (reader.hasNext()) record1 = reader.next();
-//        if (reader.hasNext()) record2 = reader.next();
-//        if (reader.hasNext()) record3 = reader.next();
-//        input.close();
-//
-//    }
+    @Test
+    public void testProblemRecords() throws Exception {
+        InputStream input = getClass().getResourceAsStream("/not_unimarc_errors_3.mrc");
+        assertNotNull(input);
+        MarcReader reader = new MarcPermissiveStreamReader(input, true, true);
+        Record record;
+        while (reader.hasNext()) {
+            record = reader.next();
+            RecordTestingUtils.assertRecordHasErrorMatching(record, "Record claims to be UTF-8, but it has encoding errors, so it might not be");
+        }
+        input.close();
+    }
+
 }

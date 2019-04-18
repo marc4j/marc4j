@@ -2,14 +2,17 @@
 package org.marc4j.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
@@ -119,10 +122,12 @@ public class RawRecordReader {
             int offset = 0;
             boolean merge = true;
             boolean idsOnly = false;
+            boolean unique = false;
             String idRegex = null;
             String hasFieldRegex = null;
             String idsLookedForFile = null;
-            
+            String outputfilename = null;
+
             while (offset >= 0 && offset < args.length) {
                 if (args[offset].startsWith("-")) {
                     if (args[offset].equals("-")) {
@@ -146,11 +151,20 @@ public class RawRecordReader {
                     } else if (args[offset].equals("-id")) {
                         idsOnly = true;
                         offset++;
+                    } else if (args[offset].equals("-u")) {
+                        unique = true;
+                        offset++;
                     } else if (args[offset].equals("-h")) {
                         if (offset == args.length - 1) {
                             usage("Missing argument for option "+args[offset]+ " should be regex for field(s) that must be present", 1);
                         }
                         hasFieldRegex = args[offset + 1].trim();
+                        offset += 2;
+                    }  else if (args[offset].equals("-o")) {
+                        if (offset == args.length - 1) {
+                            usage("Missing argument for option "+args[offset]+ " should be output file name", 1);
+                        }
+                        outputfilename = args[offset + 1].trim();
                         offset += 2;
                     } else if (args[offset].equals("-usage")) {
                         usage(null, 0);
@@ -167,6 +181,14 @@ public class RawRecordReader {
                 }
             }
 
+            OutputStream out;
+            if (outputfilename != null) {
+                out = new BufferedOutputStream(new FileOutputStream(outputfilename));
+            }
+            else {
+                out = System.out;
+            }
+
             if (reader == null) {
                 reader = new RawRecordReader(System.in);
             } 
@@ -177,10 +199,10 @@ public class RawRecordReader {
                 printIds(reader, numToSkip, numToOutput);
             } else if (numToSkip != 0 || numToOutput != -1) {
                 processInput(reader, numToSkip, numToOutput);
-            } else if (hasFieldRegex != null) {                
-                processInput(reader, null, hasFieldRegex, null);
+            } else if (hasFieldRegex != null) {
+                processInput(reader, null, hasFieldRegex, null, out, unique);
             } else if (idRegex != null) {
-                processInput(reader, idRegex, null, null);
+                processInput(reader, idRegex, null, null, out, unique);
             } else if (idsLookedForFile != null) {
                 final File idList = new File(idsLookedForFile);
                 final BufferedReader idStream = new BufferedReader(new InputStreamReader(
@@ -194,10 +216,10 @@ public class RawRecordReader {
                 }
 
                 idStream.close();
-                processInput(reader, null, null, idsLookedFor);
+                processInput(reader, null, null, idsLookedFor, out, unique);
 
             } else {
-                processInput(reader, null, null, null);
+                processInput(reader, null, null, null, out, unique);
             }
         } catch (final EOFException e) {
             // Done Reading input, Be happy
@@ -217,6 +239,8 @@ public class RawRecordReader {
         System.err.println("       -h <field>    Only output records containing the specified field");
         System.err.println("       -skip <num>   Number of records to skip before outputing any");
         System.err.println("       -num <num>    Number of records to output before terminating");
+        System.err.println("       -u            Only output a singles copy of a record if multiple copies of it occur in the input file.");
+        System.err.println("       -o <filename> Write output to the specified file rather thatn to stdout.");
         System.err.println("       idfile.txt    Name of file containing pull-list of records to output");
         System.err.println("       id            Regex specifying id(s) of records to output");
         System.err.println("       -usage        Show this message");
@@ -270,22 +294,24 @@ public class RawRecordReader {
     }
 
     static void processInput(final RawRecordReader reader, final String idRegex,
-            final String recordHas, final HashSet<String> idsLookedFor) throws IOException {
+            final String recordHas, final HashSet<String> idsLookedFor, OutputStream out, boolean unique) throws IOException {
+        HashSet<String> idsOutput = new LinkedHashSet<String>();
         while (reader.hasNext()) {
             final RawRecord rec = reader.next();
             final String id = rec.getRecordId();
-            if (idsLookedFor == null && recordHas == null && (idRegex == null || id.matches(idRegex)) || 
-                    idsLookedFor != null && idsLookedFor.contains(id)) {
+            if (idsLookedFor == null && recordHas == null && (idRegex == null || id.matches(idRegex)) && (!unique || !idsOutput.contains(id)) || 
+                    idsLookedFor != null && idsLookedFor.contains(id) && (!unique || !idsOutput.contains(id))) {
                 final byte recordBytes[] = rec.getRecordBytes();
-                System.out.write(recordBytes);
-                System.out.flush();
-            } else if (idsLookedFor == null && idRegex == null && recordHas != null) {
+                out.write(recordBytes);
+                out.flush();
+                idsOutput.add(id);
+            } else if (idsLookedFor == null && idRegex == null && recordHas != null ) {
                 final String tag = recordHas.substring(0, 3);
                 final String field = rec.getFieldVal(tag);
                 if (field != null) {
                     final byte recordBytes[] = rec.getRecordBytes();
-                    System.out.write(recordBytes);
-                    System.out.flush();
+                    out.write(recordBytes);
+                    out.flush();
                 }
             }
         }

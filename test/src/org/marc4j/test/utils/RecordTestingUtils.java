@@ -2,6 +2,7 @@ package org.marc4j.test.utils;
 
 import static org.junit.Assert.*;
 
+import org.marc4j.MarcError;
 import org.marc4j.marc.*;
 
 import java.io.*;
@@ -199,6 +200,26 @@ public class RecordTestingUtils
             }
         }
         org.junit.Assert.assertEquals("Number of values doesn't match", expectedVals.size(), resultSet.size());
+    }
+
+    /**
+     * Assert that the given record noted an error containing the specified message
+     */
+    public static void assertRecordHasErrorMatching(Record record, String errorMessage)
+    {
+        if (record.hasErrors())
+        {
+            List<MarcError> errors = record.getErrors();
+            for (MarcError error : errors) 
+            {
+                if (error.message.contains(errorMessage)) 
+                {
+                    // found expected error message, return and be happy
+                    return;
+                }
+            }
+        }
+        fail("Didn't find expected an error message stating: " + errorMessage );
     }
 
    /**
