@@ -247,7 +247,8 @@ public class RecordImpl implements Record {
      * 
      * @return a List of all VariableFields plus the Leader represented as a ControlField
      */
-    public List<VariableField> getVariableFieldsWithLeader() {
+   @Override
+   public List<VariableField> getVariableFieldsWithLeader() {
         final List<VariableField> fields = new ArrayList<VariableField>();
         final ControlField leaderAsField = new ControlFieldImpl("000", this.getLeader().toString());
         fields.add(leaderAsField);

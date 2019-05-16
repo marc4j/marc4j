@@ -85,6 +85,14 @@ public interface Record extends Serializable {
     public List<VariableField> getVariableFields();
 
     /**
+     * Gets a {@link List} of {@link VariableField}s from the {@link Record}
+     * including the LEADER recast as ControlField for field matching purposes.
+     * 
+     * @return a List of all VariableFields plus the Leader represented as a ControlField
+     */
+    public List<VariableField> getVariableFieldsWithLeader();
+
+        /**
      * Returns a list of control fields
      *
      * @return List - the control fields
