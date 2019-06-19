@@ -300,7 +300,7 @@ public class MarcXmlWriterTest extends XMLTestCase {
                 assertTrue(line.contains("code=\"&lt;U+0014&gt;\">&lt;U+0014&gt; 2011035923"));
             } else if (line.contains("9781410442444")) {
                 // subfield delimiter in subfield text
-                assertTrue(line.contains("code=\"&lt;U+001f&gt;\">9781410442444 (hbk.)"));
+                assertTrue(line.contains("code=\"&lt;U+001F&gt;\">9781410442444 (hbk.)"));
             }
         }
         testoutput.close();

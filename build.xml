@@ -57,9 +57,19 @@
     <target name="codetablegen" depends="prepare-codetablegen" unless="already.ctged">
         <java fork="true" classname="org.marc4j.converter.impl.CodeTableGenerator" errorproperty="CodeTableGenerated.error" output="${build.generated-src.dir}/org/marc4j/converter/impl/CodeTableGenerated.java" >
             <classpath location="${build.classes.dir}" />
+            <arg value="MARC8"/>
         </java>
         <java fork="true" classname="org.marc4j.converter.impl.ReverseCodeTableGenerator" errorproperty="ReverseCodeTableGenerated.error" output="${build.generated-src.dir}/org/marc4j/converter/impl/ReverseCodeTableGenerated.java" >
             <classpath location="${build.classes.dir}" />
+            <arg value="MARC8"/>
+        </java>
+        <java fork="true" classname="org.marc4j.converter.impl.CodeTableGenerator" errorProperty="UnimarcCodeTableGenerated.error" output="${build.generated-src.dir}/org/marc4j/converter/impl/UnimarcCodeTableGenerated.java" >
+            <classpath location="${build.classes.dir}" />
+            <arg value="UNIMARC"/>
+        </java>
+        <java fork="true" classname="org.marc4j.converter.impl.ReverseCodeTableGenerator" errorProperty="UnimarcReverseCodeTableGenerated.error" output="${build.generated-src.dir}/org/marc4j/converter/impl/UnimarcReverseCodeTableGenerated.java" >
+            <classpath location="${build.classes.dir}" />
+            <arg value="UNIMARC"/>
         </java>
         <concat >
             <fileset dir="${build.generated-src.dir}/org/marc4j/converter/impl" includes="Code*.java" />
