@@ -150,14 +150,13 @@ public class MarcFilteredReader implements MarcReader {
                                 break;
                             }
                         } else {
-                            if (includeRecordIfFieldContains == null) {
-                                currentRecord = rec;
-                                break;
-                            } else {
-                                String subfieldVal = ((DataField) vf).getSubfieldsAsString(tagAndSf[1]);
-                                if (subfieldVal != null && 
-                                    (!includeRecordIfFieldContains.startsWith("^") && subfieldVal.contains(includeRecordIfFieldContains)) ||
-                                    (includeRecordIfFieldContains.startsWith("^") && subfieldVal.matches(includeRecordIfFieldContains))) {
+                            String subfieldVal = ((DataField) vf).getSubfieldsAsString(tagAndSf[1]);
+                            if (subfieldVal != null) {
+                                if (includeRecordIfFieldContains == null) {
+                                    currentRecord = rec;
+                                    break;
+                                } else if ((!includeRecordIfFieldContains.startsWith("^") && subfieldVal.contains(includeRecordIfFieldContains)) ||
+                                            (includeRecordIfFieldContains.startsWith("^") && subfieldVal.matches(includeRecordIfFieldContains))) {
                                     currentRecord = rec;
                                     break;
                                 }
@@ -186,8 +185,8 @@ public class MarcFilteredReader implements MarcReader {
                         } else {
                             String subfieldVal = ((DataField) vf).getSubfieldsAsString(tagAndSf[1]);
                             if (includeRecordIfFieldDoesntContain == null || 
-                                (!includeRecordIfFieldDoesntContain.startsWith("^") && subfieldVal.contains(includeRecordIfFieldDoesntContain)) ||
-                                (includeRecordIfFieldDoesntContain.startsWith("^") && subfieldVal.matches(includeRecordIfFieldDoesntContain))) {
+                                (!includeRecordIfFieldDoesntContain.startsWith("^") && subfieldVal != null && subfieldVal.contains(includeRecordIfFieldDoesntContain)) ||
+                                (includeRecordIfFieldDoesntContain.startsWith("^") && subfieldVal != null && subfieldVal.matches(includeRecordIfFieldDoesntContain))) {
                                 useRecord = false;
                                 break;
                             }

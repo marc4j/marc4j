@@ -30,6 +30,23 @@ public class MarcFilteredReaderTest {
     }
 
     @Test
+    public void testIncludeIfPresentWithSubfieldNoPattern() throws Exception {
+        InputStream input = getClass().getResourceAsStream("/field700_4_test.mrc");
+        assertNotNull(input);
+        String[] expectedIds = { "u6415274" };
+
+        MarcFilteredReader reader = new MarcFilteredReader(new MarcStreamReader(input), "7004", null);
+        int cnt = 0;
+        while (reader.hasNext())
+        {
+            Record record = reader.next();
+            assertTrue("Wrong count of records (too many)", cnt < expectedIds.length);
+            assertTrue("Mismatch of expected record ID", record.getControlNumber().equals(expectedIds[cnt++]));
+        }
+        assertTrue("Wrong count of records (too few)", cnt == expectedIds.length);
+    }
+
+    @Test
     public void testIncludeIfPresentWithPattern() throws Exception {
         InputStream input = getClass().getResourceAsStream("/selectedRecs.mrc");
         assertNotNull(input);
