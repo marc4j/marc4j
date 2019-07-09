@@ -23,7 +23,7 @@ package org.marc4j;
 /**
  * Shared global configuration.  Allows clients to set these once, and have these config values used
  * throughout Marc4j.
- * <b>
+ * <br>
  * These are NOT thread safe!  The intent is that these are set once by the client, and then used for all
  * operations by that client.  They are NOT designed to be reset during processing!
  *

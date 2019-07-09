@@ -133,7 +133,7 @@ public class AnselToUnicode extends CharConverter {
      * Sets whether we should translate NCR's to Unicode chars (i.e. convert "&amp;#XXXX;" sequences to Unicode).
      * If shouldComposeUnicode() is also true, the NCR Translate will happen before the
      * compose.
-     * <b>
+     * <br>
      * Note: Also translates any (optional) "&lt;U+XXXX&gt;" (Unicode BNF) sequences to Unicode).
      *
      * @param translateNCR True if we should translate NCR's to Unicode chars; else, false

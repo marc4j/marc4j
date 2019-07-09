@@ -71,7 +71,7 @@
             <classpath location="${build.classes.dir}" />
             <arg value="UNIMARC"/>
         </java>
-        <concat >
+       <!-- <concat >
             <fileset dir="${build.generated-src.dir}/org/marc4j/converter/impl" includes="Code*.java" />
             <filterchain>
                 <headfilter lines="15"/>
@@ -82,7 +82,7 @@
             <filterchain>
                 <headfilter lines="15"/>
             </filterchain>
-        </concat>
+        </concat>  -->
     </target>
 
     <target name="compile-codegen" depends="codetablegen">

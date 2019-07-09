@@ -176,7 +176,7 @@ public class UnicodeToAnsel extends CharConverter {
     /**
      * Converts UCS/Unicode data to MARC-8.
      * <p>
-     * If there is no match for a Unicode character, it will be encoded as &amp#xXXXX; or &lt;U+XXXX&gt; (depending
+     * If there is no match for a Unicode character, it will be encoded as &amp;#xXXXX; or &lt;U+XXXX&gt; (depending
      * on Marc4jConfig setting) so that if the data is translated back into Unicode, the original data can be recreated.
      * </p>
      *

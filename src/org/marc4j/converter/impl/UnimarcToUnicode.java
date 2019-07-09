@@ -150,7 +150,7 @@ public class UnimarcToUnicode extends CharConverter implements UnimarcConstants 
      * Sets whether we should translate to NCR (i.e. convert "&amp;#XXXX;" sequences to Unicode).
      * If shouldComposeUnicode() is also true, the NCR Translate will happen before the
      * compose.
-     * <b>
+     * <br>
      * Note: Also translates any (optional) "&lt;U+XXXX&gt;" (Unicode BNF) sequences to Unicode).
      *
      * @param translateNCR True if we should translate to NCR; else, false
