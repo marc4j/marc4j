@@ -101,7 +101,7 @@ public class CodeTable implements CodeTableInterface {
             if (charset == null) {
                 // System.err.println("Hashtable not found: "
                 // + Integer.toHexString(mode));
-                return (char) c;
+                return (char) 0;
             } else {
                 Character ch = charset.get(new Integer(c));
                 if (ch == null) {
