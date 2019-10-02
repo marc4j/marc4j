@@ -99,8 +99,14 @@ public class MarcMerger
         {
             String modfile = args[1+argoffset];
             String delfile = null;
+            boolean use_stdin = false;
+
             FileOutputStream newRecordsOutStream = null;
-            if (modfile.endsWith(".mrc"))
+            if (modfile.equals ("-"))
+            {
+                use_stdin = true;
+            }
+            else if (modfile.endsWith(".mrc") )
             {
                 delfile = modfile.substring(0, modfile.length()-4) + ".del";
             }
@@ -109,13 +115,20 @@ public class MarcMerger
                 delfile = modfile + ".del";
                 modfile = modfile + ".mrc";
             }
-            input2 = new RawRecordReader(new FileInputStream(new File(modfile)));
-            try {
-                input3 = new DataInputStream(new BufferedInputStream(new FileInputStream(new File(delfile))));
-            }
-            catch (FileNotFoundException e)
+            if (use_stdin) 
             {
-                // no del file,  ignore it be happy
+                input2 = new RawRecordReader(new BufferedInputStream(System.in));
+            }
+            else 
+            {
+                input2 = new RawRecordReader(new FileInputStream(new File(modfile)));
+                try {
+                    input3 = new DataInputStream(new BufferedInputStream(new FileInputStream(new File(delfile))));
+                }
+                catch (FileNotFoundException e)
+                {
+                    // no del file,  ignore it be happy
+                }
             }
             if (newRecordsOut != null)
             {
