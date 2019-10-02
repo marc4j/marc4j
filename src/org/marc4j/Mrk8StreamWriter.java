@@ -20,7 +20,9 @@
 package org.marc4j;
 
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import org.marc4j.converter.CharConverter;
 import org.marc4j.marc.ControlField;
@@ -53,7 +55,7 @@ import org.marc4j.marc.VariableField;
  */
 public class Mrk8StreamWriter implements MarcWriter {
 
-    private final PrintWriter mrk8Writer;
+    private PrintWriter mrk8Writer;
 //    private final CharsetEncoder encoder;
 
     /**
@@ -64,7 +66,14 @@ public class Mrk8StreamWriter implements MarcWriter {
      */
     public Mrk8StreamWriter(final OutputStream output) {
  //       this.encoder = StandardCharsets.UTF_8.newEncoder();
-        this.mrk8Writer = new PrintWriter(output);
+        try
+        {
+            this.mrk8Writer = new PrintWriter(new OutputStreamWriter(output, "UTF8"));
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            this.mrk8Writer = new PrintWriter(output);
+        }
     }
 
     /**
