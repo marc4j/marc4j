@@ -1,4 +1,4 @@
-h1. MARC4J !>https://travis-ci.org/marc4j/marc4j.png?branch=master(Build Status)!:https://travis-ci.org/marc4jmarc4j
+h1. MARC4J !>https://travis-ci.org/marc4j/marc4j.png?branch=master(Build Status)!:https://travis-ci.org/marc4j/marc4j
 
 h2. Mission
 
