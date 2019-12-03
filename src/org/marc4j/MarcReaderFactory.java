@@ -77,11 +77,16 @@ public class MarcReaderFactory {
         return reader;
     }
 
-    public static MarcReader makeReader(MarcReaderConfig config, final InputStream input)
+    public static MarcReader makeReader(MarcReaderConfig config, final String[] searchDirectories, final InputStream input)
             throws IOException {
         MarcReader reader = makeReaderInternal(config, input);
-        reader = decorateMarcReader(reader, config, new String[]{"."});
+        reader = decorateMarcReader(reader, config, searchDirectories);
         return(reader);
+    }
+
+    public static MarcReader makeReader(MarcReaderConfig config, final InputStream input)
+            throws IOException {
+        return makeReader(config, new String[]{"."}, input);
     }
 
 
