@@ -342,7 +342,16 @@ public class MarcPermissiveStreamReader implements MarcReader, ConverterErrorHan
             byte[] recordBuf = new byte[recordLength - 24];
             if (permissive) {
                 input.mark(marc_file_lookahead_buffer);
-                input.readFully(recordBuf);
+                try {
+                    input.readFully(recordBuf);
+                }
+                catch (final EOFException e) {
+                    input.reset();
+                    input.mark(marc_file_lookahead_buffer);
+                    int toRead = input.available();
+                    recordBuf = new byte[toRead];
+                    input.readFully(recordBuf);
+                }
                 if (recordBuf[recordBuf.length - 1] != Constants.RT) {
                     record.addError("n/a", "n/a", MarcError.MAJOR_ERROR,
                             "Record terminator character not found at end of record length");
