@@ -152,4 +152,14 @@ public class Mrk8StreamWriter implements MarcWriter {
         this.mrk8Writer.flush();
         this.mrk8Writer.close();
     }
+
+    /**
+     * Whether the writer expects the record passed in to be encoded in Unicode.
+     */
+    @Override
+    public boolean expectsUnicode()
+    {
+        return true;
+    }
+    
 }

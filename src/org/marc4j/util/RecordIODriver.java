@@ -17,6 +17,7 @@ import org.marc4j.MarcReaderFactory;
 import org.marc4j.MarcStreamWriter;
 import org.marc4j.MarcTxtWriter;
 import org.marc4j.MarcWriter;
+import org.marc4j.MarcWriterFactory;
 import org.marc4j.MarcXmlWriter;
 import org.marc4j.Mrk8StreamWriter;
 import org.marc4j.converter.impl.UnicodeToAnsel;
@@ -29,7 +30,8 @@ public class RecordIODriver {
     String convert;
     boolean normalize = false;
     boolean pretty = true;
-    boolean marc8Flag = false;
+    boolean oversize = false;
+    int splitAt = 0;
     boolean writeErrorRecs = true;
     boolean writeNoErrorRecs = true;
     List<String>otherArgs = new ArrayList<String>();
@@ -64,11 +66,6 @@ public class RecordIODriver {
     public boolean shouldPrettify()
     {
         return pretty;
-    }
-
-    public boolean isMarc8()
-    {
-        return marc8Flag;
     }
 
     public boolean shouldWriteErrorRecs()
@@ -164,7 +161,6 @@ public class RecordIODriver {
                 final Record record = reader.next();
                 location = "in";
                 controlNumber = record.getControlNumber();
-                record.getLeader().setCharCodingScheme((driverInfo.marc8Flag ? ' ' : 'a'));
                 if ((driverInfo.writeErrorRecs && driverInfo.writeNoErrorRecs) ||
                     (driverInfo.writeErrorRecs && record.hasErrors()) ||
                     (driverInfo.writeNoErrorRecs && !record.hasErrors())) {
@@ -240,6 +236,10 @@ public class RecordIODriver {
                 encoding = args[++i].trim();
             } else if (args[i].equals("-pretty")) {
                 driverInfo.pretty = true;
+            } else if (args[i].equals("-split")) {
+                driverInfo.splitAt = 70000;
+            } else if (args[i].equals("-oversize")) {
+                driverInfo.oversize = true;
             } else if (args[i].equals("-normalize")) {
                 driverInfo.normalize = true;
             } else if (args[i].equals("-strict")) {
@@ -283,70 +283,13 @@ public class RecordIODriver {
     }
 
     static protected MarcWriter makeWriterFromConvertParm(RecordIODriver driverInfo, OutputStream out) {
-        MarcWriter writer = null;
-        boolean mustBeUtf8 = false;
+        MarcWriter result = MarcWriterFactory.makeWriterFromConvertParm(driverInfo.convert, driverInfo.pretty, driverInfo.normalize, driverInfo.oversize, driverInfo.splitAt, out);
         
-        if (driverInfo.convert.equalsIgnoreCase("text") || driverInfo.convert.equalsIgnoreCase("ASCII")) {
-            writer = new MarcTxtWriter(out);
-        } else if (driverInfo.convert.equalsIgnoreCase("errors")) {
-            writer = new MarcTxtWriter(out, "001;err");
-        } else if (driverInfo.convert.matches("([0-9][0-9][0-9]|err)(:([0-9][0-9][0-9]|err))*")) {
-            writer = new MarcTxtWriter(out, driverInfo.convert);
-        } else if (driverInfo.convert.equalsIgnoreCase("XML") || driverInfo.convert.equalsIgnoreCase("MARCXML")) {
-            mustBeUtf8 = true;
-            MarcXmlWriter xmlwriter = new MarcXmlWriter(out, "UTF8");
-            if (driverInfo.pretty)     xmlwriter.setIndent(true);
-            if (driverInfo.normalize)  xmlwriter.setUnicodeNormalization(true);
-            writer = xmlwriter;
-        } else if (driverInfo.convert.equalsIgnoreCase("MARC_IN_JSON") || driverInfo.convert.equalsIgnoreCase("json")) {
-            mustBeUtf8 = true;
-            MarcJsonWriter jsonwriter = new MarcJsonWriter(out, MarcJsonWriter.MARC_IN_JSON);
-            if (driverInfo.pretty)     jsonwriter.setIndent(true);
-            if (driverInfo.normalize)  jsonwriter.setUnicodeNormalization(true);
-            writer = jsonwriter;
-        } else if (driverInfo.convert.equalsIgnoreCase("MARC_JSON") || driverInfo.convert.equalsIgnoreCase("json2")) {
-            mustBeUtf8 = true;
-            MarcJsonWriter jsonwriter = new MarcJsonWriter(out, MarcJsonWriter.MARC_JSON);
-            if (driverInfo.pretty)     jsonwriter.setIndent(true);
-            if (driverInfo.normalize)  jsonwriter.setUnicodeNormalization(true);
-            writer = jsonwriter;
-        } else if (driverInfo.convert.equalsIgnoreCase("UTF8") || driverInfo.convert.equalsIgnoreCase("UTF-8")) {
-            mustBeUtf8 = true;
-            MarcStreamWriter binwriter = new MarcStreamWriter(out, "UTF8");
-            if (driverInfo.readerConfig.getCombineConsecutiveRecordsFields() != null) {
-                binwriter.setAllowOversizeEntry(true);
-            }
-            writer = binwriter;
-        } else if (driverInfo.convert.equalsIgnoreCase("MARC8")) {
-            MarcStreamWriter binwriter = new MarcStreamWriter(out, "ISO8859_1", true);
-            binwriter.setConverter(new UnicodeToAnsel());
-            driverInfo.marc8Flag = true;
-            if (driverInfo.readerConfig.getCombineConsecutiveRecordsFields() != null) {
-                binwriter.setAllowOversizeEntry(true);
-            }
-            writer = binwriter;
-        } else if (driverInfo.convert.equalsIgnoreCase("MARC8NCR") || driverInfo.convert.equalsIgnoreCase("NCR")) {
-            MarcStreamWriter binwriter = new MarcStreamWriter(out, "ISO8859_1", true);
-            binwriter.setConverter(new UnicodeToAnsel(true));
-            driverInfo.marc8Flag = true;
-            if (driverInfo.readerConfig.getCombineConsecutiveRecordsFields() != null) {
-                binwriter.setAllowOversizeEntry(true);
-            }
-            writer = binwriter;
-        } else if (driverInfo.convert.equalsIgnoreCase("MRK8")) {
-            mustBeUtf8 = true;
-            Mrk8StreamWriter mrkwriter = new Mrk8StreamWriter(out);
-            writer = mrkwriter;
-        } else {
-            throw new IllegalArgumentException("Error : Unknown output format: "+ driverInfo.convert );
-//            System.exit(1);
-        }
-        if (mustBeUtf8 && driverInfo.readerConfig.toUtf8() == false) {
+        if (result.expectsUnicode() && driverInfo.readerConfig.toUtf8() == false) {
             driverInfo.readerConfig.setToUtf8(true);
         }
-        return(writer);
+        return(result);
     }
-
 
     private static void usage(String error, int exitcode) {
         if (error != null) {

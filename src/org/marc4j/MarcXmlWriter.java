@@ -710,4 +710,13 @@ public class MarcXmlWriter implements MarcWriter {
 
         return false;
     }
+
+    /**
+     * Whether the writer expects the record passed in to be encoded in Unicode.
+     */
+    @Override
+    public boolean expectsUnicode()
+    {
+        return (converter == null) ? true : false; 
+    }
 }
