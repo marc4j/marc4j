@@ -20,6 +20,12 @@
 
 package org.marc4j;
 
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import org.marc4j.marc.Record;
 
 /**
@@ -32,7 +38,7 @@ import org.marc4j.marc.Record;
  * 
  * @author Bas Peters
  */
-public interface MarcReader {
+public interface MarcReader extends Iterable<Record>, Iterator<Record>  {
 
     /**
      * Returns true if the iteration has more records, false otherwise.
@@ -48,4 +54,25 @@ public interface MarcReader {
      */
     public Record next();
 
+    /**
+     * Optional operation -- not supported
+     */
+    @Override
+    default public void remove() {
+        throw new UnsupportedOperationException("remove() not supported on this class");
+    }
+    
+    /**
+     * Returns an iterator over the Record objects
+     * 
+     * @return the MarcReader to be used as an Iterator
+     */
+    @Override
+    default public Iterator<Record> iterator() {
+        return (this);
+    }
+        
+    default Stream<Record> stream() {
+        return StreamSupport.stream(spliterator(), false);
+    }
 }
