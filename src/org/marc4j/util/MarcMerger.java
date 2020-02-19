@@ -42,33 +42,48 @@ public class MarcMerger
         String newRecordsOut = null;
         int argoffset = 0;
         boolean mergeRecords = true;
-        if (args[0].equals("-v"))
+        String modfile = null;
+        String delfile = null;
+        while (argoffset < args.length && args[argoffset].startsWith("-"))
         {
-            verbose = true;
-            argoffset = 1;
+            if (args[0+argoffset].equals("-v"))
+            {
+                verbose = true;
+                argoffset = 1;
+            }
+            if (args[0+argoffset].equals("-vv"))
+            {
+                verbose = true;
+                veryverbose = true;
+                argoffset = 1;
+            }
+            if (args[0+argoffset].equals("-min"))
+            {
+                segmentMinRecordID = args[1+argoffset];
+                argoffset += 2;
+            }
+            if (args[0+argoffset].equals("-max"))
+            {
+                segmentMaxRecordID = args[1+argoffset];
+                argoffset += 2;
+            }
+            if (args[0+argoffset].equals("-new"))
+            {
+                newRecordsOut = args[1+argoffset];
+                argoffset += 2;
+            }
+            if (args[0+argoffset].equals("-mrc"))
+            {
+                modfile = args[1+argoffset];
+                argoffset += 2;
+            }
+            if (args[0+argoffset].equals("-del"))
+            {
+                delfile = args[1+argoffset];
+                argoffset += 2;
+            }
         }
-        if (args[0].equals("-vv"))
-        {
-            verbose = true;
-            veryverbose = true;
-            argoffset = 1;
-        }
-        if (args[0+argoffset].equals("-min"))
-        {
-            segmentMinRecordID = args[1+argoffset];
-            argoffset += 2;
-        }
-        if (args[0+argoffset].equals("-max"))
-        {
-            segmentMaxRecordID = args[1+argoffset];
-            argoffset += 2;
-        }
-        if (args[0+argoffset].equals("-new"))
-        {
-            newRecordsOut = args[1+argoffset];
-            argoffset += 2;
-        }
-        if (args[0+argoffset].endsWith(".del"))
+        if (args[0+argoffset].endsWith(".del") || args[0+argoffset].endsWith(".ids"))
         {
             // merging deletes, not merging records.
             mergeRecords = false;
@@ -97,16 +112,18 @@ public class MarcMerger
         }
         try
         {
-            String modfile = args[1+argoffset];
-            String delfile = null;
             boolean use_stdin = false;
 
             FileOutputStream newRecordsOutStream = null;
+            if (modfile == null)  
+            {
+                modfile = args[1+argoffset];
+            }
             if (modfile.equals ("-"))
             {
                 use_stdin = true;
             }
-            else if (modfile.endsWith(".mrc") )
+            else if (modfile.endsWith(".mrc") && delfile == null)
             {
                 delfile = modfile.substring(0, modfile.length()-4) + ".del";
             }
@@ -321,25 +338,17 @@ public class MarcMerger
             }
             else // mainrec.id is greater than either newOrModrec.id or deletedId
             {
-                if (newOrModrec != null && compare.compare(mainDelete, newOrModrec.getRecordId())> 0 && compare.compare(newOrModrec.getRecordId(), deletedId)== 0)
+                if (newOrModrec != null && compare.compare(mainDelete, newOrModrec.getRecordId())> 0)
                 {    
-                    //  Update contains a new 
-                    out.println(mainDelete);
+                    // newOrModrec is a new record,  Write out new record.
+                    if (verbose) System.err.println("New record in mod file "+ newOrModrec.getRecordId() + " skipping it.");
+                    newOrModrec = newOrModified.hasNext() ? newOrModified.next() : null;
                 }
-                else
-                {
-                    if (newOrModrec != null && compare.compare(mainDelete, newOrModrec.getRecordId())> 0)
-                    {    
-                        // newOrModrec is a new record,  Write out new record.
-                        if (verbose) System.err.println("New record in mod file "+ newOrModrec.getRecordId() + " skipping it.");
-                        newOrModrec = newOrModified.hasNext() ? newOrModified.next() : null;
-                    }
-                    if (compare.compare(mainDelete, deletedId)> 0)
-                    {    
-                        // Trying to delete a record that's already not there.  Be Happy.
-                        out.println(deletedId);
-                        deletedId = getNextDelId(delReader);
-                    }
+                if (compare.compare(mainDelete, deletedId)> 0)
+                {    
+                    // Trying to delete a record that's already not there.  Be Happy.
+                    out.println(deletedId);
+                    deletedId = getNextDelId(delReader);
                 }
             }
         }
