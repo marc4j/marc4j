@@ -94,7 +94,11 @@ public class MarcJsonWriter implements MarcWriter {
      */
     @Override
     public void close() {
-        // TODO Auto-generated method stub
+        try {
+            os.close();
+        } catch (IOException e) {
+            throw new MarcException("IO Error occurred closing marc writer", e);
+        }
     }
 
     protected String toMarcJson(final Record record) {
