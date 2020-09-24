@@ -74,9 +74,9 @@ public class UnicodeToUnimarc extends CharConverter implements UnimarcConstants 
         try {
             final Class<?> generated = Class.forName("org.marc4j.converter.impl.UnimarcReverseCodeTableGenerated");
             final Constructor<?> cons = generated.getConstructor();
-            final Object rct = cons.newInstance();
+            final Object localRct = cons.newInstance();
 
-            return (UnimarcReverseCodeTableHash) rct;
+            return (ReverseCodeTable) localRct;
         } catch (final Exception e) {
             return new UnimarcReverseCodeTableHash(getClass().getResourceAsStream("resources/unimarc.xml"));
         }
