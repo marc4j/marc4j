@@ -62,6 +62,8 @@ public interface MarcWriter {
     
     /**
      * Whether the writer expects the record passed in to be encoded in Unicode.
+     *
+     * @return boolean  whether the writer expects it's input to be encoded in Unicode.
      */
     default public boolean expectsUnicode() { return true; }
 
