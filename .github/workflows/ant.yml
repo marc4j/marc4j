@@ -21,4 +21,4 @@ jobs:
             distribution: 'adopt' # See 'Supported distributions' for available options
             java-version: '8'
             java-package: jdk
-    - run: ant -noinput -buildfile build.xml
+    - run: ant -noinput -buildfile build.xml dist
