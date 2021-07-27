@@ -281,8 +281,7 @@
             <arg value="--detach-sign" />
             <arg value="${jar.name}" />
         </exec>
-        <exec executable="C:/Program Files (x86)/GNU/GnuPG/pub/gpg" dir="${dist.dir}" searchpath="true" >
-            <env key="PATH" path="C:/Program Files (x86)/GNU/GnuPG/pub" />
+        <exec executable="${gpg.exe}" dir="${dist.dir}" searchpath="true" >
             <arg value="--batch" />
             <arg value="-a" />
             <arg value="--passphrase" />
@@ -290,8 +289,7 @@
             <arg value="--detach-sign" />
             <arg value="${jar.sources.name}" />
         </exec>
-        <exec executable="C:/Program Files (x86)/GNU/GnuPG/pub/gpg" dir="${dist.dir}" searchpath="true" >
-            <env key="PATH" path="C:/Program Files (x86)/GNU/GnuPG/pub" />
+        <exec executable="${gpg.exe}" dir="${dist.dir}" searchpath="true" >
             <arg value="--batch" />
             <arg value="-a" />
             <arg value="--passphrase" />
@@ -299,8 +297,7 @@
             <arg value="--detach-sign" />
             <arg value="${jar.javadoc.name}" />
         </exec>
-        <exec executable="C:/Program Files (x86)/GNU/GnuPG/pub/gpg" dir="${dist.dir}" searchpath="true" >
-            <env key="PATH" path="C:/Program Files (x86)/GNU/GnuPG/pub" />
+        <exec executable="${gpg.exe}" dir="${dist.dir}" searchpath="true" >
             <arg value="--batch" />
             <arg value="-a" />
             <arg value="--passphrase" />
