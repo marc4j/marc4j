@@ -20,19 +20,18 @@
 
 package org.marc4j.converter.impl;
 
+import org.marc4j.MarcException;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Vector;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.marc4j.MarcException;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
 /**
  * <p>
@@ -51,20 +50,37 @@ public class CodeTable implements CodeTableInterface {
     /**
      * Returns <code>true</code> if combining; else, <code>false</code>.
      *
-     * @param i - the character code to check
+     * @param c  - the character code to check
      * @param g0 - the current g0 character set in use
      * @param g1 - the current g1 character code in use
      * @return Returns <code>true</code> if combining
      */
     @Override
-    public boolean isCombining(final int i, final int g0, final int g1) {
-        if (i <= 0x7E) {
-            final Vector<Integer> v = combining.get(new Integer(g0));
-            return (v != null && v.contains(new Integer(i)));
+    public boolean isCombining(final int c, final int g0, final int g1) {
+        boolean retVal = false;
+        int mode;
+        int newc;
+
+        if (c <= 0x7E) {
+            mode = g0;
+            newc = c + 0x80;
         } else {
-            final Vector<Integer> v = combining.get(new Integer(g1));
-            return (v != null && v.contains(new Integer(i)));
+            mode = g1;
+            newc = c - 0x80;
         }
+
+        Vector<Integer> v = combining.get(mode);
+        // Check both the original character, and if not found, then the new character (original +- 0x80) in case
+        // the original code table specified chars < 0x80 and we're in a G1 code page, or specified chars >= 0x80
+        // and we're in a G0 code page.
+        if (null != v) {
+            retVal = v.contains(c);
+            if (!retVal) {
+                retVal = v.contains(newc);
+            }
+        }
+
+        return retVal;
     }
 
     /**
@@ -72,7 +88,8 @@ public class CodeTable implements CodeTableInterface {
      *
      * @param c - the character being looked up
      * @param mode - the current mode of the converter
-     * @return Returns the <code>char</code> for the supplied <code>int</code> and mode
+     * @return Returns the <code>char</code> for the supplied <code>int</code> and mode, or char 0
+     * if there's no lookup match (i.e. character doesn't exist in the mapping tables)
      */
     @Override
     public char getChar(final int c, final int mode) {
@@ -84,7 +101,7 @@ public class CodeTable implements CodeTableInterface {
             if (charset == null) {
                 // System.err.println("Hashtable not found: "
                 // + Integer.toHexString(mode));
-                return (char) c;
+                return (char) 0;
             } else {
                 Character ch = charset.get(new Integer(c));
                 if (ch == null) {

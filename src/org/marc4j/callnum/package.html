@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>org.marc4j.callnum</title>
+</head>
+<body>
+  <p>Provides classes to parse and manipulate call numbers.</p>
+  <p>
+  The main purpose is to produce lexically-sortable sort keys for call numbers. 
+  The basic strategy is to assume that letters in call numbers will sort naturally.
+  Numbers will be treated according to whether they sort as integer values or decimal values.
+  Integer values, generally before the Cutter or years in the cutter, will be prepended with the number of digits.
+  Thus one-digit integer values will be prepended with {{1}}, two-digit integer with {{2}}, etc.
+  Decimal values, numbers in the Cutter, will not be modified
+  The resulting keys will sort lexically. 
+  <p>
+  Motivated by Naomi Dushay's earlier <code>CallNumUtils</code>.
+  Sort key algorithm suggested by John Craig.
+  </p>
+
+</body>
+</html>

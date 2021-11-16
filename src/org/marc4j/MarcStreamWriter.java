@@ -300,4 +300,14 @@ public class MarcStreamWriter implements MarcWriter {
     public void setAllowOversizeEntry(final boolean allowOversizeEntry) {
         this.allowOversizeEntry = allowOversizeEntry;
     }
+    
+    /**
+     * Whether the writer expects the record passed in to be encoded in Unicode.
+     */
+    @Override
+    public boolean expectsUnicode()
+    {
+        return (converter != null) ? (converter.outputsUnicode() ?  false : true ) : (encoding == "UTF-8" ? true : false); 
+    }
+
 }

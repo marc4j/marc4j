@@ -16,7 +16,7 @@
     <h3>Reading records</h3>
     <p>The {@link org.marc4j.marc.Record}&nbsp;interface provides access to the 
     leader and variable fields for each record returned by the {@link org.marc4j.MarcReader}&nbsp;implementation.</p>
-    <p>The following example retrieves all control fields (tags 001 through 009):<p>
+    <p>The following example retrieves all control fields (tags 001 through 009):</p>
     <pre>
     List fields = record.getControlFields();
     </pre>
@@ -81,7 +81,7 @@
     or subject. The example below checks if the cataloging agency is DLC. The example also shows 
     how you can extend the find capailities to specific subfields, a feature not directly available 
     in MARC4J, since it is easy to accomplish using the record model together with the standard Java API's.</p>
-    <pre>
+    <pre>{@code
     InputStream input = new FileInputStream("file.mrc");
     MarcReader reader = new MarcStreamReader(input);
     while (reader.hasNext()) {
@@ -100,7 +100,7 @@
             System.out.println("DLC is the original agency");    	
     	
     }
-    </pre>
+    }</pre>
     <p>By using <code>find()</code> you can also implement a kind of search and replace to batch 
     update records that meet certain criteria. You can use Java regular expressions in <code>find()</code> methods. 
     Check the 

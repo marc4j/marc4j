@@ -57,11 +57,21 @@
     <target name="codetablegen" depends="prepare-codetablegen" unless="already.ctged">
         <java fork="true" classname="org.marc4j.converter.impl.CodeTableGenerator" errorproperty="CodeTableGenerated.error" output="${build.generated-src.dir}/org/marc4j/converter/impl/CodeTableGenerated.java" >
             <classpath location="${build.classes.dir}" />
+            <arg value="MARC8"/>
         </java>
         <java fork="true" classname="org.marc4j.converter.impl.ReverseCodeTableGenerator" errorproperty="ReverseCodeTableGenerated.error" output="${build.generated-src.dir}/org/marc4j/converter/impl/ReverseCodeTableGenerated.java" >
             <classpath location="${build.classes.dir}" />
+            <arg value="MARC8"/>
         </java>
-        <concat >
+        <java fork="true" classname="org.marc4j.converter.impl.CodeTableGenerator" errorProperty="UnimarcCodeTableGenerated.error" output="${build.generated-src.dir}/org/marc4j/converter/impl/UnimarcCodeTableGenerated.java" >
+            <classpath location="${build.classes.dir}" />
+            <arg value="UNIMARC"/>
+        </java>
+        <java fork="true" classname="org.marc4j.converter.impl.ReverseCodeTableGenerator" errorProperty="UnimarcReverseCodeTableGenerated.error" output="${build.generated-src.dir}/org/marc4j/converter/impl/UnimarcReverseCodeTableGenerated.java" >
+            <classpath location="${build.classes.dir}" />
+            <arg value="UNIMARC"/>
+        </java>
+       <!-- <concat >
             <fileset dir="${build.generated-src.dir}/org/marc4j/converter/impl" includes="Code*.java" />
             <filterchain>
                 <headfilter lines="15"/>
@@ -72,7 +82,7 @@
             <filterchain>
                 <headfilter lines="15"/>
             </filterchain>
-        </concat>
+        </concat>  -->
     </target>
 
     <target name="compile-codegen" depends="codetablegen">
@@ -307,7 +317,7 @@
         </jar>
     </target>
 
-    <property name="ivy.install.version" value="2.3.0" />
+    <property name="ivy.install.version" value="2.5.0" />
     <property name="ivy.jar.dir" value="${basedir}/ivy" />
     <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
 
@@ -319,7 +329,7 @@
         <mkdir dir="${ivy.jar.dir}"/>
 
         <echo message="installing ivy..."/>
-        <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.jar.file}" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.jar.file}" usetimestamp="true"/>
     </target>
 
     <target name="setup-ivy" depends="download-ivy" description="--> setup ivy" unless="prepared">

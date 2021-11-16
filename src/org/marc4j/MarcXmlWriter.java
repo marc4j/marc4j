@@ -20,14 +20,17 @@
 
 package org.marc4j;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.text.Normalizer;
-import java.util.regex.Pattern;
+import org.marc4j.converter.CharConverter;
+import org.marc4j.converter.impl.AnselToUnicode;
+import org.marc4j.converter.impl.UnicodeUtils;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
+import org.marc4j.marc.Leader;
+import org.marc4j.marc.MarcFactory;
+import org.marc4j.marc.Record;
+import org.marc4j.marc.Subfield;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -37,17 +40,14 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import org.marc4j.converter.CharConverter;
-import org.marc4j.converter.impl.AnselToUnicode;
-import org.marc4j.marc.ControlField;
-import org.marc4j.marc.DataField;
-import org.marc4j.marc.Leader;
-import org.marc4j.marc.MarcFactory;
-import org.marc4j.marc.Record;
-import org.marc4j.marc.Subfield;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 
 /**
  * Class for writing MARC record objects in MARCXML format. This class outputs a SAX event stream to the given
@@ -366,7 +366,7 @@ public class MarcXmlWriter implements MarcWriter {
 
     /**
      * Optional check for characters that are invalid for xml (e.g. control characters),
-     * will convert to a form like "&lt;U+xxxx&gt;" where 'xxxx' is the equivalent hex value
+     * will convert to a form like "&lt;U+XXXX&gt;" where 'XXXX' is the equivalent hex value
      * of the invalid character.  Useful for poor source data, but slows down the XML emission.
      *
      * @param checkNonXMLChars true if want to check (and replace) non-XML chars, false (default) otherwise.
@@ -376,7 +376,7 @@ public class MarcXmlWriter implements MarcWriter {
     }
 
     /**
-     * Returns true if this writer will check for non-XML characters and replace them with a form like "&lt;U+xxxx&gt;",
+     * Returns true if this writer will check for non-XML characters and replace them with a form like "&lt;U+XXXX&gt;",
      * false otherwise.
      *
      * @return boolean - true if this writer checks for (and replaces) non-XML characters, false otherwise.
@@ -672,10 +672,7 @@ public class MarcXmlWriter implements MarcWriter {
         final StringBuffer out = new StringBuffer(dataElement.length());
         for (final char ch : dataElement.toCharArray()) {
             if (isInvalidXmlChar(ch)) {
-                out.append("<U+");
-                final String hex = "0000" + Integer.toString(ch, 16);
-                out.append(hex.substring(hex.length() - 4));
-                out.append('>');
+                out.append(UnicodeUtils.convertUnicodeToUnicodeBNF(ch));
             } else {
                 out.append(ch);
             }
@@ -712,5 +709,14 @@ public class MarcXmlWriter implements MarcWriter {
         }
 
         return false;
+    }
+
+    /**
+     * Whether the writer expects the record passed in to be encoded in Unicode.
+     */
+    @Override
+    public boolean expectsUnicode()
+    {
+        return (converter == null) ? true : false; 
     }
 }

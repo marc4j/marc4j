@@ -286,7 +286,26 @@ public class MarcScriptedRecordEditReader implements MarcReader {
                     }
                 }
             } else if (field != null && field instanceof ControlField && args.length == 2) {
-                if (((ControlField) field).getData().matches(args[1])) {
+                String dataToMatch = ((ControlField) field).getData();
+                try { 
+                    if (args[0].matches("[0-9]+")) {
+                        int start = Integer.parseInt(args[0]);
+                        dataToMatch = dataToMatch.substring(start, start+1);
+                    }
+                    else if (args[0].matches("[0-9]+-[0-9]+")) {
+                        int dash = args[0].indexOf('-');
+                        int start = Integer.parseInt(args[0].substring(0, dash));
+                        int end = Integer.parseInt(args[0].substring(dash+1));
+                        dataToMatch = dataToMatch.substring(start, end+1);
+                    }
+                }
+                catch (NumberFormatException nfe) {
+                    return false;
+                }
+                catch (IndexOutOfBoundsException ioobe) {
+                    return false;
+                }
+                if (dataToMatch.matches(args[1])) {
                     return true;
                 }
             }
@@ -326,13 +345,19 @@ public class MarcScriptedRecordEditReader implements MarcReader {
             }
         } else if (conditional.startsWith("fieldexists(")) {
             final String args[] = getThreeArgs(conditional);
-            if (args.length == 3 && args[0].matches("[0-9][0-9][0-9]") && args[1].length() == 1) {
+            if (args.length == 3 && (args[0].matches("[0-9][0-9][0-9]") && args[1].length() == 1) || args[0].matches("00[1-9]")) {
                 for (final VariableField vf : record.getVariableFields(args[0])) {
                     if (vf instanceof DataField) {
                         for (final Subfield sf : ((DataField) vf).getSubfields(args[1].charAt(0))) {
                             if (sf.getData().equals(args[2]) || sf.getData().matches(args[2])) {
                                 return true;
                             }
+                        }
+                    }
+                    else if (vf instanceof ControlField) {
+                        ControlField cf = (ControlField)vf;
+                        if (cf.getData().equals(args[2]) || cf.getData().matches(args[2])) {
+                            return true;
                         }
                     }
                 }
@@ -428,6 +453,11 @@ public class MarcScriptedRecordEditReader implements MarcReader {
             final VariableField vf = createFieldFromString(arg, null);
             if (vf != null) {
                 fToInsert.add(vf);
+            }
+        } else if (command.startsWith("movefield(")) {
+            final String arg = getOneArg(command);
+            if (arg.length() == 3) {
+                field.setTag(arg);
             }
         } else if (command.startsWith("insertparameterizedfield(")) {
             final String args[] = getThreeArgs(command);

@@ -124,4 +124,14 @@ public class MarcTxtWriter implements MarcWriter {
         this.out.flush();
         this.out.close();
     }
+    
+    /**
+     * Whether the writer expects the record passed in to be encoded in Unicode.
+     */
+    @Override
+    public boolean expectsUnicode()
+    {
+        return (conv == null) ? true : false; 
+    }
+
 }
