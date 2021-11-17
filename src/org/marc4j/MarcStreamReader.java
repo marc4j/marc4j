@@ -40,6 +40,7 @@ import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.marc4j.marc.impl.Verifier;
+import org.marc4j.util.Encoding;
 
 /**
  * An iterator over a collection of MARC records in ISO 2709 format.
@@ -78,7 +79,7 @@ public class MarcStreamReader implements MarcReader {
 
     private final MarcFactory factory;
 
-    private String encoding = "ISO8859_1";
+    private Encoding encoding = Encoding.ISO8859_1;
 
     private boolean override = false;
 
@@ -103,8 +104,11 @@ public class MarcStreamReader implements MarcReader {
         this.input = new DataInputStream(input.markSupported() ? input : new BufferedInputStream(input));
         factory = MarcFactory.newInstance();
         if (encoding != null) {
-            this.encoding = encoding;
-            override = true;
+            Encoding candidate = Encoding.get(encoding);
+            if (candidate != null) {
+                this.encoding = candidate;
+                override = true;
+            }
         }
     }
 
@@ -176,12 +180,12 @@ public class MarcStreamReader implements MarcReader {
         switch (ldr.getCharCodingScheme()) {
             case ' ':
                 if (!override) {
-                    encoding = "ISO-8859-1";
+                    encoding = Encoding.ISO8859_1;
                 }
                 break;
             case 'a':
                 if (!override) {
-                    encoding = "UTF8";
+                    encoding = Encoding.UTF8;
                 }
         }
 
@@ -366,7 +370,7 @@ public class MarcStreamReader implements MarcReader {
     }
 
     private int parseRecordLength(final byte[] leaderData) throws IOException {
-        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), "ISO-8859-1");
+        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), Encoding.ISO8859_1.getStandardName());
         int length = -1;
         final char[] tmp = new char[5];
         isr.read(tmp);
@@ -379,7 +383,7 @@ public class MarcStreamReader implements MarcReader {
     }
 
     private void parseLeader(final Leader ldr, final byte[] leaderData) throws IOException {
-        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), "ISO-8859-1");
+        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), Encoding.ISO8859_1.getStandardName());
         char[] tmp = new char[5];
         isr.read(tmp);
         // Skip over bytes for record length, If we get here, its already been
@@ -425,26 +429,20 @@ public class MarcStreamReader implements MarcReader {
 
     private String getDataAsString(final byte[] bytes) {
         String dataElement = null;
-        if (encoding.equals("UTF-8") || encoding.equals("UTF8")) {
+        if (encoding.equals(Encoding.UTF8) || encoding.equals(Encoding.ISO8859_1)) {
             try {
-                dataElement = new String(bytes, "UTF8");
+                dataElement = new String(bytes, encoding.getStandardName());
             } catch (final UnsupportedEncodingException e) {
                 throw new MarcException("unsupported encoding", e);
             }
-        } else if (encoding.equals("MARC-8") || encoding.equals("MARC8")) {
+        } else if (encoding.equals(Encoding.MARC8)) {
             if (converterAnsel == null) {
                 converterAnsel = new AnselToUnicode();
             }
             dataElement = converterAnsel.convert(bytes);
-        } else if (encoding.equals("ISO-8859-1") || encoding.equals("ISO8859_1") || encoding.equals("ISO_8859_1")) {
-            try {
-                dataElement = new String(bytes, "ISO-8859-1");
-            } catch (final UnsupportedEncodingException e) {
-                throw new MarcException("unsupported encoding", e);
-            }
         } else if (override) {
             try {
-                dataElement = new String(bytes, encoding);
+                dataElement = new String(bytes, encoding.getStandardName());
             } catch (final UnsupportedEncodingException e) {
                 throw new MarcException("unsupported encoding", e);
             }
