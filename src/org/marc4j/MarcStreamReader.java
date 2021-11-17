@@ -370,7 +370,7 @@ public class MarcStreamReader implements MarcReader {
     }
 
     private int parseRecordLength(final byte[] leaderData) throws IOException {
-        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), "ISO-8859-1");
+        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), Encoding.ISO8859_1.getStandardName());
         int length = -1;
         final char[] tmp = new char[5];
         isr.read(tmp);
@@ -383,7 +383,7 @@ public class MarcStreamReader implements MarcReader {
     }
 
     private void parseLeader(final Leader ldr, final byte[] leaderData) throws IOException {
-        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), "ISO-8859-1");
+        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), Encoding.ISO8859_1.getStandardName());
         char[] tmp = new char[5];
         isr.read(tmp);
         // Skip over bytes for record length, If we get here, its already been
