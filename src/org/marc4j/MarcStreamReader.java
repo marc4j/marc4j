@@ -167,9 +167,9 @@ public class MarcStreamReader implements MarcReader {
             parseLeader(ldr, byteArray);
             directoryLength = ldr.getBaseAddressOfData() - (24 + 1);
         } catch (final IOException e) {
-            throw new MarcException("error parsing leader with data: '" + new String(byteArray) + "'", e);
+            throw new MarcException("error parsing leader with data: " + new String(byteArray) + "'", e);
         } catch (final MarcException e) {
-            throw new MarcException("error parsing leader with data: '" + new String(byteArray) + "'", e);
+            throw new MarcException("error parsing leader with data: " + new String(byteArray) + "'", e);
         }
 
         // if MARC 21 then check encoding
