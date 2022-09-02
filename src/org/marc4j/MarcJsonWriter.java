@@ -284,9 +284,9 @@ public class MarcJsonWriter implements MarcWriter {
 
             buf.append(ql + df.getTag() + ql + ":");
 
-            buf.append("{");
-
             indent(buf, "\n                ");
+
+            buf.append("{");
 
             buf.append(ql + "subfields" + ql + ":");
 
