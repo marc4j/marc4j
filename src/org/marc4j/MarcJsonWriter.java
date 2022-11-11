@@ -3,7 +3,7 @@ package org.marc4j;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 
 import org.marc4j.converter.CharConverter;
@@ -23,7 +23,7 @@ public class MarcJsonWriter implements MarcWriter {
      */
     private CharConverter converter = null;
 
-    private OutputStream os = null;
+    private final OutputStream os;
 
     private int useJsonFormat = MARC_IN_JSON;
 
@@ -81,6 +81,7 @@ public class MarcJsonWriter implements MarcWriter {
      * @param jsonFormat - whether to use the MARC_IN_JSON format (default) or the MARC_JSON format (1)
      */
     public MarcJsonWriter(final OutputStream os, final CharConverter conv, final int jsonFormat) {
+        this.os = os;
         setConverter(conv);
         useJsonFormat = jsonFormat;
 
@@ -107,7 +108,7 @@ public class MarcJsonWriter implements MarcWriter {
 
         indent(buf, "\n    ");
 
-        buf.append(ql + "leader" + ql + ":\"").append(record.getLeader().toString()).append("\",");
+        buf.append(ql + "leader" + ql + ":\"").append(unicodeEscape(record.getLeader().toString())).append("\",");
 
         indent(buf, "\n    ");
 
@@ -125,8 +126,10 @@ public class MarcJsonWriter implements MarcWriter {
                 firstField = false;
             }
 
-            if (indent) {
-                buf.append("\n        ");
+            indent(buf, "\n        ");
+
+            if (!cf.getTag().matches("[A-Z0-9][A-Z0-9][A-Z0-9]")) {
+                throw new MarcException("Invalid tag: " + cf.getTag());
             }
 
             buf.append("{ " + ql + "tag" + ql + " : \"" + cf.getTag() + "\", " + ql + "data" + ql + " : ")
@@ -153,28 +156,26 @@ public class MarcJsonWriter implements MarcWriter {
                 firstField = false;
             }
 
-            if (indent) {
-                buf.append("\n        ");
-            }
+            indent(buf, "\n        ");
 
             buf.append("{");
 
-            if (indent) {
-                buf.append("\n            ");
+            indent(buf, "\n            ");
+
+            if (!df.getTag().matches("[A-Z0-9][A-Z0-9][A-Z0-9]")) {
+                throw new MarcException("Invalid tag: " + df.getTag());
             }
 
-            buf.append(ql + "tag" + ql + " : \"" + df.getTag() + "\", " + ql + "ind" + ql + " : \"" +
-                    df.getIndicator1() + df.getIndicator2() + "\",");
+            buf.append(ql + "tag" + ql + " : \"" + df.getTag() + "\", " + ql + "ind" + ql + " : \"");
+            unicodeEscape(buf, df.getIndicator1());
+            unicodeEscape(buf, df.getIndicator2());
+            buf.append("\",");
 
-            if (indent) {
-                buf.append("\n            ");
-            }
+            indent(buf, "\n            ");
 
             buf.append(ql + "subfield" + ql + " :");
 
-            if (indent) {
-                buf.append("\n            ");
-            }
+            indent(buf, "\n            ");
 
             buf.append("[");
             boolean firstSubfield = true;
@@ -186,23 +187,21 @@ public class MarcJsonWriter implements MarcWriter {
                     firstSubfield = false;
                 }
 
-                if (indent) {
-                    buf.append("\n                ");
+                indent(buf, "\n                ");
+
+                if ((sf.getCode() < 'a' || 'z' < sf.getCode()) && (sf.getCode() < '0' || '9' < sf.getCode())) {
+                    throw new MarcException("Invalid code: " + sf.getCode());
                 }
 
                 buf.append("{ " + ql + "code" + ql + " : \"" + sf.getCode() + "\", " + ql + "data" + ql + " : \"" +
                         unicodeEscape(sf.getData()) + "\" }");
             }
 
-            if (indent) {
-                buf.append("\n            ");
-            }
+            indent(buf, "\n            ");
 
             buf.append("]");
 
-            if (indent) {
-                buf.append("\n        ");
-            }
+            indent(buf, "\n        ");
 
             buf.append("}");
         }
@@ -229,15 +228,15 @@ public class MarcJsonWriter implements MarcWriter {
         final StringBuffer buf = new StringBuffer();
         buf.append("{");
 
-        indent(buf, "\n    ");;
+        indent(buf, "\n    ");
 
-        buf.append(ql + "leader" + ql + ":\"").append(record.getLeader().toString()).append("\",");
+        buf.append(ql + "leader" + ql + ":\"").append(unicodeEscape(record.getLeader().toString())).append("\",");
 
-        indent(buf, "\n    ");;
+        indent(buf, "\n    ");
 
         buf.append(ql + "fields" + ql + ":");
 
-        indent(buf, "\n    ");;
+        indent(buf, "\n    ");
 
         buf.append("[");
         boolean firstField = true;
@@ -249,21 +248,19 @@ public class MarcJsonWriter implements MarcWriter {
                 firstField = false;
             }
 
-            if (indent) {
-                buf.append("\n        ");
-            }
+            indent(buf, "\n        ");
 
             buf.append("{");
 
-            if (indent) {
-                buf.append("\n            ");
+            indent(buf, "\n            ");
+
+            if (!cf.getTag().matches("[A-Z0-9][A-Z0-9][A-Z0-9]")) {
+                throw new MarcException("Invalid tag: " + cf.getTag());
             }
 
             buf.append(ql + cf.getTag() + ql + ":").append("\"" + unicodeEscape(cf.getData()) + "\"");
 
-            if (indent) {
-                buf.append("\n        ");
-            }
+            indent(buf, "\n        ");
 
             buf.append("}");
         }
@@ -275,29 +272,25 @@ public class MarcJsonWriter implements MarcWriter {
                 firstField = false;
             }
 
-            if (indent) {
-                buf.append("\n        ");
-            }
+            indent(buf, "\n        ");
 
             buf.append("{");
 
-            if (indent) {
-                buf.append("\n            ");
+            indent(buf, "\n            ");
+
+            if (!df.getTag().matches("[A-Z0-9][A-Z0-9][A-Z0-9]")) {
+                throw new MarcException("Invalid tag: " + df.getTag());
             }
 
             buf.append(ql + df.getTag() + ql + ":");
 
-            if (indent) {
-                buf.append("\n                ");
-            }
+            indent(buf, "\n                ");
 
             buf.append("{");
-            // if (indent) buf.append("\n                ");
+
             buf.append(ql + "subfields" + ql + ":");
 
-            if (indent) {
-                buf.append("\n                ");
-            }
+            indent(buf, "\n                ");
 
             buf.append("[");
             boolean firstSubfield = true;
@@ -309,61 +302,53 @@ public class MarcJsonWriter implements MarcWriter {
                     firstSubfield = false;
                 }
 
-                if (indent) {
-                    buf.append("\n                    ");
-                }
+                indent(buf, "\n                    ");
 
                 buf.append("{");
 
-                if (indent) {
-                    buf.append("\n                        ");
+                indent(buf, "\n                        ");
+
+                if ((sf.getCode() < 'a' || 'z' < sf.getCode()) && (sf.getCode() < '0' || '9' < sf.getCode())) {
+                    throw new MarcException("Invalid code: " + sf.getCode());
                 }
 
                 buf.append(ql + sf.getCode() + ql + ":\"" + unicodeEscape(sf.getData()) + "\"");
 
-                if (indent) {
-                    buf.append("\n                    ");
-                }
+                indent(buf, "\n                    ");
 
                 buf.append("}");
             }
 
-            if (indent) {
-                buf.append("\n                ");
-            }
+            indent(buf, "\n                ");
 
             buf.append("],");
 
-            if (indent) {
-                buf.append("\n                ");
-            }
+            indent(buf, "\n                ");
 
-            buf.append(ql + "ind1" + ql + ":\"" + df.getIndicator1() + "\",");
+            buf.append(ql + "ind1" + ql + ":\"");
+            unicodeEscape(buf, df.getIndicator1());
+            buf.append("\",");
 
-            if (indent) {
-                buf.append("\n                ");
-            }
+            indent(buf, "\n                ");
 
-            buf.append(ql + "ind2" + ql + ":\"" + df.getIndicator2() + "\"");
+            buf.append(ql + "ind2" + ql + ":\"");
+            unicodeEscape(buf, df.getIndicator2());
+            buf.append("\"");
 
-            if (indent) {
-                buf.append("\n            ");
-            }
+            indent(buf, "\n            ");
 
             buf.append("}");
 
-            if (indent) {
-                buf.append("\n        ");
-            }
+            indent(buf, "\n        ");
 
             buf.append("}");
         }
 
-        indent(buf, "\n    ");;
+        indent(buf, "\n    ");
 
         buf.append("]");
 
-        indent(buf, "\n");;
+        indent(buf, "\n");
 
         buf.append("}\n");
 
@@ -383,49 +368,50 @@ public class MarcJsonWriter implements MarcWriter {
 
         for (int i = 0; i < data.length(); i++) {
             final char c = data.charAt(i);
-            switch (c) {
-                case '/': {
-                    if (escapeSlash) {
-                        buffer.append("\\/");
-                    } else {
-                        buffer.append("/");
-                    }
-                }
-                    break;
-                case '"':
-                    buffer.append("\\\"");
-                    break;
-                case '\\':
-                    buffer.append("\\\\");
-                    break;
-                case '\b':
-                    buffer.append("\\b");
-                    break;
-                case '\f':
-                    buffer.append("\\f");
-                    break;
-                case '\n':
-                    buffer.append("\\n");
-                    break;
-                case '\r':
-                    buffer.append("\\r");
-                    break;
-                case '\t':
-                    buffer.append("\\t");
-                    break;
-                default: {
-                    if (c > 0xff || c < 0x1f) {
-                        final String val = "0000" + Integer.toHexString(c);
-                        buffer.append("\\u" + val.substring(val.length() - 4, val.length()));
-                    } else {
-                        buffer.append(c);
-                    }
-
-                    break;
-                }
-            }
+            unicodeEscape(buffer, c);
         }
-        return (buffer.toString());
+        return buffer.toString();
+    }
+
+    private void unicodeEscape(StringBuffer buffer, char c) {
+        switch (c) {
+            case '/':
+                if (escapeSlash) {
+                    buffer.append("\\/");
+                } else {
+                    buffer.append("/");
+                }
+                break;
+            case '"':
+                buffer.append("\\\"");
+                break;
+            case '\\':
+                buffer.append("\\\\");
+                break;
+            case '\b':
+                buffer.append("\\b");
+                break;
+            case '\f':
+                buffer.append("\\f");
+                break;
+            case '\n':
+                buffer.append("\\n");
+                break;
+            case '\r':
+                buffer.append("\\r");
+                break;
+            case '\t':
+                buffer.append("\\t");
+                break;
+            default:
+                if (c > 0xff || c <= 0x1f) {
+                    final String val = "0000" + Integer.toHexString(c);
+                    buffer.append("\\u" + val.substring(val.length() - 4));
+                } else {
+                    buffer.append(c);
+                }
+                break;
+        }
     }
 
     /**
@@ -480,11 +466,8 @@ public class MarcJsonWriter implements MarcWriter {
         }
 
         try {
-            os.write(recordAsJson.getBytes("UTF-8"));
+            os.write(recordAsJson.getBytes(StandardCharsets.UTF_8));
             os.flush();
-        } catch (final UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (final IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
