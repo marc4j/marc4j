@@ -1,6 +1,7 @@
 package org.marc4j.test.utils;
 
 import org.marc4j.marc.*;
+import org.marc4j.marc.Record;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
