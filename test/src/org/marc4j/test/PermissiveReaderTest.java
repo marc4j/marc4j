@@ -9,6 +9,7 @@ import org.marc4j.MarcReader;
 import org.marc4j.test.utils.RecordTestingUtils;
 
 import org.marc4j.MarcStreamWriter;
+import org.marc4j.marc.Record;
 import org.marc4j.marc.*;
 
 import org.marc4j.test.utils.StaticTestRecords;
