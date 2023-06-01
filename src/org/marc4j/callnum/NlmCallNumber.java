@@ -20,7 +20,8 @@ package org.marc4j.callnum;
  * Parses and computes sort keys for
  * <a href="https://classification.nlm.nih.gov/">National Library of Medicine call numbers</a>.
  * This class uses the same logic for computing sort keys as {@link LCCallNumber}
- * but it has changed {@link #isValid()} method. NLM call numbers utilize schedules QS-QZ and W and WA-WZ.
+ * but it has changed {@link #isValid()} method. NLM call numbers utilize schedules
+ * QS-QZ and W and WA-WZ, for 19th Century also QSA-QZZ and WAA-WZZ schedule.
  */
 public class NlmCallNumber extends LCCallNumber {
 
@@ -30,12 +31,12 @@ public class NlmCallNumber extends LCCallNumber {
 
   @Override
   public boolean isValid() {
-    if (this.classLetters == null || this.classLetters.length() > 2 || this.classDigits == null) {
+    if (this.classLetters == null || this.classLetters.length() > 3 || this.classDigits == null) {
       return false;
     }
     if (this.classLetters.startsWith("W")) {
       return true;
     }
-    return this.classLetters.compareTo("QS") >= 0 && this.classLetters.compareTo("QZ") <= 0;
+    return this.classLetters.compareTo("QS") >= 0 && this.classLetters.compareTo("QZZ") <= 0;
   }
 }
