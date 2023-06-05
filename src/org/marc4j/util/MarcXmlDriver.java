@@ -178,11 +178,7 @@ public class MarcXmlDriver {
         MarcXmlWriter writer = null;
 
         if (stylesheet == null) {
-            if (convert != null) {
-                writer = new MarcXmlWriter(out, "UTF8");
-            } else {
-                writer = new MarcXmlWriter(out, "UTF8");
-            }
+            writer = new MarcXmlWriter(out, "UTF8");
         } else {
             Writer outputWriter = null;
             if (convert != null) {
