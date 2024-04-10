@@ -46,6 +46,22 @@ public class MarcXmlReaderTest {
         input.close();
     }
 
+    @Test
+    public void testMarcXmlReaderLinkedFields() throws Exception {
+        final InputStream input = getClass().getResourceAsStream("/azdoud.xml");
+        assertNotNull(input);
+        final MarcXmlReader reader = new MarcXmlReader(input);
+
+        assertTrue("Should have at least one record", reader.hasNext());
+
+        final Record record1 = reader.next();
+        TestUtils.validateAzdoudRecord(record1);
+        TestUtils.validateAzdoudLinkedFields(record1);
+
+        assertFalse(" has more than one records", reader.hasNext());
+        input.close();
+    }
+
     /**
      * Tests reading record type from MARCXML record.
      */
