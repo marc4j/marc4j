@@ -205,7 +205,7 @@ public class RecordImpl implements Record {
         if (tag.startsWith("LNK") && field.getTag().equals("880")) {
             final DataField df = (DataField) field;
             final Subfield link = df.getSubfield('6');
-            if (link != null && link.getData().equals(tag.substring(3))) {
+            if (link != null && link.getData().substring(0, 3).equals(tag.substring(3))) {
                 return true;
             }
         }

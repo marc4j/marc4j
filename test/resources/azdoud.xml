@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record xmlns:marc="http://www.loc.gov/MARC21/slim">
+    <leader>03438cam a2200577 i 4500</leader>
+    <controlfield tag="001">in00006816706</controlfield>
+    <controlfield tag="005">20240229122825.0</controlfield>
+    <controlfield tag="008">240213s2022    mr       b    001 0 fre d</controlfield>
+    <datafield ind1=" " ind2=" " tag="020">
+      <subfield code="a">9789920739788</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="020">
+      <subfield code="a">9920739782</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="035">
+      <subfield code="a">(OCoLC)on1420910598</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="035">
+      <subfield code="a">(OCoLC)1420910598</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="040">
+      <subfield code="a">EEM</subfield>
+      <subfield code="b">eng</subfield>
+      <subfield code="e">rda</subfield>
+      <subfield code="c">EEM</subfield>
+      <subfield code="d">EEM</subfield>
+      <subfield code="d">UtOrBLW</subfield>
+    </datafield>
+    <datafield ind1="1" ind2=" " tag="041">
+      <subfield code="a">fre</subfield>
+      <subfield code="a">ber</subfield>
+      <subfield code="b">ber</subfield>
+      <subfield code="b">fre</subfield>
+    </datafield>
+    <datafield ind1="1" ind2=" " tag="100">
+      <subfield code="a">Azdoud, Driss,</subfield>
+      <subfield code="e">author.</subfield>
+      <subfield code="0">http://id.loc.gov/authorities/names/no2011183558</subfield>
+    </datafield>
+    <datafield ind1="1" ind2="0" tag="245">
+      <subfield code="6">880-01</subfield>
+      <subfield code="a">Choix de proverbs amazighes /</subfield>
+      <subfield code="c">Driss Azdoud = Timstiyin n wanziw n tmazig̳t / Aẓḍuḍ Dris.</subfield>
+    </datafield>
+    <datafield ind1="3" ind2="1" tag="246">
+      <subfield code="6">880-02</subfield>
+      <subfield code="a">Timstiyin n wanziw n tmazig̳t</subfield>
+    </datafield>
+    <datafield ind1="3" ind2=" " tag="246">
+      <subfield code="a">Timstiyin n wanziw n tmaziɣt</subfield>
+    </datafield>
+    <datafield ind1="1" ind2="4" tag="246">
+      <subfield code="6">880-03</subfield>
+      <subfield code="a">Tadla n wanziwn imazig̳n =</subfield>
+      <subfield code="b">Choix de proverbs amazighes</subfield>
+    </datafield>
+    <datafield ind1="3" ind2=" " tag="246">
+      <subfield code="a">Tadla n wanziwn imaziɣn</subfield>
+    </datafield>
+    <datafield ind1=" " ind2="1" tag="264">
+      <subfield code="a">[Morocco] :</subfield>
+      <subfield code="b">Institut Royal de la Culture Amazighe,</subfield>
+      <subfield code="c">[2022]</subfield>
+    </datafield>
+    <datafield ind1=" " ind2="3" tag="264">
+      <subfield code="a">Rabat :</subfield>
+      <subfield code="b">Editions &amp; Impressions Bouregreg</subfield>
+    </datafield>
+    <datafield ind1="1" ind2="0" tag="880">
+      <subfield code="6">245-01</subfield>
+      <subfield code="a">Choix de proverbs amazighes /</subfield>
+      <subfield code="c">Driss Azdoud = ⵜⵉⵎⵙⵜⵉⵢⵉⵏ ⵏ ⵡⴰⵏⵣⵉⵡ ⵏ ⵜⵎⴰⵣⵉⵖⵜ / ⴰⵥⴹⵓⴹ ⴷⵔⵉⵙ.</subfield>
+    </datafield>
+    <datafield ind1="3" ind2="1" tag="880">
+      <subfield code="6">246-02</subfield>
+      <subfield code="a">ⵜⵉⵎⵙⵜⵉⵢⵉⵏ ⵏ ⵡⴰⵏⵣⵉⵡ ⵏ ⵜⵎⴰⵣⵉⵖⵜ</subfield>
+    </datafield>
+    <datafield ind1="1" ind2="4" tag="880">
+      <subfield code="6">246-03</subfield>
+      <subfield code="a">ⵜⴰⴷⵍⴰ ⵏ ⵡⴰⵏⵣⵉⵡⵏ ⵉⵎⴰⵣⵉⵖⵏ =</subfield>
+      <subfield code="b">Choix de proverbs amazighes</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="994">
+      <subfield code="a">C0</subfield>
+      <subfield code="b">EEM</subfield>
+    </datafield>
+  </record>
+</collection>
