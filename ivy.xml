@@ -6,6 +6,7 @@
     </configurations>
 
     <dependencies>
+        <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" />
         <dependency org="junit" name="junit" rev="4.11+" conf="test->default"/>
         <!-- https://mvnrepository.com/artifact/xmlunit/xmlunit -->
         <dependency org="xmlunit" name="xmlunit" rev="1.6" conf="test->default"/>

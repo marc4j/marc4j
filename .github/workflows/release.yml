@@ -1,0 +1,53 @@
+name: Run Ant Script with GPG Signing
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: "release environment"   # Specify the environment here
+
+    steps:
+      # Check out the code from the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up Java for Ant
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '8'
+
+      # Install Ant and gpg and curl
+      - name: Install Ant
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ant gnupg2 curl
+
+      # Import the GPG key from GitHub secrets
+      - name: Import GPG key
+        env:
+          GPG_SECRET_KEY_B64: ${{ secrets.GPG_SECRET_KEY_B64 }}
+          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          echo "passphrase hash = $(echo -n "$GPG_PASSPHRASE" | sha256sum)"
+          echo "privateb64key hash = $(echo -n "$GPG_SECRET_KEY_B64" | base64 --decode | sha256sum)"
+          echo "privatekey hash = $(echo -n "$GPG_SECRET_KEY" | sha256sum)"
+          echo "$GPG_SECRET_KEY_B64" | base64 --decode | gpg --batch --yes --pinentry=loopback --passphrase "$GPG_PASSPHRASE" --import
+          echo "imported"
+          gpg --list-secret-keys
+          echo "listed"
+
+      # Run the Ant script to sign the artifacts
+      - name: Run Ant Script for creating, signing, uploading, and promoting Artifacts
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_USERNAME_PASSWORD: ${{ secrets.SONATYPE_USERNAME_PASSWORD }}
+          MARC4J_ORG_PROFILEID: ${{ vars.MARC4J_ORG_PROFILEID }}
+        run: |
+          ant -f build.xml -Dgpg-passphrase="${GPG_PASSPHRASE}" -Dsonatypeuserpassword="${SONATYPE_USERNAME_PASSWORD}" -Dmarc4j.org.profileId.sonatype.org="${MARC4J_ORG_PROFILEID}" dist sonatype-release
+

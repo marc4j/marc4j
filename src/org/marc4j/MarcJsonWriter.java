@@ -189,7 +189,10 @@ public class MarcJsonWriter implements MarcWriter {
 
                 indent(buf, "\n                ");
 
-                if ((sf.getCode() < 'a' || 'z' < sf.getCode()) && (sf.getCode() < '0' || '9' < sf.getCode())) {
+                if (!((sf.getCode() >= 'a' && sf.getCode() <= 'z') ||
+                      (sf.getCode() >= '0' && sf.getCode() <= '9') ||
+                      (sf.getCode() >= 'A' && sf.getCode() <= 'Z') ) )
+                {
                     throw new MarcException("Invalid code: " + sf.getCode());
                 }
 
