@@ -37,6 +37,7 @@ public class MarcJsonWriter implements MarcWriter {
 
     private boolean normalize = false;
 
+    private static String localSubfields = " ! \" # $ % & ' ( ) * + , - . / : ; < = > ? { } _ ^ ` ~ [ ] \\ ";
     /**
      * Creates a {@link MarcJsonWriter} with the supplied {@link OutputStream}.
      *
@@ -191,7 +192,8 @@ public class MarcJsonWriter implements MarcWriter {
 
                 if (!((sf.getCode() >= 'a' && sf.getCode() <= 'z') ||
                       (sf.getCode() >= '0' && sf.getCode() <= '9') ||
-                      (sf.getCode() >= 'A' && sf.getCode() <= 'Z') ) )
+                      (sf.getCode() >= 'A' && sf.getCode() <= 'Z') ||
+                      (sf.getCode() != ' ' && localSubfields.indexOf(sf.getCode()) >= 0) ))
                 {
                     throw new MarcException("Invalid code: " + sf.getCode());
                 }

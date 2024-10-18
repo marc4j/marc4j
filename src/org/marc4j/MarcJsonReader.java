@@ -34,6 +34,8 @@ public class MarcJsonReader implements MarcReader {
 
     public final static int SUBFIELD_ARRAY = 5;
 
+    private static String localSubfields = " ! \" # $ % & ' ( ) * + , - . / : ; < = > ? { } _ ^ ` ~ [ ] \\ ";
+
     /**
      * Creates a MarcJsonReader from a supplied {@link InputStream}
      * 
@@ -178,7 +180,8 @@ public class MarcJsonReader implements MarcReader {
                     } else if (inArray == FIELDS_ARRAY && mname.matches("[A-Z0-9][A-Z0-9][A-Z0-9]")) {
                         cf = factory.newControlField(mname, value);
                         record.addVariableField(cf);
-                    } else if (inArray == SUBFIELDS_ARRAY && mname.matches("[a-z0-9]")) {
+                    } else if (inArray == SUBFIELDS_ARRAY && 
+                        (mname.matches("[a-z0-9A-Z]") || (localSubfields.contains(mname) && mname.length() == 1))) { 
                         sf = factory.newSubfield(mname.charAt(0), value);
                         df.addSubfield(sf);
                     } else if (inArray == CONTROLFIELD_ARRAY && mname.equals("tag")) {
