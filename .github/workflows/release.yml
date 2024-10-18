@@ -2,7 +2,8 @@ name: Run Ant Script with GPG Signing
 
 on:
   release:
-    types: [created]
+    types: 
+      - published
 
 jobs:
   build:
