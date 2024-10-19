@@ -46,6 +46,7 @@
         <pathelement location="test/resources"/>
         <fileset dir="${lib.dir}">
             <include name="**/*.jar" />
+            <exclude name="**/ant*.jar" />
         </fileset>
     </path>
 
@@ -346,8 +347,9 @@
     </target>
 
     <!-- Macro definition for executing the command -->
-    <macrodef name="execute-check-closed">
+    <macrodef name="execute-check-state">
         <attribute name="returnProperty"/>
+        <attribute name="expectedState"/>
         <sequential>
             <local name="commandOutput" />
             <exec executable="curl" outputproperty="commandOutput" failonerror="false">
@@ -361,7 +363,7 @@
                 <arg value="https://oss.sonatype.org/service/local/staging/repository/${repositoryId}" />
             </exec>
             <condition property="@{returnProperty}">
-                <contains string="${commandOutput}" substring="&lt;type&gt;closed&lt;/type&gt;" />
+                <contains string="${commandOutput}" substring="&lt;type&gt;@{expectedState}&lt;/type&gt;" />
             </condition>
         <!--    <echo message="output = ${commandOutput}"/> -->
         </sequential>
@@ -400,22 +402,22 @@
             <sequential>
             <if> 
                 <not>
-                    <isset property="desired.output.met"/>
+                    <isset property="closedResponse"/>
                 </not>
                 <then>
                     <echo message="sleeping ..." />
                     <sleep seconds="15" />
                     <echo message="Executing command @{loop-count} time ..." />
-                    <execute-check-closed returnProperty="desired.output.met" />
-                    <echo if:set="desired.output.met" message="repository ${repositoryId} closed" />
-                    <echo unless:set="desired.output.met" message="repository ${repositoryId} not closed yet" />
+                    <execute-check-state returnProperty="closedResponse" expectedState="closed" />
+                    <echo if:set="closedResponse" message="repository ${repositoryId} closed" />
+                    <echo unless:set="closedResponse" message="repository ${repositoryId} not closed yet" />
                 </then>
             </if>
             </sequential>
         </for>
 
         <!-- Check if the condition was met before printing -->
-        <fail unless="desired.output.met" message="Sonatype repository not closed after 10 retries." />
+        <fail unless="closedResponse" message="Sonatype repository not closed after 10 retries." />
 
         <echo message="Condition met!" />
     </target>
@@ -460,18 +462,28 @@
 
     <target name="sonatype-release" depends="sign,upload,promote" if="release.is.ready" >
         <echo message="Checking for successful release of bundle-${version}.jar from ${repositoryId} " />
-        <exec executable="curl"  outputproperty="releaseOutput" errorproperty="releaseErrorOutput" >
-            <!-- Specify the URL you want to request -->
-            <arg value="--user" />
-            <arg value="${sonatypeuserpassword}" />
-            <arg value="https://oss.sonatype.org/service/local/lucene/search?g=org.marc4j&amp;a=marc4j.jar&amp;v=${version}" />
-        </exec>
-        <condition property="release.success">
-            <contains string="${releasedOutput}" substring="&lt;totalCount&gt;1&lt;/totalCount&gt;" />
-        </condition>
-        <fail message="Release to sonatype didn't succeed: ${line.separator}${releaseErrorOutput}" unless="release.success" />
-        <echo message="Release response = ${releaseOutput}" />
+        <for list="1,2,3,4,5,6,7,8,9,10" param="loop-count" >
+            <sequential>
+            <if>
+                <not>
+                    <isset property="releasedResponse"/>
+                </not>
+                <then>
+                    <echo message="sleeping ..." />
+                    <sleep seconds="15" />
+                    <echo message="Executing command @{loop-count} time ..." />
+                    <execute-check-state returnProperty="releasedResponse" expectedState="released" />
+                    <echo if:set="releasedResponse" message="repository ${repositoryId} released" />
+                    <echo unless:set="releasedResponse" message="repository ${repositoryId} not closed yet" />
+                </then>
+            </if>
+            </sequential>
+        </for>
 
+        <!-- Check if the condition was met before printing -->
+        <fail unless="releasedResponse" message="Sonatype repository not released after 10 retries." />
+
+        <echo message="Release to sonatype successful!" />
     </target>
 
 

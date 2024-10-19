@@ -21,9 +21,9 @@ jobs:
             distribution: 'adopt' # See 'Supported distributions' for available options
             java-version: '8'
             java-package: jdk
-    # Install Ant and gpg and curl
+    # Install Ant 
     - name: Install Ant
       run: |
         sudo apt-get update
-        sudo apt-get install -y ant gnupg2 curl
+        sudo apt-get install -y ant 
     - run: ant -noinput -buildfile build.xml dist test
