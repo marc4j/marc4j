@@ -294,7 +294,7 @@ public class DeweyCallNumber extends AbstractCallNumber {
                 if (keyBuf.length() > 0) {
                     keyBuf.append(' ');
                 }
-                Utils.appendNumericallySortable(keyBuf, cutter);
+                keyBuf.append(cutter);
             }
             if (cutterSuffix != null) {
                 if (keyBuf.length() > 0) {
