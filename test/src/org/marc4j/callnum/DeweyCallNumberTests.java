@@ -103,6 +103,9 @@ public class DeweyCallNumberTests
         validCallNums.add("111.12 .I39");            // fraction in class, space period
         validCallNums.add("111.123 I39");            // space but no period before cutter
         validCallNums.add("111.134Q39");             // no period or space before cutter
+        validCallNums.add("222 .K123");              // cutter with different digit lengths
+        validCallNums.add("222 .K45");               // cutter with different digit lengths
+        validCallNums.add("222 .K7");                // cutter with different digit lengths
         validCallNums.add("322.44 .F816 V.1 1974");  // cutterSuffix - volume and year
         validCallNums.add("322.45 .R513 1957");      // cutterSuffix year
         validCallNums.add("323 .A512RE NO.23-28");   // cutterSuffix no.
