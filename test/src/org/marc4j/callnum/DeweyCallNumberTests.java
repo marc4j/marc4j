@@ -111,6 +111,9 @@ public class DeweyCallNumberTests
         validCallNums.add("324.54 .I39 F");          // letter with space
         validCallNums.add("324.548 .C425R");         // letter without space
         validCallNums.add("324.6 .A75CUA");          // letters without space
+        validCallNums.add("792.0944 T374 v.1");      // long cutter
+        validCallNums.add("792.0944 T374 v.2");      // long cutter
+        validCallNums.add("792.0944 T3741");         // long cutter
 
         invalidCallNums = new ArrayList<String>();
         invalidCallNums.add("");

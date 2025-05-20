@@ -10,3 +10,6 @@ marc4j.iml
 generated-src
 bin
 /.settings/
+
+marc4j.jar
+.vscode
