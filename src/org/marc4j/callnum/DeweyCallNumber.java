@@ -120,7 +120,8 @@ public class DeweyCallNumber extends AbstractCallNumber {
     //TODO: support cutter with space-then-letter
     //public static final String CUTTER_REGEX = "[A-Z]\\d{1,3} *(?:[A-Z]+)?";
     // public static final String CUTTER_REGEX = "[A-Z]\\d{1,3}(?:[A-Z]+)?";
-    public static final String CUTTER_REGEX = "[A-Z]\\d+(?:[A-Z]+)?";
+    // public static final String CUTTER_REGEX = "[A-Z]\\d+(?:[A-Z]+)?";
+    public static final String CUTTER_REGEX = "[A-Z]\\d+(?:[A-Za-z]+)?";
 
     public static Pattern cutterPattern = Pattern.compile(" *\\.?(" + CUTTER_REGEX + ") *(.+)?");
 
