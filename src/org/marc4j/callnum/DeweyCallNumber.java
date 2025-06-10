@@ -121,7 +121,7 @@ public class DeweyCallNumber extends AbstractCallNumber {
     //public static final String CUTTER_REGEX = "[A-Z]\\d{1,3} *(?:[A-Z]+)?";
     // public static final String CUTTER_REGEX = "[A-Z]\\d{1,3}(?:[A-Z]+)?";
     // public static final String CUTTER_REGEX = "[A-Z]\\d+(?:[A-Z]+)?";
-    public static final String CUTTER_REGEX = "(?<CutterMain>[A-Z]\\d+)(?<CutterExtra>[A-Za-z]+)?";
+    public static final String CUTTER_REGEX = "(?<CutterMain>[A-Z]\\d+)(?<CutterExtra>[A-Za-z0-9:]+)?";
 
     public static Pattern cutterPattern = Pattern.compile(" *\\.?(?<Cutter>" + CUTTER_REGEX + ") *(?<CutterSuffix>.+)?");
 
