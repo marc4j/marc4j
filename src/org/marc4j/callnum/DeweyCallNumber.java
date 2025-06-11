@@ -204,7 +204,7 @@ public class DeweyCallNumber extends AbstractCallNumber {
                 cutter = mCut.group("CutterMain");
                 String cutterExtra = mCut.group("CutterExtra");
                 if (cutterExtra != null) {
-                    cutter += cutterExtra.toLowerCase();
+                    cutter += cutterExtra.toUpperCase();
                 }
                 cutterSuffix = mCut.group("CutterSuffix");
             }
