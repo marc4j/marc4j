@@ -35,5 +35,4 @@ public class LeaderTest extends TestCase {
         leader.unmarshal("00714cam a2200205 a 450");
         assertEquals("00714cam a2200205 a 450", leader.toString());
     }
-
 }
