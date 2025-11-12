@@ -224,7 +224,7 @@ public class MarcStreamReader implements MarcReader {
                     lengths[i] = Integer.parseInt(tmp);
                 } catch (final NumberFormatException e) {
                     throw new MarcException(String.format(
-                      "an number parsing error while reading directory (length of %dth element, tag: %s): '%s'",
+                      "a number parsing error occured while reading directory (length of %dth element, tag: %s): '%s'",
                       i, tags[i], tmp
                     ), e);
                 }
@@ -236,7 +236,7 @@ public class MarcStreamReader implements MarcReader {
                     starts[i] = Integer.parseInt(tmp);
                 } catch (final NumberFormatException e) {
                     throw new MarcException(String.format(
-                      "an number parsing error while reading directory (start of %dth element, tag: %s): '%s'",
+                      "a number parsing error occured while reading directory (start of %dth element, tag: %s): '%s'",
                       i, tags[i], tmp
                     ), e);
                 }
