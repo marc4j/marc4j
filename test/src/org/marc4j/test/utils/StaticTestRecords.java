@@ -23,6 +23,7 @@ public class StaticTestRecords {
     public static final String RESOURCES_BRKRTEST_UTF8_MRC = "/brkrtest_UTF8.mrc";
     public static final String RESOURCES_CHABON_MRC = "/chabon.mrc";
     public static final String RESOURCES_CHABON_XML = "/chabon.xml";
+    public static final String RESOURCES_AZDOUD_XML = "/azdoud.xml";
     public static final String RESOURCES_OCLC814388508_XML = "/OCLC_814388508.xml";    
     public static final String RESOURCES_CYRILLIC_CAPITAL_E_MRC = "/cyrillic_capital_e.mrc";
     public static final String RESOURCES_GREEK_MISSING_CHARSET_MRC = "/greekmissingcharsetchange.mrc";
@@ -104,7 +105,6 @@ public class StaticTestRecords {
         sumland.addVariableField(factory.newDataField("650", ' ', '1', "a", "Magic", "v", "Fiction."));
         return sumland;
     }
-
 
     public static Record getSummerlandRecord() {
         return makeSummerlandRecord();

@@ -171,6 +171,7 @@ public class RecordIODriver {
                 System.err.printf("Exception %s record: %s -- %s\n",
                   location, (location.equals("after") ? previousControlNumber : controlNumber), re.getMessage());
                 re.printStackTrace(System.err);
+                break;
             }
             previousControlNumber = controlNumber;
 

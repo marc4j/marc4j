@@ -721,7 +721,7 @@ public class MarcPermissiveStreamReader implements MarcReader, ConverterErrorHan
             boolean doneWithDirectory = false;
             int totalOffset = 0;
             int offset = 0;
-            for (int i = 0; !doneWithDirectory; i++) {
+            for (int i = 0; offset + 14 < recordBuf.length && !doneWithDirectory; i++) {
                 final int increment = 12;
                 final int prevOffset = offset;
                 final String dirEntry = new String(recordBuf, offsetToFT, 14);
@@ -830,6 +830,9 @@ public class MarcPermissiveStreamReader implements MarcReader, ConverterErrorHan
         if (directoryLength != offsetToFT) {
             record.addError("n/a", "n/a", MarcError.MINOR_ERROR,
                     "Specified directory length not equal to actual directory length.");
+        }
+        if (size == 0) {
+            record.addError("n/a", "n/a", MarcError.MAJOR_ERROR, "Record comtains no directory or fields");
         }
 
         if (unsortedOffsets) {

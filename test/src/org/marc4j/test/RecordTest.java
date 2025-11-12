@@ -2,6 +2,7 @@ package org.marc4j.test;
 
 import org.junit.Test;
 import org.marc4j.marc.*;
+import org.marc4j.marc.Record;
 import org.marc4j.test.utils.StaticTestRecords;
 
 import java.util.List;

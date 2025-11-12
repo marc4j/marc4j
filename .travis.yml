@@ -5,4 +5,4 @@ addons:
     packages:
       ant
       ant-optional
-script: ant -Dversion="travis_CI" test
+script: ant -Dversion="travis_CI" dist test

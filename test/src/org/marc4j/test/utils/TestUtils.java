@@ -1,6 +1,7 @@
 package org.marc4j.test.utils;
 
 import org.marc4j.marc.*;
+import org.marc4j.marc.Record;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -59,6 +60,59 @@ public class TestUtils {
         assertDataFieldEquals(it.next(), "650", ' ', '1', "a", "Baseball", "v", "Fiction.");
         assertDataFieldEquals(it.next(), "650", ' ', '1', "a", "Magic", "v", "Fiction.");
         assertFalse("too many fields", it.hasNext());
+    }
+
+    public static void validateAzdoudRecord(Record record) {
+        assertEquals("leader", "03438cam a2200577 i 4500", record.getLeader().marshal());
+        Iterator<VariableField> it = record.getVariableFields().iterator();
+        assertControlFieldInRecordEquals("001", "in00006816706", it.next());
+        assertControlFieldInRecordEquals("005", "20240229122825.0", it.next());
+        assertControlFieldInRecordEquals("008", "240213s2022    mr       b    001 0 fre d", it.next());
+        assertDataFieldEquals(it.next(), "020", ' ', ' ', "a", "9789920739788");
+        assertDataFieldEquals(it.next(), "020", ' ', ' ', "a", "9920739782");
+        assertDataFieldEquals(it.next(), "035", ' ', ' ', "a", "(OCoLC)on1420910598");
+        assertDataFieldEquals(it.next(), "035", ' ', ' ', "a", "(OCoLC)1420910598");
+        assertDataFieldEquals(it.next(), "040", ' ', ' ', "a", "EEM", "b", "eng", "e", "rda", "c", "EEM", "d", "EEM", "d", "UtOrBLW");
+        assertDataFieldEquals(it.next(), "041", '1', ' ', "a", "fre", "a", "ber", "b", "ber", "b", "fre");
+        assertDataFieldEquals(it.next(), "100", '1', ' ', "a", "Azdoud, Driss,", "e", "author.", "0", "http://id.loc.gov/authorities/names/no2011183558");
+        assertDataFieldEquals(it.next(), "245", '1', '0', "6", "880-01", "a", "Choix de proverbs amazighes /", "c", "Driss Azdoud = Timstiyin n wanziw n tmazig̳t / Aẓḍuḍ Dris.");
+        assertDataFieldEquals(it.next(), "246", '3', '1', "6", "880-02", "a", "Timstiyin n wanziw n tmazig̳t");
+        assertDataFieldEquals(it.next(), "246", '3', ' ', "a", "Timstiyin n wanziw n tmaziɣt");
+        assertDataFieldEquals(it.next(), "246", '1', '4', "6", "880-03", "a", "Tadla n wanziwn imazig̳n =", "b", "Choix de proverbs amazighes");
+        assertDataFieldEquals(it.next(), "246", '3', ' ', "a", "Tadla n wanziwn imaziɣn");
+        assertDataFieldEquals(it.next(), "264", ' ', '1', "a", "[Morocco] :", "b", "Institut Royal de la Culture Amazighe,", "c", "[2022]");
+        assertDataFieldEquals(it.next(), "264", ' ', '3', "a", "Rabat :", "b", "Editions & Impressions Bouregreg");
+        assertDataFieldEquals(it.next(), "880", '1', '0', "6", "245-01", "a", "Choix de proverbs amazighes /", "c", "Driss Azdoud = ⵜⵉⵎⵙⵜⵉⵢⵉⵏ ⵏ ⵡⴰⵏⵣⵉⵡ ⵏ ⵜⵎⴰⵣⵉⵖⵜ / ⴰⵥⴹⵓⴹ ⴷⵔⵉⵙ.");
+        assertDataFieldEquals(it.next(), "880", '3', '1', "6", "246-02", "a", "ⵜⵉⵎⵙⵜⵉⵢⵉⵏ ⵏ ⵡⴰⵏⵣⵉⵡ ⵏ ⵜⵎⴰⵣⵉⵖⵜ");
+        assertDataFieldEquals(it.next(), "880", '1', '4', "6", "246-03", "a", "ⵜⴰⴷⵍⴰ ⵏ ⵡⴰⵏⵣⵉⵡⵏ ⵉⵎⴰⵣⵉⵖⵏ =", "b", "Choix de proverbs amazighes");
+        assertDataFieldEquals(it.next(), "994", ' ', ' ', "a", "C0", "b", "EEM");
+        assertFalse("too many fields", it.hasNext());
+    }
+
+    public static void validateAzdoudLinkedFields(Record record) {
+        DataField f245 = (DataField) record.getVariableField("245");
+        assertNotNull(f245);
+        assertEquals(3, f245.getSubfields().size());
+        assertEquals("Choix de proverbs amazighes /", f245.getSubfield('a').getData());
+
+        DataField kf245 = (DataField) record.getVariableField("LNK245");
+        assertNotNull(kf245);
+        assertEquals(3, kf245.getSubfields().size());
+        assertEquals("245-01", kf245.getSubfield('6').getData());
+
+        List<VariableField> lkf246 = record.getVariableFields("LNK246");
+        assertNotNull(lkf246);
+        assertEquals(2, lkf246.size());
+
+        DataField kf246_02 = (DataField) lkf246.get(0);
+        assertEquals(2, kf246_02.getSubfields().size());
+        assertEquals("246-02", kf246_02.getSubfield('6').getData());
+        assertEquals("ⵜⵉⵎⵙⵜⵉⵢⵉⵏ ⵏ ⵡⴰⵏⵣⵉⵡ ⵏ ⵜⵎⴰⵣⵉⵖⵜ", kf246_02.getSubfield('a').getData());
+        DataField kf246_03 = (DataField) lkf246.get(1);
+        assertEquals(3, kf246_03.getSubfields().size());
+        assertEquals("246-03", kf246_03.getSubfield('6').getData());
+        assertEquals("ⵜⴰⴷⵍⴰ ⵏ ⵡⴰⵏⵣⵉⵡⵏ ⵉⵎⴰⵣⵉⵖⵏ =", kf246_03.getSubfield('a').getData());
+        assertEquals("Choix de proverbs amazighes", kf246_03.getSubfield('b').getData());
     }
 
     public static void validateFreewheelingBobDylanRecord(Record record) {

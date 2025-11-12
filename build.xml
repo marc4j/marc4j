@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project  xmlns:ivy="antlib:org.apache.ivy.ant" name="marc4j" default="jar" basedir=".">
+<project  xmlns:ivy="antlib:org.apache.ivy.ant" name="marc4j" default="jar" basedir="." 
+     xmlns:if="ant:if" xmlns:unless="ant:unless">
 
     <target name="init">
         <tstamp />
@@ -7,26 +8,29 @@
     </target>
 
     <property file="build.properties" />
+    <property environment="env" /> 
 
     <tstamp>
         <format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss Z" timezone="GMT" />
     </tstamp>
 
-        <target name="prepare" depends="init,setup-ivy" unless="prepared">
+    <property name="marc4j.org.profileId.sonatype.org" value="33ba7afe3fa581" />
+
+    <target name="prepare" depends="init,setup-ivy" unless="prepared">
         <mkdir dir="${build.dir}" />
         <mkdir dir="${build.classes.dir}"/>
         <mkdir dir="${build.test-classes.dir}"/>
         <mkdir dir="${build.generated-src.dir}"/>
         <mkdir dir="${lib.dir}"/>
         <ivy:retrieve />
-  <!--      <property file="${user.home}/gnupg.properties"/>
-        <taskdef resource="org/apache/commons/openpgp/ant/antlib.xml">
+        <!-- Add the downloaded ant-contrib JAR to the classpath -->
+        <taskdef resource="net/sf/antcontrib/antlib.xml">
             <classpath>
-                <pathelement location="${user.home}/.m2/repository/org/bouncycastle/bcprov-jdk12/130/bcprov-jdk12-130.jar"/>
-                <pathelement location="${user.home}/.m2/repository/org/apache/commons/commons-openpgp/1.0-SNAPSHOT/commons-openpgp-1.0-SNAPSHOT.jar"/>
-                <pathelement location="${user.home}/.m2/repository/org/bouncycastle/bcpg-jdk12/130/bcpg-jdk12-130.jar"/>
+                <fileset dir="lib">
+                    <include name="ant-contrib-*.jar" />
+                </fileset>
             </classpath>
-        </taskdef><condition property="gpg.dir" value="${user.home}/AppData/Roaming/gnupg"><os family="windows"/></condition><property name="gpg.dir" location="${user.home}/.gnupg"/>         -->
+        </taskdef>
         <property name="prepared" value="true"/>
     </target>
 
@@ -42,6 +46,7 @@
         <pathelement location="test/resources"/>
         <fileset dir="${lib.dir}">
             <include name="**/*.jar" />
+            <exclude name="**/ant*.jar" />
         </fileset>
     </path>
 
@@ -173,12 +178,15 @@
         </delete>
         <delete dir="${build.dir}" />
     </target>
+
     <target name="distclean" depends="clean">
         <delete dir="${lib.dir}"/>
         <delete dir="${ivy.jar.dir}"/>
 
     </target>
+
     <target name="dist" depends="jar,javadoc" unless="dist.already.run" >
+        <delete dir="${dist.dir}" includes="*" />
         <property name="prefix" value="${project.name}-${version}" />
         <property name="tmp.dir" value="${dist.dir}/tmp" />
         <property name="tmp.arc.dir" value="${tmp.dir}/${prefix}" />
@@ -267,47 +275,48 @@
         <property name="dist.already.run" value="true" />
     </target>
 
-    <target name="sign" depends="dist" if="gpg.exe" unless="is.snapshot" >
+    <target name="sign" depends="dist,release-ready" if="release.is.ready" unless="is.snapshot" >
         <delete dir="${dist.dir}" includes="*.asc" />
-        <input message="Enter Pass Phrase for Signing" addproperty="passphrase" >
-<!--            <handler classname="org.apache.tools.ant.input.SecureInputHandler" /> -->
-        </input>
-        <!--  - -batch -a - -passphrase "ENTERED_PASSPHRASE" - -detach-sign $file -->
-        <exec executable="${gpg.exe}" dir="${dist.dir}" searchpath="true" >
+        <echo message="Signing jar files using provided passphrase" />
+        <exec executable="gpg" dir="${dist.dir}" searchpath="true" >
             <arg value="--batch" />
             <arg value="-a" />
+            <arg value="--pinentry-mode=loopback" />
             <arg value="--passphrase" />
-            <arg value="${passphrase}" />
+            <arg value="${gpg-passphrase}" />
             <arg value="--detach-sign" />
             <arg value="${jar.name}" />
         </exec>
-        <exec executable="C:/Program Files (x86)/GNU/GnuPG/pub/gpg" dir="${dist.dir}" searchpath="true" >
-            <env key="PATH" path="C:/Program Files (x86)/GNU/GnuPG/pub" />
+        <exec executable="gpg" dir="${dist.dir}" searchpath="true" >
             <arg value="--batch" />
             <arg value="-a" />
+            <arg value="--pinentry-mode=loopback" />
             <arg value="--passphrase" />
-            <arg value="${passphrase}" />
+            <arg value="${gpg-passphrase}" />
             <arg value="--detach-sign" />
             <arg value="${jar.sources.name}" />
         </exec>
-        <exec executable="C:/Program Files (x86)/GNU/GnuPG/pub/gpg" dir="${dist.dir}" searchpath="true" >
-            <env key="PATH" path="C:/Program Files (x86)/GNU/GnuPG/pub" />
+        <exec executable="gpg" dir="${dist.dir}" searchpath="true" >
             <arg value="--batch" />
             <arg value="-a" />
+            <arg value="--pinentry-mode=loopback" />
             <arg value="--passphrase" />
-            <arg value="${passphrase}" />
+            <arg value="${gpg-passphrase}" />
             <arg value="--detach-sign" />
             <arg value="${jar.javadoc.name}" />
         </exec>
-        <exec executable="C:/Program Files (x86)/GNU/GnuPG/pub/gpg" dir="${dist.dir}" searchpath="true" >
-            <env key="PATH" path="C:/Program Files (x86)/GNU/GnuPG/pub" />
+        <exec executable="gpg" dir="${dist.dir}" searchpath="true" >
             <arg value="--batch" />
             <arg value="-a" />
+            <arg value="--pinentry-mode=loopback" />
             <arg value="--passphrase" />
-            <arg value="${passphrase}" />
+            <arg value="${gpg-passphrase}" />
             <arg value="--detach-sign" />
             <arg value="${project.name}-${version}.pom" />
         </exec>
+        <available file="${dist.dir}/${jar.name}.asc" property="sign.successful" />
+        <fail unless="sign.successful" message="failure signing jar files release to sonatype will fail" />
+        <echo message="Creating uploadable bundle bundle-${version}.jar" />
         <jar jarfile="${dist.dir}/bundle-${version}.jar" >
             <fileset dir="${dist.dir}">
                 <include name="marc4j*.jar" />
@@ -316,6 +325,167 @@
             </fileset>
         </jar>
     </target>
+
+    <target name="upload" depends="prepare" if="release.is.ready" unless="is.snapshot" >
+        <echo message="Uploading bundle bundle-${version}.jar" />
+        <exec executable="curl"  outputproperty="uploadOutput" errorproperty="uploadErrorOutput" >
+            <!-- Specify the URL you want to request -->
+            <arg value="--user" />
+            <arg value="${sonatypeuserpassword}" />
+            <!-- form data specify bundle file just created  -->
+            <arg value="--request" />
+            <arg value="POST" />
+            <arg value="--form" />
+            <arg value="file=@${dist.dir}/bundle-${version}.jar" />
+            <arg value="https://oss.sonatype.org/service/local/staging/bundle_upload" />
+        </exec>
+        <echo message="bundle uri = ${uploadOutput}" />
+        <!-- <echo message="error = ${uploadErrorOutput}" /> -->
+        <!-- Use the regexp task to extract the desired value -->
+        <propertyregex property="repositoryId" input="${uploadOutput}" regexp=".*repositories/([a-zA-Z0-9-]+).*" select="\1" />
+        <fail message="Upload to sonatype didn't succeed: ${line.separator}${uploadErrorOutput}" unless="repositoryId" />
+    </target>
+
+    <!-- Macro definition for executing the command -->
+    <macrodef name="execute-check-state">
+        <attribute name="returnProperty"/>
+        <attribute name="expectedState"/>
+        <sequential>
+            <local name="commandOutput" />
+            <exec executable="curl" outputproperty="commandOutput" failonerror="false">
+                <arg value="-s" />
+                <arg value="-u" />
+                <arg value="${sonatypeuserpassword}" />
+                <arg value="-H" />
+                <arg value="Content-Type: application/xml" />
+                <arg value="-X" />
+                <arg value="GET" />
+                <arg value="https://oss.sonatype.org/service/local/staging/repository/${repositoryId}" />
+            </exec>
+            <condition property="@{returnProperty}">
+                <contains string="${commandOutput}" substring="&lt;type&gt;@{expectedState}&lt;/type&gt;" />
+            </condition>
+        <!--    <echo message="output = ${commandOutput}"/> -->
+        </sequential>
+    </macrodef>
+
+    <macrodef name="finish-drop-promote">
+        <attribute name="command"/>
+        <attribute name="message"/>
+        <attribute name="verbose" default="-s" />
+        <sequential>
+            <echo message="@{message}" />
+            <local name="commandOutput" />
+            <local name="commandErrorOutput" />
+            <exec executable="curl"  outputproperty="commandOutput" errorproperty="commandErrorOutput" >
+                <arg value="@{verbose}" />
+                <arg value="--user" />
+                <arg value="${sonatypeuserpassword}" />
+                <arg value="--request" />
+                <arg value="POST" />
+                <arg value="-H" />
+                <arg value="Content-Type: application/json"  />
+                <arg value="-d" />
+                <arg value='{"data": {"stagedRepositoryId": "${repositoryId}", "description": "Automatically Uploaded repository"}}' />
+                <arg value="https://oss.sonatype.org/service/local/staging/profiles/${marc4j.org.profileId.sonatype.org}/@{command}" />
+            </exec>
+            <echo message="@{command} response = ${commandOutput}" />
+        </sequential>
+    </macrodef>
+           
+    <target name="close-staging-repo" if="repositoryId" unless="is.snapshot" >
+        <finish-drop-promote command="finish" message="Forcing staging repository to close with finish" verbose="--verbose" />
+    </target>
+
+    <target name="wait-closed"  if="repositoryId" unless="is.snapshot" >
+        <for list="1,2,3,4,5,6,7,8,9,10" param="loop-count" >
+            <sequential>
+            <if> 
+                <not>
+                    <isset property="closedResponse"/>
+                </not>
+                <then>
+                    <echo message="sleeping ..." />
+                    <sleep seconds="15" />
+                    <echo message="Executing command @{loop-count} time ..." />
+                    <execute-check-state returnProperty="closedResponse" expectedState="closed" />
+                    <echo if:set="closedResponse" message="repository ${repositoryId} closed" />
+                    <echo unless:set="closedResponse" message="repository ${repositoryId} not closed yet" />
+                </then>
+            </if>
+            </sequential>
+        </for>
+
+        <!-- Check if the condition was met before printing -->
+        <fail unless="closedResponse" message="Sonatype repository not closed after 10 retries." />
+
+        <echo message="Condition met!" />
+    </target>
+
+    <target name="promote" depends="close-staging-repo,wait-closed"  if="repositoryId" unless="is.snapshot" >
+        <finish-drop-promote command="promote" message="Promoting staging repository ${repositoryId} to close with promote" verbose="--verbose" />
+    </target>
+
+    <target name="release-ready" depends="prepare" unless="release.is.ready" >
+        <available file="gpg"  filepath="${env.PATH}" property="has-gpg" />
+        <available file="curl"  filepath="${env.PATH}" property="has-curl" />
+        <if>
+            <and>
+                <not>
+                    <isset property="is.snapshot" />
+                </not>
+                <isset property="sonatypeuserpassword"   />
+                <isset property="gpg-passphrase" />
+                <isset property="has-gpg" />
+                <isset property="has-curl" />
+                <isset property="marc4j.org.profileId.sonatype.org" />
+            </and>
+            <then>
+                <property name="release.is.ready" value="true" />
+            </then>
+            <else>
+                <echo if:set="is.snapshot"                            message="ERROR: current state is snapshot" level="error" />
+                <echo unless:set="sonatypeuserpassword"               message="ERROR: sonatype username and password not provided" level="error" />
+                <echo if:blank="${sonatypeuserpassword}"              message="ERROR: sonatype username and password is blank" level="error" />
+                <echo unless:set="gpg-passphrase"                     message="ERROR: gpg passphrase not provided" level="error" />
+                <echo if:blank="${gpg-passphrase}"                    message="ERROR: gpg passphrase is blank" level="error" />
+                <echo unless:set="has-gpg"                            message="ERROR: program gpg not found in PATH" level="error" />
+                <echo unless:set="has-curl"                           message="ERROR: program curl not found in PATH" level="error" />
+                <echo unless:set="marc4j.org.profileId.sonatype.org"  message="ERROR: sonatype profileId not provided" level="error" />
+                <echo if:blank="${marc4j.org.profileId.sonatype.org}" message="ERROR: sonatype profileId is blank" level="error" />
+
+                <fail message="required values for a sonatype release not all defined" />
+            </else>
+        </if>
+    
+    </target> 
+
+    <target name="sonatype-release" depends="sign,upload,promote" if="release.is.ready" >
+        <echo message="Checking for successful release of bundle-${version}.jar from ${repositoryId} " />
+        <for list="1,2,3,4,5,6,7,8,9,10" param="loop-count" >
+            <sequential>
+            <if>
+                <not>
+                    <isset property="releasedResponse"/>
+                </not>
+                <then>
+                    <echo message="sleeping ..." />
+                    <sleep seconds="15" />
+                    <echo message="Executing command @{loop-count} time ..." />
+                    <execute-check-state returnProperty="releasedResponse" expectedState="released" />
+                    <echo if:set="releasedResponse" message="repository ${repositoryId} released" />
+                    <echo unless:set="releasedResponse" message="repository ${repositoryId} not closed yet" />
+                </then>
+            </if>
+            </sequential>
+        </for>
+
+        <!-- Check if the condition was met before printing -->
+        <fail unless="releasedResponse" message="Sonatype repository not released after 10 retries." />
+
+        <echo message="Release to sonatype successful!" />
+    </target>
+
 
     <property name="ivy.install.version" value="2.5.0" />
     <property name="ivy.jar.dir" value="${basedir}/ivy" />
