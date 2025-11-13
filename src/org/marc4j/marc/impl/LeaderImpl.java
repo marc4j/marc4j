@@ -330,7 +330,8 @@ public class LeaderImpl implements Leader {
                 setBaseAddressOfData(0);
             }
             setImplDefined2(ldr.substring(17, 20).toCharArray());
-            setEntryMap(ldr.substring(20, 24).toCharArray());
+            String entryMap = ldr.length() == 24 ? ldr.substring(20, 24) : ldr.substring(20);
+            setEntryMap(entryMap.toCharArray());
         } catch (final NumberFormatException e) {
             throw new RuntimeException("Unable to parse leader", e);
         }

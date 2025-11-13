@@ -144,9 +144,11 @@ public class MarcStreamReader implements MarcReader {
             input.readFully(byteArray);
 
             final int recordLength = parseRecordLength(byteArray);
-            final byte[] recordBuf = new byte[recordLength - 24];
-            input.readFully(recordBuf);
-            parseRecord(record, byteArray, recordBuf, recordLength);
+            if (recordLength > 24) {
+                final byte[] recordBuf = new byte[recordLength - 24];
+                input.readFully(recordBuf);
+                parseRecord(record, byteArray, recordBuf, recordLength);
+            }
             return record;
         } catch (final EOFException e) {
             throw new MarcException("Premature end of file encountered", e);
@@ -169,9 +171,9 @@ public class MarcStreamReader implements MarcReader {
             parseLeader(ldr, byteArray);
             directoryLength = ldr.getBaseAddressOfData() - (24 + 1);
         } catch (final IOException e) {
-            throw new MarcException("error parsing leader with data: " + new String(byteArray), e);
+            throw new MarcException("error parsing leader with data: '" + new String(byteArray) + "'", e);
         } catch (final MarcException e) {
-            throw new MarcException("error parsing leader with data: " + new String(byteArray), e);
+            throw new MarcException("error parsing leader with data: '" + new String(byteArray) + "'", e);
         }
 
         // if MARC 21 then check encoding
@@ -189,8 +191,11 @@ public class MarcStreamReader implements MarcReader {
 
         record.setLeader(ldr);
 
-        if (directoryLength % 12 != 0) {
-            throw new MarcException("invalid directory");
+        if (directoryLength < 0 || directoryLength % 12 != 0) {
+            throw new MarcException("invalid directory length: " + directoryLength
+              + ", leader: '" + new String(byteArray) + "'"
+              + ", base address of data (pos. 12-16): " + ldr.getBaseAddressOfData()
+              );
         }
 
         final DataInputStream inputrec = new DataInputStream(new ByteArrayInputStream(recordBuf));
@@ -215,12 +220,26 @@ public class MarcStreamReader implements MarcReader {
 
                 inputrec.readFully(length);
                 tmp = new String(length);
-                lengths[i] = Integer.parseInt(tmp);
+                try {
+                    lengths[i] = Integer.parseInt(tmp);
+                } catch (final NumberFormatException e) {
+                    throw new MarcException(String.format(
+                      "a number parsing error occured while reading directory (length of %dth element, tag: %s): '%s'",
+                      i, tags[i], tmp
+                    ), e);
+                }
 
                 inputrec.readFully(start);
 
                 tmp = new String(start);
-                starts[i] = Integer.parseInt(tmp);
+                try {
+                    starts[i] = Integer.parseInt(tmp);
+                } catch (final NumberFormatException e) {
+                    throw new MarcException(String.format(
+                      "a number parsing error occured while reading directory (start of %dth element, tag: %s): '%s'",
+                      i, tags[i], tmp
+                    ), e);
+                }
                 unsortedStartIndex.put(starts[i], i);
             }
 
@@ -266,7 +285,7 @@ public class MarcStreamReader implements MarcReader {
                 throw new MarcException("expected record terminator");
             }
         } catch (final IOException e) {
-            throw new MarcException("an error occured reading input", e);
+            throw new MarcException("an error occured reading input" + new String(recordBuf), e);
         }
     }
 
@@ -351,20 +370,20 @@ public class MarcStreamReader implements MarcReader {
     }
 
     private int parseRecordLength(final byte[] leaderData) throws IOException {
-        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), "ISO-8859-1");
+        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), Encoding.ISO8859_1.getStandardName());
         int length = -1;
         final char[] tmp = new char[5];
         isr.read(tmp);
         try {
             length = Integer.parseInt(new String(tmp));
         } catch (final NumberFormatException e) {
-            throw new MarcException("unable to parse record length", e);
+            throw new MarcException("unable to parse record length: " + new String(tmp) + ", leader: '" + new String(leaderData) + "'", e);
         }
         return length;
     }
 
     private void parseLeader(final Leader ldr, final byte[] leaderData) throws IOException {
-        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), "ISO-8859-1");
+        final InputStreamReader isr = new InputStreamReader(new ByteArrayInputStream(leaderData), Encoding.ISO8859_1.getStandardName());
         char[] tmp = new char[5];
         isr.read(tmp);
         // Skip over bytes for record length, If we get here, its already been
@@ -389,7 +408,11 @@ public class MarcStreamReader implements MarcReader {
         try {
             ldr.setIndicatorCount(Integer.parseInt(String.valueOf(indicatorCount)));
         } catch (final NumberFormatException e) {
-            throw new MarcException("unable to parse indicator count", e);
+            if (indicatorCount == ' ') {
+                ldr.setIndicatorCount(2);
+            } else {
+                throw new MarcException("unable to parse indicator count", e);
+            }
         }
         try {
             ldr.setSubfieldCodeLength(Integer.parseInt(String.valueOf(subfieldCodeLength)));
