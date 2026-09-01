@@ -275,6 +275,44 @@
         <property name="dist.already.run" value="true" />
     </target>
 
+    <target name="sonatype-package" description="Creates the uploadable Sonatype package" depends="dist" unless="sonatype-package.already.run">
+        <echo message="Generate sha1 files" />
+        <checksum algorithm="SHA-256" fileext=".sha1" format="MD5SUM" todir="${dist.dir}">
+            <fileset dir="${dist.dir}">
+                <include name="marc4j*.jar" />
+                <include name="marc4j*.pom" />
+            </fileset>
+        </checksum>
+
+        <echo message="Generate md5 files" />
+        <checksum fileext=".md5" todir="${dist.dir}">
+            <fileset dir="${dist.dir}">
+                <include name="marc4j*.jar" />
+                <include name="marc4j*.pom" />
+            </fileset>
+        </checksum>
+
+        <echo message="Generate asc files" />
+        <checksum algorithm="SHA-512" fileext=".asc" todir="${dist.dir}">
+            <fileset dir="${dist.dir}">
+                <include name="marc4j*.jar" />
+                <include name="marc4j*.pom" />
+            </fileset>
+        </checksum>
+
+        <echo message="Generate bundle file for Sonatype" />
+        <zip destfile="${dist.dir}/central-bundle.zip" >
+            <zipfileset prefix="org/marc4j/${versionstr}" dir="${dist.dir}">
+                <include name="marc4j*.jar"/>
+                <include name="marc4j*.pom"/>
+                <include name="marc4j*.sha1"/>
+                <include name="marc4j*.asc"/>
+                <include name="marc4j*.md5"/>
+            </zipfileset>
+        </zip>
+        <property name="sonatype-package.already.run" value="true" />
+    </target>
+
     <target name="sign" depends="dist,release-ready" if="release.is.ready" unless="is.snapshot" >
         <delete dir="${dist.dir}" includes="*.asc" />
         <echo message="Signing jar files using provided passphrase" />
