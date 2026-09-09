@@ -11,57 +11,66 @@ public class StringNaturalCompare implements Comparator<String>
         return(result);
     }
 
-
+    /**
+     * Compare two right-aligned numbers: the longest run of digits wins,
+     * and if the runs are the same length, the earlier-recorded bias
+     * (from the first differing digit) decides.
+     *
+     * FIX: previously checked (ind1 == s1.length()) / (ind2 == s2.length())
+     * BEFORE checking whether the current characters were digits. That
+     * meant hitting the end of one string was always treated as "that
+     * digit run is shorter, so it loses" - even when the other string's
+     * digit run ended at exactly the same position (just followed by
+     * more non-digit text, e.g. comparing "21" against "12-14": both
+     * digit runs are length 2, but s1's string ends right there while
+     * s2 continues with "-14"). This caused e.g. "Box 21" to sort before
+     * "Box 12-14" instead of after it.
+     *
+     * The fix treats an out-of-range index as a non-digit sentinel
+     * character (mirroring how the original C strnatcmp uses '\0', where
+     * isdigit('\0') is false), so "ran out of string" and "ran out of
+     * digits" are handled by the same digit-vs-non-digit comparison
+     * instead of a separate, premature length check.
+     */
     private static int compareRight(String s1, int ind1, String s2, int ind2)
     {
-         int bias = 0;
+        int bias = 0;
 
-         /* The longest run of digits wins.  That aside, the greatest
-        value wins, but we can't know that it will until we've scanned
-        both numbers to know that they have the same magnitude, so we
-        remember it in BIAS. */
-         for (;; ind1++, ind2++)
-         {
-             if (ind1 == s1.length() && ind2 == s2.length())
-                 return(bias);
-             else if (ind1 == s1.length())
-                 return(-1);
-             else if (ind2 == s2.length())
-                 return(+1);
-             char a = s1.charAt(ind1);
-             char b = s2.charAt(ind2);
-             if (!Character.isDigit(a) && !Character.isDigit(b))
-                 return bias;
-             else if (!Character.isDigit(a))
-                 return -1;
-             else if (!Character.isDigit(b))
-                 return +1;
-             else if (a < b)
-             {
-                 if (bias == 0)  bias = -1;
-             }
-             else if (a > b)
-             {
-                 if (bias == 0)  bias = +1;
-             }
-         }
-    }
-
-
-    public static int compareLeft(String s1, int ind1, String s2, int ind2)
-    {
-         /* Compare two left-aligned numbers: the first to have a
-            different value wins. */
         for (;; ind1++, ind2++)
         {
-            if (ind1 == s1.length() && ind2 == s2.length())
-                return 0;
-            else if (ind1 == s1.length())
-                return(-1);
-            else if (ind2 == s2.length())
-                return(+1);
-            char a = s1.charAt(ind1);
-            char b = s2.charAt(ind2);
+            char a = ind1 < s1.length() ? s1.charAt(ind1) : 0;
+            char b = ind2 < s2.length() ? s2.charAt(ind2) : 0;
+
+            if (!Character.isDigit(a) && !Character.isDigit(b))
+                return bias;
+            else if (!Character.isDigit(a))
+                return -1;
+            else if (!Character.isDigit(b))
+                return +1;
+            else if (a < b)
+            {
+                if (bias == 0) bias = -1;
+            }
+            else if (a > b)
+            {
+                if (bias == 0) bias = +1;
+            }
+        }
+    }
+
+    /**
+     * Compare two left-aligned numbers (used when either number has a
+     * leading zero): the first differing digit wins.
+     *
+     * Same end-of-string-vs-end-of-digit-run fix as compareRight above.
+     */
+    private static int compareLeft(String s1, int ind1, String s2, int ind2)
+    {
+        for (;; ind1++, ind2++)
+        {
+            char a = ind1 < s1.length() ? s1.charAt(ind1) : 0;
+            char b = ind2 < s2.length() ? s2.charAt(ind2) : 0;
+
             if (!Character.isDigit(a) && !Character.isDigit(b))
                 return 0;
             else if (!Character.isDigit(a))
@@ -72,17 +81,16 @@ public class StringNaturalCompare implements Comparator<String>
                 return -1;
             else if (a > b)
                 return +1;
-         }
+        }
     }
 
-    public static int strnatcmp0(String s1, String s2, boolean fold_case)
+    private static int strnatcmp0(String s1, String s2, boolean fold_case)
     {
         int ai, bi;
         char ca, cb;
         boolean fractional;
         int result;
 
-        //   assert(a && b);
         ai = bi = 0;
         while (true)
         {
@@ -119,8 +127,6 @@ public class StringNaturalCompare implements Comparator<String>
 
             if (ca == 0 && cb == 0)
             {
-                /* The strings compare the same.  Perhaps the caller
-                       will want to call strcmp to break the tie. */
                 return 0;
             }
 
@@ -137,8 +143,4 @@ public class StringNaturalCompare implements Comparator<String>
             ++bi;
         }
     }
-
-
-
-
 }

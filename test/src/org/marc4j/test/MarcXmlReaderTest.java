@@ -15,6 +15,7 @@ import org.marc4j.MarcXmlReader;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
+import org.marc4j.test.utils.RecordTestingUtils;
 import org.marc4j.test.utils.TestUtils;
 
 /**
@@ -197,6 +198,26 @@ public class MarcXmlReaderTest {
         assertTrue(record.hasErrors());
         assertTrue(record.getErrors().size() == 2);
         assertTrue(record.getErrors().iterator().next().message.contains("Missing tag element in ControlField after tag: 001"));
+    }
+    
+    /**
+     * Tests reading a record with a too short leader {@link ControlField} tag in {@link Record}
+     */
+    @Test
+    public void testReadFileWithTooShortLeaderTag() {
+        final InputStream input1 = getClass().getResourceAsStream("/unimarc_record_short_leader.xml");
+        assertNotNull(input1);
+        final MarcXmlReader reader1 = new MarcXmlReader(input1);
+        assertTrue(reader1.hasNext());
+        final Record record1 = reader1.next();
+        
+        final InputStream input2 = getClass().getResourceAsStream("/unimarc_record.xml");
+        assertNotNull(input2);
+        final MarcXmlReader reader2 = new MarcXmlReader(input2);
+        assertTrue(reader2.hasNext());
+        final Record record2 = reader2.next();
+        
+        RecordTestingUtils.assertEqualsIgnoreLeader(record1, record2);
     }
 
 }

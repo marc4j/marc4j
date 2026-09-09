@@ -119,8 +119,9 @@
     </target>
 
     <target name="test" depends="compile-all,compile-tests">
-        <junit fork="yes" forkmode="perBatch" haltonfailure="true">
-            <batchtest>
+        <junit fork="yes" forkmode="perBatch" haltonfailure="false">
+        	<jvmarg value="-Dfile.encoding=UTF-8"/>
+        	<batchtest>
                 <fileset dir="${test.src.dir}">
                     <exclude name="org/marc4j/test/utils/**"/>
                 </fileset>

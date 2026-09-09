@@ -4,8 +4,10 @@ import org.junit.Test;
 import org.marc4j.MarcJsonReader;
 import org.marc4j.MarcJsonWriter;
 import org.marc4j.MarcStreamReader;
+import org.marc4j.MarcXmlReader;
 import org.marc4j.converter.impl.AnselToUnicode;
 import org.marc4j.marc.Record;
+import org.marc4j.test.utils.RecordTestingUtils;
 import org.marc4j.test.utils.StaticTestRecords;
 import org.marc4j.test.utils.TestUtils;
 
@@ -178,6 +180,63 @@ public class JsonWriterTest  {
 
     @Test
     public void testJsonWriteAndRead2() throws Exception {
+        String fileName = StaticTestRecords.RESOURCES_MARC_JSON_JSON;
+        Record record = getJSONRecordFromFile(fileName);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_JSON);
+        writer.write(record);
+        writer.close();
+
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        MarcJsonReader marcReader = new MarcJsonReader(in);
+        assertTrue(marcReader.hasNext());
+        TestUtils.validateFreewheelingBobDylanRecord(marcReader.next());
+        assertFalse(marcReader.hasNext());
+        in.close();
+        out.close();
+    }
+    @Test
+    public void testJsonWriteAndReadUppercaseSubfield1() throws Exception {
+        final InputStream input1 = getClass().getResourceAsStream("/unimarc_record.xml");
+        assertNotNull(input1);
+        final MarcXmlReader reader1 = new MarcXmlReader(input1);
+        assertTrue(reader1.hasNext());
+        final Record record1 = reader1.next();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_IN_JSON);
+        writer.write(record1);
+        writer.close();
+
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        MarcJsonReader marcReader = new MarcJsonReader(in);
+        assertTrue(marcReader.hasNext());
+        Record record2 = marcReader.next();
+        RecordTestingUtils.assertEquals(record1, record2);
+        in.close();
+    }
+
+    @Test
+    public void testJsonWriteAndReadUppercaseSubfield2() throws Exception {
+        final InputStream input1 = getClass().getResourceAsStream("/unimarc_record.xml");
+        assertNotNull(input1);
+        final MarcXmlReader reader1 = new MarcXmlReader(input1);
+        assertTrue(reader1.hasNext());
+        final Record record1 = reader1.next();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MarcJsonWriter writer = new MarcJsonWriter(out, MarcJsonWriter.MARC_JSON);
+        writer.write(record1);
+        writer.close();
+
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        MarcJsonReader marcReader = new MarcJsonReader(in);
+        assertTrue(marcReader.hasNext());
+        Record record2 = marcReader.next();
+        RecordTestingUtils.assertEquals(record1, record2);
+        in.close();
+    }
+    @Test
+    public void testJsonWriteAndReadUppercaseSubfield() throws Exception {
         String fileName = StaticTestRecords.RESOURCES_MARC_JSON_JSON;
         Record record = getJSONRecordFromFile(fileName);
         ByteArrayOutputStream out = new ByteArrayOutputStream();

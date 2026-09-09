@@ -25,9 +25,20 @@ public class RecordTestingUtils
         String errmsg = "Record " + actualId + " wasn't as expected";
 
         if ( actualId.equals(expected.getControlNumber()) )
-            assertTrue(errmsg, expected.toString().equals(actual.toString()) );
+        {
+        	if (!expected.toString().equals(actual.toString()))
+            {
+            	String difference = getFirstRecordDifferenceIgnoreLeader(expected, actual);
+            	String fullMsg = errmsg + "\n" + difference;
+        		fail(fullMsg);
+            }
+        }
         else
-            fail(errmsg);
+        {
+        	String fullMsg = errmsg + "\n" + "Control number is different " + actualId + " vs. " + expected.getControlNumber();
+    		fail(fullMsg);
+
+        }
     }
 
     /**

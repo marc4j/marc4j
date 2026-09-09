@@ -16,6 +16,10 @@ package org.marc4j.callnum;
  * limitations under the License.
  */
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -546,26 +550,149 @@ public class LCCallNumber extends AbstractCallNumber {
         keyBuf.append("0.").append(number).append((number.length() < 6 ? "000000".substring(number.length()) : ""));
     }
 
+    // Helper so the two Set literals below stay easy to read.
+    // (Set.of(...) needs Java 9+; this works on any Java version.)
+    private static Set<String> setOf(String... values) {
+        return Collections.unmodifiableSet(
+            new HashSet<>(Arrays.asList(values)));
+    }
+    
+    private static final Set<String> VALID_NON_K_SUBCLASSES = setOf(
+            // A - General Works
+            "A", "AC", "AE", "AG", "AI", "AM", "AN", "AP", "AS", "AY", "AZ",
+            // B - Philosophy. Psychology. Religion
+            "B", "BC", "BD", "BF", "BH", "BJ", "BL", "BM", "BP", "BQ", "BR", "BS",
+            "BT", "BV", "BX",
+            // C - Auxiliary Sciences of History
+            "C", "CB", "CC", "CD", "CE", "CJ", "CN", "CR", "CS", "CT",
+            // D - World History
+            "D", "DA", "DAW", "DB", "DC", "DD", "DE", "DF", "DG", "DH", "DJ",
+            "DJK", "DK", "DL", "DP", "DQ", "DR", "DS", "DT", "DU", "DX",
+            // E - F - History of the Americas (no letter subclasses; F followed
+            // only by numbers for individual states/countries)
+            "E", "F",
+            // G - Geography. Anthropology. Recreation
+            "G", "GA", "GB", "GC", "GE", "GF", "GN", "GR", "GT", "GV",
+            // H - Social Sciences
+            "H", "HA", "HB", "HC", "HD", "HE", "HF", "HG", "HJ", "HM", "HN", "HQ",
+            "HS", "HT", "HV", "HX",
+            // J - Political Science (JX is marked obsolete by LC but may still
+            // appear on older cataloged records)
+            "J", "JA", "JC", "JF", "JJ", "JK", "JL", "JN", "JQ", "JS", "JV", "JX",
+            "JZ",
+            // L - Education
+            "L", "LA", "LB", "LC", "LD", "LE", "LF", "LG", "LH", "LJ", "LT",
+            // M - Music
+            "M", "ML", "MT",
+            // N - Fine Arts
+            "N", "NA", "NB", "NC", "ND", "NE", "NK", "NX",
+            // P - Language and Literature
+            "P", "PA", "PB", "PC", "PD", "PE", "PF", "PG", "PH", "PJ", "PK", "PL",
+            "PM", "PN", "PQ", "PR", "PS", "PT", "PZ",
+            // Q - Science
+            "Q", "QA", "QB", "QC", "QD", "QE", "QH", "QK", "QL", "QM", "QP", "QR",
+            // R - Medicine
+            "R", "RA", "RB", "RC", "RD", "RE", "RF", "RG", "RJ", "RK", "RL", "RM",
+            "RS", "RT", "RV", "RX", "RZ",
+            // S - Agriculture
+            "S", "SB", "SD", "SF", "SH", "SK",
+            // T - Technology
+            "T", "TA", "TC", "TD", "TE", "TF", "TG", "TH", "TJ", "TK", "TL", "TN",
+            "TP", "TR", "TS", "TT", "TX",
+            // U - Military Science
+            "U", "UA", "UB", "UC", "UD", "UE", "UF", "UG", "UH",
+            // V - Naval Science
+            "V", "VA", "VB", "VC", "VD", "VE", "VF", "VG", "VK", "VM",
+            // Z - Bibliography. Library Science. Information Resources
+            "Z", "ZA"
+        );
+     
+        // --- K (Law) authoritative subclass list ---
+        // Source: LC Classification Outline, Class K - Law
+        // https://www.loc.gov/aba/cataloging/classification/lcco/lcco_k.pdf
+        private static final Set<String> VALID_K_SUBCLASSES = setOf(
+            "K",
+            "KB", "KBM", "KBP", "KBR", "KBU",
+            "KD", "KDC", "KDE", "KDG", "KDK", "KDZ",
+            "KE", "KEA", "KEB", "KEM", "KEN", "KEO", "KEP", "KEQ", "KES", "KEY", "KEZ",
+            "KF", "KFA", "KFC", "KFD", "KFF", "KFG", "KFH", "KFI", "KFK", "KFL", "KFM",
+            "KFN", "KFO", "KFP", "KFR", "KFS", "KFT", "KFU", "KFV", "KFW", "KFX", "KFZ",
+            "KG", "KGA", "KGB", "KGC", "KGD", "KGE", "KGF", "KGG", "KGH", "KGJ", "KGK",
+            "KGL", "KGM", "KGN", "KGP", "KGQ", "KGR", "KGS", "KGT", "KGU", "KGV", "KGW",
+            "KGX", "KGY", "KGZ",
+            "KH", "KHA", "KHC", "KHD", "KHF", "KHH", "KHK", "KHL", "KHM", "KHN", "KHP",
+            "KHQ", "KHS", "KHU", "KHW",
+            "KJ", "KJA", "KJC", "KJE", "KJG", "KJH", "KJJ", "KJK", "KJM", "KJN", "KJP",
+            "KJR", "KJS", "KJT", "KJV", "KJW",
+            "KK", "KKA", "KKB", "KKC", "KKE", "KKF", "KKG", "KKH", "KKI", "KKJ", "KKK",
+            "KKL", "KKM", "KKN", "KKP", "KKQ", "KKR", "KKS", "KKT", "KKV", "KKW", "KKX",
+            "KKY", "KKZ",
+            "KL", "KLA", "KLB", "KLD", "KLE", "KLF", "KLH", "KLM", "KLN", "KLP", "KLQ",
+            "KLR", "KLS", "KLT", "KLV", "KLW",
+            "KM", "KMC", "KME", "KMF", "KMG", "KMH", "KMJ", "KMK", "KML", "KMM", "KMN",
+            "KMP", "KMQ", "KMS", "KMT", "KMU", "KMV", "KMX", "KMY",
+            "KN", "KNC", "KNE", "KNF", "KNG", "KNH", "KNK", "KNL", "KNM", "KNN", "KNP",
+            "KNQ", "KNR", "KNS", "KNT", "KNU", "KNV", "KNW", "KNX", "KNY",
+            "KP", "KPA", "KPC", "KPE", "KPF", "KPG", "KPH", "KPJ", "KPK", "KPL", "KPM",
+            "KPP", "KPS", "KPT", "KPV", "KPW",
+            "KQ", "KQC", "KQE", "KQG", "KQH", "KQJ", "KQK", "KQM", "KQP", "KQT", "KQV",
+            "KQW", "KQX",
+            "KR", "KRB", "KRC", "KRE", "KRG", "KRK", "KRL", "KRM", "KRN", "KRP", "KRR",
+            "KRS", "KRU", "KRV", "KRW", "KRX", "KRY",
+            "KS", "KSA", "KSC", "KSE", "KSG", "KSH", "KSK", "KSL", "KSN", "KSP", "KSR",
+            "KSS", "KST", "KSU", "KSV", "KSW", "KSX", "KSY", "KSZ",
+            "KT", "KTA", "KTC", "KTD", "KTE", "KTF", "KTG", "KTH", "KTJ", "KTK", "KTL",
+            "KTN", "KTQ", "KTR", "KTT", "KTU", "KTV", "KTW", "KTX", "KTY", "KTZ",
+            "KU", "KUA", "KUB", "KUC", "KUD", "KUE", "KUF", "KUG", "KUH", "KUN", "KUQ",
+            "KV", "KVB", "KVC", "KVE", "KVH", "KVL", "KVM", "KVN", "KVP", "KVQ", "KVR",
+            "KVS", "KVU", "KVW",
+            "KW", "KWA", "KWC", "KWE", "KWG", "KWH", "KWL", "KWP", "KWQ", "KWR", "KWT",
+            "KWW", "KWX",
+            "KZ", "KZA", "KZD"
+        );
+
+
     /**
-     * Initial implementation checks for:
-     *  - invalid classes (beginning with I,O,W,X, or Y)
-     *  - null classDigits
+     * Determines whether a LC call number is valid.  Either using older loose check of
+     * the initial letter only or newer more-strict checks of the entire initial sequence 
+     * of letters.
+     *
+     * @param strict - if strict is true, it will check the initial string for validity
+     *                 as expressed by the above sets of strings
+     *               - if strict is false, it will only do the original comparison 
+     *                 for invalid classes (beginning with I,O,W,X, or Y)
+     *
+     * @return true if this call number is valid, false otherwise
      */
-    public boolean isValid() {
-        boolean valid = true;
+    public boolean isValid(boolean strict) {
         if (this.classLetters == null) {
             valid = false;
         }
-        else {
-            char firstChar = this.classLetters.charAt(0);
+        else if (strict && (!VALID_K_SUBCLASSES.contains(classLetters)
+                && !VALID_NON_K_SUBCLASSES.contains(classLetters))) {
+            valid = false;        	
+        }
+        else if (!strict) {
+        	char firstChar = this.classLetters.charAt(0);
             // LC call numbers can't begin with I, O, W, X, or Y
             if (firstChar == 'I' || firstChar == 'O' || firstChar == 'W'
                     || firstChar == 'X' || firstChar == 'Y') {
                 valid = false;
             }
         }
-        if (this.classDigits == null) valid = false;
+        if (classDigits == null) {
+            valid = false;
+        }
         return valid;
+    }
+    
+    /**
+     * Initial implementation checks for:
+     *  - invalid classes (beginning with I,O,W,X, or Y)
+     *  - null classDigits
+     */
+    public boolean isValid() {
+        return isValid(false);
     }
 
     @Override

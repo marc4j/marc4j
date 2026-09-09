@@ -287,7 +287,14 @@ public class MarcXmlHandler implements ContentHandler {
                 queue.push(record);
                 break;
             case LEADER_ID:
-                final Leader leader = factory.newLeader(sb.toString());
+                String leaderText = sb.toString();
+
+                // Defensive check: Fix malformed lengths before instantiating the Leader object
+                if (leaderText != null && leaderText.length() != 24) {
+                    leaderText = normalizeLeaderText(leaderText);
+                }
+
+                final Leader leader = factory.newLeader(leaderText);
                 record.setLeader(leader);
                 break;
             case CONTROLFIELD_ID:
@@ -383,6 +390,44 @@ public class MarcXmlHandler implements ContentHandler {
     public void startPrefixMapping(final String prefix, final String uri) throws SAXException {
         // not implemented
     }
+
+    /**
+     * Normalizes an invalid XML leader string to exactly 24 characters, 
+     * preserving critical user metadata positions while enforcing a safe structural template.
+     */
+    private String normalizeLeaderText(final String badLeader) {
+        // Safe, default 24-character frame for monographs
+        final char[] clean = "00000nam  2200000   4500".toCharArray();
+
+        if (badLeader == null || badLeader.trim().isEmpty()) {
+            return new String(clean);
+        }
+
+        final int len = badLeader.length();
+
+        // 1. Preserve critical record metadata positions (5-9) if present
+        // (Status, Type, Bib Level, Control Type, Encoding Scheme)
+        for (int i = 5; i <= 9; i++) {
+            if (len > i) {
+                clean[i] = badLeader.charAt(i);
+            }
+        }
+
+        // 2. Preserve encoding and cataloging rule flags (17-19) if present
+        // (Encoding Level, Descriptive Cataloging, Multipart Resource Record Level)
+        for (int i = 17; i <= 19; i++) {
+            if (len > i) {
+                clean[i] = badLeader.charAt(i);
+            }
+        }
+
+        // Note: Positions 0-4 (Length), 10-16 (Indicators/Base Address), and 20-23 (Entry Map)
+        // are left as default templates. They will be dynamically overwritten 
+        // accurately when the record passes through MarcStreamWriter.
+
+        return new String(clean);
+    }
+
 
     /**
      * Handle namespace prefixes; also fixes issue with broken SAX emitters that spit out QName instead of local name.

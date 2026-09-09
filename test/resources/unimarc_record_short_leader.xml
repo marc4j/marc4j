@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record xmlns="http://www.loc.gov/MARC21/slim">
+  <leader>00745nam0 2200229   450</leader>
+  <controlfield tag="001">FRBNF3456789012</controlfield>
+  <datafield tag="010" ind1=" " ind2=" ">
+    <subfield code="a">9782707301234</subfield>
+  </datafield>
+  <datafield tag="020" ind1=" " ind2=" ">
+    <subfield code="a">FR</subfield>
+    <subfield code="b">2026-PARIS-001</subfield>
+  </datafield>
+  <datafield tag="100" ind1=" " ind2=" ">
+    <subfield code="a">20261105d1984####m##y0frey50######ba</subfield>
+  </datafield>
+  <datafield tag="101" ind1="0" ind2=" ">
+    <subfield code="a">fre</subfield>
+  </datafield>
+  <datafield tag="102" ind1=" " ind2=" ">
+    <subfield code="a">FR</subfield>
+  </datafield>
+  <datafield tag="200" ind1="1" ind2=" ">
+    <subfield code="a">Le Spleen de Paris</subfield>
+    <subfield code="e">Petits poèmes en prose</subfield>
+    <subfield code="f">Charles Baudelaire</subfield>
+  </datafield>
+  <datafield tag="210" ind1=" " ind2=" ">
+    <subfield code="a">Paris</subfield>
+    <subfield code="c">Éditions de Minuit</subfield>
+    <subfield code="d">1984</subfield>
+  </datafield>
+  <datafield tag="215" ind1=" " ind2=" ">
+    <subfield code="a">125 p.</subfield>
+    <subfield code="d">22 cm</subfield>
+  </datafield>
+  <datafield tag="300" ind1=" " ind2=" ">
+    <subfield code="a">Contient également une étude critique de l'œuvre.</subfield>
+  </datafield>
+  <datafield tag="464" ind1=" " ind2="1">
+    <subfield code="t">Étude sur le Spleen de Baudelaire</subfield>
+    <subfield code="f">Jean-Pierre Richard</subfield>
+    <subfield code="A">1</subfield>
+  </datafield>
+  <datafield tag="606" ind1=" " ind2=" ">
+    <subfield code="3">FRBNF11936054</subfield>
+    <subfield code="a">Poésie française</subfield>
+    <subfield code="y">19e siècle</subfield>
+  </datafield>
+  <datafield tag="700" ind1=" " ind2="1">
+    <subfield code="3">FRBNF11890582</subfield>
+    <subfield code="a">Baudelaire</subfield>
+    <subfield code="b">Charles</subfield>
+    <subfield code="4">070</subfield>
+  </datafield>
+</record>
