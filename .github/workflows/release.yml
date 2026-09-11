@@ -1,9 +1,20 @@
-name: Run Ant Script with GPG Signing
+name: Publish Release to Maven Central
 
 on:
   release:
-    types: 
+    types:
       - published
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g. 2.9.8). Leave blank to let git describe decide from tags.'
+        required: false
+        default: ''
+      publish:
+        description: 'Actually publish to Central? If false, stops after VALIDATED (safe dry run).'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build:
@@ -11,44 +22,97 @@ jobs:
     environment: "release environment"   # Specify the environment here
 
     steps:
-      # Check out the code from the repository
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      # Set up Java for Ant
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
           java-version: '8'
 
-      # Install Ant and gpg and curl
-      - name: Install Ant
+      - name: Install Ant and gpg and curl
         run: |
           sudo apt-get update
           sudo apt-get install -y ant gnupg2 curl
 
-      # Import the GPG key from GitHub secrets
       - name: Import GPG key
         env:
           GPG_SECRET_KEY_B64: ${{ secrets.GPG_SECRET_KEY_B64 }}
-          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          echo "passphrase hash = $(echo -n "$GPG_PASSPHRASE" | sha256sum)"
-          echo "privateb64key hash = $(echo -n "$GPG_SECRET_KEY_B64" | base64 --decode | sha256sum)"
-          echo "privatekey hash = $(echo -n "$GPG_SECRET_KEY" | sha256sum)"
-          echo "$GPG_SECRET_KEY_B64" | base64 --decode | gpg --batch --yes --pinentry=loopback --passphrase "$GPG_PASSPHRASE" --import
-          echo "imported"
+          echo "$GPG_SECRET_KEY_B64" | base64 --decode | gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --import
           gpg --list-secret-keys
-          echo "listed"
 
-      # Run the Ant script to sign the artifacts
-      - name: Run Ant Script for creating, signing, uploading, and promoting Artifacts
+      # Works out what version string to pass to ant, and whether this
+      # run should actually publish or only dry-run, regardless of which
+      # of the three trigger paths fired:
+      #   - release published, not marked pre-release  -> full, tag_name
+      #   - release published, marked pre-release       -> dry-run, tag_name
+      #   - workflow_dispatch (manual run)               -> version/publish
+      #     come from the inputs above; publish defaults to false so a
+      #     manual run against a draft/branch/commit never accidentally
+      #     goes live unless someone deliberately checks the box.
+      - name: Determine version and mode
+        id: plan
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "version=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+            if [ "${{ github.event.release.prerelease }}" = "true" ]; then
+              echo "mode=dryrun" >> "$GITHUB_OUTPUT"
+            else
+              echo "mode=full" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+            if [ "${{ github.event.inputs.publish }}" = "true" ]; then
+              echo "mode=full" >> "$GITHUB_OUTPUT"
+            else
+              echo "mode=dryrun" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+          echo "Resolved: version='${{ steps.plan.outputs.version }}' mode='${{ steps.plan.outputs.mode }}'"
+
+      # Dry run: package, sign, upload, wait for VALIDATED - stop there.
+      # Nothing is published to Central. Covers: pre-release publishes,
+      # and any manual workflow_dispatch run where "publish" wasn't
+      # checked (the default) - including runs against a branch/commit
+      # with no release/tag at all, which is as close as we can get to
+      # testing a draft, since GitHub never fires this workflow for an
+      # actual draft release.
+      - name: Dry run - package, upload, validate only
+        if: steps.plan.outputs.mode == 'dryrun'
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          SONATYPE_USERNAME_PASSWORD: ${{ secrets.SONATYPE_USERNAME_PASSWORD }}
-          MARC4J_ORG_PROFILEID: ${{ vars.MARC4J_ORG_PROFILEID }}
+          CENTRAL_BEARER_TOKEN: ${{ secrets.CENTRAL_BEARER_TOKEN }}
         run: |
-          ant -f build.xml -Dgpg-passphrase="${GPG_PASSPHRASE}" -Dsonatypeuserpassword="${SONATYPE_USERNAME_PASSWORD}" -Dmarc4j.org.profileId.sonatype.org="${MARC4J_ORG_PROFILEID}" dist sonatype-release
+          VERSION_ARG=""
+          if [ -n "${{ steps.plan.outputs.version }}" ]; then
+            VERSION_ARG="-Dversion=${{ steps.plan.outputs.version }}"
+          fi
+          ant -f build.xml \
+            $VERSION_ARG \
+            -Dgpg-passphrase="${GPG_PASSPHRASE}" \
+            -Dcentral.bearer.token="${CENTRAL_BEARER_TOKEN}" \
+            central-wait-validated
+          echo "Dry run complete. Deployment left at VALIDATED, not published. Check https://central.sonatype.com/publishing/deployments"
 
+      # Full release: package -> upload -> validate -> publish.
+      - name: Full release - package, upload, validate, and publish to Central
+        if: steps.plan.outputs.mode == 'full'
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          CENTRAL_BEARER_TOKEN: ${{ secrets.CENTRAL_BEARER_TOKEN }}
+        run: |
+          VERSION_ARG=""
+          if [ -n "${{ steps.plan.outputs.version }}" ]; then
+            VERSION_ARG="-Dversion=${{ steps.plan.outputs.version }}"
+          fi
+          ant -f build.xml \
+            $VERSION_ARG \
+            -Dgpg-passphrase="${GPG_PASSPHRASE}" \
+            -Dcentral.bearer.token="${CENTRAL_BEARER_TOKEN}" \
+            -Dcentral.publishing.type=AUTOMATIC \
+            central-release
